@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iText</title>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: url('./src/assets/bg/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    } 
+      .glass-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        pointer-events: none;
+        z-index: -1;
+      }
+
+    /* Navbar Topo */
+    nav {
+      background: #2A2A2A;
+      background: linear-gradient(0deg, rgba(42, 42, 42, 1) 0%, rgba(60, 60, 60, 1) 100%);
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: #111;
+    }
+
+    /* Sidebar Desktop */
+    .sidebar {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 220px;
+      height: calc(100% - 70px);
+      background-color: #000;
+      border-right: 1px solid #333;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.3s;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .sidebar a:hover {
+      background-color: #111;
+      border-radius: 8px;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 220px;
+      padding: 90px 20px 60px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .post {
+      background-color: #111;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 200px;
+    }
+
+    .post .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .post .username {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .post .content {
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .post .content img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    .post .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #333;
+      padding-top: 8px;
+    }
+
+    .post .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .post .actions button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .post .actions button:hover {
+      color: #00c853;
+    }
+
+    /* Navbar Inferior Mobile */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #000;
+      border-top: 1px solid #333;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .bottom-nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bottom-nav a:hover {
+      color: #585858;
+    }
+
+    /* Responsivo */
+    @media (max-width: 1024px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .bottom-nav {
+        display: flex;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Navbar topo -->
+<nav>
+  <div class="logo">iFriendMatch</div>
+</nav>
+
+<!-- Sidebar Desktop -->
+<div class="sidebar">
+  <a href="#"><i class="fas fa-home"></i> Início</a>
+  <a href="#"><i class="fas fa-search"></i> Pesquisar</a>
+  <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+  <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+  <a href="#"><i class="fas fa-plus-square"></i> Criar</a>
+  <a href="#"><i class="fas fa-user"></i> Perfil</a>
+  <a href="#"><i class="fas fa-bars"></i> Mais</a>
+</div>
+
+<!-- Navbar Inferior Mobile -->
+<div class="bottom-nav">
+  <a href="#"><i class="fas fa-home"></i></a>
+  <a href="#"><i class="fas fa-search"></i></a>
+  <a href="#"><i class="fas fa-plus-square"></i></a>
+  <a href="#"><i class="fas fa-comments"></i></a>
+  <a href="#"><i class="fas fa-user"></i></a>
+</div>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+  <div class="grid">
+    <div class="post">
+      <div class="header">
+        <div class="user-info">
+          <img src="https://picsum.photos/200" alt="User">
+          <div class="username">@usuario1</div>
+        </div>
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+      <div class="content">
+        <p>Post bem curto só pra testar.</p>
+      </div>
+      <div class="footer">
+        <div class="actions">
+          <button><i class="fas fa-heart"></i></button>
+          <button><i class="fas fa-comment"></i></button>
+          <button><i class="fas fa-bookmark"></i></button>
+        </div>
+        <div class="date">2h atrás</div>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="header">
+        <div class="user-info">
+          <img src="https://picsum.photos/200" alt="User">
+          <div class="username">@usuario2</div>
+        </div>
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+      <div class="content">
+        <img src="https://picsum.photos/400" alt="Post">
+      </div>
+      <div class="footer">
+        <div class="actions">
+          <button><i class="fas fa-heart"></i></button>
+          <button><i class="fas fa-comment"></i></button>
+          <button><i class="fas fa-bookmark"></i></button>
+        </div>
+        <div class="date">5h atrás</div>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="header">
+        <div class="user-info">
+          <img src="https://picsum.photos/200" alt="User">
+          <div class="username">@usuario3</div>
+        </div>
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+      <div class="content">
+        <p>Mais um post de texto, agora um pouco maior, mas nada demais.</p>
+      </div>
+      <div class="footer">
+        <div class="actions">
+          <button><i class="fas fa-heart"></i></button>
+          <button><i class="fas fa-comment"></i></button>
+          <button><i class="fas fa-bookmark"></i></button>
+        </div>
+        <div class="date">8h atrás</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="glass-overlay"></div>
+
+</body>
+</html>
