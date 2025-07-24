@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-image: url("../bg/bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  color: #dbdbdb;
+  display: flex;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.glass-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@font-face {
+  font-family: 'MinhaFonte';
+  src: url('/src/font/w95fa.woff') format('woff2'),
+       url('/src/font/w95fa.woff2') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
