@@ -45,12 +45,13 @@
   <!-- Sidebar Desktop -->
   <aside class="sidebar">
     <a href="iFeed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
-    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="amigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="dm.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="not.html"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
   </aside>
 
   <!-- Navbar Bottom (Mobile) -->
@@ -110,7 +111,7 @@
 
     <!-- Conteúdo dinâmico -->
     <div class="tab mural-tab active">
-                <h3>Mural desse usuario</h3>
+       <h3 id="tituloMural">Mural de </h3>
       <div class="status-box">
         <p><strong>Este Usuario está:</strong></p>
         <p class="status-text">Online</p>
@@ -252,7 +253,7 @@
       <h3>Depoimentos desse usuario</h3>
              <div class="about-container">
         <div class="about-box">
-          <h2>esta opção nao esta disponível no momento...</h2>
+          <h2>esta opção não esta disponível no momento...</h2>
         </div>
       </div>
     </div>
@@ -294,115 +295,407 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // ===================
+  // FUNCIONALIDADE DE BUSCA (mantida)
+  // ===================
   const searchInput = document.getElementById('searchInput');
   const resultsList = document.getElementById('searchResults');
   const searchButton = document.querySelector('.search-box button');
 
-  async function performSearch() {
-    const term = searchInput.value.trim().toLowerCase();
-    resultsList.innerHTML = '';
-    resultsList.classList.remove('visible');
+  if (searchInput && resultsList && searchButton) {
+    async function performSearch() {
+      const term = searchInput.value.trim().toLowerCase();
+      resultsList.innerHTML = '';
+      resultsList.classList.remove('visible');
 
-    if (!term) return;
+      if (!term) return;
 
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
 
-    try {
-      const snapshot = await getDocs(q);
+      try {
+        const snapshot = await getDocs(q);
 
-      if (snapshot.empty) {
-        resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
-        resultsList.classList.add('visible');
-        return;
-      }
+        if (snapshot.empty) {
+          resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
+          resultsList.classList.add('visible');
+          return;
+        }
 
-      snapshot.forEach(doc => {
-        const user = doc.data();
-        const li = document.createElement('li');
-        li.textContent = user.username;
-        li.addEventListener('click', () => {
-          window.location.href = `PF.html?username=${user.username}`;
+        snapshot.forEach(docSnap => {
+          const user = docSnap.data();
+          const li = document.createElement('li');
+          li.textContent = user.username;
+          li.addEventListener('click', () => {
+            window.location.href = `PF.html?username=${user.username}`;
+          });
+          resultsList.appendChild(li);
         });
-        resultsList.appendChild(li);
-      });
 
-      resultsList.classList.add('visible');
-    } catch (err) {
-      console.error('Erro na busca:', err);
-      resultsList.innerHTML = '<li>Erro na busca</li>';
-      resultsList.classList.add('visible');
+        resultsList.classList.add('visible');
+      } catch (err) {
+        console.error('Erro na busca:', err);
+        resultsList.innerHTML = '<li>Erro na busca</li>';
+        resultsList.classList.add('visible');
+      }
     }
+
+    searchButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+
+    searchInput.addEventListener('input', performSearch);
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-area')) {
+        resultsList.classList.remove('visible');
+      }
+    });
   }
 
-  searchButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    performSearch();
-  });
-
-  searchInput.addEventListener('input', performSearch);
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-area')) {
-      resultsList.classList.remove('visible');
-    }
-  });
-
-  // 🔍 Carregar dados do perfil
+  // ===================
+  // CARREGAR PERFIL COMPLETO
+  // ===================
   const params = new URLSearchParams(window.location.search);
   const usernameParam = params.get("username");
 
-  async function carregarPerfil() {
-    if (!usernameParam) return;
+  async function carregarPerfilCompleto() {
+    if (!usernameParam) {
+      console.log("Nenhum username fornecido na URL");
+      return;
+    }
 
-    const userRef = doc(db, "users", usernameParam);
-    const docSnap = await getDoc(userRef);
+    try {
+      const userRef = doc(db, "users", usernameParam);
+      const docSnap = await getDoc(userRef);
 
-    if (docSnap.exists()) {
-      const dados = docSnap.data();
-      const nomeCompleto = `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
-      document.getElementById("nomeCompleto").textContent = nomeCompleto || "Nome não disponível";
-      document.getElementById("username").textContent = `@${dados.username || usernameParam}`;
-    } else {
-      document.getElementById("nomeCompleto").textContent = "Usuário não encontrado";
-      document.getElementById("username").textContent = "";
+      if (docSnap.exists()) {
+        const dados = docSnap.data();
+        console.log("Dados do usuário carregados:", dados);
+        
+        // Atualizar informações básicas do perfil
+        atualizarInformacoesBasicas(dados);
+        
+        // Atualizar seção "Visão Geral"
+        atualizarVisaoGeral(dados);
+        
+        // Atualizar seção "Gostos"
+        atualizarGostos(dados);
+        
+        // Atualizar imagens do perfil
+        atualizarImagensPerfil(dados);
+        
+      } else {
+        console.log("Usuário não encontrado no banco de dados");
+        document.getElementById("nomeCompleto").textContent = "Usuário não encontrado";
+        document.getElementById("username").textContent = "";
+      }
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
     }
   }
 
-  carregarPerfil();
-
-// ...seu código atual...
-
-async function atualizarMarqueeUltimoUsuario() {
-  try {
-    const lastUpdateRef = doc(db, "lastupdate", "latestUser");
-    const docSnap = await getDoc(lastUpdateRef);
-
-    const marquee = document.querySelector(".marquee");
-    if (!marquee) return;
-
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      // Aqui username é só uma string com o nome do usuário
-      const nomeUsuario = data.username || "Usuário";
-      marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
-    } else {
-      marquee.textContent = "Nenhum usuário encontrado.";
+  // ===================
+  // ATUALIZAR INFORMAÇÕES BÁSICAS
+  // ===================
+  function atualizarInformacoesBasicas(dados) {
+    // Nome completo
+    const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
+    const nomeElement = document.getElementById("nomeCompleto");
+    if (nomeElement) {
+      nomeElement.textContent = nomeCompleto || "Nome não disponível";
     }
-  } catch (error) {
-    console.error("Erro ao buscar último usuário:", error);
-    const marquee = document.querySelector(".marquee");
-    if (marquee) marquee.textContent = "Erro ao carregar dados.";
+
+    // Username
+    const usernameElement = document.getElementById("username");
+    if (usernameElement) {
+      usernameElement.textContent = `@${dados.username || usernameParam}`;
+    }
+
+    // Título do mural
+    const tituloMural = document.getElementById("tituloMural");
+    if (tituloMural) {
+      tituloMural.textContent = `Mural de ${nomeCompleto || dados.username || usernameParam}`;
+    }
+
+    // Título da visão geral
+    const visaoGeralTitle = document.getElementById("visao-geral-title");
+    if (visaoGeralTitle) {
+      visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || usernameParam}`;
+    }
+
+    // Pronomes (se existir elemento para isso)
+    if (dados.pronoun1 || dados.pronoun2) {
+      const pronomes = `${dados.pronoun1 || ''}/${dados.pronoun2 || ''}`.replace(/^\/|\/$/g, '');
+      // Adicionar pronomes ao lado do nome se houver elemento
+      const handleElement = document.querySelector('.handle');
+      if (handleElement && pronomes) {
+        handleElement.innerHTML = `@${dados.username || usernameParam} • ${pronomes}`;
+      }
+    }
+
+    // Estado civil e localização (se houver onde exibir)
+    console.log("Estado Civil:", dados.estadoCivil);
+    console.log("Localização:", dados.localizacao);
   }
+
+  // ===================
+  // ATUALIZAR SEÇÃO VISÃO GERAL
+  // ===================
+  function atualizarVisaoGeral(dados) {
+    const visaoTab = document.querySelector('.visao-tab .about-container');
+    if (!visaoTab) return;
+
+    const aboutBoxes = visaoTab.querySelectorAll('.about-box');
+    
+    // Visão Geral
+    if (aboutBoxes[0]) {
+      const visaoGeral = dados.visaoGeral || "Informação não disponível";
+      aboutBoxes[0].innerHTML = `
+        <p><i>Visão geral:</i></p>
+        <p>${visaoGeral}</p>
+      `;
+    }
+
+    // Tags como "Sobre mim"
+    if (aboutBoxes[1]) {
+      const tags = dados.tags || "Informação não disponível";
+      aboutBoxes[1].innerHTML = `
+        <p><i>Tags:</i></p>
+        <p>${tags}</p>
+      `;
+    }
+
+    // Estilo
+    if (aboutBoxes[2]) {
+      const estilo = dados.estilo || "Informação não disponível";
+      aboutBoxes[2].innerHTML = `
+        <p><i>Meu Estilo:</i></p>
+        <p>${estilo}</p>
+      `;
+    }
+
+    // Personalidade
+    if (aboutBoxes[3]) {
+      const personalidade = dados.personalidade || "Informação não disponível";
+      aboutBoxes[3].innerHTML = `
+        <p><i>Minha personalidade:</i></p>
+        <p>${personalidade}</p>
+      `;
+    }
+
+    // Sonhos e desejos
+    if (aboutBoxes[4]) {
+      const sonhos = dados.sonhos || "Informação não disponível";
+      aboutBoxes[4].innerHTML = `
+        <p><i>Meus Sonhos e desejos:</i></p>
+        <p>${sonhos}</p>
+      `;
+    }
+
+    // Medos
+    if (aboutBoxes[5]) {
+      const medos = dados.medos || "Informação não disponível";
+      aboutBoxes[5].innerHTML = `
+        <p><i>Meus Medos:</i></p>
+        <p>${medos}</p>
+      `;
+    }
+  }
+
+  // ===================
+  // ATUALIZAR SEÇÃO GOSTOS
+  // ===================
+  function atualizarGostos(dados) {
+    const gostosTab = document.querySelector('.gostos-tab .about-container');
+    if (!gostosTab) return;
+
+    const aboutBoxes = gostosTab.querySelectorAll('.about-box');
+
+    // Músicas
+    if (aboutBoxes[0]) {
+      const musicas = dados.musicas || "Informação não disponível";
+      aboutBoxes[0].innerHTML = `
+        <p><i>Músicas:</i></p>
+        <p>${musicas}</p>
+      `;
+    }
+
+    // Filmes e Séries
+    if (aboutBoxes[1]) {
+      const filmesSeries = dados.filmesSeries || "Informação não disponível";
+      aboutBoxes[1].innerHTML = `
+        <p><i>Filmes e Séries:</i></p>
+        <p>${filmesSeries}</p>
+      `;
+    }
+
+    // Livros
+    if (aboutBoxes[2]) {
+      const livros = dados.livros || "Informação não disponível";
+      aboutBoxes[2].innerHTML = `
+        <p><i>Livros:</i></p>
+        <p>${livros}</p>
+      `;
+    }
+
+    // Personagens
+    if (aboutBoxes[3]) {
+      const personagens = dados.personagens || "Informação não disponível";
+      aboutBoxes[3].innerHTML = `
+        <p><i>Personagens:</i></p>
+        <p>${personagens}</p>
+      `;
+    }
+
+    // Comidas e Bebidas
+    if (aboutBoxes[4]) {
+      const comidas = dados.comidas || "Informação não disponível";
+      aboutBoxes[4].innerHTML = `
+        <p><i>Comidas e Bebidas:</i></p>
+        <p>${comidas}</p>
+      `;
+    }
+
+    // Hobbies
+    if (aboutBoxes[5]) {
+      const hobbies = dados.hobbies || "Informação não disponível";
+      aboutBoxes[5].innerHTML = `
+        <p><i>Hobbies:</i></p>
+        <p>${hobbies}</p>
+      `;
+    }
+
+    // Jogos favoritos
+    if (aboutBoxes[6]) {
+      const jogos = dados.jogos || "Informação não disponível";
+      aboutBoxes[6].innerHTML = `
+        <p><i>Jogos favoritos:</i></p>
+        <p>${jogos}</p>
+      `;
+    }
+
+    // Outros gostos
+    if (aboutBoxes[7]) {
+      const outrosGostos = dados.outrosGostos || "Informação não disponível";
+      aboutBoxes[7].innerHTML = `
+        <p><i>Outros gostos:</i></p>
+        <p>${outrosGostos}</p>
+      `;
+    }
+  }
+
+  // ===================
+  // ATUALIZAR IMAGENS DO PERFIL
+  // ===================
+  function atualizarImagensPerfil(dados) {
+  const profilePic = document.querySelector('.profile-pic');
+  if (profilePic && dados.userphoto) {
+    profilePic.src = dados.userphoto;
+    profilePic.onerror = () => {
+      profilePic.src = './src/icon/default.jpg';
+    };
+  }
+
+  const userPics = document.querySelectorAll('.user-pic');
+  userPics.forEach(pic => {
+    if (dados.userphoto) {
+      pic.src = dados.userphoto;
+      pic.onerror = () => {
+        pic.src = './src/icon/default.jpg';
+      };
+    }
+  });
+
+  if (dados.imagemFundo) {
+    const profileHeader = document.querySelector('.profile-header');
+    if (profileHeader) {
+      profileHeader.style.backgroundImage = `url(${dados.imagemFundo})`;
+      profileHeader.style.backgroundSize = 'cover';
+      profileHeader.style.backgroundPosition = 'center';
+    }
+  }
+
+  const usernameSpans = document.querySelectorAll('.username');
+  const displayName = dados.displayname || dados.username;
+  usernameSpans.forEach(span => {
+    span.textContent = displayName;
+  });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  atualizarMarqueeUltimoUsuario();
-});
+  // ===================
+  // LINKS DE PERFIL E LOGOUT
+  // ===================
+  function configurarLinks() {
+    // Pegar usuário logado do localStorage para links
+    const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+    if (usuarioLogadoJSON) {
+      const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+      const username = usuarioLogado.username;
+      
+      const urlPerfil = `PF.html?username=${encodeURIComponent(username)}`;
+      
+      const linkSidebar = document.getElementById('linkPerfilSidebar');
+      const linkMobile = document.getElementById('linkPerfilMobile');
+      
+      if (linkSidebar) linkSidebar.href = urlPerfil;
+      if (linkMobile) linkMobile.href = urlPerfil;
+    }
 
+    // Botão de logout
+    const btnSair = document.getElementById('btnSair');
+    if (btnSair) {
+      btnSair.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('usuarioLogado');
+        window.location.href = 'index.html';
+      });
+    }
+  }
 
+  // ===================
+  // MARQUEE ÚLTIMO USUÁRIO
+  // ===================
+  async function atualizarMarqueeUltimoUsuario() {
+    try {
+      const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+      const docSnap = await getDoc(lastUpdateRef);
+
+      const marquee = document.querySelector(".marquee");
+      if (!marquee) return;
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const nomeUsuario = data.username || "Usuário";
+        marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+      } else {
+        marquee.textContent = "Bem-vindo ao RealMe!";
+      }
+    } catch (error) {
+      console.error("Erro ao buscar último usuário:", error);
+      const marquee = document.querySelector(".marquee");
+      if (marquee) marquee.textContent = "Erro ao carregar dados.";
+    }
+  }
+
+  // ===================
+  // INICIALIZAÇÃO
+  // ===================
+  window.addEventListener("DOMContentLoaded", async () => {
+    console.log("Carregando página de perfil...");
+    
+    // Carregar todas as funcionalidades
+    await carregarPerfilCompleto();
+    await atualizarMarqueeUltimoUsuario();
+    configurarLinks();
+    
+    console.log("Página de perfil carregada com sucesso!");
+  });
+
+  // Também carregar imediatamente (compatibilidade)
+  carregarPerfilCompleto();
 </script>
-
 
 </body>
 </html>

@@ -183,8 +183,23 @@
 
   <!-- Navbar -->
   <nav>
-    <div class="logo">
-      <p>RealMe</p>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+<div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
+  </div>
+</div>
+
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">Blessed_ranixw acabou de entrar no RealMe!</div>
     </div>
   </nav>
 
@@ -197,6 +212,7 @@
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="PF.html" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
     <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
   </aside>
 
   <!-- Main Content -->
@@ -315,7 +331,7 @@
         postEl.innerHTML = `
           <div class="post-header">
             <div class="user-info">
-              <img src="./src/assets/icon/default.png" alt="Avatar do usuário" class="avatar" />
+              <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar" />
               <div class="user-meta">
                 <strong>Usuário Anônimo</strong>
               </div>

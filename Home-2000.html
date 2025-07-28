@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iFriendMatch</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+</head>
+<body>
+
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+      <div class="search-box">
+        <button><i class="fas fa-search"></i></button>
+        <input type="text" placeholder="Buscar" />
+      </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">marcio_marques acabou de postar uma foto...</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#"><i class="fas fa-user"></i> Perfil</a>
+    <a href="#"><i class="fas fa-bars"></i> Mais</a>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="#"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="#"><i class="fas fa-plus-square"></i></a>
+      <a href="#"><i class="fas fa-user"></i></a>
+      <a href="#"><i class="fas fa-bars"></i></a>
+    </div>
+  </div>
+<div class="layout-container"></div>
+  <!-- Conteúdo Principal -->
+  <main class="welcome-container">
+      <section class="welcome-box">
+        <div class="user-welcome">
+          <img src="./src/icon/PF.jpg">
+          <h1><span id="greeting"></span> <span class="username">maxgfortes</span>!</h1>
+        </div>
+        <div class="welcome-start">
+            <p>Compartilhe como está sendo o seu dia, conte algo curioso, poste uma lembrança especial ou simplesmente jogue conversa fora com seus amigos.</p>
+            <div class="post-box">
+              <input type="text" placeholder="Escreva seu pensamento..." />
+              <button class="post-button">
+                <i class="fas fa-plus-square"></i> Enviar Post!
+              </button>
+            </div>
+        </div>
+      </section>
+
+    
+
+    <!-- Aqui você pode adicionar outras áreas tipo Orkut -->
+<section class="section-friends-posts">
+  <h2>Posts Publicos</h2>
+
+  <!-- POST ÚNICO -->
+  <div class="friend-post">
+
+    <!-- TOPO: Avatar, Nome, Tag e 3 pontinhos -->
+    <div class="post-header">
+      <div class="user-info">
+        <img src="src/icon/PF2.jpg" alt="Avatar" class="avatar">
+        <div class="user-meta">
+          <strong>Flickr</strong>
+          <span>@xxFlickr_</span>
+        </div>
+      </div>
+      <div class="post-options">
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+    </div>
+
+    <!-- IMAGEM DO POST -->
+    <div class="post-image">
+    </div>
+
+    <!-- TEXTO DO POST -->
+    <p class="post-text">
+      Eu to AMANDOOO essa nova rede social, amo a liberdade e verdade que ela nos dá!
+    </p>
+
+    <!-- AÇÕES DO POST -->
+    <div class="post-actions">
+      <button><i class="fas fa-heart"></i> <span>152</span></button>
+      <button><i class="fas fa-comment"></i> <span>34</span></button>
+      <button><i class="fas fa-bookmark"></i> <span>20</span></button>
+      <button><i class="fas fa-ban"></i></button>
+    </div>
+
+  </div>
+
+    <div class="friend-post">
+
+    <!-- TOPO: Avatar, Nome, Tag e 3 pontinhos -->
+    <div class="post-header">
+      <div class="user-info">
+        <img src="src/assets/icon/blink.jpg" alt="Avatar" class="avatar">
+        <div class="user-meta">
+          <strong>Davi Nogueira</strong>
+          <span>@davzx</span>
+        </div>
+      </div>
+      <div class="post-options">
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+    </div>
+
+    <!-- IMAGEM DO POST -->
+    <div class="post-image">
+      <img src="src/assets/icon/postdav.jpeg" alt="Imagem do post">
+    </div>
+
+    <!-- TEXTO DO POST -->
+    <p class="post-text">
+      Hoje o céu estava lindo... 🌇 Alguém mais ama finais de tarde?
+    </p>
+
+    <!-- AÇÕES DO POST -->
+    <div class="post-actions">
+      <button><i class="fas fa-heart"></i> <span>152</span></button>
+      <button><i class="fas fa-comment"></i> <span>34</span></button>
+      <button><i class="fas fa-bookmark"></i> <span>20</span></button>
+      <button><i class="fas fa-ban"></i></button>
+    </div>
+  </div>
+
+    <div class="friend-post">
+
+    <!-- TOPO: Avatar, Nome, Tag e 3 pontinhos -->
+    <div class="post-header">
+      <div class="user-info">
+        <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+        <div class="user-meta">
+          <strong>RealMe</strong>
+          <span>@realme</span>
+        </div>
+      </div>
+      <div class="post-options">
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+    </div>
+
+    <!-- IMAGEM DO POST -->
+    <div class="post-image">
+      <img src="src/assets/icon/postrealme.png" alt="Imagem do post">
+    </div>
+
+    <!-- TEXTO DO POST -->
+    <p class="post-text">
+      Quem mais Gostaria de um Quarto assim? acho que esse é um sonho dos anos 2000!
+      #realme #2000s #aesthetic #dreamrooms
+    </p>
+
+    <!-- AÇÕES DO POST -->
+    <div class="post-actions">
+      <button><i class="fas fa-heart"></i> <span>152</span></button>
+      <button><i class="fas fa-comment"></i> <span>34</span></button>
+      <button><i class="fas fa-bookmark"></i> <span>20</span></button>
+      <button><i class="fas fa-ban"></i></button>
+    </div>
+
+  </div>
+</section>
+
+  <footer>
+    <div>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="privacidade.html">Privacidade</a>
+    </div>
+    <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
+  </footer>
+  </main>
+  
+  <aside class="right-column">
+<div class="online-friends">
+  <h2>Amigos Online</h2>
+
+  <div class="online-grid">
+    <div class="online-user">
+      <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>RealMe</strong></div>
+    </div>
+    <div class="online-user">
+      <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>Ana</strong></div>
+    </div>
+    <div class="online-user">
+      <img src="src/icon/default.png" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>Lucas</strong></div>
+    </div>
+        <div class="online-user">
+      <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>RealMe</strong></div>
+    </div>
+    <div class="online-user">
+      <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>Ana</strong></div>
+    </div>
+    <div class="online-user">
+      <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+      <div class="online-user-meta"><strong>Lucas</strong></div>
+    </div>
+    <!-- Adicione mais se quiser -->
+  </div>
+</div>
+
+<div class="notifications-center">
+  <h2>Notificações</h2>
+  <ul class="notifications-list">
+    <li><i class="fas fa-heart"></i> Joana curtiu seu post</li>
+    <li><i class="fas fa-comment"></i> Davi comentou: “Amei!!”</li>
+    <li><i class="fas fa-user-plus"></i> Novo pedido de amizade</li>
+    <li><i class="fas fa-bell"></i> Atualização no sistema</li>
+  </ul>
+</div>
+
+<div class="new-people">
+  <h2>Novas Pessoas Legais</h2>
+
+  <div class="new-user">
+    <img src="src/assets/icon/blink.jpg" alt="Avatar" class="avatar">
+    <div class="new-user-info">
+      <strong>Camila Lins</strong>
+      <p>@camilov</p>
+      <button>Adicionar</button>
+    </div>
+  </div>
+
+  <div class="new-user">
+    <img src="src/icon/PF2.jpg" alt="Avatar" class="avatar">
+    <div class="new-user-info">
+      <strong>Pedro Gamer</strong>
+      <p>@pedroxg</p>
+      <button>Adicionar</button>
+    </div>
+  </div>
+
+  <div class="new-user">
+    <img src="src/assets/icon/rm.jpg" alt="Avatar" class="avatar">
+    <div class="new-user-info">
+      <strong>Luna Costa</strong>
+      <p>@lunatic</p>
+      <button>Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+
+  </aside>
+</div>
+<div class="post-modal" id="postModal">
+  <div class="post-modal-content">
+    <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
+    <h2>Fazer Nova <span>Postagem</span>!</h2>
+
+    <textarea id="postText" placeholder="Compartilhe algo..."></textarea>
+
+    <label class="file-input-label">
+      <i class="fas fa-image"></i> Adicionar imagem
+      <input type="file" id="postImageInput" accept="image/*" />
+    </label>
+
+    <div id="imagePreview" class="image-preview"></div>
+    <button id="removeImageBtn" class="remove-image-btn" style="display:none;" onclick="removeImage()">Remover Imagem</button>
+
+
+    <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
+  </div>
+</div>
+  <script src="./src/js/main.js" defer></script>
+</body>
+</html>

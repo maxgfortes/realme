@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iFriendMatch</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/basemax.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+    <link rel="stylesheet" href="./src/styles/profile1.css" />
+</head>
+<body>
+ <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+      <div class="search-box">
+        <button><i class="fas fa-search"></i></button>
+        <input type="text" placeholder="Buscar" />
+      </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">Blessed_ranixw acabou de entrar no RealMe!</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#"><i class="fas fa-user"></i> Perfil</a>
+    <a href="#"><i class="fas fa-bars"></i> Mais</a>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="#"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="#"><i class="fas fa-plus-square"></i></a>
+      <a href="#"><i class="fas fa-user"></i></a>
+      <a href="#"><i class="fas fa-bars"></i></a>
+    </div>
+  </div>
+
+<div class="full-profile-container">
+
+  <!-- Topo do perfil -->
+  <div class="profile-header">
+    <div class="profile-pic-block">
+      <img src="./src/icon/maxpf.jpeg" alt="Foto de perfil" class="profile-pic" />
+    </div>
+    
+    <div class="profile-info-block">
+      <div class="name-line">
+        <h2 class="profile-name">maxgfortes</h2>
+        <span class="pronouns">ne/ver</span>
+        <span class="tag">Creator</span>
+        <span class="tag">Cool</span>
+      </div>
+      <div class="handle">@maxgfortes</div>
+
+      <div class="profile-stats">
+        <span><strong>6</strong> posts</span>
+        <span><strong>1 M</strong> seguidores</span>
+        <span><strong>32</strong> amigos</span>
+        <span><strong>824</strong> seguindo</span>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-follow">seguir</button>
+        <button class="btn-message">mensagem</button>
+        <button class="btn-nudge">nudge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Corpo do perfil -->
+  <div class="profile-body">
+    <!-- Sidebar -->
+    <div class="profile-menu">
+      <button class="menu-item active">mural</button>
+      <button class="menu-item">visão geral</button>
+      <button class="menu-item">gostos</button>
+      <button class="menu-item">depoimentos</button>
+      <button class="menu-item">links</button>
+    </div>
+
+    <!-- Conteúdo dinâmico -->
+    <div class="profile-content">
+                <h3>Mural de maxgfortes</h3>
+      <div class="status-box">
+        <p><strong>Maxgfortes está:</strong></p>
+        <p class="status-text">Online programando o RealMe!</p>
+      </div>
+
+      <div class="post-grid">
+        <div class="post-card large"></div>
+        <div class="post-card"></div>
+        <div class="post-card"></div>
+        <div class="post-card"></div>
+        <div class="post-card small"></div>
+        <div class="post-card small"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+  function criarFolha() {
+    const folha = document.createElement("img");
+    folha.src = "./src/icon/leave.png"; // Caminho da imagem
+    folha.classList.add("folha");
+
+    // Posição inicial aleatória
+    folha.style.left = Math.random() * window.innerWidth + "px";
+
+    // Duração e delay aleatório
+    const duracao = 5 + Math.random() * 5;
+    folha.style.animationDuration = duracao + "s";
+
+    document.body.appendChild(folha);
+
+    // Remover folha após a animação
+    setTimeout(() => {
+      folha.remove();
+    }, duracao * 1000);
+  }
+
+  // Criar folhas em intervalos regulares
+  setInterval(criarFolha, 400);
+</script>
+
+</html>

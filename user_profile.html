@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iFriendMatch</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png">
+  <link rel="stylesheet" href="./src/styles/navbars.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Cor da barra de navegação no iPhone Safari e Android Chrome -->
   <meta name="theme-color" content="#1F1F1F"> <!-- Cor desejada -->
@@ -49,263 +50,6 @@
         pointer-events: none;
         z-index: -1;
       }
-    /* Navbar Topo */
-    nav {
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      border-bottom: 1px solid #121212;
-      display: flex;
-      align-items: center;
-      padding: 0px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-    }
-
-    .logo {
-      font-weight: bold;
-      font-size: 30px;
-      color: #707070;
-      padding: 10px;
-    }
-
-    .logo_area{
-    border-right: 1px solid #0f0f0f;
-    padding: 0px;
-    padding-right: 35px;
-    padding-left: 20px;
-    }
-
-    .friends_area{
-    border-right: 1px solid #919191;
-    border-left: 1px solid #919191;
-    padding: 0px;
-    padding-right: 35px;
-    padding-left: 20px;
-    background-color: #e7e7e7;
-    }
-
-    .friends_photo_area {
-      font-weight: bold;
-      font-size: 30px;
-      color: #707070;
-      padding-top: 4px;
-    }
-    .friends_photo img{
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      border: 1px solid #bababa;
-      margin-right: 5px;
-    }
-
-    .friends_photo {
-        padding: 0px;
-    }
-
-.search-box {
-    background: #474747; /* Quase preto, mas não absoluto */
-    display: flex;
-    align-items: center;
-    border-radius: 4px;
-    border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
-    box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
-    margin-left: 20px;
-    padding-right: 50px;
-    margin-right: 20px;
-}
-
-.search-box:focus-within {
-  border-color: #4A90E2;
-  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
-}
-
-
-
-
-.search-box input {
-    border: none;
-    outline: none;
-    background: none;
-    padding-top: 3px;
-    padding-bottom: 2px;
-    padding-left: 3px;
-    width: 250px;
-    font-size: 16px;
-}
-
-.search-box button {
-    border: none;
-    cursor: pointer;
-    background-color: #00000000;
-    padding-left: 3px;
-}
-
-
-.player {
-    background-color: #f1f1f1;
-    padding: 20px;
-    border-right: 1px solid #919191;
-    border-left: 1px solid #919191;
-    padding-left: 40px;
-    padding-right: 40px;
-}
-
-.player-row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.controls {
-    display: flex;
-    gap: 15px;
-}
-
-.controls button {
-    border: none;
-    color: #6d6d6d;
-    cursor: pointer;
-    font-size: 16px;
-    background-color: #00000000;
-}
-
-.volume {
-    flex: 1; /* Faz o slider ocupar o espaço restante */
-}
-
-.volume input[type="range"] {
-    width: 100%;
-    appearance: none;
-    background: #707070;
-    height: 5px;
-    border-radius: 5px;
-    outline: none;
-}
-
-.volume input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #f2f2f2;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-    cursor: pointer;
-    border: none;
-}
-
-.icon-button {
-    border: 1px solid ;
-    color: #858585;
-    background: #D9DAD9;
-    background: linear-gradient(0deg, rgb(192, 192, 192) 0%, rgba(248, 248, 248, 1) 100%);
-    padding: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: auto;
-    padding: 5px 12px 5px 12px;
-}
-
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-
-    .nav-links a:hover {
-      background-color: #111;
-    }
-
-        /* Navbar Bottom - Mobile */
-    .navbar-bottom {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      border-top: 1px solid #181818;
-      padding: 10px 0;
-      z-index: 1000;
-      box-shadow: 0 -4px 6px rgba(0,0,0,0.5);
-    }
-
-    .navbar-bottom-content {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .navbar-bottom a {
-      color: #fafafa;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 8px;
-      font-size: 20px;
-      transition: color 0.3s;
-    }
-
-    .navbar-bottom a:hover {
-      color: #4A90E2;
-    }
-
-
-    /* Sidebar Desktop */
-    .sidebar {
-      position: fixed;
-      top: 50px;
-      left: 0;
-      width: 220px;
-      height: calc(100% - 70px);
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #141414 100%);
-      border: 1px solid #181818;
-      padding-top: 20px;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
-      height: 100%;
-
-    }
-
-    .sidebar a {
-      color: #fafafa;
-      text-decoration: none;
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 18px;
-      margin-top: 10px;
-    }
-
-    .sidebar a:hover {
-      background-color: #3b3b3b;
-    }
-
     /* Perfil */
     .profile-container {
       margin-left: 220px; /* Para deixar espaço para a sidebar */
@@ -759,22 +503,6 @@
 
 /* Tablets */
 @media (max-width: 1024px) {
-  .sidebar {
-    width: 180px;
-  }
-  
-  .profile-container {
-    margin-left: 180px;
-    padding: 20px;
-  }
-  
-  .logo {
-    font-size: 24px;
-  }
-  
-  .search-box input {
-    width: 200px;
-  }
   /* Ajustar galeria */
   .gallery {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -788,47 +516,13 @@
   body {
     margin-bottom: 70px; /* Espaço para navbar bottom */
   }
-  
-  /* Esconder sidebar lateral */
-  .sidebar {
-    display: none;
-  }
-  
-  /* Mostrar navbar bottom */
-  .navbar-bottom {
-    display: block;
-  }
-  
   /* Ajustar container principal */
   .profile-container {
     margin-left: 0;
     padding: 15px;
     margin-top: 20px;
   }
-  
-  /* Ajustar navbar superior */
-  nav {
-    padding: 0 15px;
-  }
-  
-  .logo {
-    font-size: 20px;
-  }
-  
-  .logo_area {
-    padding-right: 15px;
-    padding-left: 10px;
-  }
-  
-  .search-box {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-  
-  .search-box input {
-    width: 150px;
-    font-size: 14px;
-  }
+
   
   /* Ajustar perfil */
   .profile-header {
@@ -993,24 +687,24 @@
 
 <!-- Sidebar Desktop -->
 <div class="sidebar">
-  <a href="#"><i class="fas fa-home"></i> Início</a>
-  <a href="#"><i class="fas fa-search"></i> Pesquisar</a>
+  <a href="index.html"><i class="fas fa-home"></i> Início</a>
   <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
   <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
   <a href="#"><i class="fas fa-plus-square"></i> Criar</a>
   <a href="#"><i class="fas fa-user"></i> Perfil</a>
   <a href="#"><i class="fas fa-bars"></i> Mais</a>
+    <a href="#"><i class="fas fa-search"></i> Sair</a>
 </div>
 
 <!-- Navbar Bottom Mobile -->
 <div class="navbar-bottom">
   <div class="navbar-bottom-content">
-    <a href="#"><i class="fas fa-home"></i></a>
+    <a href="index.html"><i class="fas fa-home"></i></a>
     <a href="#"><i class="fas fa-search"></i></a>
     <a href="#"><i class="fas fa-user-friends"></i></a>
     <a href="#"><i class="fas fa-comments"></i></a>
     <a href="#"><i class="fas fa-plus-square"></i></a>
-    <a href="#"><i class="fas fa-user"></i></a>
+    <a href="user_profile.html"><i class="fas fa-user"></i></a>
     <a href="#"><i class="fas fa-bars"></i></a>
   </div>
 </div>

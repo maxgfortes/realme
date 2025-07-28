@@ -2,339 +2,394 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iText</title>
-
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfil - iFriendMatch</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      margin: 0;
-      height: 100vh;
-      background: url('./src/assets/bg/bg.jpg') no-repeat center center fixed;
+      background-image: url("src/bg/bg.jpg");
       background-size: cover;
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
-      overflow-x: hidden;
-      position: relative;
-    } 
-      .glass-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        pointer-events: none;
-        z-index: -1;
-      }
-
-    /* Navbar Topo */
-    nav {
-      background: #2A2A2A;
-      background: linear-gradient(0deg, rgba(42, 42, 42, 1) 0%, rgba(60, 60, 60, 1) 100%);
-      border-bottom: 1px solid #333;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      color: #dbdbdb;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
+      flex-direction: column;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .glass-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: none;
+      z-index: -1;
     }
 
-    .logo {
-      font-weight: bold;
-      font-size: 40px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-
-    .nav-links a:hover {
-      background-color: #111;
-    }
-
-    /* Sidebar Desktop */
     .sidebar {
       position: fixed;
-      top: 70px;
+      top: 50px;
       left: 0;
       width: 220px;
-      height: calc(100% - 70px);
-      background-color: #000;
-      border-right: 1px solid #333;
+      height: 100%;
+      background: linear-gradient(0deg, #141414 0%, #141414 100%);
+      border: 1px solid #181818;
       padding-top: 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
     }
 
     .sidebar a {
-      color: #fff;
+      color: #fafafa;
       text-decoration: none;
       padding: 15px 25px;
       display: flex;
       align-items: center;
       gap: 10px;
-      transition: background 0.3s;
       font-size: 18px;
       margin-top: 10px;
     }
 
     .sidebar a:hover {
-      background-color: #111;
-      border-radius: 8px;
+      background-color: #3b3b3b;
     }
 
-    /* Main Content */
-    .main-content {
+    .profile-container {
       margin-left: 220px;
-      padding: 90px 20px 60px 20px;
+      padding: 30px;
+      width: 100%;
+      margin-top: 30px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+    .profile-header {
+      display: flex;
+      align-items: center;
+      padding: 30px;
+      background-color: #1d1d1f;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
 
-    .post {
-      background-color: #111;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 15px;
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-right: 30px;
+      object-fit: cover;
+      border: 3px solid #363636;
+    }
+
+    .profile-info {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      min-height: 200px;
     }
 
-    .post .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .post .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .post .user-info img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-    }
-
-    .post .username {
+    .username {
+      font-size: 24px;
       font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .bio, .location {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #aaa;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
       font-size: 14px;
     }
 
-    .post .content {
-      margin: 10px 0;
-      text-align: center;
+    .profile-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
     }
 
-    .post .content img {
-      max-width: 100%;
+    .action-btn {
+      background-color: #2e2e2e;
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .action-btn:hover {
+      background-color: #555;
+    }
+
+    .settings-container {
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .settings-button {
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: #dbdbdb;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .settings-menu {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background-color: #2c2c2c;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      width: 220px;
+      z-index: 10;
+    }
+
+    .settings-menu label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .settings-menu input {
+      width: 100%;
+      padding: 5px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: none;
+    }
+
+    .settings-menu button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      background-color: #444;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .settings-menu button:hover {
+      background-color: #666;
+    }
+
+    .button-container {
+      margin-top: 20px;
+      background-color: #363636;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .toggle-button {
+      background: none;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .toggle-button:hover {
+      color: #ccc;
+      background-color: #0f0f0f;
+      border-radius: 2px;
+    }
+
+    .content {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #242424;
+      color: #ccc;
+      border: 1px solid #585858;
       border-radius: 8px;
     }
 
-    .post .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid #333;
-      padding-top: 8px;
+    .line-container {
+      margin-top: 20px;
+      border-top: 1px solid #cfcfcf;
     }
 
-    .post .actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .post .actions button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .post .actions button:hover {
-      color: #00c853;
-    }
-
-    /* Navbar Inferior Mobile */
-    .bottom-nav {
+    .navbar-bottom {
       display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: #000;
-      border-top: 1px solid #333;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 1000;
-    }
-
-    .bottom-nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .bottom-nav a:hover {
-      color: #585858;
-    }
-
-    /* Responsivo */
-    @media (max-width: 1024px) {
-      .sidebar {
-        display: none;
-      }
-      .main-content {
-        margin-left: 0;
-      }
     }
 
     @media (max-width: 768px) {
-      .nav-links {
+      .sidebar {
         display: none;
       }
 
-      .bottom-nav {
+      .profile-container {
+        margin-left: 0;
+        padding: 15px;
+        margin-top: 20px;
+      }
+
+      .navbar-bottom {
         display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+        padding: 10px 0;
+        z-index: 1000;
+        justify-content: space-around;
+      }
+
+      .navbar-bottom a {
+        color: #fafafa;
+        text-decoration: none;
+        font-size: 20px;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .profile-pic {
+        margin-bottom: 15px;
       }
     }
 
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    .shake {
+      animation: shake 0.5s;
+      animation-iteration-count: 2;
+    }
   </style>
 </head>
 <body>
-
-<!-- Navbar topo -->
-<nav>
-  <div class="logo">iFriendMatch</div>
-</nav>
-
-<!-- Sidebar Desktop -->
-<div class="sidebar">
-  <a href="#"><i class="fas fa-home"></i> Início</a>
-  <a href="#"><i class="fas fa-search"></i> Pesquisar</a>
-  <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-  <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
-  <a href="#"><i class="fas fa-plus-square"></i> Criar</a>
-  <a href="#"><i class="fas fa-user"></i> Perfil</a>
-  <a href="#"><i class="fas fa-bars"></i> Mais</a>
-</div>
-
-<!-- Navbar Inferior Mobile -->
-<div class="bottom-nav">
-  <a href="#"><i class="fas fa-home"></i></a>
-  <a href="#"><i class="fas fa-search"></i></a>
-  <a href="#"><i class="fas fa-plus-square"></i></a>
-  <a href="#"><i class="fas fa-comments"></i></a>
-  <a href="#"><i class="fas fa-user"></i></a>
-</div>
-
-<!-- Conteúdo principal -->
-<div class="main-content">
-  <div class="grid">
-    <div class="post">
-      <div class="header">
-        <div class="user-info">
-          <img src="https://picsum.photos/200" alt="User">
-          <div class="username">@usuario1</div>
-        </div>
-        <i class="fas fa-ellipsis-h"></i>
-      </div>
-      <div class="content">
-        <p>Post bem curto só pra testar.</p>
-      </div>
-      <div class="footer">
-        <div class="actions">
-          <button><i class="fas fa-heart"></i></button>
-          <button><i class="fas fa-comment"></i></button>
-          <button><i class="fas fa-bookmark"></i></button>
-        </div>
-        <div class="date">2h atrás</div>
-      </div>
-    </div>
-
-    <div class="post">
-      <div class="header">
-        <div class="user-info">
-          <img src="https://picsum.photos/200" alt="User">
-          <div class="username">@usuario2</div>
-        </div>
-        <i class="fas fa-ellipsis-h"></i>
-      </div>
-      <div class="content">
-        <img src="https://picsum.photos/400" alt="Post">
-      </div>
-      <div class="footer">
-        <div class="actions">
-          <button><i class="fas fa-heart"></i></button>
-          <button><i class="fas fa-comment"></i></button>
-          <button><i class="fas fa-bookmark"></i></button>
-        </div>
-        <div class="date">5h atrás</div>
-      </div>
-    </div>
-
-    <div class="post">
-      <div class="header">
-        <div class="user-info">
-          <img src="https://picsum.photos/200" alt="User">
-          <div class="username">@usuario3</div>
-        </div>
-        <i class="fas fa-ellipsis-h"></i>
-      </div>
-      <div class="content">
-        <p>Mais um post de texto, agora um pouco maior, mas nada demais.</p>
-      </div>
-      <div class="footer">
-        <div class="actions">
-          <button><i class="fas fa-heart"></i></button>
-          <button><i class="fas fa-comment"></i></button>
-          <button><i class="fas fa-bookmark"></i></button>
-        </div>
-        <div class="date">8h atrás</div>
-      </div>
-    </div>
-
+  <div class="glass-overlay"></div>
+  <div class="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-user"></i> Perfil</a>
   </div>
-</div>
-<div class="glass-overlay"></div>
 
+  <div class="navbar-bottom">
+    <a href="#"><i class="fas fa-home"></i></a>
+    <a href="#"><i class="fas fa-search"></i></a>
+    <a href="#"><i class="fas fa-user"></i></a>
+  </div>
+
+  <div class="profile-container">
+    <div class="profile-header">
+      <img src="src/icon/default.jpg" class="profile-pic" alt="Foto de Perfil">
+      <div class="profile-info">
+        <div class="username">usuario do iFriendMatch</div>
+        <div class="location">São Paulo - Brasil</div>
+        <div class="bio">hi! im new on iFriendMatch.</div>
+        <div class="stats">
+          <div><strong>0</strong> publicações</div>
+          <div><strong>1.2k</strong> seguidores</div>
+          <div><strong>0</strong> amigos</div>
+          <div><strong>980</strong> seguindo</div>
+        </div>
+        <div class="profile-actions">
+          <button class="action-btn follow-btn">Seguir</button>
+          <button class="action-btn message-btn">Mensagem</button>
+          <button class="action-btn nudge-btn" onclick="sendNudge()">Nudge</button>
+        </div>
+        <div class="settings-container">
+          <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+          <div class="settings-menu" id="settingsMenu">
+            <label>Nome de usuário:
+              <input type="text" id="usernameInput" placeholder="Novo nome">
+            </label>
+            <label>Cor do banner:
+              <input type="color" id="bannerColorInput">
+            </label>
+            <label>Imagem de fundo:
+              <input type="text" id="bgUrlInput" placeholder="URL da imagem">
+            </label>
+            <button onclick="applySettings()">Aplicar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button class="toggle-button" onclick="toggleContent('sonhos')">Sonhos</button>
+      <button class="toggle-button" onclick="toggleContent('visao')">Visão Geral</button>
+      <button class="toggle-button" onclick="toggleContent('musicas')">Músicas</button>
+    </div>
+
+    <div id="sonhos" class="content"><h3>Sonhos</h3><p>not available at the moment.</p></div>
+    <div id="visao" class="content"><h3>Visão Geral</h3><p>not available at the moment.</p></div>
+    <div id="musicas" class="content"><h3>Músicas</h3><p>not available at the moment.</p></div>
+
+    <div class="line-container"></div>
+  </div>
+
+  <audio id="nudgeSound" src="src/music/nudge.mp3"></audio>
+
+  <script>
+    function toggleContent(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleSettings() {
+      const menu = document.getElementById('settingsMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function applySettings() {
+      const name = document.getElementById('usernameInput').value;
+      const color = document.getElementById('bannerColorInput').value;
+      const bgUrl = document.getElementById('bgUrlInput').value;
+
+      if (name) document.querySelector('.username').textContent = name;
+      if (color) document.querySelector('.profile-header').style.backgroundColor = color;
+      if (bgUrl) document.body.style.backgroundImage = `url('${bgUrl}')`;
+
+      toggleSettings();
+    }
+
+    function sendNudge() {
+      const header = document.querySelector('.profile-header');
+      const sound = document.getElementById('nudgeSound');
+      sound.currentTime = 0;
+      sound.play();
+      header.classList.add('shake');
+      setTimeout(() => header.classList.remove('shake'), 1000);
+    }
+  </script>
 </body>
 </html>

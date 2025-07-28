@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iFriendMatch</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+</head>
+<body>
+
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+      <div class="search-box">
+        <button><i class="fas fa-search"></i></button>
+        <input type="text" placeholder="Buscar" />
+      </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update"><p>Novidades!</p></div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee" id="marquee">Carregando novidades...</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#"><i class="fas fa-user"></i> Perfil</a>
+    <a href="#"><i class="fas fa-bars"></i> Mais</a>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="welcome-container">
+    <section class="welcome-box">
+      <div class="user-welcome">
+        <img src="./src/icon/default.png" alt="Avatar">
+        <h1><span id="greeting"></span> <span class="username" id="username">usuario</span>!</h1>
+      </div>
+      <div class="welcome-start">
+        <p>Compartilhe como está sendo o seu dia, conte algo curioso, poste uma lembrança especial ou simplesmente jogue conversa fora com seus amigos.</p>
+        <div class="post-box">
+          <input type="text" placeholder="Escreva seu pensamento..." />
+          <button class="post-button"><i class="fas fa-plus-square"></i> Enviar Post!</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-friends-posts">
+      <h2>Posts Publicos</h2>
+      <!-- Posts estáticos ou do Firebase -->
+    </section>
+
+    <footer>
+      <div>
+        <a href="sobre.html">Sobre</a>
+        <a href="contato.html">Contato</a>
+        <a href="privacidade.html">Privacidade</a>
+      </div>
+      <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
+    </footer>
+  </main>
+
+  <aside class="right-column">
+    <div class="online-friends">
+      <h2>Amigos Online</h2>
+      <div class="online-grid" id="onlineFriendsGrid">
+        <p>Carregando amigos online...</p>
+      </div>
+    </div>
+
+    <div class="notifications-center">
+      <h2>Notificações</h2>
+      <ul class="notifications-list" id="notificationsList">
+        <!-- notificações -->
+      </ul>
+    </div>
+
+    <div class="new-people">
+      <h2>Novas Pessoas Legais</h2>
+      <!-- conteúdo original intacto -->
+    </div>
+  </aside>
+
+  <!-- Modal de postagem -->
+  <div class="post-modal" id="postModal" style="display:none;">
+    <div class="post-modal-content">
+      <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
+      <h2>Fazer Nova <span>Postagem</span>!</h2>
+      <textarea id="postText" placeholder="Compartilhe algo..."></textarea>
+      <label class="file-input-label"><i class="fas fa-image"></i> Adicionar imagem
+        <input type="file" id="postImageInput" accept="image/*" />
+      </label>
+      <div id="imagePreview" class="image-preview"></div>
+      <button id="removeImageBtn" class="remove-image-btn" style="display:none;" onclick="removeImage()">Remover Imagem</button>
+      <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET.appspot.com",
+      messagingSenderId: "SEU_ID",
+      appId: "SEU_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(async (user) => {
+      const greetingEl = document.getElementById('greeting');
+      const usernameEl = document.getElementById('username');
+      const marqueeEl = document.getElementById('marquee');
+      const onlineGrid = document.getElementById('onlineFriendsGrid');
+
+      if (user) {
+        const h = new Date().getHours();
+        let s = 'Olá';
+        if (h >= 5 && h < 12) s = 'Bom dia';
+        else if (h >= 12 && h < 18) s = 'Boa tarde';
+        else s = 'Boa noite';
+        greetingEl.textContent = s;
+        usernameEl.textContent = user.displayName || usernameEl.textContent;
+
+        // novidades
+        try {
+          const snapshot = await db.collection('news').orderBy('createdAt','desc').limit(1).get();
+          marqueeEl.textContent = !snapshot.empty ? snapshot.docs[0].data().title : 'Nenhuma novidade no momento';
+        } catch {
+          marqueeEl.textContent = 'Nenhuma novidade no momento';
+        }
+
+        // amigos online
+        onlineGrid.innerHTML = '';
+        try {
+          const snap2 = await db.collection('users').where('online','==',true).get();
+          if (!snap2.empty) {
+            snap2.forEach(doc => {
+              const d = doc.data();
+              onlineGrid.insertAdjacentHTML('beforeend', `
+                <div class="online-user">
+                  <img src="${d.photoURL||'src/icon/default.png'}" class="avatar">
+                  <div class="online-user-meta"><strong>${d.displayName||'Amigo(a)'}</strong></div>
+                </div>
+              `);
+            });
+          } else {
+            onlineGrid.innerHTML = '<p>Nenhum amigo online</p>';
+          }
+        } catch {
+          onlineGrid.innerHTML = '<p>Nenhum amigo online</p>';
+        }
+      } else {
+        greetingEl.textContent = 'Olá';
+        marqueeEl.textContent = 'Nenhuma novidade no momento';
+        onlineGrid.innerHTML = '<p>Nenhum amigo online</p>';
+      }
+    });
+
+    // Modal + preview
+    function openPostOverlay() { document.getElementById('postModal').style.display = 'flex'; }
+    function closePostOverlay() {
+      document.getElementById('postModal').style.display = 'none';
+      document.getElementById('postText').value = '';
+      document.getElementById('imagePreview').innerHTML = '';
+      document.getElementById('postImageInput').value = '';
+    }
+    document.getElementById('postImageInput').addEventListener('change', function() {
+      const file = this.files[0], preview = document.getElementById('imagePreview'), btn = document.getElementById('removeImageBtn');
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%;max-height:300px;border-radius:12px;">`;
+          btn.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      } else { preview.innerHTML = ''; btn.style.display = 'none'; }
+    });
+    function removeImage() {
+      document.getElementById('postImageInput').value = '';
+      document.getElementById('imagePreview').innerHTML = '';
+      document.getElementById('removeImageBtn').style.display = 'none';
+    }
+    function submitPost() {
+      const text = document.getElementById('postText').value, img = document.getElementById('postImageInput').files[0];
+      console.log("Texto:", text, "Imagem:", img);
+      alert("Post enviado! (console por enquanto 😘)");
+      closePostOverlay();
+    }
+  </script>
+</body>
+</html>

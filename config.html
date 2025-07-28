@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/config-layout.css" />
+  <link rel="stylesheet" href="./src/styles/config-components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+</head>
+<body>
+
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+  </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">marcio_marques acabou de postar uma foto...</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar">
+    <a href="iFeed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="#"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="#"><i class="fas fa-plus-square"></i></a>
+      <a href="#"><i class="fas fa-user"></i></a>
+      <a href="#"><i class="fas fa-bars"></i></a>
+    </div>
+  </div>
+
+  <ul id="searchResults"></ul>
+
+
+
+<section class="config-box-layout">
+  <div class="form-container">
+    <h2>Configurações do Perfil</h2>
+
+    <!-- Tabs -->
+    <div class="config-tabs">
+      <button class="tab-button active" data-tab="perfil">
+        <i class="fas fa-user"></i> Perfil
+      </button>
+      <button class="tab-button" data-tab="preferencias">
+        <i class="fas fa-heart"></i> Preferências
+      </button>
+      <button class="tab-button" data-tab="conta">
+        <i class="fas fa-shield-alt"></i> Conta
+      </button>
+    </div>
+
+    <form>
+      <!-- Tab: Perfil -->
+      <div class="tab-content active" id="perfil">
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-id-card"></i>
+            <h3>Informações Básicas</h3>
+          </div>
+          <div class="form-grid two-column">
+            <div class="form-group">
+              <label>Nome de Usuário:</label>
+              <input type="text" name="username" minlength="3" required maxlength="100">
+            </div>
+            <div class="form-group">
+              <label>Nome visível:</label>
+              <input type="text" name="displayname">
+            </div>
+            <div class="form-group">
+              <label>Pronome 1:</label>
+              <input type="text" maxlength="5" name="pronoun1">
+            </div>
+            <div class="form-group">
+              <label>Pronome 2:</label>
+              <input type="text" maxlength="5" name="pronoun2">
+            </div>
+            <div class="form-group">
+              <label>Estado Civil:</label>
+              <select name="estadoCivil">
+                <option value="">Selecione...</option>
+                <option value="solteiro">Solteiro(a)</option>
+                <option value="namorando">Namorando</option>
+                <option value="casado">Casado(a)</option>
+                <option value="divorciado">Divorciado(a)</option>
+                <option value="viuvo">Viúvo(a)</option>
+                <option value="em compromisso">em Compromisso</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Localização:</label>
+              <input type="text" name="localizacao" maxlength="100">
+              <div class="char-counter">0/100</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+  <div class="section-header">
+    <i class="fas fa-image"></i>
+    <h3>Imagens do Perfil</h3>
+  </div>
+
+  <div class="form-grid two-column">
+              <div class="form-group">
+              <label>Foto de perfil:</label>
+              <input type="text" name="userphoto" maxlength="500" placeholder="url da foto">
+            </div>
+  </div>
+        
+
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-tags"></i>
+            <h3>Descrição</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tags:</label>
+              <input type="text" name="tags" maxlength="8">
+            </div>
+            <div class="form-group">
+              <label>Visão Geral:</label>
+              <textarea name="visaoGeral" maxlength="600"></textarea>
+              <div class="char-counter">0/600</div>
+            </div>
+            <div class="form-group">
+              <label>Estilo:</label>
+              <textarea name="estilo" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-brain"></i>
+            <h3>Personalidade</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Sonhos e desejos:</label>
+              <textarea name="sonhos" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Medos:</label>
+              <textarea name="medos" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Personalidade:</label>
+              <textarea name="personalidade" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Preferências -->
+      <div class="tab-content" id="preferencias">
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-heart"></i>
+            <h3>Gostos</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Meus Gostos:</label>
+              <textarea name="gostos" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Músicas:</label>
+              <textarea name="musicas" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Filmes e Séries:</label>
+              <textarea name="filmesSeries" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Livros:</label>
+              <textarea name="livros" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Personagens:</label>
+              <textarea name="personagens" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Comidas e Bebidas:</label>
+              <textarea name="comidas" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Hobbies:</label>
+              <textarea name="hobbies" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Jogos favoritos:</label>
+              <textarea name="jogos" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+            <div class="form-group">
+              <label>Outros gostos:</label>
+              <textarea name="outrosGostos" maxlength="500"></textarea>
+              <div class="char-counter">0/500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Conta -->
+      <div class="tab-content" id="conta">
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-envelope"></i>
+            <h3>Informações de Contato</h3>
+          </div>
+          <div class="form-grid two-column">
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" name="email" value="seuemail@exemplo.com">
+            </div>
+            <div class="form-group">
+              <label>Número de telefone:</label>
+              <input type="text" name="telefone" value="(00) 00000-0000">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-lock"></i>
+            <h3>Segurança</h3>
+          </div>
+          <div class="form-grid two-column">
+            <div class="form-group">
+              <label>Senha atual:</label>
+              <input type="password" name="senhaAtual">
+            </div>
+            <div class="form-group">
+              <label>Nova senha:</label>
+              <input type="password" name="novaSenha">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Salvar Configurações</button>
+    </form>
+  </div>
+  
+  <footer>
+    <div>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="privacidade.html">Privacidade</a>
+    </div>
+    <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
+  </footer>
+</section>
+
+<script type="module">
+// Imports do Firebase (apenas uma vez)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  startAt,
+  endAt,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// Configuração do Firebase (apenas uma vez)
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM carregado, inicializando aplicação');
+
+  // Verificar se usuário está logado
+  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+  if (!usuarioLogadoJSON) {
+    alert('Você precisa estar logado para acessar esta página.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+  const username = usuarioLogado.username;
+
+  // Atualizar informações do usuário na página
+  const nomeCompleto = document.getElementById("nomeCompleto");
+  if (nomeCompleto) {
+    nomeCompleto.textContent = `${usuarioLogado.nome || ''} ${usuarioLogado.sobrenome || ''}`;
+  }
+
+  const usernameElement = document.getElementById("username");
+  if (usernameElement) {
+    usernameElement.textContent = `@${usuarioLogado.username}`;
+  }
+
+  // Atualizar links de perfil
+  const urlPerfil = `PF.html?user=${encodeURIComponent(username)}`;
+  const linkSidebar = document.getElementById('linkPerfilSidebar');
+  const linkMobile = document.getElementById('linkPerfilMobile');
+  if(linkSidebar) linkSidebar.href = urlPerfil;
+  if(linkMobile) linkMobile.href = urlPerfil;
+
+  // ===================
+  // FUNCIONALIDADE DAS ABAS
+  // ===================
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+      // Remove active class from all tabs and contents
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      // Add active class to clicked tab and corresponding content
+      button.classList.add('active');
+      const tabContent = document.getElementById(button.dataset.tab);
+      if (tabContent) {
+        tabContent.classList.add('active');
+      }
+    });
+  });
+
+  // ===================
+  // CONTADOR DE CARACTERES
+  // ===================
+  function atualizarContadores() {
+    document.querySelectorAll('textarea[maxlength], input[maxlength]').forEach(element => {
+      const counter = element.parentNode.querySelector('.char-counter');
+      if (counter) {
+        const maxLength = parseInt(element.getAttribute('maxlength'));
+        
+        const updateCounter = () => {
+          const currentLength = element.value.length;
+          counter.textContent = `${currentLength}/${maxLength}`;
+          
+          // Add warning classes
+          counter.classList.remove('warning', 'danger');
+          if (currentLength > maxLength * 0.9) {
+            counter.classList.add('danger');
+          } else if (currentLength > maxLength * 0.75) {
+            counter.classList.add('warning');
+          }
+        };
+        
+        element.addEventListener('input', updateCounter);
+        updateCounter(); // Initial count
+      }
+    });
+  }
+
+  // ===================
+  // FUNCIONALIDADE DE BUSCA
+  // ===================
+  const searchInput = document.getElementById("searchInput");
+  const resultsList = document.getElementById("searchResults");
+  const searchButton = document.querySelector(".search-box button");
+
+  if (searchInput && resultsList && searchButton) {
+    async function performSearch() {
+      const term = searchInput.value.trim().toLowerCase();
+      resultsList.innerHTML = "";
+      resultsList.classList.remove("visible");
+
+      if (!term) return;
+
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("username"), startAt(term), endAt(term + "\uf8ff"));
+
+      try {
+        const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+          resultsList.innerHTML = "<li>Nenhum usuário encontrado</li>";
+          resultsList.classList.add("visible");
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const user = docSnap.data();
+          const li = document.createElement("li");
+          li.textContent = user.username;
+          li.addEventListener("click", () => {
+            window.location.href = `PF.html?username=${user.username}`;
+          });
+          resultsList.appendChild(li);
+        });
+
+        resultsList.classList.add("visible");
+      } catch (err) {
+        console.error("Erro na busca:", err);
+        resultsList.innerHTML = "<li>Erro na busca</li>";
+        resultsList.classList.add("visible");
+      }
+    }
+
+    searchButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+
+    searchInput.addEventListener("input", performSearch);
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-area")) {
+        resultsList.classList.remove("visible");
+      }
+    });
+  }
+
+  // ===================
+  // PREVIEW DAS IMAGENS
+  // ===================
+  const fotoPerfilInput = document.getElementById("fotoPerfilInput");
+  const bgPerfilInput = document.getElementById("bgPerfilInput");
+  const previewFotoPerfil = document.getElementById("previewFotoPerfil");
+  const previewBgPerfil = document.getElementById("previewBgPerfil");
+
+  if (fotoPerfilInput && previewFotoPerfil) {
+    fotoPerfilInput.addEventListener("change", () => {
+      const file = fotoPerfilInput.files[0];
+      if (file) {
+        previewFotoPerfil.src = URL.createObjectURL(file);
+      } else {
+        previewFotoPerfil.src = "./src/icon/default.jpg";
+      }
+    });
+  }
+
+  if (bgPerfilInput && previewBgPerfil) {
+    bgPerfilInput.addEventListener("change", () => {
+      const file = bgPerfilInput.files[0];
+      if (file) {
+        previewBgPerfil.src = URL.createObjectURL(file);
+      } else {
+        previewBgPerfil.src = "./src/bg/bg.jpg";
+      }
+    });
+  }
+
+  // ===================
+  // CARREGAR DADOS EXISTENTES
+  // ===================
+  async function carregarDadosUsuario() {
+    try {
+      const userRef = doc(db, "users", username);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        preencherFormulario(userData);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados do usuário:", error);
+    }
+  }
+
+  // Preencher formulário com dados existentes
+  function preencherFormulario(userData) {
+    // Informações básicas
+    const usernameInput = document.querySelector('input[name="username"]');
+    if (usernameInput && userData.username) usernameInput.value = userData.username;
+    
+    const displaynameInput = document.querySelector('input[name="displayname"]');
+    if (displaynameInput && userData.displayname) displaynameInput.value = userData.displayname;
+    
+    const pronoun1Input = document.querySelector('input[name="pronoun1"]');
+    if (pronoun1Input && userData.pronoun1) pronoun1Input.value = userData.pronoun1;
+    
+    const userphotoInput = document.querySelector('input[name="userphoto"]');
+    if (userphotoInput && userData.userphoto) userphotoInput.value = userData.userphoto;
+    
+    const pronoun2Input = document.querySelector('input[name="pronoun2"]');
+    if (pronoun2Input && userData.pronoun2) pronoun2Input.value = userData.pronoun2;
+    
+    const estadoCivilSelect = document.querySelector('select[name="estadoCivil"]');
+    if (estadoCivilSelect && userData.estadoCivil) estadoCivilSelect.value = userData.estadoCivil;
+    
+    const localizacaoInput = document.querySelector('input[name="localizacao"]');
+    if (localizacaoInput && userData.localizacao) localizacaoInput.value = userData.localizacao;
+
+    // Descrição
+    const tagsInput = document.querySelector('input[name="tags"]');
+    if (tagsInput && userData.tags) tagsInput.value = userData.tags;
+    
+    const visaoGeralTextarea = document.querySelector('textarea[name="visaoGeral"]');
+    if (visaoGeralTextarea && userData.visaoGeral) visaoGeralTextarea.value = userData.visaoGeral;
+    
+    const estiloTextarea = document.querySelector('textarea[name="estilo"]');
+    if (estiloTextarea && userData.estilo) estiloTextarea.value = userData.estilo;
+
+    // Personalidade
+    const sonhosTextarea = document.querySelector('textarea[name="sonhos"]');
+    if (sonhosTextarea && userData.sonhos) sonhosTextarea.value = userData.sonhos;
+    
+    const medosTextarea = document.querySelector('textarea[name="medos"]');
+    if (medosTextarea && userData.medos) medosTextarea.value = userData.medos;
+    
+    const personalidadeTextarea = document.querySelector('textarea[name="personalidade"]');
+    if (personalidadeTextarea && userData.personalidade) personalidadeTextarea.value = userData.personalidade;
+
+    // Preferências
+    const gostosTextarea = document.querySelector('textarea[name="gostos"]');
+    if (gostosTextarea && userData.gostos) gostosTextarea.value = userData.gostos;
+    
+    const musicasTextarea = document.querySelector('textarea[name="musicas"]');
+    if (musicasTextarea && userData.musicas) musicasTextarea.value = userData.musicas;
+    
+    const filmesSeriesTextarea = document.querySelector('textarea[name="filmesSeries"]');
+    if (filmesSeriesTextarea && userData.filmesSeries) filmesSeriesTextarea.value = userData.filmesSeries;
+    
+    const livrosTextarea = document.querySelector('textarea[name="livros"]');
+    if (livrosTextarea && userData.livros) livrosTextarea.value = userData.livros;
+    
+    const personagensTextarea = document.querySelector('textarea[name="personagens"]');
+    if (personagensTextarea && userData.personagens) personagensTextarea.value = userData.personagens;
+    
+    const comidasTextarea = document.querySelector('textarea[name="comidas"]');
+    if (comidasTextarea && userData.comidas) comidasTextarea.value = userData.comidas;
+    
+    const hobbiesTextarea = document.querySelector('textarea[name="hobbies"]');
+    if (hobbiesTextarea && userData.hobbies) hobbiesTextarea.value = userData.hobbies;
+    
+    const jogosTextarea = document.querySelector('textarea[name="jogos"]');
+    if (jogosTextarea && userData.jogos) jogosTextarea.value = userData.jogos;
+    
+    const outrosGostosTextarea = document.querySelector('textarea[name="outrosGostos"]');
+    if (outrosGostosTextarea && userData.outrosGostos) outrosGostosTextarea.value = userData.outrosGostos;
+
+    // Conta
+    const emailInput = document.querySelector('input[name="email"]');
+    if (emailInput && userData.email) emailInput.value = userData.email;
+    
+    const telefoneInput = document.querySelector('input[name="telefone"]');
+    if (telefoneInput && userData.telefone) telefoneInput.value = userData.telefone;
+
+    // Imagens
+    if (previewFotoPerfil && userData.fotoPerfil) {
+      previewFotoPerfil.src = userData.fotoPerfil;
+    }
+    
+    if (previewBgPerfil && userData.imagemFundo) {
+      previewBgPerfil.src = userData.imagemFundo;
+    }
+
+    // Atualizar contadores após preencher
+    setTimeout(atualizarContadores, 100);
+  }
+
+  // ===================
+  // UPLOAD DE IMAGENS
+  // ===================
+  async function uploadImagem(file, caminho) {
+    try {
+      const storageRef = ref(storage, caminho);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error("Erro no upload da imagem:", error);
+      throw error;
+    }
+  }
+
+  // ===================
+  // SALVAR CONFIGURAÇÕES
+  // ===================
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.querySelector('.submit-btn');
+      const originalText = submitBtn ? submitBtn.textContent : 'Salvar Configurações';
+      
+      if (submitBtn) {
+        submitBtn.textContent = 'Salvando...';
+        submitBtn.disabled = true;
+      }
+
+      try {
+        console.log('Iniciando salvamento das configurações...');
+
+        // Coletar dados do formulário
+        const formData = new FormData(form);
+        const dadosParaSalvar = {
+          username: username,
+          ultimaAtualizacao: new Date().toISOString()
+        };
+
+        // Converter FormData para objeto
+        for (const [chave, valor] of formData.entries()) {
+          if (valor && valor.trim() !== '') {
+            dadosParaSalvar[chave] = valor;
+          }
+        }
+
+        // Upload das imagens se foram selecionadas
+        if (fotoPerfilInput && fotoPerfilInput.files[0]) {
+          console.log('Fazendo upload da foto de perfil...');
+          const fotoURL = await uploadImagem(
+            fotoPerfilInput.files[0], 
+            `usuarios/${username}/foto-perfil.jpg`
+          );
+          dadosParaSalvar.fotoPerfil = fotoURL;
+        }
+
+        if (bgPerfilInput && bgPerfilInput.files[0]) {
+          console.log('Fazendo upload da imagem de fundo...');
+          const bgURL = await uploadImagem(
+            bgPerfilInput.files[0], 
+            `usuarios/${username}/imagem-fundo.jpg`
+          );
+          dadosParaSalvar.imagemFundo = bgURL;
+        }
+
+        // Salvar no Firestore
+        const userRef = doc(db, 'users', username);
+        await setDoc(userRef, dadosParaSalvar, { merge: true });
+
+        // Atualizar localStorage com novos dados
+        const dadosAtualizados = { ...usuarioLogado, ...dadosParaSalvar };
+        localStorage.setItem('usuarioLogado', JSON.stringify(dadosAtualizados));
+
+        alert('Configurações salvas com sucesso!');
+        console.log('Dados salvos:', dadosParaSalvar);
+
+      } catch (error) {
+        console.error('Erro ao salvar configurações:', error);
+        alert('Erro ao salvar as configurações: ' + error.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      }
+    });
+  }
+
+  // Funcionalidade extra para menus (se existir)
+  const menuItems = document.querySelectorAll('.menu-item');
+  const tabs = document.querySelectorAll('.tab');
+
+  if (menuItems.length > 0 && tabs.length > 0) {
+    menuItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        // Troca abas
+        tabs.forEach(tab => tab.classList.remove('active'));
+        if (tabs[index]) tabs[index].classList.add('active');
+
+        // Troca botão ativo
+        menuItems.forEach(btn => btn.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+  }
+
+  // Inicializar funcionalidades
+  carregarDadosUsuario();
+  atualizarContadores();
+});
+</script>
+</body>
+</html>
