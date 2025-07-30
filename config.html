@@ -57,13 +57,13 @@
   <!-- Navbar Bottom (Mobile) -->
   <div class="navbar-bottom">
     <div class="navbar-bottom-content">
-      <a href="#"><i class="fas fa-home"></i></a>
-      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="iFeed.html"><i class="fas fa-home"></i></a>
       <a href="#"><i class="fas fa-user-friends"></i></a>
       <a href="#"><i class="fas fa-comments"></i></a>
       <a href="#"><i class="fas fa-plus-square"></i></a>
-      <a href="#"><i class="fas fa-user"></i></a>
-      <a href="#"><i class="fas fa-bars"></i></a>
+      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
+      <a href="config.html"><i class="fas fa-cog"></i></a>
+      <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
 
@@ -134,18 +134,28 @@
         </div>
 
         <div class="form-section">
-  <div class="section-header">
-    <i class="fas fa-image"></i>
-    <h3>Imagens do Perfil</h3>
-  </div>
+          <div class="section-header">
+            <i class="fas fa-image"></i>
+            <h3>Imagens do Perfil</h3>
+          </div>
 
-  <div class="form-grid two-column">
-              <div class="form-group">
+          <div class="form-grid two-column">
+            <div class="form-group">
               <label>Foto de perfil:</label>
-              <input type="text" name="userphoto" maxlength="500" placeholder="url da foto">
+              <input type="text" name="userphoto" maxlength="500" placeholder="URL da foto de perfil">
             </div>
-  </div>
+            <div class="form-group">
+              <label>Imagem de fundo (background):</label>
+              <input type="text" name="backgroundphoto" maxlength="500" placeholder="URL da imagem de fundo">
+            </div>
+            <div class="form-group">
+              <label>Foto do cabeçalho:</label>
+              <input type="text" name="headerphoto" maxlength="500" placeholder="URL da foto do cabeçalho">
+            </div>
+          </div>
+        </div>
         
+  
 
         <div class="form-section">
           <div class="section-header">
@@ -478,36 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===================
-  // PREVIEW DAS IMAGENS
-  // ===================
-  const fotoPerfilInput = document.getElementById("fotoPerfilInput");
-  const bgPerfilInput = document.getElementById("bgPerfilInput");
-  const previewFotoPerfil = document.getElementById("previewFotoPerfil");
-  const previewBgPerfil = document.getElementById("previewBgPerfil");
-
-  if (fotoPerfilInput && previewFotoPerfil) {
-    fotoPerfilInput.addEventListener("change", () => {
-      const file = fotoPerfilInput.files[0];
-      if (file) {
-        previewFotoPerfil.src = URL.createObjectURL(file);
-      } else {
-        previewFotoPerfil.src = "./src/icon/default.jpg";
-      }
-    });
-  }
-
-  if (bgPerfilInput && previewBgPerfil) {
-    bgPerfilInput.addEventListener("change", () => {
-      const file = bgPerfilInput.files[0];
-      if (file) {
-        previewBgPerfil.src = URL.createObjectURL(file);
-      } else {
-        previewBgPerfil.src = "./src/bg/bg.jpg";
-      }
-    });
-  }
-
-  // ===================
   // CARREGAR DADOS EXISTENTES
   // ===================
   async function carregarDadosUsuario() {
@@ -538,6 +518,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const userphotoInput = document.querySelector('input[name="userphoto"]');
     if (userphotoInput && userData.userphoto) userphotoInput.value = userData.userphoto;
+    
+    const backgroundphotoInput = document.querySelector('input[name="backgroundphoto"]');
+    if (backgroundphotoInput && userData.backgroundphoto) backgroundphotoInput.value = userData.backgroundphoto;
+    
+    const headerphotoInput = document.querySelector('input[name="headerphoto"]');
+    if (headerphotoInput && userData.headerphoto) headerphotoInput.value = userData.headerphoto;
     
     const pronoun2Input = document.querySelector('input[name="pronoun2"]');
     if (pronoun2Input && userData.pronoun2) pronoun2Input.value = userData.pronoun2;
@@ -603,32 +589,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const telefoneInput = document.querySelector('input[name="telefone"]');
     if (telefoneInput && userData.telefone) telefoneInput.value = userData.telefone;
 
-    // Imagens
-    if (previewFotoPerfil && userData.fotoPerfil) {
-      previewFotoPerfil.src = userData.fotoPerfil;
-    }
-    
-    if (previewBgPerfil && userData.imagemFundo) {
-      previewBgPerfil.src = userData.imagemFundo;
-    }
-
     // Atualizar contadores após preencher
     setTimeout(atualizarContadores, 100);
-  }
-
-  // ===================
-  // UPLOAD DE IMAGENS
-  // ===================
-  async function uploadImagem(file, caminho) {
-    try {
-      const storageRef = ref(storage, caminho);
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      return downloadURL;
-    } catch (error) {
-      console.error("Erro no upload da imagem:", error);
-      throw error;
-    }
   }
 
   // ===================
@@ -662,25 +624,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (valor && valor.trim() !== '') {
             dadosParaSalvar[chave] = valor;
           }
-        }
-
-        // Upload das imagens se foram selecionadas
-        if (fotoPerfilInput && fotoPerfilInput.files[0]) {
-          console.log('Fazendo upload da foto de perfil...');
-          const fotoURL = await uploadImagem(
-            fotoPerfilInput.files[0], 
-            `usuarios/${username}/foto-perfil.jpg`
-          );
-          dadosParaSalvar.fotoPerfil = fotoURL;
-        }
-
-        if (bgPerfilInput && bgPerfilInput.files[0]) {
-          console.log('Fazendo upload da imagem de fundo...');
-          const bgURL = await uploadImagem(
-            bgPerfilInput.files[0], 
-            `usuarios/${username}/imagem-fundo.jpg`
-          );
-          dadosParaSalvar.imagemFundo = bgURL;
         }
 
         // Salvar no Firestore

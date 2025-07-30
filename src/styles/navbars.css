@@ -204,6 +204,7 @@
   /* Mostrar navbar bottom */
   .navbar-bottom {
     display: block;
+    padding-bottom: 20px;
   }
   
   /* Ajustar container principal */
@@ -219,7 +220,7 @@
   }
   
   .logo {
-    font-size: 20px;
+    font-size: 22px;
   }
   
   .logo_area {
@@ -230,11 +231,13 @@
   .search-box {
     margin-left: 5px;
     margin-right: 5px;
+    padding-right: 200px;
   }
   
   .search-box input {
     width: 150px;
     font-size: 14px;
+        padding-right: 200px;
   }
 
     nav {

@@ -58,12 +58,12 @@
   <div class="navbar-bottom">
     <div class="navbar-bottom-content">
       <a href="iFeed.html"><i class="fas fa-home"></i></a>
-      <a href="#"><i class="fas fa-search"></i></a>
       <a href="#"><i class="fas fa-user-friends"></i></a>
       <a href="#"><i class="fas fa-comments"></i></a>
       <a href="#"><i class="fas fa-plus-square"></i></a>
       <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
-      <a href="#"><i class="fas fa-bars"></i></a>
+      <a href="config.html"><i class="fas fa-cog"></i></a>
+      <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
 
@@ -102,11 +102,11 @@
   <div class="profile-body">
     <!-- Sidebar -->
     <div class="profile-menu">
-      <button class="menu-item active">mural</button> <!-- Ativo por padrão -->
-      <button class="menu-item">visão geral</button>
-      <button class="menu-item">gostos</button>
-      <button class="menu-item">depoimentos</button>
-      <button class="menu-item">links</button>
+      <button class="menu-item active"><i class="fas fa-paper-plane"></i> <p>mural</p></button> <!-- Ativo por padrão -->
+      <button class="menu-item"><i class="fas fa-comment-dots"></i><p>Visão Geral</p></button>
+      <button class="menu-item"><i class="fas fa-heart"></i><p>Gostos</p></button>
+      <button class="menu-item"><i class="fas fa-comments"></i><p>Depoimentos</p></button>
+      <button class="menu-item"><i class="fas fa-link"></i><p>links</p></button>
     </div>
 
     <!-- Conteúdo dinâmico -->
@@ -213,7 +213,7 @@
       </div>
     </div>
     <div class="tab gostos-tab">
-      <h3>Gostos desse usuario</h3>
+      <h3 id="gostos-title">Gostos desse usuario</h3>
        <div class="about-container">
         <div class="about-box">
           <p><i>Musicas:</i></p>
@@ -250,7 +250,7 @@
       </div>
     </div>
     <div class="tab deps-tab">
-      <h3>Depoimentos desse usuario</h3>
+      <h3 id="tituloMural">Depoimentos desse usuario</h3>
              <div class="about-container">
         <div class="about-box">
           <h2>esta opção não esta disponível no momento...</h2>
@@ -258,7 +258,7 @@
       </div>
     </div>
     <div class="tab links-tab">
-      <h3>Links  desse usuario</h3>
+      <h3 id="tituloMural">Links  desse usuario</h3>
       <div class="about-container">
         <div class="link-box">
           <a href="#">Nenhum Link Disponivel</a>
@@ -355,19 +355,44 @@
   }
 
   // ===================
+  // DETERMINAR QUAL USUÁRIO CARREGAR
+  // ===================
+  function determinarUsuarioParaCarregar() {
+    const params = new URLSearchParams(window.location.search);
+    const usernameParam = params.get("username") || params.get("user");
+    
+    // Se há um parâmetro na URL, usar esse usuário (busca)
+    if (usernameParam) {
+      return usernameParam;
+    }
+    
+    // Caso contrário, usar o usuário logado
+    const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+    if (usuarioLogadoJSON) {
+      const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+      return usuarioLogado.username;
+    }
+    
+    return null;
+  }
+
+  // ===================
   // CARREGAR PERFIL COMPLETO
   // ===================
-  const params = new URLSearchParams(window.location.search);
-  const usernameParam = params.get("username");
-
   async function carregarPerfilCompleto() {
-    if (!usernameParam) {
-      console.log("Nenhum username fornecido na URL");
+    const usernameParaCarregar = determinarUsuarioParaCarregar();
+    
+    if (!usernameParaCarregar) {
+      console.log("Nenhum usuário para carregar (não logado e sem parâmetro na URL)");
+      // Redirecionar para login se não há usuário logado
+      window.location.href = 'index.html';
       return;
     }
 
+    console.log("Carregando perfil do usuário:", usernameParaCarregar);
+
     try {
-      const userRef = doc(db, "users", usernameParam);
+      const userRef = doc(db, "users", usernameParaCarregar);
       const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
@@ -375,7 +400,7 @@
         console.log("Dados do usuário carregados:", dados);
         
         // Atualizar informações básicas do perfil
-        atualizarInformacoesBasicas(dados);
+        atualizarInformacoesBasicas(dados, usernameParaCarregar);
         
         // Atualizar seção "Visão Geral"
         atualizarVisaoGeral(dados);
@@ -383,13 +408,15 @@
         // Atualizar seção "Gostos"
         atualizarGostos(dados);
         
-        // Atualizar imagens do perfil
+        // Atualizar imagens do perfil (versão melhorada)
         atualizarImagensPerfil(dados);
         
       } else {
         console.log("Usuário não encontrado no banco de dados");
-        document.getElementById("nomeCompleto").textContent = "Usuário não encontrado";
-        document.getElementById("username").textContent = "";
+        const nomeElement = document.getElementById("nomeCompleto");
+        if (nomeElement) nomeElement.textContent = "Usuário não encontrado";
+        const usernameElement = document.getElementById("username");
+        if (usernameElement) usernameElement.textContent = "";
       }
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
@@ -399,7 +426,7 @@
   // ===================
   // ATUALIZAR INFORMAÇÕES BÁSICAS
   // ===================
-  function atualizarInformacoesBasicas(dados) {
+  function atualizarInformacoesBasicas(dados, username) {
     // Nome completo
     const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
     const nomeElement = document.getElementById("nomeCompleto");
@@ -410,20 +437,21 @@
     // Username
     const usernameElement = document.getElementById("username");
     if (usernameElement) {
-      usernameElement.textContent = `@${dados.username || usernameParam}`;
+      usernameElement.textContent = `@${dados.username || username}`;
     }
 
     // Título do mural
     const tituloMural = document.getElementById("tituloMural");
     if (tituloMural) {
-      tituloMural.textContent = `Mural de ${nomeCompleto || dados.username || usernameParam}`;
+      tituloMural.textContent = `Mural de ${nomeCompleto || dados.username || username}`;
     }
 
     // Título da visão geral
     const visaoGeralTitle = document.getElementById("visao-geral-title");
     if (visaoGeralTitle) {
-      visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || usernameParam}`;
+      visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
     }
+    
 
     // Pronomes (se existir elemento para isso)
     if (dados.pronoun1 || dados.pronoun2) {
@@ -431,7 +459,7 @@
       // Adicionar pronomes ao lado do nome se houver elemento
       const handleElement = document.querySelector('.handle');
       if (handleElement && pronomes) {
-        handleElement.innerHTML = `@${dados.username || usernameParam} • ${pronomes}`;
+        handleElement.innerHTML = `@${dados.username || username} • ${pronomes}`;
       }
     }
 
@@ -587,42 +615,103 @@
   }
 
   // ===================
-  // ATUALIZAR IMAGENS DO PERFIL
+  // ATUALIZAR IMAGENS DO PERFIL (VERSÃO MELHORADA)
   // ===================
   function atualizarImagensPerfil(dados) {
-  const profilePic = document.querySelector('.profile-pic');
-  if (profilePic && dados.userphoto) {
-    profilePic.src = dados.userphoto;
-    profilePic.onerror = () => {
-      profilePic.src = './src/icon/default.jpg';
-    };
-  }
+    // Atualizar foto de perfil principal
+    const profilePic = document.querySelector('.profile-pic');
+    if (profilePic) {
+      if (dados.userphoto || dados.foto) {
+        profilePic.src = dados.userphoto || dados.foto;
+        profilePic.onerror = () => {
+          profilePic.src = './src/icon/default.jpg';
+        };
+      } else {
+        profilePic.src = './src/icon/default.jpg';
+      }
+    }
 
-  const userPics = document.querySelectorAll('.user-pic');
-  userPics.forEach(pic => {
-    if (dados.userphoto) {
-      pic.src = dados.userphoto;
-      pic.onerror = () => {
+    // Atualizar todas as outras imagens de usuário
+    const userPics = document.querySelectorAll('.user-pic');
+    userPics.forEach(pic => {
+      if (dados.userphoto || dados.foto) {
+        pic.src = dados.userphoto || dados.foto;
+        pic.onerror = () => {
+          pic.src = './src/icon/default.jpg';
+        };
+      } else {
         pic.src = './src/icon/default.jpg';
-      };
-    }
-  });
+      }
+    });
 
-  if (dados.imagemFundo) {
-    const profileHeader = document.querySelector('.profile-header');
-    if (profileHeader) {
-      profileHeader.style.backgroundImage = `url(${dados.imagemFundo})`;
-      profileHeader.style.backgroundSize = 'cover';
-      profileHeader.style.backgroundPosition = 'center';
+    // Atualizar imagem de fundo/background
+    if (dados.backgroundphoto || dados.imagemFundo) {
+      const profileHeader = document.querySelector('.profile-header');
+      if (profileHeader) {
+        const backgroundUrl = dados.backgroundphoto || dados.imagemFundo;
+        profileHeader.style.backgroundImage = `url(${backgroundUrl})`;
+        profileHeader.style.backgroundSize = 'cover';
+        profileHeader.style.backgroundPosition = 'center';
+        
+        // Adicionar uma camada de overlay se necessário para melhor legibilidade
+        profileHeader.style.position = 'relative';
+        profileHeader.style.backgroundAttachment = 'scroll';
+      }
+      
+      // Aplicar também em outros elementos de background se existirem
+      const backgroundElements = document.querySelectorAll('.background-image, .hero-bg, .banner-bg');
+      backgroundElements.forEach(element => {
+        element.style.backgroundImage = `url(${backgroundUrl})`;
+        element.style.backgroundSize = 'cover';
+        element.style.backgroundPosition = 'center';
+      });
     }
+
+    // Atualizar foto do header/cabeçalho
+    if (dados.headerphoto) {
+      const headerImages = document.querySelectorAll('.header-image, .banner-image, .cover-photo');
+      headerImages.forEach(img => {
+        if (img.tagName === 'IMG') {
+          img.src = dados.headerphoto;
+          img.onerror = () => {
+            img.src = './src/bg/bg.jpg';
+          };
+        } else {
+          // Se for um div ou outro elemento, aplicar como background
+          img.style.backgroundImage = `url(${dados.headerphoto})`;
+          img.style.backgroundSize = 'cover';
+          img.style.backgroundPosition = 'center';
+        }
+      });
+      
+      // Também aplicar no cabeçalho do perfil se não há backgroundphoto
+      if (!dados.backgroundphoto && !dados.imagemFundo) {
+        const profileHeader = document.querySelector('.profile-header');
+        if (profileHeader) {
+          profileHeader.style.backgroundImage = `url(${dados.headerphoto})`;
+          profileHeader.style.backgroundSize = 'cover';
+          profileHeader.style.backgroundPosition = 'center';
+        }
+      }
+    }
+
+    // Atualizar nomes de usuário exibidos
+    const usernameSpans = document.querySelectorAll('.username');
+    const displayName = dados.displayname || dados.username;
+    usernameSpans.forEach(span => {
+      if (displayName) {
+        span.textContent = displayName;
+      }
+    });
+
+    // Log para debug
+    console.log("Imagens atualizadas:", {
+      userphoto: dados.userphoto,
+      backgroundphoto: dados.backgroundphoto,
+      headerphoto: dados.headerphoto,
+      imagemFundo: dados.imagemFundo
+    });
   }
-
-  const usernameSpans = document.querySelectorAll('.username');
-  const displayName = dados.displayname || dados.username;
-  usernameSpans.forEach(span => {
-    span.textContent = displayName;
-  });
-}
 
   // ===================
   // LINKS DE PERFIL E LOGOUT
@@ -680,10 +769,28 @@
   }
 
   // ===================
+  // VERIFICAR SE USUÁRIO ESTÁ LOGADO
+  // ===================
+  function verificarLogin() {
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
+      console.log("Usuário não está logado, redirecionando para login");
+      window.location.href = 'index.html';
+      return false;
+    }
+    return true;
+  }
+
+  // ===================
   // INICIALIZAÇÃO
   // ===================
   window.addEventListener("DOMContentLoaded", async () => {
     console.log("Carregando página de perfil...");
+    
+    // Verificar se o usuário está logado
+    if (!verificarLogin()) {
+      return;
+    }
     
     // Carregar todas as funcionalidades
     await carregarPerfilCompleto();
@@ -694,7 +801,13 @@
   });
 
   // Também carregar imediatamente (compatibilidade)
-  carregarPerfilCompleto();
+  if (document.readyState === 'loading') {
+    // DOM ainda está carregando
+    document.addEventListener('DOMContentLoaded', carregarPerfilCompleto);
+  } else {
+    // DOM já foi carregado
+    carregarPerfilCompleto();
+  }
 </script>
 
 </body>
