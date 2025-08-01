@@ -149,7 +149,7 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid #333;
-  background: rgba(20, 20, 20, 0.63);
+  background: #141414a1;
   backdrop-filter: blur(8px);
   top: 140px; /* Alinha abaixo do header */
   align-self: flex-start;
@@ -727,10 +727,12 @@
   }
   
   .full-profile-container {
-    width: calc(100vw - 20px);
-    margin: 80px 10px 0 10px;
-    height: auto;
-    min-height: 60vh;
+    margin: 0px;
+    margin-top: 60px;
+    width: 100vw;
+      height: 100vh;
+      border: none;
+      border-radius: 0%;
   }
   
   nav {
@@ -774,9 +776,12 @@
   .profile-header {
     display: flex;
     flex-direction: row;
-    padding: 20px 15px;
+    padding: 40px 15px;
+    padding-top: 20px;
     gap: 15px;
     align-items: flex-start;
+    border-bottom: none;
+    margin-bottom: 0px;
   }
   
   .profile-pic-block {
@@ -785,8 +790,9 @@
   }
   
   .profile-pic {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #6d6d6d;
   }
   
   .profile-info-block {
@@ -833,7 +839,7 @@
   
   /* Botões embaixo das stats */
   .action-buttons {
-    margin-top: 15px;
+    margin-top: 25px;
     display: flex;
     gap: 8px;
     justify-content: flex-start;
@@ -841,8 +847,8 @@
   }
   
   .action-buttons button {
-    padding: 10px 18px;
-    font-size: 14px;
+    padding: 8px 18px;
+    font-size: 18px;
   }
   
   .profile-body {
@@ -873,6 +879,7 @@
     justify-content: center;
     align-items: center;
     border: none;
+    background-color: #141414;
   }
 
   .menu-item i :active {
@@ -948,6 +955,15 @@
 .profile-header > * {
   position: relative;
   z-index: 1;
+}
+.menu-item:hover {
+  background-color: transparent;
+  color: #ffffff;
+}
+.menu-item:focus {
+  background-color: transparent;
+  color: #4A90E2;
+  border-bottom: 2PX solid #4A90E2;
 }
 }
 
@@ -1099,12 +1115,12 @@
   position: absolute;
   inset: 0;
   backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05); /* dá algo pra sombra "segurar" */
   mask: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
   -webkit-mask: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
   z-index: 0;
 }
 
-/* Garante que o conteúdo fique acima do ::before */
 .profile-header > * {
   position: relative;
   z-index: 1;
@@ -1114,5 +1130,18 @@
   .profile-header::before {
     mask: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 60%);
     -webkit-mask: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 60%);
+    
+    box-shadow: 0 -20px 30px rgba(0, 0, 0, 0.3); /* sombra invertida visível */
   }
+  .profile-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #141414);
+  z-index: 1;
 }
+}
+
