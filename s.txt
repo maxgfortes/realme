@@ -1,8 +1,538 @@
-        <input type="text" id="usuario" name="usuario" placeholder="0000 0000 0000" maxlength="12" required />
+<!DOCTYPE html>
 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealMe Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: #fff;
+        height: 100vh;
+        overflow-x: hidden;
+    }
 
-      <div>
-        <label for="invite">Codigo de Convite</label>
-        <input type="text" id="invite" name="invite" placeholder="0000 0000 0000" minlength="12" maxlength="12" required />
-      </div>
+    .phone-container {
+        width: 375px;
+        height: 812px;
+        margin: 20px auto;
+        background: #000;
+        border-radius: 40px;
+        padding: 10px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        position: relative;
+    }
+
+    .screen {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        border-radius: 30px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 20px 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .header {
+        padding: 8px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #64b5f6;
+    }
+
+    .search-bar {
+        flex: 1;
+        background: rgba(255,255,255,0.1);
+        border: none;
+        padding: 8px 12px;
+        border-radius: 20px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .profile-header {
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(100,181,246,0.2) 0%, rgba(63,81,181,0.2) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.3)"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .profile-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #64b5f6 0%, #3f51b5 100%);
+        border: 3px solid rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+    }
+
+    .profile-details h2 {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+
+    .profile-handle {
+        color: #90caf9;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 15px;
+        font-size: 12px;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-weight: 700;
+        color: #64b5f6;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid #64b5f6;
+        background: transparent;
+        color: #64b5f6;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        background: #64b5f6;
+        color: #000;
+    }
+
+    .section-tabs {
+        display: flex;
+        background: rgba(0,0,0,0.3);
+        margin: 0 20px;
+        border-radius: 25px;
+        padding: 4px;
+        margin-top: 15px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .section-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .tab.active {
+        background: #64b5f6;
+        color: #000;
+    }
+
+    .content-area {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(76, 175, 80, 0.2);
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border-left: 4px solid #4caf50;
+    }
+
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .post {
+        background: rgba(255,255,255,0.05);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #64b5f6 0%, #3f51b5 100%);
+    }
+
+    .post-info h4 {
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+
+    .post-date {
+        font-size: 12px;
+        color: #90caf9;
+    }
+
+    .post-content {
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: none;
+        border: none;
+        color: #90caf9;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(20px);
+        padding: 12px 0 28px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-items {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .nav-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    .nav-item.active .nav-icon {
+        background: #64b5f6;
+        color: #000;
+    }
+
+    .nav-label {
+        font-size: 10px;
+        color: #90caf9;
+    }
+
+    .nav-item.active .nav-label {
+        color: #64b5f6;
+    }
+
+    .fab {
+        position: absolute;
+        bottom: 80px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #64b5f6 0%, #3f51b5 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(100,181,246,0.4);
+        transition: transform 0.3s ease;
+    }
+
+    .fab:hover {
+        transform: scale(1.1);
+    }
+
+    .customize-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: #64b5f6;
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <div class="status-bar">
+                <span>4:09</span>
+                <span>🔋 38%</span>
+            </div>
+
+```
+        <div class="header">
+            <div class="logo">RealMe</div>
+            <input type="text" class="search-bar" placeholder="Buscar">
+        </div>
+
+        <button class="customize-btn">⚙️</button>
+
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-details">
+                    <h2>Maxgfortes</h2>
+                    <div class="profile-handle">@maxgfortes • ne/ver</div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-number">0</span>
+                            <span>posts</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">0</span>
+                            <span>seguidores</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">0</span>
+                            <span>amigos</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">0</span>
+                            <span>seguindo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn">seguir</button>
+                <button class="btn">mensagem</button>
+                <button class="btn">nudge</button>
+            </div>
+        </div>
+
+        <div class="section-tabs">
+            <div class="tab active">mural</div>
+            <div class="tab">visão geral</div>
+            <div class="tab">gostos</div>
+            <div class="tab">depoimentos</div>
+            <div class="tab">links</div>
+            <div class="tab">fotos</div>
+        </div>
+
+        <div class="content-area">
+            <div class="status-indicator">
+                <div class="online-dot"></div>
+                <span>Este usuário está: Online</span>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar"></div>
+                    <div class="post-info">
+                        <h4>maxgfortes</h4>
+                        <div class="post-date">23 de julho de 2025</div>
+                    </div>
+                    <button style="margin-left: auto; background: none; border: none; color: #90caf9; font-size: 16px;">⋯</button>
+                </div>
+                <div class="post-content">
+                    Este é um post de testes dos devs do realme
+                </div>
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn">❤️ Curtir</button>
+                        <button class="action-btn">💬 Comentar</button>
+                        <button class="action-btn">📤 Compartilhar</button>
+                    </div>
+                    <button class="action-btn">🔖</button>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar"></div>
+                    <div class="post-info">
+                        <h4>maxgfortes</h4>
+                        <div class="post-date">23 de julho de 2025</div>
+                    </div>
+                    <button style="margin-left: auto; background: none; border: none; color: #90caf9; font-size: 16px;">⋯</button>
+                </div>
+                <div class="post-content">
+                    Este é um post de testes dos devs do realme
+                </div>
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn">❤️ Curtir</button>
+                        <button class="action-btn">💬 Comentar</button>
+                        <button class="action-btn">📤 Compartilhar</button>
+                    </div>
+                    <button class="action-btn">🔖</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="fab">+</div>
+
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <div class="nav-item active">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Início</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-label">Amigos</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">💬</div>
+                    <div class="nav-label">Chat</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Notificações</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Perfil</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Adicionar interatividade básica
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Animação do FAB
+    document.querySelector('.fab').addEventListener('click', function() {
+        this.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 150);
+    });
+</script>
+```
+
+</body>
+</html>
