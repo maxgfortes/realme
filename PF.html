@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
     <link rel="stylesheet" href="./src/styles/profile.css" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
  <div class="glass-overlay"></div>
@@ -60,10 +61,8 @@
       <a href="iFeed.html"><i class="fas fa-home"></i></a>
       <a href="#"><i class="fas fa-user-friends"></i></a>
       <a href="#"><i class="fas fa-comments"></i></a>
-      <a href="#"><i class="fas fa-plus-square"></i></a>
       <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
       <a href="config.html"><i class="fas fa-cog"></i></a>
-      <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
 
@@ -89,11 +88,10 @@
         <span><strong>0</strong> amigos</span>
         <span><strong>0</strong> seguindo</span>
       </div>
-
       <div class="action-buttons">
         <button class="btn-follow">seguir</button>
         <button class="btn-message">mensagem</button>
-        <button class="btn-nudge">nudge</button>
+        <button class="btn-nudge"><i class="fa-solid fa-bell ringing-bell"></i><p>nudge</p></button>
       </div>
     </div>
   </div>
@@ -101,17 +99,19 @@
   <!-- Corpo do perfil -->
   <div class="profile-body">
     <!-- Sidebar -->
-    <div class="profile-menu">
+    <div class="profile-menu-area">
+      <div class="profile-menu">
       <button class="menu-item active"><i class="fas fa-paper-plane"></i> <p>mural</p></button> <!-- Ativo por padrão -->
       <button class="menu-item"><i class="fas fa-comment-dots"></i><p>Visão Geral</p></button>
       <button class="menu-item"><i class="fas fa-heart"></i><p>Gostos</p></button>
       <button class="menu-item"><i class="fas fa-comments"></i><p>Depoimentos</p></button>
       <button class="menu-item"><i class="fas fa-link"></i><p>links</p></button>
+      </div>
     </div>
 
     <!-- Conteúdo dinâmico -->
     <div class="tab mural-tab active">
-       <h3 id="tituloMural">Mural de </h3>
+       <h3 class="tab-info" id="tituloMural">Mural de </h3>
       <div class="status-box">
         <p><strong>Este Usuario está:</strong></p>
         <p class="status-text">Online</p>
@@ -808,7 +808,27 @@
     // DOM já foi carregado
     carregarPerfilCompleto();
   }
+
+  
 </script>
 
+<script>
+  const menu = document.querySelector('.menu');
+  const buttons = menu.querySelectorAll('button');
+  const indicator = menu.querySelector('.indicator');
+
+  function moveIndicator(el) {
+    indicator.style.width = el.offsetWidth + 'px';
+    indicator.style.left = el.offsetLeft + 'px';
+  }
+
+  buttons.forEach(button => {
+    button.addEventListener('focus', () => moveIndicator(button));
+    button.addEventListener('mouseover', () => moveIndicator(button));
+  });
+
+  // Inicializa a posição no primeiro botão
+  moveIndicator(buttons[0]);
+</script>
 </body>
 </html>
