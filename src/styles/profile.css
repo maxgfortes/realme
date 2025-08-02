@@ -11,6 +11,9 @@
   
 }
 
+  .action-buttons .btn-nudge i {
+    display: none;
+  }
 
 
 /*new*/
@@ -715,7 +718,7 @@
 /* Small Tablets (600px - 767px) */
 @media (max-width: 767px) {
   body {
-    margin-bottom: 70px;
+    margin: 0px;
   }
   
   .sidebar {
@@ -733,6 +736,7 @@
       height: 100vh;
       border: none;
       border-radius: 0%;
+      padding: 0px;
   }
   
   nav {
@@ -741,7 +745,7 @@
   }
   
   .logo {
-    font-size: 22px;
+    font-size: 30px;
     padding: 10px 5px;
     padding-right: 15px;
   }
@@ -750,17 +754,29 @@
     border-right: none;
     padding: 0 10px 0 0;
   }
+
+  .search-area {
+    padding: 0px;
+    margin: 0;
+  }
   
   .search-box {
     margin: 0 10px;
     width: 200px;
-    padding-right: 30px;
+    padding-right: 60px;
+    padding: 7px;
+    border-radius: 30px;
   }
   
   .search-box input {
     width: 150px;
     font-size: 16px;
     padding: 5px;
+  }
+
+  .last-update-area {
+    display: none;
+    margin-left: 100px;
   }
   
   .nav-links {
@@ -793,6 +809,8 @@
     width: 100px;
     height: 100px;
     border: 1px solid #6d6d6d;
+    margin-left: 10px;
+    margin-top: 10px;
   }
   
   .profile-info-block {
@@ -807,10 +825,11 @@
     gap: 8px;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    margin-top: 10px;
   }
   
   .profile-name {
-    font-size: 18px;
+    font-size: 26px;
     white-space: nowrap;
   }
   
@@ -823,7 +842,7 @@
   /* Username embaixo do nome */
   .handle {
     margin-top: 4px;
-    font-size: 13px;
+    font-size: 18px;
     color: #aaa;
   }
   
@@ -844,6 +863,18 @@
     gap: 8px;
     justify-content: flex-start;
     flex-wrap: wrap;
+    
+    
+  }
+
+  
+  .action-buttons .btn-nudge p{
+    display: none;
+  }
+
+  .action-buttons .btn-nudge i{
+    color: #4A90E2;
+    display: flex;
   }
   
   .action-buttons button {
@@ -856,15 +887,27 @@
   }
   
   /* Menu com ícones apenas */
+  .profile-menu-area {
+    background-color: #141414;
+
+  }
   .profile-menu {
     width: 100%;
     height: auto;
     flex-direction: row;
     overflow-x: auto;
     border-right: none;
-    border-bottom: 1px solid #333;
+    border: 1px solid #333;
     justify-content: space-around;
     padding: 0;
+    background-color: #1a1a1a;
+    margin: 5px;
+    margin-right: 5px;
+    border-radius: 32px;
+  }
+
+  .profile-menu::-webkit-scrollbar {
+        display: none;
   }
   
   /* Ícones Font Awesome no menu */
@@ -873,17 +916,21 @@
     min-width: auto;
     text-align: center;
     font-size: 20px;
-    padding: 15px 12px;
+    padding: 15px 18px;
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     border: none;
-    background-color: #141414;
+    background-color: transparent;
+    font-size: 28px;
+    margin: 5px;
+    border-radius: 32px;
   }
 
   .menu-item i :active {
     color: #4A90E2;
+    background-color: transparent;
   }
   
   
@@ -903,6 +950,7 @@
   
   .post-card {
     padding: 15px;
+    box-shadow: none;
   }
   
   .status-box {
@@ -935,12 +983,15 @@
   }
   .menu-item i {
   display: block;
+  font-size: 28px;
+  display: none;
 }
 .menu-item i:active {
   color: #4A90E2;
+  border-radius: 32px;
 }
 .menu-item p {
-  display: none;
+  font-size: 18px;
 }
 
 .profile-header::before {
@@ -962,8 +1013,18 @@
 }
 .menu-item:focus {
   background-color: transparent;
-  color: #4A90E2;
-  border-bottom: 2PX solid #4A90E2;
+  color: #ffffff;
+  background-color: #4A90E2;
+  border-radius: 32px;
+}
+
+h3 {
+  text-align: center;
+  background-color: #00000000;
+  padding: 20px;
+  border-bottom: none;
+  margin-bottom: 10px;
+  display: none;
 }
 }
 
@@ -1127,21 +1188,36 @@
 }
 
 @media (max-width: 768px) {
-  .profile-header::before {
-    mask: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 60%);
-    -webkit-mask: radial-gradient(circle at center, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 60%);
-    
-    box-shadow: 0 -20px 30px rgba(0, 0, 0, 0.3); /* sombra invertida visível */
+  .profile-header {
+    position: relative;
+    overflow: hidden; /* Garante que os ::before/::after fiquem contidos */
   }
+
+  .profile-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+
+    /* sombra superior */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+    z-index: 1;
+  }
+
   .profile-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #141414);
-  z-index: 1;
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+
+    /* gradiente inferior */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #141414);
+    z-index: 1;
+  }
 }
-}
+
 
