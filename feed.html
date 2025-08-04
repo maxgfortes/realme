@@ -313,6 +313,21 @@ let loading = false;
 let allPosts = []; // Cache dos posts carregados
 
 // ===================
+// TOCAR SOM DE ENVIO
+// ===================
+function tocarSomEnvio() {
+  try {
+    const audio = new Audio('./src/audio/send.mp3');
+    audio.volume = 0.5; // Volume moderado
+    audio.play().catch(error => {
+      console.warn("Não foi possível reproduzir o som de envio:", error);
+    });
+  } catch (error) {
+    console.warn("Erro ao criar/tocar áudio:", error);
+  }
+}
+
+// ===================
 // VERIFICAR LOGIN
 // ===================
 function verificarLogin() {
@@ -551,6 +566,9 @@ async function sendPost() {
     alert("Digite algo para postar!");
     return;
   }
+
+  // Tocar som de envio no momento do clique
+  tocarSomEnvio();
 
   try {
     // Gerar ID único para o post
@@ -897,6 +915,6 @@ if (document.readyState === 'loading') {
     });
   }
 }
-  </script>
+</script>
 </body>
 </html>

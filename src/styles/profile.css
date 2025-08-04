@@ -84,15 +84,6 @@
   text-shadow: 2px 2px 4px black;
 }
 
-.tag {
-  color: white;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  font-weight: bold;
-  border: 1px solid #333;
-}
 
 .handle {
   margin-top: 6px;

@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
     <link rel="stylesheet" href="./src/styles/profile.css" />
+    <link rel="stylesheet" href="./src/styles/tags.css" />
+    <link rel="stylesheet" href="./src/styles/mobile.css" />
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -79,6 +81,18 @@
     <div class="profile-info-block">
       <div class="name-line">
         <h2 class="profile-name" id="nomeCompleto">usuario do RealMe</h2>
+        <div class="tag-area">
+          <span class="tag" data-id="1">Y2K</span>
+          <span class="tag" data-id="2">Goth</span>
+          <span class="tag" data-id="3">Dev</span>
+          <span class="tag" data-id="4">Emo</span>
+          <span class="tag" data-id="5">cute</span>
+          <span class="tag" data-id="6">Alt</span>
+          <span class="tag" data-id="7">Dark</span>
+          <span class="tag" data-id="8">loser</span>
+          <span class="tag" data-id="9">Skins</span>
+          <!-- ...até 50 -->
+        </div>
       </div>
       <div class="handle" id="username">@username</div>
 
@@ -268,6 +282,13 @@
   </div>
 </div>
 
+    <div class="container">
+    <div class="overlay">
+      <div class="text">Realme</div>
+      <div class="overlay-message">Disponível apenas em computadores.</div>
+    </div>
+  </div>
+
 <div class="post-modal" id="postModal">
   <div class="post-modal-content">
     <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
@@ -286,571 +307,793 @@
 
     <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
   </div>
+  
 </div>
   <script src="./src/js/profile.js" defer></script>
   <script src="./src/js/search.js" defer></script>
   <script src="/js/mobile-lock.js"></script>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    query,
-    orderBy,
-    startAt,
-    endAt,
-    getDocs,
-    doc,
-    getDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ===================
+// SISTEMA DE LIVE STATUS AUTOMÁTICO INTEGRADO
+// ===================
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-    authDomain: "ifriendmatch.firebaseapp.com",
-    projectId: "ifriendmatch",
-    storageBucket: "ifriendmatch.appspot.com",
-    messagingSenderId: "306331636603",
-    appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-    measurementId: "G-D96BEW6RC3"
-  };
+import { 
+  getDatabase, 
+  ref, 
+  onValue, 
+  set, 
+  onDisconnect, 
+  serverTimestamp,
+  off
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  startAt,
+  endAt,
+  getDocs,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ===================
-  // FUNCIONALIDADE DE BUSCA (mantida)
-  // ===================
-  const searchInput = document.getElementById('searchInput');
-  const resultsList = document.getElementById('searchResults');
-  const searchButton = document.querySelector('.search-box button');
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
 
-  if (searchInput && resultsList && searchButton) {
-    async function performSearch() {
-      const term = searchInput.value.trim().toLowerCase();
-      resultsList.innerHTML = '';
-      resultsList.classList.remove('visible');
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
 
-      if (!term) return;
+// ===================
+// CLASSE LIVE STATUS MANAGER
+// ===================
+class LiveStatusManager {
+  constructor(username) {
+    this.username = username;
+    this.currentPage = this.getCurrentPage();
+    this.statusRef = ref(rtdb, `userStatus/${username}`);
+    this.heartbeatInterval = null;
+    this.lastActivity = Date.now();
+    this.isTabActive = true;
+    this.awayTimeout = null;
+    
+    this.init();
+  }
 
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
+  init() {
+    this.setupPresenceSystem();
+    this.setupActivityTracking();
+    this.setupPageTracking();
+    this.setupVisibilityTracking();
+    this.startHeartbeat();
+    this.monitorUserStatus();
+  }
 
-      try {
-        const snapshot = await getDocs(q);
+  getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'index.html';
+    
+    const pageMap = {
+      'index.html': 'Login',
+      'feed.html': 'Feed',
+      'PF.html': 'Perfil',
+      'config.html': 'Configurações',
+      'chat.html': 'Chat',
+      'search.html': 'Busca'
+    };
 
-        if (snapshot.empty) {
-          resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
-          resultsList.classList.add('visible');
-          return;
-        }
+    return pageMap[page] || page.replace('.html', '');
+  }
 
-        snapshot.forEach(docSnap => {
-          const user = docSnap.data();
-          const li = document.createElement('li');
-          li.textContent = user.username;
-          li.addEventListener('click', () => {
-            window.location.href = `PF.html?username=${user.username}`;
-          });
-          resultsList.appendChild(li);
-        });
+  setupPresenceSystem() {
+    const statusData = {
+      username: this.username,
+      status: 'online',
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
+    };
 
-        resultsList.classList.add('visible');
-      } catch (err) {
-        console.error('Erro na busca:', err);
-        resultsList.innerHTML = '<li>Erro na busca</li>';
-        resultsList.classList.add('visible');
-      }
-    }
+    set(this.statusRef, statusData);
 
-    searchButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      performSearch();
+    onDisconnect(this.statusRef).set({
+      username: this.username,
+      status: 'offline',
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
     });
 
-    searchInput.addEventListener('input', performSearch);
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-area')) {
-        resultsList.classList.remove('visible');
+    const connectedRef = ref(rtdb, '.info/connected');
+    onValue(connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+        console.log('✅ Conectado ao Firebase Realtime');
+        set(this.statusRef, {
+          ...statusData,
+          status: this.isTabActive ? 'online' : 'away',
+          timestamp: serverTimestamp()
+        });
       }
     });
   }
 
-  // ===================
-  // DETERMINAR QUAL USUÁRIO CARREGAR
-  // ===================
-  function determinarUsuarioParaCarregar() {
+  setupActivityTracking() {
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    const updateActivity = () => {
+      this.lastActivity = Date.now();
+      if (this.awayTimeout) {
+        clearTimeout(this.awayTimeout);
+      }
+      
+      if (this.isTabActive) {
+        this.setStatus('online');
+      }
+      
+      this.awayTimeout = setTimeout(() => {
+        if (this.isTabActive) {
+          this.setStatus('away');
+        }
+      }, 5 * 60 * 1000); // 5 minutos
+    };
+
+    activityEvents.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+  }
+
+  setupPageTracking() {
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = (...args) => {
+      originalPushState.apply(history, args);
+      this.updateCurrentPage();
+    };
+
+    history.replaceState = (...args) => {
+      originalReplaceState.apply(history, args);
+      this.updateCurrentPage();
+    };
+
+    window.addEventListener('popstate', () => {
+      this.updateCurrentPage();
+    });
+  }
+
+  setupVisibilityTracking() {
+    document.addEventListener('visibilitychange', () => {
+      this.isTabActive = !document.hidden;
+      
+      if (this.isTabActive) {
+        this.setStatus('online');
+        this.lastActivity = Date.now();
+      } else {
+        this.setStatus('away');
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      this.setStatus('offline');
+    });
+
+    window.addEventListener('focus', () => {
+      this.isTabActive = true;
+      this.setStatus('online');
+    });
+
+    window.addEventListener('blur', () => {
+      this.isTabActive = false;
+      this.setStatus('away');
+    });
+  }
+
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      if (this.isTabActive) {
+        this.updateHeartbeat();
+      }
+    }, 30000);
+  }
+
+  updateCurrentPage() {
+    const newPage = this.getCurrentPage();
+    if (newPage !== this.currentPage) {
+      this.currentPage = newPage;
+      this.updateHeartbeat();
+    }
+  }
+
+  updateHeartbeat() {
+    const now = Date.now();
+    const timeSinceActivity = now - this.lastActivity;
+    
+    let status = 'online';
+    if (!this.isTabActive) {
+      status = 'away';
+    } else if (timeSinceActivity > 5 * 60 * 1000) {
+      status = 'away';
+    }
+
+    set(this.statusRef, {
+      username: this.username,
+      status: status,
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp(),
+      heartbeat: now
+    });
+  }
+
+  setStatus(status) {
+    set(this.statusRef, {
+      username: this.username,
+      status: status,
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
+    });
+  }
+
+  // Monitorar status do usuário sendo visualizado
+  monitorUserStatus() {
     const params = new URLSearchParams(window.location.search);
     const usernameParam = params.get("username") || params.get("user");
     
-    // Se há um parâmetro na URL, usar esse usuário (busca)
-    if (usernameParam) {
-      return usernameParam;
+    if (usernameParam && usernameParam !== this.username) {
+      const targetUserRef = ref(rtdb, `userStatus/${usernameParam}`);
+      onValue(targetUserRef, (snapshot) => {
+        if (snapshot.exists()) {
+          this.updateStatusDisplay(snapshot.val());
+        } else {
+          this.updateStatusDisplay({ status: 'offline' });
+        }
+      });
     }
-    
-    // Caso contrário, usar o usuário logado
-    const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-    if (usuarioLogadoJSON) {
-      const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-      return usuarioLogado.username;
-    }
-    
-    return null;
   }
 
-  // ===================
-  // CARREGAR PERFIL COMPLETO
-  // ===================
-  async function carregarPerfilCompleto() {
-    const usernameParaCarregar = determinarUsuarioParaCarregar();
+  updateStatusDisplay(statusData) {
+    const statusBox = document.querySelector('.status-box');
+    const statusText = document.querySelector('.status-text');
     
-    if (!usernameParaCarregar) {
-      console.log("Nenhum usuário para carregar (não logado e sem parâmetro na URL)");
-      // Redirecionar para login se não há usuário logado
-      window.location.href = 'index.html';
-      return;
+    if (!statusBox || !statusText) return;
+
+    const { status, lastSeen, currentPage } = statusData;
+    let displayText = '';
+    let statusClass = '';
+
+    switch (status) {
+      case 'online':
+        displayText = currentPage ? `Online • ${currentPage}` : 'Online';
+        statusClass = 'online';
+        break;
+      case 'away':
+        displayText = currentPage ? `Ausente • ${currentPage}` : 'Ausente';
+        statusClass = 'away';
+        break;
+      case 'offline':
+        const lastSeenText = this.formatLastSeen(lastSeen);
+        displayText = `Offline • ${lastSeenText}`;
+        statusClass = 'offline';
+        break;
+      default:
+        displayText = 'Status desconhecido';
+        statusClass = 'offline';
     }
 
-    console.log("Carregando perfil do usuário:", usernameParaCarregar);
+    statusText.textContent = displayText;
+    statusText.className = `status-text ${statusClass}`;
+
+    // Adicionar indicador visual
+    const indicator = statusBox.querySelector('.status-indicator') || this.createStatusIndicator();
+    indicator.className = `status-indicator ${statusClass}`;
+    
+    if (!statusBox.querySelector('.status-indicator')) {
+      statusBox.querySelector('p:first-child').appendChild(indicator);
+    }
+  }
+
+  createStatusIndicator() {
+    const indicator = document.createElement('span');
+    indicator.className = 'status-indicator';
+    indicator.style.cssText = `
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 8px;
+      animation: pulse 2s infinite;
+    `;
+    return indicator;
+  }
+
+  formatLastSeen(timestamp) {
+    if (!timestamp) return 'há muito tempo';
+    
+    const now = Date.now();
+    const lastSeen = typeof timestamp === 'number' ? timestamp : timestamp.seconds * 1000;
+    const diff = now - lastSeen;
+    
+    if (diff < 60000) return 'agora mesmo';
+    if (diff < 3600000) return `há ${Math.floor(diff / 60000)} min`;
+    if (diff < 86400000) return `há ${Math.floor(diff / 3600000)}h`;
+    return `há ${Math.floor(diff / 86400000)}d`;
+  }
+
+  destroy() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+    if (this.awayTimeout) {
+      clearTimeout(this.awayTimeout);
+    }
+    this.setStatus('offline');
+  }
+}
+
+// ===================
+// FUNCIONALIDADE DE BUSCA
+// ===================
+const searchInput = document.getElementById('searchInput');
+const resultsList = document.getElementById('searchResults');
+const searchButton = document.querySelector('.search-box button');
+
+if (searchInput && resultsList && searchButton) {
+  async function performSearch() {
+    const term = searchInput.value.trim().toLowerCase();
+    resultsList.innerHTML = '';
+    resultsList.classList.remove('visible');
+
+    if (!term) return;
+
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
 
     try {
-      const userRef = doc(db, "users", usernameParaCarregar);
-      const docSnap = await getDoc(userRef);
+      const snapshot = await getDocs(q);
 
-      if (docSnap.exists()) {
-        const dados = docSnap.data();
-        console.log("Dados do usuário carregados:", dados);
-        
-        // Atualizar informações básicas do perfil
-        atualizarInformacoesBasicas(dados, usernameParaCarregar);
-        
-        // Atualizar seção "Visão Geral"
-        atualizarVisaoGeral(dados);
-        
-        // Atualizar seção "Gostos"
-        atualizarGostos(dados);
-        
-        // Atualizar imagens do perfil (versão melhorada)
-        atualizarImagensPerfil(dados);
-        
-      } else {
-        console.log("Usuário não encontrado no banco de dados");
-        const nomeElement = document.getElementById("nomeCompleto");
-        if (nomeElement) nomeElement.textContent = "Usuário não encontrado";
-        const usernameElement = document.getElementById("username");
-        if (usernameElement) usernameElement.textContent = "";
+      if (snapshot.empty) {
+        resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
+        resultsList.classList.add('visible');
+        return;
       }
-    } catch (error) {
-      console.error("Erro ao carregar perfil:", error);
+
+      snapshot.forEach(docSnap => {
+        const user = docSnap.data();
+        const li = document.createElement('li');
+        li.textContent = user.username;
+        li.addEventListener('click', () => {
+          window.location.href = `PF.html?username=${user.username}`;
+        });
+        resultsList.appendChild(li);
+      });
+
+      resultsList.classList.add('visible');
+    } catch (err) {
+      console.error('Erro na busca:', err);
+      resultsList.innerHTML = '<li>Erro na busca</li>';
+      resultsList.classList.add('visible');
     }
   }
 
-  // ===================
-  // ATUALIZAR INFORMAÇÕES BÁSICAS
-  // ===================
-  function atualizarInformacoesBasicas(dados, username) {
-    // Nome completo
-    const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
-    const nomeElement = document.getElementById("nomeCompleto");
-    if (nomeElement) {
-      nomeElement.textContent = nomeCompleto || "Nome não disponível";
-    }
+  searchButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    performSearch();
+  });
 
-    // Username
-    const usernameElement = document.getElementById("username");
-    if (usernameElement) {
-      usernameElement.textContent = `@${dados.username || username}`;
-    }
+  searchInput.addEventListener('input', performSearch);
 
-    // Título do mural
-    const tituloMural = document.getElementById("tituloMural");
-    if (tituloMural) {
-      tituloMural.textContent = `Mural de ${nomeCompleto || dados.username || username}`;
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-area')) {
+      resultsList.classList.remove('visible');
     }
+  });
+}
 
-    // Título da visão geral
-    const visaoGeralTitle = document.getElementById("visao-geral-title");
-    if (visaoGeralTitle) {
-      visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
-    }
-    
+// ===================
+// DETERMINAR QUAL USUÁRIO CARREGAR
+// ===================
+function determinarUsuarioParaCarregar() {
+  const params = new URLSearchParams(window.location.search);
+  const usernameParam = params.get("username") || params.get("user");
+  
+  if (usernameParam) {
+    return usernameParam;
+  }
+  
+  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+  if (usuarioLogadoJSON) {
+    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+    return usuarioLogado.username;
+  }
+  
+  return null;
+}
 
-    // Pronomes (se existir elemento para isso)
-    if (dados.pronoun1 || dados.pronoun2) {
-      const pronomes = `${dados.pronoun1 || ''}/${dados.pronoun2 || ''}`.replace(/^\/|\/$/g, '');
-      // Adicionar pronomes ao lado do nome se houver elemento
-      const handleElement = document.querySelector('.handle');
-      if (handleElement && pronomes) {
-        handleElement.innerHTML = `@${dados.username || username} • ${pronomes}`;
-      }
-    }
-
-    // Estado civil e localização (se houver onde exibir)
-    console.log("Estado Civil:", dados.estadoCivil);
-    console.log("Localização:", dados.localizacao);
+// ===================
+// CARREGAR PERFIL COMPLETO
+// ===================
+async function carregarPerfilCompleto() {
+  const usernameParaCarregar = determinarUsuarioParaCarregar();
+  
+  if (!usernameParaCarregar) {
+    console.log("Nenhum usuário para carregar");
+    window.location.href = 'index.html';
+    return;
   }
 
-  // ===================
-  // ATUALIZAR SEÇÃO VISÃO GERAL
-  // ===================
-  function atualizarVisaoGeral(dados) {
-    const visaoTab = document.querySelector('.visao-tab .about-container');
-    if (!visaoTab) return;
+  console.log("Carregando perfil do usuário:", usernameParaCarregar);
 
-    const aboutBoxes = visaoTab.querySelectorAll('.about-box');
-    
-    // Visão Geral
-    if (aboutBoxes[0]) {
-      const visaoGeral = dados.visaoGeral || "Informação não disponível";
-      aboutBoxes[0].innerHTML = `
-        <p><i>Visão geral:</i></p>
-        <p>${visaoGeral}</p>
-      `;
-    }
+  try {
+    const userRef = doc(db, "users", usernameParaCarregar);
+    const docSnap = await getDoc(userRef);
 
-    // Tags como "Sobre mim"
-    if (aboutBoxes[1]) {
-      const tags = dados.tags || "Informação não disponível";
-      aboutBoxes[1].innerHTML = `
-        <p><i>Tags:</i></p>
-        <p>${tags}</p>
-      `;
+    if (docSnap.exists()) {
+      const dados = docSnap.data();
+      console.log("Dados do usuário carregados:", dados);
+      
+      atualizarInformacoesBasicas(dados, usernameParaCarregar);
+      atualizarVisaoGeral(dados);
+      atualizarGostos(dados);
+      atualizarImagensPerfil(dados);
+      
+    } else {
+      console.log("Usuário não encontrado no banco de dados");
+      const nomeElement = document.getElementById("nomeCompleto");
+      if (nomeElement) nomeElement.textContent = "Usuário não encontrado";
+      const usernameElement = document.getElementById("username");
+      if (usernameElement) usernameElement.textContent = "";
     }
+  } catch (error) {
+    console.error("Erro ao carregar perfil:", error);
+  }
+}
 
-    // Estilo
-    if (aboutBoxes[2]) {
-      const estilo = dados.estilo || "Informação não disponível";
-      aboutBoxes[2].innerHTML = `
-        <p><i>Meu Estilo:</i></p>
-        <p>${estilo}</p>
-      `;
-    }
-
-    // Personalidade
-    if (aboutBoxes[3]) {
-      const personalidade = dados.personalidade || "Informação não disponível";
-      aboutBoxes[3].innerHTML = `
-        <p><i>Minha personalidade:</i></p>
-        <p>${personalidade}</p>
-      `;
-    }
-
-    // Sonhos e desejos
-    if (aboutBoxes[4]) {
-      const sonhos = dados.sonhos || "Informação não disponível";
-      aboutBoxes[4].innerHTML = `
-        <p><i>Meus Sonhos e desejos:</i></p>
-        <p>${sonhos}</p>
-      `;
-    }
-
-    // Medos
-    if (aboutBoxes[5]) {
-      const medos = dados.medos || "Informação não disponível";
-      aboutBoxes[5].innerHTML = `
-        <p><i>Meus Medos:</i></p>
-        <p>${medos}</p>
-      `;
-    }
+// ===================
+// FUNÇÕES DE ATUALIZAÇÃO (mantidas iguais)
+// ===================
+function atualizarInformacoesBasicas(dados, username) {
+  const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
+  const nomeElement = document.getElementById("nomeCompleto");
+  if (nomeElement) {
+    nomeElement.textContent = nomeCompleto || "Nome não disponível";
   }
 
-  // ===================
-  // ATUALIZAR SEÇÃO GOSTOS
-  // ===================
-  function atualizarGostos(dados) {
-    const gostosTab = document.querySelector('.gostos-tab .about-container');
-    if (!gostosTab) return;
-
-    const aboutBoxes = gostosTab.querySelectorAll('.about-box');
-
-    // Músicas
-    if (aboutBoxes[0]) {
-      const musicas = dados.musicas || "Informação não disponível";
-      aboutBoxes[0].innerHTML = `
-        <p><i>Músicas:</i></p>
-        <p>${musicas}</p>
-      `;
-    }
-
-    // Filmes e Séries
-    if (aboutBoxes[1]) {
-      const filmesSeries = dados.filmesSeries || "Informação não disponível";
-      aboutBoxes[1].innerHTML = `
-        <p><i>Filmes e Séries:</i></p>
-        <p>${filmesSeries}</p>
-      `;
-    }
-
-    // Livros
-    if (aboutBoxes[2]) {
-      const livros = dados.livros || "Informação não disponível";
-      aboutBoxes[2].innerHTML = `
-        <p><i>Livros:</i></p>
-        <p>${livros}</p>
-      `;
-    }
-
-    // Personagens
-    if (aboutBoxes[3]) {
-      const personagens = dados.personagens || "Informação não disponível";
-      aboutBoxes[3].innerHTML = `
-        <p><i>Personagens:</i></p>
-        <p>${personagens}</p>
-      `;
-    }
-
-    // Comidas e Bebidas
-    if (aboutBoxes[4]) {
-      const comidas = dados.comidas || "Informação não disponível";
-      aboutBoxes[4].innerHTML = `
-        <p><i>Comidas e Bebidas:</i></p>
-        <p>${comidas}</p>
-      `;
-    }
-
-    // Hobbies
-    if (aboutBoxes[5]) {
-      const hobbies = dados.hobbies || "Informação não disponível";
-      aboutBoxes[5].innerHTML = `
-        <p><i>Hobbies:</i></p>
-        <p>${hobbies}</p>
-      `;
-    }
-
-    // Jogos favoritos
-    if (aboutBoxes[6]) {
-      const jogos = dados.jogos || "Informação não disponível";
-      aboutBoxes[6].innerHTML = `
-        <p><i>Jogos favoritos:</i></p>
-        <p>${jogos}</p>
-      `;
-    }
-
-    // Outros gostos
-    if (aboutBoxes[7]) {
-      const outrosGostos = dados.outrosGostos || "Informação não disponível";
-      aboutBoxes[7].innerHTML = `
-        <p><i>Outros gostos:</i></p>
-        <p>${outrosGostos}</p>
-      `;
-    }
+  const usernameElement = document.getElementById("username");
+  if (usernameElement) {
+    usernameElement.textContent = `@${dados.username || username}`;
   }
 
-  // ===================
-  // ATUALIZAR IMAGENS DO PERFIL (VERSÃO MELHORADA)
-  // ===================
-  function atualizarImagensPerfil(dados) {
-    // Atualizar foto de perfil principal
-    const profilePic = document.querySelector('.profile-pic');
-    if (profilePic) {
-      if (dados.userphoto || dados.foto) {
-        profilePic.src = dados.userphoto || dados.foto;
-        profilePic.onerror = () => {
-          profilePic.src = './src/icon/default.jpg';
-        };
-      } else {
+  const tituloMural = document.getElementById("tituloMural");
+  if (tituloMural) {
+    tituloMural.textContent = `Mural de ${nomeCompleto || dados.username || username}`;
+  }
+
+  const visaoGeralTitle = document.getElementById("visao-geral-title");
+  if (visaoGeralTitle) {
+    visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
+  }
+
+  if (dados.pronoun1 || dados.pronoun2) {
+    const pronomes = `${dados.pronoun1 || ''}/${dados.pronoun2 || ''}`.replace(/^\/|\/$/g, '');
+    const handleElement = document.querySelector('.handle');
+    if (handleElement && pronomes) {
+      handleElement.innerHTML = `@${dados.username || username} • ${pronomes}`;
+    }
+  }
+}
+
+function atualizarVisaoGeral(dados) {
+  const visaoTab = document.querySelector('.visao-tab .about-container');
+  if (!visaoTab) return;
+
+  const aboutBoxes = visaoTab.querySelectorAll('.about-box');
+  
+  if (aboutBoxes[0]) {
+    const visaoGeral = dados.visaoGeral || "Informação não disponível";
+    aboutBoxes[0].innerHTML = `<p><i>Visão geral:</i></p><p>${visaoGeral}</p>`;
+  }
+
+  if (aboutBoxes[1]) {
+    const tags = dados.tags || "Informação não disponível";
+    aboutBoxes[1].innerHTML = `<p><i>Tags:</i></p><p>${tags}</p>`;
+  }
+
+  if (aboutBoxes[2]) {
+    const estilo = dados.estilo || "Informação não disponível";
+    aboutBoxes[2].innerHTML = `<p><i>Meu Estilo:</i></p><p>${estilo}</p>`;
+  }
+
+  if (aboutBoxes[3]) {
+    const personalidade = dados.personalidade || "Informação não disponível";
+    aboutBoxes[3].innerHTML = `<p><i>Minha personalidade:</i></p><p>${personalidade}</p>`;
+  }
+
+  if (aboutBoxes[4]) {
+    const sonhos = dados.sonhos || "Informação não disponível";
+    aboutBoxes[4].innerHTML = `<p><i>Meus Sonhos e desejos:</i></p><p>${sonhos}</p>`;
+  }
+
+  if (aboutBoxes[5]) {
+    const medos = dados.medos || "Informação não disponível";
+    aboutBoxes[5].innerHTML = `<p><i>Meus Medos:</i></p><p>${medos}</p>`;
+  }
+}
+
+function atualizarGostos(dados) {
+  const gostosTab = document.querySelector('.gostos-tab .about-container');
+  if (!gostosTab) return;
+
+  const aboutBoxes = gostosTab.querySelectorAll('.about-box');
+
+  if (aboutBoxes[0]) {
+    const musicas = dados.musicas || "Informação não disponível";
+    aboutBoxes[0].innerHTML = `<p><i>Músicas:</i></p><p>${musicas}</p>`;
+  }
+
+  if (aboutBoxes[1]) {
+    const filmesSeries = dados.filmesSeries || "Informação não disponível";
+    aboutBoxes[1].innerHTML = `<p><i>Filmes e Séries:</i></p><p>${filmesSeries}</p>`;
+  }
+
+  if (aboutBoxes[2]) {
+    const livros = dados.livros || "Informação não disponível";
+    aboutBoxes[2].innerHTML = `<p><i>Livros:</i></p><p>${livros}</p>`;
+  }
+
+  if (aboutBoxes[3]) {
+    const personagens = dados.personagens || "Informação não disponível";
+    aboutBoxes[3].innerHTML = `<p><i>Personagens:</i></p><p>${personagens}</p>`;
+  }
+
+  if (aboutBoxes[4]) {
+    const comidas = dados.comidas || "Informação não disponível";
+    aboutBoxes[4].innerHTML = `<p><i>Comidas e Bebidas:</i></p><p>${comidas}</p>`;
+  }
+
+  if (aboutBoxes[5]) {
+    const hobbies = dados.hobbies || "Informação não disponível";
+    aboutBoxes[5].innerHTML = `<p><i>Hobbies:</i></p><p>${hobbies}</p>`;
+  }
+
+  if (aboutBoxes[6]) {
+    const jogos = dados.jogos || "Informação não disponível";
+    aboutBoxes[6].innerHTML = `<p><i>Jogos favoritos:</i></p><p>${jogos}</p>`;
+  }
+
+  if (aboutBoxes[7]) {
+    const outrosGostos = dados.outrosGostos || "Informação não disponível";
+    aboutBoxes[7].innerHTML = `<p><i>Outros gostos:</i></p><p>${outrosGostos}</p>`;
+  }
+}
+
+function atualizarImagensPerfil(dados) {
+  const profilePic = document.querySelector('.profile-pic');
+  if (profilePic) {
+    if (dados.userphoto || dados.foto) {
+      profilePic.src = dados.userphoto || dados.foto;
+      profilePic.onerror = () => {
         profilePic.src = './src/icon/default.jpg';
-      }
+      };
+    } else {
+      profilePic.src = './src/icon/default.jpg';
     }
+  }
 
-    // Atualizar todas as outras imagens de usuário
-    const userPics = document.querySelectorAll('.user-pic');
-    userPics.forEach(pic => {
-      if (dados.userphoto || dados.foto) {
-        pic.src = dados.userphoto || dados.foto;
-        pic.onerror = () => {
-          pic.src = './src/icon/default.jpg';
+  const userPics = document.querySelectorAll('.user-pic');
+  userPics.forEach(pic => {
+    if (dados.userphoto || dados.foto) {
+      pic.src = dados.userphoto || dados.foto;
+      pic.onerror = () => {
+        pic.src = './src/icon/default.jpg';
+      };
+    } else {
+      pic.src = './src/icon/default.jpg';
+    }
+  });
+
+  if (dados.backgroundphoto || dados.imagemFundo) {
+    const profileHeader = document.querySelector('.profile-header');
+    if (profileHeader) {
+      const backgroundUrl = dados.backgroundphoto || dados.imagemFundo;
+      profileHeader.style.backgroundImage = `url(${backgroundUrl})`;
+      profileHeader.style.backgroundSize = 'cover';
+      profileHeader.style.backgroundPosition = 'center';
+      profileHeader.style.position = 'relative';
+      profileHeader.style.backgroundAttachment = 'scroll';
+    }
+    
+    const backgroundElements = document.querySelectorAll('.background-image, .hero-bg, .banner-bg');
+    backgroundElements.forEach(element => {
+      element.style.backgroundImage = `url(${backgroundUrl})`;
+      element.style.backgroundSize = 'cover';
+      element.style.backgroundPosition = 'center';
+    });
+  }
+
+  if (dados.headerphoto) {
+    const headerImages = document.querySelectorAll('.header-image, .banner-image, .cover-photo');
+    headerImages.forEach(img => {
+      if (img.tagName === 'IMG') {
+        img.src = dados.headerphoto;
+        img.onerror = () => {
+          img.src = './src/bg/bg.jpg';
         };
       } else {
-        pic.src = './src/icon/default.jpg';
+        img.style.backgroundImage = `url(${dados.headerphoto})`;
+        img.style.backgroundSize = 'cover';
+        img.style.backgroundPosition = 'center';
       }
     });
-
-    // Atualizar imagem de fundo/background
-    if (dados.backgroundphoto || dados.imagemFundo) {
+    
+    if (!dados.backgroundphoto && !dados.imagemFundo) {
       const profileHeader = document.querySelector('.profile-header');
       if (profileHeader) {
-        const backgroundUrl = dados.backgroundphoto || dados.imagemFundo;
-        profileHeader.style.backgroundImage = `url(${backgroundUrl})`;
+        profileHeader.style.backgroundImage = `url(${dados.headerphoto})`;
         profileHeader.style.backgroundSize = 'cover';
         profileHeader.style.backgroundPosition = 'center';
-        
-        // Adicionar uma camada de overlay se necessário para melhor legibilidade
-        profileHeader.style.position = 'relative';
-        profileHeader.style.backgroundAttachment = 'scroll';
       }
-      
-      // Aplicar também em outros elementos de background se existirem
-      const backgroundElements = document.querySelectorAll('.background-image, .hero-bg, .banner-bg');
-      backgroundElements.forEach(element => {
-        element.style.backgroundImage = `url(${backgroundUrl})`;
-        element.style.backgroundSize = 'cover';
-        element.style.backgroundPosition = 'center';
-      });
-    }
-
-    // Atualizar foto do header/cabeçalho
-    if (dados.headerphoto) {
-      const headerImages = document.querySelectorAll('.header-image, .banner-image, .cover-photo');
-      headerImages.forEach(img => {
-        if (img.tagName === 'IMG') {
-          img.src = dados.headerphoto;
-          img.onerror = () => {
-            img.src = './src/bg/bg.jpg';
-          };
-        } else {
-          // Se for um div ou outro elemento, aplicar como background
-          img.style.backgroundImage = `url(${dados.headerphoto})`;
-          img.style.backgroundSize = 'cover';
-          img.style.backgroundPosition = 'center';
-        }
-      });
-      
-      // Também aplicar no cabeçalho do perfil se não há backgroundphoto
-      if (!dados.backgroundphoto && !dados.imagemFundo) {
-        const profileHeader = document.querySelector('.profile-header');
-        if (profileHeader) {
-          profileHeader.style.backgroundImage = `url(${dados.headerphoto})`;
-          profileHeader.style.backgroundSize = 'cover';
-          profileHeader.style.backgroundPosition = 'center';
-        }
-      }
-    }
-
-    // Atualizar nomes de usuário exibidos
-    const usernameSpans = document.querySelectorAll('.username');
-    const displayName = dados.displayname || dados.username;
-    usernameSpans.forEach(span => {
-      if (displayName) {
-        span.textContent = displayName;
-      }
-    });
-
-    // Log para debug
-    console.log("Imagens atualizadas:", {
-      userphoto: dados.userphoto,
-      backgroundphoto: dados.backgroundphoto,
-      headerphoto: dados.headerphoto,
-      imagemFundo: dados.imagemFundo
-    });
-  }
-
-  // ===================
-  // LINKS DE PERFIL E LOGOUT
-  // ===================
-  function configurarLinks() {
-    // Pegar usuário logado do localStorage para links
-    const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-    if (usuarioLogadoJSON) {
-      const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-      const username = usuarioLogado.username;
-      
-      const urlPerfil = `PF.html?username=${encodeURIComponent(username)}`;
-      
-      const linkSidebar = document.getElementById('linkPerfilSidebar');
-      const linkMobile = document.getElementById('linkPerfilMobile');
-      
-      if (linkSidebar) linkSidebar.href = urlPerfil;
-      if (linkMobile) linkMobile.href = urlPerfil;
-    }
-
-    // Botão de logout
-    const btnSair = document.getElementById('btnSair');
-    if (btnSair) {
-      btnSair.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem('usuarioLogado');
-        window.location.href = 'index.html';
-      });
     }
   }
 
-  // ===================
-  // MARQUEE ÚLTIMO USUÁRIO
-  // ===================
-  async function atualizarMarqueeUltimoUsuario() {
-    try {
-      const lastUpdateRef = doc(db, "lastupdate", "latestUser");
-      const docSnap = await getDoc(lastUpdateRef);
-
-      const marquee = document.querySelector(".marquee");
-      if (!marquee) return;
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const nomeUsuario = data.username || "Usuário";
-        marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
-      } else {
-        marquee.textContent = "Bem-vindo ao RealMe!";
-      }
-    } catch (error) {
-      console.error("Erro ao buscar último usuário:", error);
-      const marquee = document.querySelector(".marquee");
-      if (marquee) marquee.textContent = "Erro ao carregar dados.";
+  const usernameSpans = document.querySelectorAll('.username');
+  const displayName = dados.displayname || dados.username;
+  usernameSpans.forEach(span => {
+    if (displayName) {
+      span.textContent = displayName;
     }
+  });
+}
+
+function configurarLinks() {
+  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+  if (usuarioLogadoJSON) {
+    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+    const username = usuarioLogado.username;
+    
+    const urlPerfil = `PF.html?username=${encodeURIComponent(username)}`;
+    
+    const linkSidebar = document.getElementById('linkPerfilSidebar');
+    const linkMobile = document.getElementById('linkPerfilMobile');
+    
+    if (linkSidebar) linkSidebar.href = urlPerfil;
+    if (linkMobile) linkMobile.href = urlPerfil;
   }
 
-  // ===================
-  // VERIFICAR SE USUÁRIO ESTÁ LOGADO
-  // ===================
-  function verificarLogin() {
-    const usuarioLogado = localStorage.getItem('usuarioLogado');
-    if (!usuarioLogado) {
-      console.log("Usuário não está logado, redirecionando para login");
+  const btnSair = document.getElementById('btnSair');
+  if (btnSair) {
+    btnSair.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('usuarioLogado');
       window.location.href = 'index.html';
-      return false;
-    }
-    return true;
+    });
   }
+}
 
-  // ===================
-  // INICIALIZAÇÃO
-  // ===================
-  window.addEventListener("DOMContentLoaded", async () => {
-    console.log("Carregando página de perfil...");
-    
-    // Verificar se o usuário está logado
-    if (!verificarLogin()) {
-      return;
+async function atualizarMarqueeUltimoUsuario() {
+  try {
+    const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+    const docSnap = await getDoc(lastUpdateRef);
+
+    const marquee = document.querySelector(".marquee");
+    if (!marquee) return;
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const nomeUsuario = data.username || "Usuário";
+      marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+    } else {
+      marquee.textContent = "Bem-vindo ao RealMe!";
     }
-    
-    // Carregar todas as funcionalidades
-    await carregarPerfilCompleto();
-    await atualizarMarqueeUltimoUsuario();
-    configurarLinks();
-    
-    console.log("Página de perfil carregada com sucesso!");
-  });
-
-  // Também carregar imediatamente (compatibilidade)
-  if (document.readyState === 'loading') {
-    // DOM ainda está carregando
-    document.addEventListener('DOMContentLoaded', carregarPerfilCompleto);
-  } else {
-    // DOM já foi carregado
-    carregarPerfilCompleto();
+  } catch (error) {
+    console.error("Erro ao buscar último usuário:", error);
+    const marquee = document.querySelector(".marquee");
+    if (marquee) marquee.textContent = "Erro ao carregar dados.";
   }
+}
 
+function verificarLogin() {
+  const usuarioLogado = localStorage.getItem('usuarioLogado');
+  if (!usuarioLogado) {
+    console.log("Usuário não está logado, redirecionando para login");
+    window.location.href = 'index.html';
+    return false;
+  }
+  return true;
+}
+
+// ===================
+// INICIALIZAÇÃO
+// ===================
+let liveStatusManager = null;
+
+window.addEventListener("DOMContentLoaded", async () => {
+  console.log("Carregando página de perfil...");
   
-</script>
-
-<script>
-  const menu = document.querySelector('.menu');
-  const buttons = menu.querySelectorAll('button');
-  const indicator = menu.querySelector('.indicator');
-
-  function moveIndicator(el) {
-    indicator.style.width = el.offsetWidth + 'px';
-    indicator.style.left = el.offsetLeft + 'px';
+  if (!verificarLogin()) {
+    return;
   }
+  
+  // Inicializar Live Status
+  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+  if (usuarioLogadoJSON) {
+    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
+    liveStatusManager = new LiveStatusManager(usuarioLogado.username);
+  }
+  
+  await carregarPerfilCompleto();
+  await atualizarMarqueeUltimoUsuario();
+  configurarLinks();
+  
+  console.log("Página de perfil carregada com sucesso!");
+});
 
-  buttons.forEach(button => {
-    button.addEventListener('focus', () => moveIndicator(button));
-    button.addEventListener('mouseover', () => moveIndicator(button));
-  });
+// Cleanup ao sair da página
+window.addEventListener('beforeunload', () => {
+  if (liveStatusManager) {
+    liveStatusManager.destroy();
+  }
+});
 
-  // Inicializa a posição no primeiro botão
-  moveIndicator(buttons[0]);
+// ===================
+// CSS PARA STATUS INDICATOR
+// ===================
+const statusCSS = `
+<style>
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 8px;
+}
+
+.status-indicator.online {
+  background-color: #28a745;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.away {
+  background-color: #ffc107;
+}
+
+.status-indicator.offline {
+  background-color: #dc3545;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.status-text.online {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-text.away {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.status-text.offline {
+  color: #dc3545;
+}
+</style>
+`;
+
+document.head.insertAdjacentHTML('beforeend', statusCSS);
 </script>
 </body>
 </html>
