@@ -1,77 +1,64 @@
-// search.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  orderBy,
-  startAt,
-  endAt,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-  authDomain: "ifriendmatch.firebaseapp.com",
-  projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
-  messagingSenderId: "306331636603",
-  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-  measurementId: "G-D96BEW6RC3"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const searchInput = document.getElementById("searchInput");
-const resultsList = document.getElementById("searchResults");
-const searchButton = document.querySelector(".search-box button");
-
-async function performSearch() {
-  const term = searchInput.value.trim().toLowerCase();
-  resultsList.innerHTML = "";
-  resultsList.classList.remove("visible");
-
-  if (!term) return;
-
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, orderBy("username"), startAt(term), endAt(term + "\uf8ff"));
-
-  try {
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) {
-      resultsList.innerHTML = "<li>Nenhum usuário encontrado</li>";
-      resultsList.classList.add("visible");
-      return;
-    }
-
-    snapshot.forEach((doc) => {
-      const user = doc.data();
-      const li = document.createElement("li");
-      li.textContent = user.username;
-      li.addEventListener("click", () => {
-        window.location.href = `PF.html?username=${user.username}`;
-      });
-      resultsList.appendChild(li);
-    });
-
-    resultsList.classList.add("visible");
-  } catch (err) {
-    console.error("Erro na busca:", err);
-    resultsList.innerHTML = "<li>Erro na busca</li>";
-    resultsList.classList.add("visible");
-  }
+function openPostOverlay() {
+  document.getElementById('postModal').style.display = 'flex';
 }
 
-searchButton.addEventListener("click", (e) => {
-  e.preventDefault();
-  performSearch();
-});
+function closePostOverlay() {
+  document.getElementById('postModal').style.display = 'none';
+  document.getElementById('postText').value = '';
+  document.getElementById('imagePreview').innerHTML = '';
+  document.getElementById('postImageInput').value = '';
+}
 
-searchInput.addEventListener("input", performSearch);
-
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".search-area")) {
-    resultsList.classList.remove("visible");
+document.getElementById('postImageInput').addEventListener('change', function (e) {
+  const preview = document.getElementById('imagePreview');
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      preview.innerHTML = `<img src="${event.target.result}" alt="Preview da imagem">`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.innerHTML = '';
   }
 });
+
+function submitPost() {
+  const text = document.getElementById('postText').value;
+  const image = document.getElementById('postImageInput').files[0];
+
+  console.log("Texto:", text);
+  console.log("Imagem:", image);
+
+  alert("Post enviado! (mas só no console por enquanto 😘)");
+  closePostOverlay();
+}
+
+const postImageInput = document.getElementById('postImageInput');
+const imagePreview = document.getElementById('imagePreview');
+const removeImageBtn = document.getElementById('removeImageBtn');
+
+postImageInput.addEventListener('change', function () {
+  const file = this.files[0];
+
+  if (file) {
+    // Opcional: limitar tamanho, ex: 2MB
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview da imagem" style="max-width: 100%; max-height: 300px; border-radius: 12px;">`;
+      removeImageBtn.style.display = 'inline-block';
+    }
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.innerHTML = '';
+    removeImageBtn.style.display = 'none';
+  }
+});
+
+function removeImage() {
+  postImageInput.value = '';
+  imagePreview.innerHTML = '';
+  removeImageBtn.style.display = 'none';
+}

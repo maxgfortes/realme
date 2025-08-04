@@ -1,0 +1,8 @@
+        <input type="text" id="usuario" name="usuario" placeholder="0000 0000 0000" maxlength="12" required />
+
+
+
+      <div>
+        <label for="invite">Codigo de Convite</label>
+        <input type="text" id="invite" name="invite" placeholder="0000 0000 0000" minlength="12" maxlength="12" required />
+      </div>

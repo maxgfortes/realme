@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iFriendMatch</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+    <link rel="stylesheet" href="./src/styles/notifications.css" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+ <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+<div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
+  </div>
+</div>
+
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">Blessed_ranixw acabou de entrar no RealMe!</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar">
+    <a href="iFeed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="amigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="dm.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="not.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="iFeed.html"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
+      <a href="config.html"><i class="fas fa-cog"></i></a>
+    </div>
+  </div>
+  <ul id="searchResults"></ul>
+
+<div class="notifications-container">
+  <div class="notifications-header"><p>Notificações de <span>maxgfortes</span>!</p></div>
+
+  <div class="notification-item">
+    <div class="notification-text"><i class="fas fa-comments"></i><p>Você recebeu uma nova mensagem de <b><i>affliccoess</i></b></p></div>
+    <div class="notification-time">5 minutos atrás</div>
+  </div>
+
+  <div class="notification-item">
+    <div class="notification-text"><i class="fas fa-heart"></i><p><b><i>davzx</i></b> Curtiu o seu post</p></div>
+    <div class="notification-time">20 minutos atrás</div>
+  </div>
+
+  <div class="notification-item">
+    <div class="notification-text"><i class="fas fa-user-plus"></i><p><b><i>Mia.xd</i></b> comecou a seguir voce!</p></div>
+    <div class="notification-time">1 hora atrás</div>
+  </div>
+  
+  <div class="notification-item">
+    <div class="notification-text">Atualização do sistema disponível.</div>
+    <div class="notification-time">1 hora atrás</div>
+  </div>
+
+  
+
+  <!-- mais notificações aqui -->
+</div>
+
+
+
+
+<div class="post-modal" id="postModal">
+  <div class="post-modal-content">
+    <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
+    <h2>Fazer Nova <span>Postagem</span>!</h2>
+
+    <textarea id="postText" placeholder="Compartilhe algo..."></textarea>
+
+    <label class="file-input-label">
+      <i class="fas fa-image"></i> Adicionar imagem
+      <input type="file" id="postImageInput" accept="image/*" />
+    </label>
+
+    <div id="imagePreview" class="image-preview"></div>
+    <button id="removeImageBtn" class="remove-image-btn" style="display:none;" onclick="removeImage()">Remover Imagem</button>
+
+
+    <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
+  </div>
+</div>
+
+  <ul id="searchResults"></ul>
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/search-function.js"></script>
+  <script src="/js/mobile-lock.js"></script>
+</body>
+</html>

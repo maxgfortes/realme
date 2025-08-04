@@ -45,15 +45,17 @@
 
   <!-- Sidebar Desktop -->
   <aside class="sidebar">
-    <a href="iFeed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="amigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="aa.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
     <a href="dm.html"><i class="fas fa-comments"></i> Mensagens</a>
-    <a href="not.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
     <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
     <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
   </aside>
+  
+  <ul id="searchResults"></ul>
 
   <!-- Navbar Bottom (Mobile) -->
   <div class="navbar-bottom">
@@ -65,8 +67,6 @@
       <a href="config.html"><i class="fas fa-cog"></i></a>
     </div>
   </div>
-
-  <ul id="searchResults"></ul>
 
 <div class="full-profile-container">
 
@@ -117,7 +117,7 @@
         <p class="status-text">Online</p>
       </div>
 
-      <div class="post-grid">
+      <div id="muralPosts" class="post-grid">
         <div class="post-card">
           <div class="post-header">
             <div class="profile-post-info">
@@ -267,7 +267,29 @@
     </div>
   </div>
 </div>
+
+<div class="post-modal" id="postModal">
+  <div class="post-modal-content">
+    <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
+    <h2>Fazer Nova <span>Postagem</span>!</h2>
+
+    <textarea id="postText" placeholder="Compartilhe algo..."></textarea>
+
+    <label class="file-input-label">
+      <i class="fas fa-image"></i> Adicionar imagem
+      <input type="file" id="postImageInput" accept="image/*" />
+    </label>
+
+    <div id="imagePreview" class="image-preview"></div>
+    <button id="removeImageBtn" class="remove-image-btn" style="display:none;" onclick="removeImage()">Remover Imagem</button>
+
+
+    <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
+  </div>
+</div>
   <script src="./src/js/profile.js" defer></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="/js/mobile-lock.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {

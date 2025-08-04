@@ -551,6 +551,9 @@
   overflow-y: auto;
   display: none;
 }
+#searchResults::-webkit-scrollbar {
+        display: none;
+  }
 
 #searchResults.visible {
   display: block;
@@ -719,6 +722,7 @@
 @media (max-width: 767px) {
   body {
     margin: 0px;
+    padding: 0px;
   }
   
   .sidebar {
@@ -884,6 +888,8 @@
   
   .profile-body {
     flex-direction: column;
+    margin: 0px;
+    padding: 0px;
   }
   
   /* Menu com ícones apenas */

@@ -22,7 +22,7 @@
 
 
 
-  function openPostOverlay() {
+function openPostOverlay() {
   document.getElementById('postModal').style.display = 'flex';
 }
 
