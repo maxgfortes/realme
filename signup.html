@@ -342,6 +342,11 @@ async function criarConta(event) {
     return;
   }
 
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+  alert("Nome de usuário só pode conter letras, números e underline (_).");
+  return;
+}
+
   if (senha.length < 6) {
     alert("Senha deve ter pelo menos 6 caracteres.");
     return;
