@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="./src/styles/oldfeed.css" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="./src/styles/index-query.css">
+  <link rel="stylesheet" href="./src/styles/search.css">
   <style>
     /* === ESTILOS DO POST === */
     .post-card {
@@ -175,6 +176,236 @@
   }
 }
 
+
+
+
+
+
+/* ===================
+   BARRA DE LOADING NO TOPO
+   =================== */
+.loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.loading-bar.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+  background-size: 200% 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+  animation: loadingShimmer 2s infinite;
+}
+
+.loading-text {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes loadingShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ===================
+   SISTEMA DE POP-UPS
+   =================== */
+.custom-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popupFadeIn 0.3s ease;
+}
+
+.popup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.popup-content {
+  position: relative;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: popupSlideIn 0.3s ease;
+  color: #ccc;
+}
+
+.popup-header {
+  padding: 20px;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.popup-header i {
+  font-size: 24px;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.popup-body {
+  padding: 20px;
+}
+
+.popup-body p {
+  margin: 0;
+  color: #c2c2c2;
+  line-height: 1.5;
+}
+
+.popup-footer {
+  padding: 20px;
+  border-top: 1px solid #333333;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.popup-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.popup-btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.popup-btn-primary:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.popup-btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.popup-btn-secondary:hover {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+/* Cores dos pop-ups por tipo */
+.custom-popup.success .popup-header i {
+  color: #28a745;
+}
+
+.custom-popup.error .popup-header i {
+  color: #dc3545;
+}
+
+.custom-popup.warning .popup-header i {
+  color: #ffc107;
+}
+
+.custom-popup.info .popup-header i {
+  color: #17a2b8;
+}
+
+/* Animações */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popupSlideIn {
+  from {
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===================
+   RESPONSIVIDADE
+   =================== */
+@media (max-width: 768px) {
+  .popup-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .popup-header,
+  .popup-body,
+  .popup-footer {
+    padding: 16px;
+  }
+  
+  .popup-footer {
+    flex-direction: column;
+  }
+  
+  .popup-btn {
+    width: 100%;
+  }
+  
+  .loading-text {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* ===================
+   MELHORIAS VISUAIS PARA BOTÕES EXISTENTES
+   =================== */
+
   </style>
 </head>
 <body>
@@ -206,9 +437,9 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <a href="feed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="aa.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-    <a href="dm.html"><i class="fas fa-comments"></i> Mensagens</a>
-    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
     <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
@@ -266,6 +497,65 @@
   <script src="/js/mobile-lock.js"></script>
   <script src="/src/js/search-function.js"></script>
 
+  <!-- Pop-up de Sucesso -->
+<div class="custom-popup success" style="display: none;">
+  <div class="popup-content">
+    <div class="popup-header">
+      <i class="fas fa-check-circle"></i>
+      <h3>Sucesso!</h3>
+    </div>
+    <div class="popup-body">
+      <p>Post enviado com sucesso!</p>
+    </div>
+    <div class="popup-footer">
+      <button class="popup-btn popup-btn-primary">OK</button>
+    </div>
+  </div>
+  <div class="popup-overlay"></div>
+</div>
+
+<!-- Pop-up de Erro -->
+<div class="custom-popup error" style="display: none;">
+  <div class="popup-content">
+    <div class="popup-header">
+      <i class="fas fa-exclamation-circle"></i>
+      <h3>Erro</h3>
+    </div>
+    <div class="popup-body">
+      <p>Ocorreu um erro ao processar sua solicitação.</p>
+    </div>
+    <div class="popup-footer">
+      <button class="popup-btn popup-btn-primary">OK</button>
+    </div>
+  </div>
+  <div class="popup-overlay"></div>
+</div>
+
+<!-- Pop-up de Confirmação -->
+<div class="custom-popup warning" style="display: none;">
+  <div class="popup-content">
+    <div class="popup-header">
+      <i class="fas fa-question-circle"></i>
+      <h3>Confirmação</h3>
+    </div>
+    <div class="popup-body">
+      <p>Tem certeza que deseja realizar esta ação?</p>
+    </div>
+    <div class="popup-footer">
+      <button class="popup-btn popup-btn-secondary">Cancelar</button>
+      <button class="popup-btn popup-btn-primary">Confirmar</button>
+    </div>
+  </div>
+  <div class="popup-overlay"></div>
+</div>
+
+<!-- Barra de Loading (criada automaticamente) -->
+<div class="loading-bar">
+  <div class="loading-progress"></div>
+  <div class="loading-text">Carregando...</div>
+</div>
+
+<script type="module" src="./src/js/main-main.js"></script>
 <script type="module">
 // Importações do Firebase (usar a mesma configuração do PF.html)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -313,6 +603,149 @@ let loading = false;
 let allPosts = []; // Cache dos posts carregados
 
 // ===================
+// SISTEMA DE POP-UPS
+// ===================
+function criarPopup(titulo, mensagem, tipo = 'info') {
+  // Remover pop-up existente se houver
+  const popupExistente = document.querySelector('.custom-popup');
+  if (popupExistente) {
+    popupExistente.remove();
+  }
+
+  const popup = document.createElement('div');
+  popup.className = `custom-popup ${tipo}`;
+  
+  const iconMap = {
+    'success': 'fas fa-check-circle',
+    'error': 'fas fa-exclamation-circle',
+    'warning': 'fas fa-exclamation-triangle',
+    'info': 'fas fa-info-circle'
+  };
+
+  popup.innerHTML = `
+    <div class="popup-content">
+      <div class="popup-header">
+        <i class="${iconMap[tipo] || iconMap.info}"></i>
+        <h3>${titulo}</h3>
+      </div>
+      <div class="popup-body">
+        <p>${mensagem}</p>
+      </div>
+      <div class="popup-footer">
+        <button class="popup-btn popup-btn-primary" onclick="this.closest('.custom-popup').remove()">
+          OK
+        </button>
+      </div>
+    </div>
+    <div class="popup-overlay" onclick="this.closest('.custom-popup').remove()"></div>
+  `;
+
+  document.body.appendChild(popup);
+
+  // Auto-remover após 5 segundos para mensagens de sucesso
+  if (tipo === 'success') {
+    setTimeout(() => {
+      if (popup.parentNode) {
+        popup.remove();
+      }
+    }, 5000);
+  }
+
+  return popup;
+}
+
+function mostrarPopupConfirmacao(titulo, mensagem, callback) {
+  const popup = document.createElement('div');
+  popup.className = 'custom-popup warning';
+  
+  popup.innerHTML = `
+    <div class="popup-content">
+      <div class="popup-header">
+        <i class="fas fa-question-circle"></i>
+        <h3>${titulo}</h3>
+      </div>
+      <div class="popup-body">
+        <p>${mensagem}</p>
+      </div>
+      <div class="popup-footer">
+        <button class="popup-btn popup-btn-secondary" onclick="this.closest('.custom-popup').remove()">
+          Cancelar
+        </button>
+        <button class="popup-btn popup-btn-primary" id="popup-confirm-btn">
+          Confirmar
+        </button>
+      </div>
+    </div>
+    <div class="popup-overlay" onclick="this.closest('.custom-popup').remove()"></div>
+  `;
+
+  document.body.appendChild(popup);
+
+  const confirmBtn = popup.querySelector('#popup-confirm-btn');
+  confirmBtn.addEventListener('click', () => {
+    popup.remove();
+    if (callback) callback();
+  });
+
+  return popup;
+}
+
+// ===================
+// SISTEMA DE LOADING
+// ===================
+function mostrarLoading(texto = 'Carregando...') {
+  // Criar ou atualizar barra de loading
+  let loadingBar = document.querySelector('.loading-bar');
+  
+  if (!loadingBar) {
+    loadingBar = document.createElement('div');
+    loadingBar.className = 'loading-bar';
+    loadingBar.innerHTML = `
+      <div class="loading-progress"></div>
+      <div class="loading-text">${texto}</div>
+    `;
+    document.body.appendChild(loadingBar);
+  } else {
+    loadingBar.querySelector('.loading-text').textContent = texto;
+  }
+  
+  loadingBar.classList.add('active');
+  
+  // Animar progresso
+  const progress = loadingBar.querySelector('.loading-progress');
+  progress.style.width = '0%';
+  
+  // Simular progresso realista
+  let width = 0;
+  const interval = setInterval(() => {
+    width += Math.random() * 15;
+    if (width > 90) width = 90; // Parar em 90% até completar
+    progress.style.width = width + '%';
+  }, 100);
+  
+  return { loadingBar, interval };
+}
+
+function esconderLoading() {
+  const loadingBar = document.querySelector('.loading-bar');
+  if (loadingBar) {
+    const progress = loadingBar.querySelector('.loading-progress');
+    progress.style.width = '100%';
+    
+    setTimeout(() => {
+      loadingBar.classList.remove('active');
+    }, 300);
+  }
+}
+
+function atualizarTextoLoading(texto) {
+  const loadingText = document.querySelector('.loading-text');
+  if (loadingText) {
+    loadingText.textContent = texto;
+  }
+}
+
+// ===================
 // TOCAR SOM DE ENVIO
 // ===================
 function tocarSomEnvio() {
@@ -334,7 +767,10 @@ function verificarLogin() {
   const usuarioLogado = localStorage.getItem('usuarioLogado');
   if (!usuarioLogado) {
     console.log("Usuário não está logado, redirecionando para login");
-    window.location.href = 'index.html';
+    criarPopup('Acesso Negado', 'Você precisa estar logado para acessar esta página.', 'warning');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
     return null;
   }
   return JSON.parse(usuarioLogado);
@@ -373,19 +809,27 @@ async function buscarDadosUsuario(username) {
 // CARREGAR TODOS OS POSTS DE TODOS OS USUÁRIOS
 // ===================
 async function carregarTodosOsPosts() {
+  const loadingInfo = mostrarLoading('Buscando posts...');
+  
   try {
     console.log("Carregando posts de todos os usuários...");
+    
+    atualizarTextoLoading('Carregando usuários...');
     
     // Primeiro, buscar todos os usuários
     const usersRef = collection(db, 'users');
     const usersSnapshot = await getDocs(usersRef);
     
     const todosOsPosts = [];
+    const totalUsers = usersSnapshot.docs.length;
+    let processedUsers = 0;
     
     // Para cada usuário, buscar seus posts
     for (const userDoc of usersSnapshot.docs) {
       const username = userDoc.id;
       const userData = userDoc.data();
+      
+      atualizarTextoLoading(`Carregando posts de ${username}... (${processedUsers + 1}/${totalUsers})`);
       
       try {
         const postsRef = collection(db, 'users', username, 'posts');
@@ -405,7 +849,11 @@ async function carregarTodosOsPosts() {
       } catch (error) {
         console.log(`Erro ao buscar posts do usuário ${username}:`, error);
       }
+      
+      processedUsers++;
     }
+    
+    atualizarTextoLoading('Organizando posts...');
     
     // Ordenar posts por data (mais recentes primeiro)
     todosOsPosts.sort((a, b) => {
@@ -414,10 +862,17 @@ async function carregarTodosOsPosts() {
     });
     
     console.log(`Carregados ${todosOsPosts.length} posts no total`);
+    
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    
     return todosOsPosts;
     
   } catch (error) {
     console.error("Erro ao carregar posts:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Não foi possível carregar os posts. Tente novamente.', 'error');
     return [];
   }
 }
@@ -549,6 +1004,7 @@ async function loadPosts() {
   } catch (error) {
     console.error("Erro ao carregar posts:", error);
     loadMoreBtn.textContent = "Erro ao carregar";
+    criarPopup('Erro', 'Não foi possível carregar mais posts.', 'error');
   }
 
   loading = false;
@@ -563,23 +1019,31 @@ async function sendPost() {
 
   const texto = postInput.value.trim();
   if (!texto) {
-    alert("Digite algo para postar!");
+    criarPopup('Campo Vazio', 'Digite algo para postar!', 'warning');
     return;
   }
 
   // Tocar som de envio no momento do clique
   tocarSomEnvio();
 
+  const loadingInfo = mostrarLoading('Enviando post...');
+
   try {
     // Gerar ID único para o post
     const postId = gerarIdUnicoPost();
     
+    atualizarTextoLoading('Buscando dados do usuário...');
+    
     // Buscar dados atuais do usuário
     const userData = await buscarDadosUsuario(usuarioLogado.username);
     if (!userData) {
-      alert("Erro ao buscar dados do usuário");
+      clearInterval(loadingInfo.interval);
+      esconderLoading();
+      criarPopup('Erro', 'Erro ao buscar dados do usuário', 'error');
       return;
     }
+
+    atualizarTextoLoading('Salvando post...');
 
     // Criar o post no caminho: users/{username}/posts/{postId}
     const postData = {
@@ -595,6 +1059,8 @@ async function sendPost() {
 
     console.log("Post criado com sucesso:", postId);
 
+    atualizarTextoLoading('Atualizando feed...');
+
     // Limpar input
     postInput.value = '';
     
@@ -603,11 +1069,15 @@ async function sendPost() {
     allPosts = []; // Limpar cache
     await loadPosts();
 
-    alert("Post enviado com sucesso!");
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Sucesso!', 'Post enviado com sucesso!', 'success');
 
   } catch (error) {
     console.error("Erro ao enviar post:", error);
-    alert("Erro ao enviar post, tente novamente.");
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao enviar post, tente novamente.', 'error');
   }
 }
 
@@ -615,6 +1085,8 @@ async function sendPost() {
 // CURTIR POST
 // ===================
 async function curtirPost(username, postId, element) {
+  const loadingInfo = mostrarLoading('Curtindo post...');
+  
   try {
     const postRef = doc(db, 'users', username, 'posts', postId);
     
@@ -634,9 +1106,14 @@ async function curtirPost(username, postId, element) {
       element.style.color = '';
     }, 1000);
 
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+
   } catch (error) {
     console.error("Erro ao curtir post:", error);
-    alert("Erro ao curtir post");
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao curtir post', 'error');
   }
 }
 
@@ -682,6 +1159,8 @@ function obterFotoPerfil(userData, usuarioLogado) {
 async function atualizarGreeting() {
   const usuarioLogado = verificarLogin();
   if (!usuarioLogado) return;
+
+  const loadingInfo = mostrarLoading('Carregando dados do usuário...');
 
   try {
     // Buscar dados atualizados do usuário
@@ -739,8 +1218,14 @@ async function atualizarGreeting() {
       console.warn("Elemento de foto de perfil não encontrado em .user-welcome");
     }
 
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+
   } catch (error) {
     console.error("Erro ao atualizar greeting:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    
     // Fallback para dados do localStorage
     const nome = usuarioLogado.displayname || usuarioLogado.nome || usuarioLogado.username;
     const greetingElement = document.getElementById('greeting');
@@ -778,8 +1263,14 @@ function configurarLinks() {
   btnsSair.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      localStorage.removeItem('usuarioLogado');
-      window.location.href = 'index.html';
+      mostrarPopupConfirmacao(
+        'Logout',
+        'Tem certeza que deseja sair?',
+        () => {
+          localStorage.removeItem('usuarioLogado');
+          window.location.href = 'index.html';
+        }
+      );
     });
   });
 }
@@ -821,7 +1312,7 @@ function configurarEventListeners() {
       }
 
       if (btnReport) {
-        alert("Funcionalidade de denúncia será implementada em breve");
+        criarPopup('Em Desenvolvimento', 'Funcionalidade de denúncia será implementada em breve', 'info');
       }
     });
   }

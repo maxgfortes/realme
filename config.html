@@ -43,15 +43,16 @@
   </nav>
 
   <!-- Sidebar Desktop -->
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <a href="iFeed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
     <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
     <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
     <a href="#"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <a href="#"><i class="fas fa-cog"></i> Configurações</a>
-    <a href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
   </aside>
 
   <!-- Navbar Bottom (Mobile) -->
@@ -330,6 +331,7 @@
   </footer>
 </section>
 <script src="/js/mobile-lock.js"></script>
+<script type="module" src="./src/js/main-main.js"></script>
 <script type="module">
 // Imports do Firebase (apenas uma vez)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
