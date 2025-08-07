@@ -135,68 +135,6 @@
       </div>
 
       <div id="muralPosts" class="post-grid">
-        <div class="post-card">
-          <div class="post-header">
-            <div class="profile-post-info">
-              <img src="./src/icon/default.jpg" alt="Foto de perfil" class="user-pic">
-              <span class="username">Seu Usuario</span>
-           </div>
-           <i class="fas fa-ellipsis-h dots"></i>
-          </div>
-          <div class="post-content">
-            <p>Este é um post de testes dos devs do realme</p>
-            <!-- <img src="imagem.jpg" alt="Postagem" class="post-image"> -->
-          </div>
-          <div class="post-footer">
-          <div class="post-actions">
-            <button><i class="fas fa-heart"></i></button>
-            <button><i class="fas fa-bookmark"></i></button>
-          </div>
-          <span class="post-date">23 de julho de 2025</span>
-        </div>
-      </div>
-
-        <div class="post-card">
-          <div class="post-header">
-            <div class="profile-post-info">
-              <img src="./src/icon/default.jpg" alt="Foto de perfil" class="user-pic">
-              <span class="username">Seu Usuario</span>
-           </div>
-           <i class="fas fa-ellipsis-h dots"></i>
-          </div>
-          <div class="post-content">
-            <p>Este é um post de testes dos devs do realme</p>
-            <!-- <img src="imagem.jpg" alt="Postagem" class="post-image"> -->
-          </div>
-          <div class="post-footer">
-          <div class="post-actions">
-            <button><i class="fas fa-heart"></i></button>
-            <button><i class="fas fa-bookmark"></i></button>
-          </div>
-          <span class="post-date">23 de julho de 2025</span>
-        </div>
-      </div>
-
-              <div class="post-card">
-          <div class="post-header">
-            <div class="profile-post-info">
-              <img src="./src/icon/default.jpg" alt="Foto de perfil" class="user-pic">
-              <span class="username">Seu Usuario</span>
-           </div>
-           <i class="fas fa-ellipsis-h dots"></i>
-          </div>
-          <div class="post-content">
-            <p>Este é um post de testes dos devs do realme</p>
-            <!-- <img src="./src/posts/post1.png" alt="Postagem" class="post-image"> !-->
-          </div>
-          <div class="post-footer">
-          <div class="post-actions">
-            <button><i class="fas fa-heart"></i></button>
-            <button><i class="fas fa-bookmark"></i></button>
-          </div>
-          <span class="post-date">23 de julho de 2025</span>
-        </div>
-      </div>
 
       </div>
     </div>
@@ -1939,13 +1877,17 @@ function aplicarBackgroundHeaderPhoto(dados) {
       body.appendChild(overlay);
     }
     
-    console.log('✅ Background do headerphoto aplicado ao body');
-  }
-
-  const glassOverlay = document.querySelector('.glass-overlay');
+    // Remover blur apenas se tiver foto
+    const glassOverlay = document.querySelector('.glass-overlay');
     if (glassOverlay) {
       glassOverlay.remove();
     }
+    
+    console.log('✅ Background do headerphoto aplicado ao body e blur removido');
+  } else {
+    // Se não tiver foto, manter o blur/glass overlay
+    console.log('❌ Nenhuma foto de header encontrada - mantendo blur');
+  }
 }
 
 // ===================
@@ -2372,7 +2314,7 @@ const postCSS = `
   width: 100%;
   min-height: 100px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid (255, 255, 255, 0.2);
   border-radius: 8px;
   resize: vertical;
   font-family: inherit;
@@ -2385,7 +2327,7 @@ const postCSS = `
 }
 
 .depoimento-form textarea:focus {
-  border-color: #007bff;
+  border-color: #fff;
   outline: none;
   box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
 }
@@ -2529,11 +2471,9 @@ const postCSS = `
   text-align: center;
   padding: 60px 20px;
   color: #aaa;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: transparent;
   border-radius: 16px;
   margin: 20px 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .empty-depoimentos .empty-icon {
@@ -2556,9 +2496,7 @@ const postCSS = `
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: transparent;
   border-radius: 12px;
   text-decoration: none;
   color: #fff;
@@ -2597,11 +2535,9 @@ const postCSS = `
   text-align: center;
   padding: 60px 20px;
   color: #aaa;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: transparent;
   border-radius: 16px;
   margin: 20px 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .empty-links .empty-icon {
@@ -2657,10 +2593,8 @@ const postCSS = `
   padding: 60px 20px;
   text-align: center;
   min-height: 200px;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: transparent;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .loading-spinner {
@@ -3139,7 +3073,7 @@ const postCSS = `
 }
 
 .depoimento-form textarea:invalid:not(:placeholder-shown) {
-  border-color: #dc3545;
+  border-color: #fff;
 }
 
 /* Smooth transitions for all interactive elements */
