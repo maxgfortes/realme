@@ -331,8 +331,8 @@
   <script src="./src/js/modal-post.js"></script>
   <script type="module" src="./src/js/new-pf.js"></script>
 <script type="module">
-// ===================
-// SISTEMA DE LIVE STATUS AUTOMÁTICO INTEGRADO - VERSÃO CORRIGIDA
+/// ===================
+// SISTEMA DE LIVE STATUS AUTOMÁTICO INTEGRADO - VERSÃO COMPLETA
 // ===================
 
 import { 
@@ -356,8 +356,13 @@ import {
   getDocs,
   doc,
   getDoc,
+  setDoc,
+  addDoc,
   limit,
-  startAfter
+  startAfter,
+  deleteDoc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -719,6 +724,611 @@ if (searchInput && resultsList && searchButton) {
 }
 
 // ===================
+// SISTEMA DE SEGUIR/SEGUINDO
+// ===================
+
+// Variáveis globais para sistema de seguir
+let currentUserData = null;
+let targetUserData = null;
+let isFollowing = false;
+
+// Função para verificar se está seguindo
+async function verificarSeEstaSeguindo(currentUser, targetUser) {
+  try {
+    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+    const seguidoresDoc = await getDoc(seguidoresRef);
+    
+    if (seguidoresDoc.exists()) {
+      const seguidoresData = seguidoresDoc.data();
+      return seguidoresData.hasOwnProperty(currentUser);
+    }
+    return false;
+  } catch (error) {
+    console.error('Erro ao verificar seguimento:', error);
+    return false;
+  }
+}
+
+// Função para seguir usuário
+async function seguirUsuario(currentUser, targetUser) {
+  try {
+    // Adicionar aos seguidores do usuário target
+    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+    const seguidoresDoc = await getDoc(seguidoresRef);
+    let seguidoresData = seguidoresDoc.exists() ? seguidoresDoc.data() : {};
+    seguidoresData[currentUser] = currentUser;
+    await setDoc(seguidoresRef, seguidoresData);
+
+    // Adicionar aos seguindo do usuário atual
+    const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
+    const seguindoDoc = await getDoc(seguindoRef);
+    let seguindoData = seguindoDoc.exists() ? seguindoDoc.data() : {};
+    seguindoData[targetUser] = targetUser;
+    await setDoc(seguindoRef, seguindoData);
+
+    console.log(`${currentUser} agora está seguindo ${targetUser}`);
+    return true;
+  } catch (error) {
+    console.error('Erro ao seguir usuário:', error);
+    return false;
+  }
+}
+
+// Função para deixar de seguir usuário
+async function deixarDeSeguir(currentUser, targetUser) {
+  try {
+    // Remover dos seguidores do usuário target
+    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+    const seguidoresDoc = await getDoc(seguidoresRef);
+    if (seguidoresDoc.exists()) {
+      let seguidoresData = seguidoresDoc.data();
+      delete seguidoresData[currentUser];
+      await setDoc(seguidoresRef, seguidoresData);
+    }
+
+    // Remover dos seguindo do usuário atual
+    const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
+    const seguindoDoc = await getDoc(seguindoRef);
+    if (seguindoDoc.exists()) {
+      let seguindoData = seguindoDoc.data();
+      delete seguindoData[targetUser];
+      await setDoc(seguindoRef, seguindoData);
+    }
+
+    console.log(`${currentUser} deixou de seguir ${targetUser}`);
+    return true;
+  } catch (error) {
+    console.error('Erro ao deixar de seguir usuário:', error);
+    return false;
+  }
+}
+
+// Função para contar seguidores
+async function contarSeguidores(username) {
+  try {
+    const seguidoresRef = doc(db, 'users', username, 'seguidores', 'users');
+    const seguidoresDoc = await getDoc(seguidoresRef);
+    
+    if (seguidoresDoc.exists()) {
+      const seguidoresData = seguidoresDoc.data();
+      return Object.keys(seguidoresData).length;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Erro ao contar seguidores:', error);
+    return 0;
+  }
+}
+
+// Função para contar seguindo
+async function contarSeguindo(username) {
+  try {
+    const seguindoRef = doc(db, 'users', username, 'seguindo', 'users');
+    const seguindoDoc = await getDoc(seguindoRef);
+    
+    if (seguindoDoc.exists()) {
+      const seguindoData = seguindoDoc.data();
+      return Object.keys(seguindoData).length;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Erro ao contar seguindo:', error);
+    return 0;
+  }
+}
+
+// Função para atualizar estatísticas do perfil
+async function atualizarEstatisticasPerfil(username) {
+  try {
+    const postsRef = collection(db, 'users', username, 'posts');
+    const postsSnapshot = await getDocs(postsRef);
+    const numPosts = postsSnapshot.size;
+
+    const numSeguidores = await contarSeguidores(username);
+    const numSeguindo = await contarSeguindo(username);
+
+    const statsElement = document.querySelector('.profile-stats');
+    if (statsElement) {
+      statsElement.innerHTML = `
+        <span><strong>${numPosts}</strong> posts</span>
+        <span><strong>${numSeguidores}</strong> seguidores</span>
+        <span><strong>0</strong> amigos</span>
+        <span><strong>${numSeguindo}</strong> seguindo</span>
+      `;
+    }
+
+    console.log(`Estatísticas atualizadas: ${numPosts} posts, ${numSeguidores} seguidores, ${numSeguindo} seguindo`);
+  } catch (error) {
+    console.error('Erro ao atualizar estatísticas:', error);
+  }
+}
+
+// Função para configurar botão de seguir
+async function configurarBotaoSeguir() {
+  const followBtn = document.querySelector('.btn-follow');
+  if (!followBtn) return;
+
+  const currentUserJson = localStorage.getItem('usuarioLogado');
+  if (!currentUserJson) return;
+
+  const currentUser = JSON.parse(currentUserJson);
+  const params = new URLSearchParams(window.location.search);
+  const targetUsername = params.get("username") || params.get("user");
+
+  // Se for o próprio perfil, esconder botão
+  if (!targetUsername || targetUsername === currentUser.username) {
+    followBtn.style.display = 'none';
+    return;
+  }
+
+  // Verificar se já está seguindo
+  isFollowing = await verificarSeEstaSeguindo(currentUser.username, targetUsername);
+  
+  // Atualizar texto do botão
+  followBtn.textContent = isFollowing ? 'seguindo' : 'seguir';
+  followBtn.className = isFollowing ? 'btn-follow following' : 'btn-follow';
+
+  // Adicionar event listener
+  followBtn.onclick = async () => {
+    followBtn.disabled = true;
+    followBtn.textContent = 'carregando...';
+
+    try {
+      if (isFollowing) {
+        const success = await deixarDeSeguir(currentUser.username, targetUsername);
+        if (success) {
+          isFollowing = false;
+          followBtn.textContent = 'seguir';
+          followBtn.className = 'btn-follow';
+        }
+      } else {
+        const success = await seguirUsuario(currentUser.username, targetUsername);
+        if (success) {
+          isFollowing = true;
+          followBtn.textContent = 'seguindo';
+          followBtn.className = 'btn-follow following';
+        }
+      }
+      
+      // Atualizar estatísticas
+      await atualizarEstatisticasPerfil(targetUsername);
+      
+    } catch (error) {
+      console.error('Erro ao processar seguimento:', error);
+      followBtn.textContent = 'erro';
+    } finally {
+      followBtn.disabled = false;
+    }
+  };
+}
+
+// ===================
+// SISTEMA DE DEPOIMENTOS
+// ===================
+
+// Função para carregar depoimentos
+async function carregarDepoimentos(username) {
+  console.log('🔄 Carregando depoimentos para:', username);
+  
+  const depoimentosContainer = document.querySelector('.deps-tab .about-container');
+  if (!depoimentosContainer) {
+    console.error('❌ Container de depoimentos não encontrado');
+    return;
+  }
+
+  try {
+    // Mostrar loading
+    depoimentosContainer.innerHTML = `
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Carregando depoimentos...</p>
+      </div>
+    `;
+
+    // Buscar depoimentos
+    const depoimentosRef = collection(db, 'users', username, 'depoimentos');
+    const depoimentosQuery = query(depoimentosRef, orderBy('criadoem', 'desc'));
+    const snapshot = await getDocs(depoimentosQuery);
+
+    // Limpar container
+    depoimentosContainer.innerHTML = '';
+
+    // Verificar se é perfil próprio para mostrar/esconder botão
+    const currentUserJson = localStorage.getItem('usuarioLogado');
+    const isOwnProfile = currentUserJson ? JSON.parse(currentUserJson).username === username : false;
+
+    // Adicionar botão de enviar depoimento (apenas para outros usuários)
+    if (!isOwnProfile) {
+      const depoimentoForm = document.createElement('div');
+      depoimentoForm.className = 'depoimento-form';
+      depoimentoForm.innerHTML = `
+        <h4>Deixar um depoimento</h4>
+        <textarea id="depoimentoTexto" placeholder="Escreva seu depoimento aqui..." maxlength="500"></textarea>
+        <div class="form-actions">
+          <span class="char-count">0/500</span>
+          <button class="btn-enviar-depoimento" onclick="enviarDepoimento('${username}')">
+            <i class="fas fa-paper-plane"></i> Enviar Depoimento
+          </button>
+        </div>
+      `;
+      depoimentosContainer.appendChild(depoimentoForm);
+
+      // Contador de caracteres
+      const textarea = depoimentoForm.querySelector('#depoimentoTexto');
+      const charCount = depoimentoForm.querySelector('.char-count');
+      textarea.addEventListener('input', () => {
+        const count = textarea.value.length;
+        charCount.textContent = `${count}/500`;
+        charCount.style.color = count > 450 ? '#dc3545' : '#666';
+      });
+    }
+
+    if (snapshot.empty) {
+      console.log('📭 Nenhum depoimento encontrado');
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty-depoimentos';
+      emptyDiv.innerHTML = `
+        <div class="empty-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <h3>Nenhum depoimento ainda</h3>
+        <p>${isOwnProfile ? 'Você ainda não recebeu depoimentos.' : 'Este usuário ainda não recebeu depoimentos.'}</p>
+      `;
+      depoimentosContainer.appendChild(emptyDiv);
+      return;
+    }
+
+    // Criar depoimentos
+    let depoimentosAdicionados = 0;
+    
+    for (const depoDoc of snapshot.docs) {
+      try {
+        const depoData = depoDoc.data();
+        console.log(`📄 Processando depoimento ${depoDoc.id}:`, {
+          conteudo: depoData.conteudo?.substring(0, 50) + '...',
+          username: depoData.username,
+          data: depoData.criadoem
+        });
+
+        // Buscar dados do autor do depoimento
+        let autorData = {};
+        if (depoData.username) {
+          const autorRef = doc(db, 'users', depoData.username);
+          const autorDoc = await getDoc(autorRef);
+          if (autorDoc.exists()) {
+            autorData = autorDoc.data();
+          }
+        }
+
+        const depoElement = criarElementoDepoimento(depoData, autorData, depoDoc.id, username);
+        depoimentosContainer.appendChild(depoElement);
+        depoimentosAdicionados++;
+      } catch (error) {
+        console.error(`❌ Erro ao processar depoimento ${depoDoc.id}:`, error);
+      }
+    }
+
+    console.log(`✅ ${depoimentosAdicionados} depoimentos carregados com sucesso!`);
+
+  } catch (error) {
+    console.error('❌ Erro ao carregar depoimentos:', error);
+    depoimentosContainer.innerHTML = `
+      <div class="error-container">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Erro ao carregar depoimentos</h3>
+        <p>Não foi possível carregar os depoimentos. Tente novamente.</p>
+        <button onclick="carregarDepoimentos('${username}')" class="btn-secondary">Tentar novamente</button>
+      </div>
+    `;
+  }
+}
+
+// Função para criar elemento do depoimento
+function criarElementoDepoimento(depoData, autorData, depoId, targetUsername) {
+  const depoElement = document.createElement('div');
+  depoElement.className = 'depoimento-card';
+  depoElement.setAttribute('data-depo-id', depoId);
+
+  const autorFoto = autorData.userphoto || autorData.foto || './src/icon/default.jpg';
+  const autorNome = autorData.displayname || autorData.username || depoData.username || 'Usuário Anônimo';
+  const dataFormatada = formatarDataPost(depoData.criadoem);
+  const conteudo = depoData.conteudo || 'Depoimento sem conteúdo';
+
+  // Verificar se é o autor do depoimento (para mostrar botão de excluir)
+  const currentUserJson = localStorage.getItem('usuarioLogado');
+  const isAuthor = currentUserJson ? JSON.parse(currentUserJson).username === depoData.username : false;
+
+  depoElement.innerHTML = `
+    <div class="depoimento-header">
+      <div class="autor-info">
+        <img src="${autorFoto}" 
+             alt="Foto do autor" 
+             class="autor-pic" 
+             onerror="this.src='./src/icon/default.jpg'"
+             onclick="window.location.href='PF.html?username=${depoData.username}'">
+        <div class="autor-details">
+          <span class="autor-nome" onclick="window.location.href='PF.html?username=${depoData.username}'">${autorNome}</span>
+          <span class="depo-time">${dataFormatada}</span>
+        </div>
+      </div>
+      ${isAuthor ? `<button class="delete-depo-btn" onclick="excluirDepoimento('${depoId}', '${targetUsername}')">
+        <i class="fas fa-trash"></i>
+      </button>` : ''}
+    </div>
+    
+    <div class="depoimento-content">
+      <p>${conteudo}</p>
+    </div>
+  `;
+
+  return depoElement;
+}
+
+// Função para enviar depoimento
+async function enviarDepoimento(targetUsername) {
+  const textarea = document.getElementById('depoimentoTexto');
+  const btnEnviar = document.querySelector('.btn-enviar-depoimento');
+  
+  if (!textarea || !btnEnviar) return;
+
+  const conteudo = textarea.value.trim();
+  if (!conteudo) {
+    alert('Por favor, escreva um depoimento antes de enviar.');
+    return;
+  }
+
+  const currentUserJson = localStorage.getItem('usuarioLogado');
+  if (!currentUserJson) {
+    alert('Você precisa estar logado para enviar depoimentos.');
+    return;
+  }
+
+  const currentUser = JSON.parse(currentUserJson);
+
+  // Verificar se não está tentando fazer autodepoimento
+  if (currentUser.username === targetUsername) {
+    alert('Você não pode deixar um depoimento para si mesmo.');
+    return;
+  }
+
+  btnEnviar.disabled = true;
+  btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+  try {
+    // Gerar ID único para o depoimento
+    const depoId = `dep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    const depoimentoData = {
+      conteudo: conteudo,
+      username: currentUser.username,
+      criadoem: new Date(),
+      targetUser: targetUsername
+    };
+
+    // Salvar depoimento
+    const depoRef = doc(db, 'users', targetUsername, 'depoimentos', depoId);
+    await setDoc(depoRef, depoimentoData);
+
+    console.log('✅ Depoimento enviado com sucesso!');
+    
+    // Limpar formulário
+    textarea.value = '';
+    const charCount = document.querySelector('.char-count');
+    if (charCount) charCount.textContent = '0/500';
+
+    // Recarregar depoimentos
+    await carregarDepoimentos(targetUsername);
+
+    // Mostrar mensagem de sucesso
+    const successMsg = document.createElement('div');
+    successMsg.className = 'success-message';
+    successMsg.textContent = 'Depoimento enviado com sucesso!';
+    successMsg.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      animation: slideIn 0.3s ease-out;
+    `;
+    document.body.appendChild(successMsg);
+    
+    setTimeout(() => {
+      successMsg.remove();
+    }, 3000);
+
+  } catch (error) {
+    console.error('❌ Erro ao enviar depoimento:', error);
+    alert('Erro ao enviar depoimento. Tente novamente.');
+  } finally {
+    btnEnviar.disabled = false;
+    btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Depoimento';
+  }
+}
+
+// Função para excluir depoimento
+async function excluirDepoimento(depoId, targetUsername) {
+  if (!confirm('Tem certeza que deseja excluir este depoimento?')) {
+    return;
+  }
+
+  try {
+    const depoRef = doc(db, 'users', targetUsername, 'depoimentos', depoId);
+    await deleteDoc(depoRef);
+
+    console.log('✅ Depoimento excluído com sucesso!');
+    
+    // Recarregar depoimentos
+    await carregarDepoimentos(targetUsername);
+
+    // Mostrar mensagem de sucesso
+    const successMsg = document.createElement('div');
+    successMsg.className = 'success-message';
+    successMsg.textContent = 'Depoimento excluído com sucesso!';
+    successMsg.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #dc3545;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      animation: slideIn 0.3s ease-out;
+    `;
+    document.body.appendChild(successMsg);
+    
+    setTimeout(() => {
+      successMsg.remove();
+    }, 3000);
+
+  } catch (error) {
+    console.error('❌ Erro ao excluir depoimento:', error);
+    alert('Erro ao excluir depoimento. Tente novamente.');
+  }
+}
+
+// ===================
+// SISTEMA DE LINKS
+// ===================
+
+// Função para carregar links do usuário
+async function carregarLinks(username) {
+  console.log('🔄 Carregando links para:', username);
+  
+  const linksContainer = document.querySelector('.links-tab .about-container');
+  if (!linksContainer) {
+    console.error('❌ Container de links não encontrado');
+    return;
+  }
+
+  try {
+    // Buscar dados do usuário para pegar links
+    const userRef = doc(db, 'users', username);
+    const userDoc = await getDoc(userRef);
+    
+    linksContainer.innerHTML = '';
+
+    if (!userDoc.exists()) {
+      linksContainer.innerHTML = `
+        <div class="empty-links">
+          <div class="empty-icon">
+            <i class="fas fa-link"></i>
+          </div>
+          <h3>Usuário não encontrado</h3>
+        </div>
+      `;
+      return;
+    }
+
+    const userData = userDoc.data();
+    const links = userData.links || {};
+
+    // Se não há links
+    if (!links || Object.keys(links).length === 0) {
+      linksContainer.innerHTML = `
+        <div class="empty-links">
+          <div class="empty-icon">
+            <i class="fas fa-link"></i>
+          </div>
+          <h3>Nenhum link ainda</h3>
+          <p>Este usuário ainda não adicionou nenhum link.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Criar elementos de link
+    Object.entries(links).forEach(([key, url]) => {
+      if (url && url.trim()) {
+        const linkElement = document.createElement('div');
+        linkElement.className = 'link-box';
+        
+        // Detectar tipo de link e adicionar ícone apropriado
+        let icon = 'fas fa-external-link-alt';
+        let label = key;
+        
+        if (url.includes('instagram.com')) {
+          icon = 'fab fa-instagram';
+          label = 'Instagram';
+        } else if (url.includes('twitter.com') || url.includes('x.com')) {
+          icon = 'fab fa-twitter';
+          label = 'Twitter/X';
+        } else if (url.includes('tiktok.com')) {
+          icon = 'fab fa-tiktok';
+          label = 'TikTok';
+        } else if (url.includes('youtube.com')) {
+          icon = 'fab fa-youtube';
+          label = 'YouTube';
+        } else if (url.includes('github.com')) {
+          icon = 'fab fa-github';
+          label = 'GitHub';
+        } else if (url.includes('linkedin.com')) {
+          icon = 'fab fa-linkedin';
+          label = 'LinkedIn';
+        } else if (url.includes('discord')) {
+          icon = 'fab fa-discord';
+          label = 'Discord';
+        } else if (url.includes('spotify.com')) {
+          icon = 'fab fa-spotify';
+          label = 'Spotify';
+        }
+
+        linkElement.innerHTML = `
+          <a href="${url}" target="_blank" rel="noopener noreferrer" class="user-link">
+            <i class="${icon}"></i>
+            <span>${label}</span>
+            <i class="fas fa-external-link-alt link-arrow"></i>
+          </a>
+        `;
+        
+        linksContainer.appendChild(linkElement);
+      }
+    });
+
+    console.log(`✅ ${Object.keys(links).length} links carregados com sucesso!`);
+
+  } catch (error) {
+    console.error('❌ Erro ao carregar links:', error);
+    linksContainer.innerHTML = `
+      <div class="error-container">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Erro ao carregar links</h3>
+        <p>Não foi possível carregar os links. Tente novamente.</p>
+        <button onclick="carregarLinks('${username}')" class="btn-secondary">Tentar novamente</button>
+      </div>
+    `;
+  }
+}
+
+// ===================
 // SISTEMA DE POSTS CORRIGIDO E MELHORADO
 // ===================
 
@@ -1068,6 +1678,62 @@ async function carregarMaisPosts() {
 }
 
 // ===================
+// SISTEMA DE NAVEGAÇÃO ENTRE TABS
+// ===================
+
+// Função para configurar navegação entre tabs
+function configurarNavegacaoTabs() {
+  const menuItems = document.querySelectorAll('.menu-item');
+  const tabs = document.querySelectorAll('.tab');
+  
+  if (!menuItems.length || !tabs.length) return;
+
+  menuItems.forEach((item, index) => {
+    item.addEventListener('click', async () => {
+      // Remover classe active de todos os itens e tabs
+      menuItems.forEach(mi => mi.classList.remove('active'));
+      tabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Adicionar classe active ao item clicado e tab correspondente
+      item.classList.add('active');
+      if (tabs[index]) {
+        tabs[index].classList.add('active');
+      }
+
+      // Carregar conteúdo específico baseado na tab
+      const username = determinarUsuarioParaCarregar();
+      if (!username) return;
+
+      switch (index) {
+        case 0: // Mural
+          if (!document.querySelector('#muralPosts .post-card:not(.loading-container):not(.empty-posts):not(.error-container)')) {
+            await carregarPostsDoMural(username);
+          }
+          break;
+        case 1: // Visão Geral
+          // Já carregado no carregarPerfilCompleto
+          break;
+        case 2: // Gostos  
+          // Já carregado no carregarPerfilCompleto
+          break;
+        case 3: // Depoimentos
+          await carregarDepoimentos(username);
+          break;
+        case 4: // Links
+          await carregarLinks(username);
+          break;
+      }
+    });
+  });
+
+  // Ativar primeira tab por padrão
+  if (menuItems[0] && tabs[0]) {
+    menuItems[0].classList.add('active');
+    tabs[0].classList.add('active');
+  }
+}
+
+// ===================
 // FUNÇÕES DE INTERAÇÃO COM POSTS
 // ===================
 
@@ -1160,7 +1826,7 @@ function salvarPost(postId) {
 }
 
 // ===================
-// OUTRAS FUNÇÕES (mantidas iguais)
+// OUTRAS FUNÇÕES
 // ===================
 
 function determinarUsuarioParaCarregar() {
@@ -1217,6 +1883,13 @@ async function carregarPerfilCompleto() {
       atualizarGostos(dados);
       atualizarImagensPerfil(dados);
       
+      // Aplicar background do headerphoto no body
+      aplicarBackgroundHeaderPhoto(dados);
+      
+      // Atualizar estatísticas e configurar botão de seguir
+      await atualizarEstatisticasPerfil(usernameParaCarregar);
+      await configurarBotaoSeguir();
+      
       // Carregar posts do mural (versão corrigida)
       await carregarPostsDoMural(usernameParaCarregar);
       
@@ -1233,6 +1906,46 @@ async function carregarPerfilCompleto() {
   } catch (error) {
     console.error("Erro ao carregar perfil:", error);
   }
+}
+
+// ===================
+// FUNÇÃO PARA APLICAR BACKGROUND DO HEADERPHOTO
+// ===================
+function aplicarBackgroundHeaderPhoto(dados) {
+  if (dados.headerphoto) {
+    const body = document.body;
+    
+    // Aplicar background do headerphoto no body
+    body.style.backgroundImage = `url(${dados.headerphoto})`;
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundPosition = 'center';
+    body.style.backgroundAttachment = 'fixed';
+    body.style.backgroundRepeat = 'no-repeat';
+    
+    // Adicionar overlay para melhor legibilidade
+    if (!document.querySelector('.body-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.className = 'body-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: -1;
+        pointer-events: none;
+      `;
+      body.appendChild(overlay);
+    }
+    
+    console.log('✅ Background do headerphoto aplicado ao body');
+  }
+
+  const glassOverlay = document.querySelector('.glass-overlay');
+    if (glassOverlay) {
+      glassOverlay.remove();
+    }
 }
 
 // ===================
@@ -1260,17 +1973,18 @@ function atualizarInformacoesBasicas(dados, username) {
     visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
   }
 
-  const gostosTitle= document.getElementById("gostos-title");
+  // Atualizar títulos das outras tabs
+  const gostosTitle = document.getElementById("gostos-title");
   if (gostosTitle) {
     gostosTitle.textContent = `Gostos de ${nomeCompleto || dados.username || username}`;
   }
 
-  const depsTitle= document.getElementById("deps-title");
+  const depsTitle = document.querySelector('.deps-tab h3');
   if (depsTitle) {
     depsTitle.textContent = `Depoimentos de ${nomeCompleto || dados.username || username}`;
   }
 
-  const linksTitle= document.getElementById("links-title");
+  const linksTitle = document.querySelector('.links-tab h3');
   if (linksTitle) {
     linksTitle.textContent = `Links de ${nomeCompleto || dados.username || username}`;
   }
@@ -1412,24 +2126,7 @@ function atualizarImagensPerfil(dados) {
     });
   }
 
-  // Nova funcionalidade: aplicar headerphoto como background do body
   if (dados.headerphoto) {
-    const body = document.querySelector('body');
-    if (body) {
-      body.style.backgroundImage = `url(${dados.headerphoto})`;
-      body.style.backgroundSize = 'cover';
-      body.style.backgroundPosition = 'center';
-      body.style.backgroundRepeat = 'no-repeat';
-      body.style.backgroundAttachment = 'fixed';
-      body.style.minHeight = '100vh';
-    }
-
-    // Remover a div glass-overlay quando headerphoto for aplicado
-    const glassOverlay = document.querySelector('.glass-overlay');
-    if (glassOverlay) {
-      glassOverlay.remove();
-    }
-
     const headerImages = document.querySelectorAll('.header-image, .banner-image, .cover-photo');
     headerImages.forEach(img => {
       if (img.tagName === 'IMG') {
@@ -1539,6 +2236,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     liveStatusManager = new LiveStatusManager(usuarioLogado.username);
   }
   
+  // Configurar navegação entre tabs
+  configurarNavegacaoTabs();
+  
   await carregarPerfilCompleto();
   await atualizarMarqueeUltimoUsuario();
   configurarLinks();
@@ -1562,12 +2262,47 @@ window.abrirComentarios = abrirComentarios;
 window.compartilharPost = compartilharPost;
 window.salvarPost = salvarPost;
 window.carregarMaisPosts = carregarMaisPosts;
+window.enviarDepoimento = enviarDepoimento;
+window.excluirDepoimento = excluirDepoimento;
+window.carregarDepoimentos = carregarDepoimentos;
+window.carregarLinks = carregarLinks;
 
 // ===================
 // CSS MELHORADO PARA POSTS E STATUS
 // ===================
 const postCSS = `
 <style>
+/* Full Profile Container with Glassmorphism */
+.full-profile-container {
+  width: 1050px;
+  height: 520px;
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 250px;
+  margin-top: 80px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Profile Header - Fixed Top */
+.profile-header {
+  display: flex;
+  padding: 30px;
+  gap: 20px;
+  background: rgba(20, 20, 20, 0.61);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
 /* Status Indicators */
 .status-indicator {
   display: inline-block;
@@ -1600,7 +2335,320 @@ const postCSS = `
 .status-text.away { color: #ffc107; font-weight: bold; }
 .status-text.offline { color: #dc3545; }
 
-/* Loading States */
+/* Body Background Overlay */
+.body-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Follow Button States */
+
+
+/* Depoimentos Styles - Enhanced with Glassmorphism */
+.depoimento-form {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.depoimento-form h4 {
+  color: #fff;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.depoimento-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: border-color 0.3s ease;
+  background: rgba(40, 40, 40, 0.8);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.depoimento-form textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+.depoimento-form textarea::placeholder {
+  color: #aaa;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.btn-enviar-depoimento {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-enviar-depoimento:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+}
+
+.btn-enviar-depoimento:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.depoimento-card {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.depoimento-card:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.depoimento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.autor-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.autor-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.autor-pic:hover {
+  border-color: #007bff;
+}
+
+.autor-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.autor-nome {
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.autor-nome:hover {
+  color: #007bff;
+}
+
+.depo-time {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.delete-depo-btn {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.delete-depo-btn:hover {
+  background: rgba(220, 53, 69, 0.2);
+  transform: scale(1.1);
+}
+
+.depoimento-content p {
+  margin: 0;
+  color: #fff;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.empty-depoimentos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: #aaa;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  margin: 20px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-depoimentos .empty-icon {
+  font-size: 3em;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.empty-depoimentos h3 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+/* Links Styles - Enhanced with Glassmorphism */
+.link-box {
+  margin-bottom: 12px;
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease;
+  gap: 12px;
+}
+
+.user-link:hover {
+  border-color: #007bff;
+  color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,123,255,0.2);
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.user-link i:first-child {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.user-link span {
+  flex: 1;
+  font-weight: 600;
+}
+
+.link-arrow {
+  font-size: 12px !important;
+  opacity: 0.7;
+}
+
+.empty-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: #aaa;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  margin: 20px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-links .empty-icon {
+  font-size: 3em;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.empty-links h3 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+/* Social Media Link Colors - Enhanced for Dark Theme */
+.user-link:hover .fa-instagram {
+  color: #E4405F;
+}
+
+.user-link:hover .fa-twitter {
+  color: #1DA1F2;
+}
+
+.user-link:hover .fa-tiktok {
+  color: #ff0050;
+}
+
+.user-link:hover .fa-youtube {
+  color: #FF0000;
+}
+
+.user-link:hover .fa-github {
+  color: #fff;
+}
+
+.user-link:hover .fa-linkedin {
+  color: #0077B5;
+}
+
+.user-link:hover .fa-discord {
+  color: #7289DA;
+}
+
+.user-link:hover .fa-spotify {
+  color: #1DB954;
+}
+
+/* Loading States - Dark Theme */
 .loading-container, .error-container, .empty-posts {
   display: flex;
   flex-direction: column;
@@ -1609,12 +2657,16 @@ const postCSS = `
   padding: 60px 20px;
   text-align: center;
   min-height: 200px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
+  border: 4px solid rgba(255, 255, 255, 0.1);
   border-top: 4px solid #007bff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -1628,7 +2680,7 @@ const postCSS = `
 
 .empty-icon, .error-icon {
   font-size: 3.5em;
-  color: #ccc;
+  color: #555;
   margin-bottom: 20px;
 }
 
@@ -1637,13 +2689,13 @@ const postCSS = `
 }
 
 .empty-posts h3, .error-container h3 {
-  color: #333;
+  color: #fff;
   margin-bottom: 10px;
   font-size: 1.3em;
 }
 
 .empty-posts p, .error-container p {
-  color: #666;
+  color: #aaa;
   margin-bottom: 20px;
   line-height: 1.5;
 }
@@ -1657,6 +2709,7 @@ const postCSS = `
   transition: all 0.3s ease;
   cursor: pointer;
   display: inline-block;
+  backdrop-filter: blur(8px);
 }
 
 .btn-primary {
@@ -1667,27 +2720,29 @@ const postCSS = `
 .btn-primary:hover {
   background: linear-gradient(135deg, #0056b3, #004085);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+  box-shadow: 0 8px 32px rgba(0,123,255,0.4);
 }
 
 .btn-secondary {
-  background: #6c757d;
+  background: rgba(108, 117, 125, 0.8);
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-secondary:hover {
-  background: #545b62;
+  background: rgba(84, 91, 98, 0.9);
   transform: translateY(-2px);
 }
 
-/* Post Cards */
+/* Post Cards - Enhanced Dark Glassmorphism */
 .post-card {
-  background: white;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
   border-radius: 16px;
   margin-bottom: 20px;
   padding: 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  border: 1px solid #e9ecef;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   animation: fadeInUp 0.6s ease-out;
   position: relative;
@@ -1695,8 +2750,9 @@ const postCSS = `
 }
 
 .post-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 @keyframes fadeInUp {
@@ -1729,7 +2785,7 @@ const postCSS = `
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e9ecef;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   transition: border-color 0.3s ease;
 }
 
@@ -1745,13 +2801,13 @@ const postCSS = `
 
 .display-name {
   font-weight: 700;
-  color: #333;
+  color: #fff;
   font-size: 1.1em;
   line-height: 1.2;
 }
 
 .username-small {
-  color: #666;
+  color: #aaa;
   font-size: 0.9em;
   font-weight: 500;
 }
@@ -1765,7 +2821,7 @@ const postCSS = `
 .post-options {
   background: none;
   border: none;
-  color: #666;
+  color: #aaa;
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
@@ -1773,8 +2829,8 @@ const postCSS = `
 }
 
 .post-options:hover {
-  background: #f8f9fa;
-  color: #333;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 /* Post Content */
@@ -1785,7 +2841,7 @@ const postCSS = `
 
 .post-content p {
   margin: 0;
-  color: #333;
+  color: #fff;
   font-size: 1.05em;
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -1854,7 +2910,7 @@ const postCSS = `
   justify-content: space-around;
   align-items: center;
   padding-top: 15px;
-  border-top: 1px solid #333;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   max-width: 400px;
   margin: 0 auto;
 }
@@ -1866,7 +2922,7 @@ const postCSS = `
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
+  color: #aaa;
   font-size: 0.95em;
   padding: 8px 16px;
   border-radius: 20px;
@@ -1875,8 +2931,8 @@ const postCSS = `
 }
 
 .action-btn:hover {
-  background: #f8f9fa;
-  color: #333;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .action-btn i {
@@ -1895,7 +2951,7 @@ const postCSS = `
 /* Like Button Specific */
 .like-btn:hover {
   color: #e91e63 !important;
-  background: rgba(233, 30, 99, 0.1) !important;
+  background: rgba(233, 30, 99, 0.2) !important;
 }
 
 .like-btn.liked {
@@ -1909,17 +2965,17 @@ const postCSS = `
 /* Other Action Buttons */
 .comment-btn:hover {
   color: #1da1f2 !important;
-  background: rgba(29, 161, 242, 0.1) !important;
+  background: rgba(29, 161, 242, 0.2) !important;
 }
 
 .share-btn:hover {
   color: #17bf63 !important;
-  background: rgba(23, 191, 99, 0.1) !important;
+  background: rgba(23, 191, 99, 0.2) !important;
 }
 
 .bookmark-btn:hover {
   color: #f39c12 !important;
-  background: rgba(243, 156, 18, 0.1) !important;
+  background: rgba(243, 156, 18, 0.2) !important;
 }
 
 .action-count {
@@ -1937,8 +2993,8 @@ const postCSS = `
 }
 
 .load-more-btn {
-  background-color: #4A90E2;
-  color: #fff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
   border: none;
   padding: 12px 24px;
   border-radius: 25px;
@@ -1951,10 +3007,9 @@ const postCSS = `
 }
 
 .load-more-btn:hover {
-  background-color: #4A90E2;
-  color: #fff;
+  background: linear-gradient(135deg, #0056b3, #004085);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(0,123,255,0.4);
 }
 
 .load-more-btn:disabled {
@@ -1974,7 +3029,7 @@ const postCSS = `
   gap: 8px;
 }
 
-/* Image Modal */
+/* Image Modal - Enhanced for Dark Theme */
 .image-modal {
   position: fixed;
   top: 0;
@@ -1993,13 +3048,14 @@ const postCSS = `
 .modal-overlay {
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   padding: 20px;
   box-sizing: border-box;
+  backdrop-filter: blur(16px);
 }
 
 .modal-content {
@@ -2018,15 +3074,16 @@ const postCSS = `
   max-width: 100%;
   max-height: 100%;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 16px 64px rgba(0,0,0,0.5);
 }
 
 .modal-close {
   position: absolute;
   top: -50px;
   right: 0;
-  background: white;
-  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -2037,104 +3094,127 @@ const postCSS = `
   font-size: 16px;
   color: #333;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
 .modal-close:hover {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 1);
   transform: scale(1.1);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .post-card {
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 12px;
+/* Success Message Animation */
+.success-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
   }
-  
-  .post-actions {
-    max-width: 100%;
-    justify-content: space-between;
-  }
-  
-  .action-btn {
-    padding: 6px 12px;
-    font-size: 0.9em;
-  }
-  
-  .user-pic {
-    width: 42px;
-    height: 42px;
-  }
-  
-  .display-name {
-    font-size: 1em;
-  }
-  
-  .modal-content {
-    max-width: 95%;
-    max-height: 80%;
-  }
-  
-  .modal-close {
-    top: -40px;
-    width: 35px;
-    height: 35px;
-    font-size: 14px;
-  }
-  
-  .loading-container, .error-container, .empty-posts {
-    padding: 40px 15px;
-    min-height: 150px;
-  }
-  
-  .empty-icon, .error-icon {
-    font-size: 2.5em;
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-@media (max-width: 480px) {
-  .post-actions {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .action-btn {
-    flex: 1;
-    min-width: calc(50% - 5px);
-    justify-content: center;
-  }
+
+/* Hover effects for better UX */
+.depoimento-card:hover .autor-pic {
+  transform: scale(1.05);
 }
 
-/* Dark mode support (opcional) */
-@media (prefers-color-scheme: dark) {
-  .post-card {
-    background: #1a1a1a;
-    border-color: #333;
-    color: #fff;
-  }
-  
-  .display-name, .post-content p {
-    color: #fff;
-  }
-  
-  .username-small, .post-time {
-    color: #aaa;
-  }
-  
-  .action-btn {
-    color: #aaa;
-  }
-  
-  .action-btn:hover {
-    background: #333;
-    color: #fff;
-  }
-  
-  .post-options:hover {
-    background: #333;
-  }
+.user-link:hover i:first-child {
+  transform: scale(1.1);
+}
+
+/* Loading spinner for buttons */
+.btn-enviar-depoimento i.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Enhanced visual feedback */
+.depoimento-form textarea:valid {
+  border-color: #28a745;
+}
+
+.depoimento-form textarea:invalid:not(:placeholder-shown) {
+  border-color: #dc3545;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Pulse animation for important buttons */
+.btn-enviar-depoimento:not(:disabled):hover {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+}
+
+/* Custom scrollbar for better aesthetics - Dark Theme */
+.depoimento-form textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.depoimento-form textarea::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.depoimento-form textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.depoimento-form textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Enhanced focus states for accessibility */
+.btn-enviar-depoimento:focus,
+.user-link:focus,
+.delete-depo-btn:focus,
+.modal-close:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Subtle animations for content loading */
+.depoimento-card,
+.user-link {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.depoimento-card:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+.user-link:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+/* Improved typography hierarchy */
+.depoimento-form h4,
+.empty-depoimentos h3,
+.empty-links h3,
+.empty-posts h3 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.depoimento-content p,
+.empty-depoimentos p,
+.empty-links p,
+.empty-posts p {
+  line-height: 1.7;
+  font-weight: 400;
 }
 </style>
 `;
