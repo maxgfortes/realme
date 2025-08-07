@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="./src/styles/tags.css" />
     <link rel="stylesheet" href="./src/styles/mobile.css" />
     <link rel="stylesheet" href="./src/styles/new-popup.css" />
+    <link rel="stylesheet" href="./src/styles/depoimentos.css" />
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -266,7 +267,7 @@
       </div>
     </div>
     <div class="tab deps-tab">
-      <h3 id="tituloMural">Depoimentos desse usuario</h3>
+      <h3 id="deps-title">Depoimentos desse usuario</h3>
              <div class="about-container">
         <div class="about-box">
           <h2>esta opção não esta disponível no momento...</h2>
@@ -274,7 +275,7 @@
       </div>
     </div>
     <div class="tab links-tab">
-      <h3 id="tituloMural">Links  desse usuario</h3>
+      <h3 id="links-title">Links  desse usuario</h3>
       <div class="about-container">
         <div class="link-box">
           <a href="#">Nenhum Link Disponivel</a>
@@ -327,6 +328,8 @@
   <script src="./src/js/search.js" defer></script>
   <script src="/js/mobile-lock.js"></script>
   <script src="./src/js/new-popup.js" defer></script>
+  <script src="./src/js/modal-post.js"></script>
+  <script type="module" src="./src/js/new-pf.js"></script>
 <script type="module">
 // ===================
 // SISTEMA DE LIVE STATUS AUTOMÁTICO INTEGRADO - VERSÃO CORRIGIDA
@@ -1257,6 +1260,21 @@ function atualizarInformacoesBasicas(dados, username) {
     visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
   }
 
+  const gostosTitle= document.getElementById("gostos-title");
+  if (gostosTitle) {
+    gostosTitle.textContent = `Gostos de ${nomeCompleto || dados.username || username}`;
+  }
+
+  const depsTitle= document.getElementById("deps-title");
+  if (depsTitle) {
+    depsTitle.textContent = `Depoimentos de ${nomeCompleto || dados.username || username}`;
+  }
+
+  const linksTitle= document.getElementById("links-title");
+  if (linksTitle) {
+    linksTitle.textContent = `Links de ${nomeCompleto || dados.username || username}`;
+  }
+
   if (dados.pronoun1 || dados.pronoun2) {
     const pronomes = `${dados.pronoun1 || ''}/${dados.pronoun2 || ''}`.replace(/^\/|\/$/g, '');
     const handleElement = document.querySelector('.handle');
@@ -1394,7 +1412,24 @@ function atualizarImagensPerfil(dados) {
     });
   }
 
+  // Nova funcionalidade: aplicar headerphoto como background do body
   if (dados.headerphoto) {
+    const body = document.querySelector('body');
+    if (body) {
+      body.style.backgroundImage = `url(${dados.headerphoto})`;
+      body.style.backgroundSize = 'cover';
+      body.style.backgroundPosition = 'center';
+      body.style.backgroundRepeat = 'no-repeat';
+      body.style.backgroundAttachment = 'fixed';
+      body.style.minHeight = '100vh';
+    }
+
+    // Remover a div glass-overlay quando headerphoto for aplicado
+    const glassOverlay = document.querySelector('.glass-overlay');
+    if (glassOverlay) {
+      glassOverlay.remove();
+    }
+
     const headerImages = document.querySelectorAll('.header-image, .banner-image, .cover-photo');
     headerImages.forEach(img => {
       if (img.tagName === 'IMG') {
