@@ -1436,5 +1436,40 @@ if (document.readyState === 'loading') {
   }
 }
 </script>
+
+<script>
+  // Função para animar o avião
+  function animarAviao() {
+    const aviao = document.createElement('img');
+    aviao.src = './src/posts/post4.png'; // coloque o caminho correto para seu PNG
+    aviao.style.position = 'fixed';
+    aviao.style.top = '40%'; // posição vertical do avião
+    aviao.style.left = '0';
+    aviao.style.width = '60px';
+    aviao.style.height = 'auto';
+    aviao.style.transform = 'translateX(0)';
+    aviao.style.transition = 'transform 3s linear';
+    aviao.style.zIndex = '10000';
+    aviao.style.pointerEvents = 'none';
+
+    document.body.appendChild(aviao);
+
+    // força registro do estilo inicial
+    requestAnimationFrame(() => {
+      aviao.style.transform = `translateX(${window.innerWidth + 100}px)`;
+    });
+
+    // remove após 3 segundos (tempo da animação)
+    setTimeout(() => {
+      aviao.remove();
+    }, 3000);
+  }
+
+  // Simula o envio do post, chama a animação
+  document.getElementById('btnEnviar').addEventListener('click', () => {
+    animarAviao();
+    alert('Post enviado com sucesso!');
+  });
+</script>
 </body>
 </html>

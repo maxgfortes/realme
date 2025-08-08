@@ -91,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Obter número de vezes que o popup foi exibido
   let count = parseInt(localStorage.getItem('popupBoasVindasCount')) || 0;
 
-  if (count < 6) {
+  if (count < 1) {
     // Mostrar o popup
     const popup = criarPopup(
       'Novo por aqui?',

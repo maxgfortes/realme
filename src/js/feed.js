@@ -1,6 +1,6 @@
 // greeting-fix.js - Solução corrigida baseada na estrutura do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs, startAfter } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Config Firebase
 const firebaseConfig = {
@@ -15,39 +15,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Função para determinar saudação baseada no horário
+// ============================
+// SAUDAÇÃO
+// ============================
 function getGreetingByHour() {
   const hour = new Date().getHours();
   const day = new Date().getDay();
-  
-  // Saudações especiais para dias da semana (apenas em horários normais)
+
   if (hour >= 6 && hour <= 22) {
     switch (day) {
-      case 0: return "Feliz domingo,"; // Domingo
-      case 1: return "Segunda produtiva,"; // Segunda
-      case 5: return "Sexta-feira chegou,"; // Sexta
-      case 6: return "Bom sábado,"; // Sábado
+      case 0: return "Feliz domingo,";
+      case 1: return "Segunda produtiva,";
+      case 5: return "Sexta-feira chegou,";
+      case 6: return "Bom sábado,";
     }
   }
-  
-  // Saudações baseadas no horário
+
   if (hour >= 0 && hour < 6) return "Boa madrugada,";
   if (hour >= 6 && hour < 12) return "Bom dia,";
   if (hour >= 12 && hour < 18) return "Boa tarde,";
   return "Boa noite,";
 }
 
-// Função principal para carregar saudação
 async function carregarSaudacao() {
   const greetingElem = document.getElementById('greeting');
   const usernameElem = document.querySelector('.username');
-  
+
   if (!greetingElem || !usernameElem) {
     console.log('Elementos de saudação não encontrados');
     return;
   }
 
-  // Pegar username do parâmetro URL ou da sessão
   const urlParams = new URLSearchParams(window.location.search);
   const username = urlParams.get('user') || sessionStorage.getItem('username');
 
@@ -59,16 +57,13 @@ async function carregarSaudacao() {
     return;
   }
 
-  // Salvar username na sessão
   sessionStorage.setItem('username', username);
 
-  // Atualizar saudação baseada no horário
   const greeting = getGreetingByHour();
   greetingElem.textContent = greeting;
   console.log('Saudação definida:', greeting);
 
   try {
-    // Buscar dados do usuário no Firestore na coleção "users"
     const userDoc = doc(db, "users", username);
     const userSnap = await getDoc(userDoc);
 
@@ -78,49 +73,43 @@ async function carregarSaudacao() {
     if (userSnap.exists()) {
       const data = userSnap.data();
       console.log('Dados do usuário:', data);
-      
-      // Extrair informações do usuário baseado na estrutura mostrada no Firebase
+
       const nomeCompleto = data.nome || data.username || username;
       const sobrenome = data.sobrenome || '';
       const location = data.location || '';
       const idade = data.idade || '';
-      
-      // Construir nome de exibição
+
       let displayName = nomeCompleto;
       if (sobrenome) {
         displayName = `${nomeCompleto} ${sobrenome}`;
       }
-      
-      // Construir texto completo do usuário
+
       let userText = displayName;
-      
-      // Adicionar informações extras se disponíveis
+
       const infoExtras = [];
       if (idade) infoExtras.push(`${idade} anos`);
       if (location) infoExtras.push(location);
-      
+
       if (infoExtras.length > 0) {
         userText += ` • ${infoExtras.join(' • ')}`;
       }
-      
-      // Adicionar informação contextual baseada no horário
+
       const extraInfo = getContextualInfo();
       if (extraInfo) {
         userText += ` ${extraInfo}`;
       }
-      
+
       usernameElem.textContent = userText;
       console.log('Texto do usuário definido:', userText);
-      
+
     } else {
       console.log('Usuário não encontrado no Firestore, usando fallback');
       usernameElem.textContent = username;
     }
 
-    // Adicionar animação suave
     usernameElem.style.opacity = '0';
     usernameElem.style.transform = 'translateY(10px)';
-    
+
     setTimeout(() => {
       usernameElem.style.transition = 'all 0.6s ease-out';
       usernameElem.style.opacity = '1';
@@ -133,43 +122,40 @@ async function carregarSaudacao() {
   }
 }
 
-// Função para obter informação contextual baseada no horário
 function getContextualInfo() {
   const hour = new Date().getHours();
   const isWeekend = [0, 6].includes(new Date().getDay());
-  
+
   if (hour >= 3 && hour < 6) return "• que madrugada!";
   if (hour >= 11 && hour <= 14) return "• hora do almoço!";
   if (hour >= 18 && hour <= 20) return "• como foi o dia?";
   if (isWeekend && hour >= 9 && hour <= 11) return "• bom descanso!";
   if (hour >= 22 || hour < 2) return "• boa noite!";
-  
+
   return "";
 }
 
-// Função para atualizar saudação periodicamente
 function iniciarAtualizacaoAutomatica() {
   setInterval(() => {
     const greetingElem = document.getElementById('greeting');
     if (greetingElem) {
       const newGreeting = getGreetingByHour();
       if (greetingElem.textContent !== newGreeting) {
-        // Animação suave para mudança de saudação
         greetingElem.style.transition = 'opacity 0.4s ease';
         greetingElem.style.opacity = '0.6';
-        
+
         setTimeout(() => {
           greetingElem.textContent = newGreeting;
           greetingElem.style.opacity = '1';
         }, 200);
       }
     }
-  }, 30000); // Verificar a cada 30 segundos
+  }, 30000);
 }
 
-// Adicionar estilos melhorados
 function adicionarEstilos() {
   const style = document.createElement('style');
+  style.id = 'greeting-styles';
   style.textContent = `
     #greeting {
       font-weight: 700;
@@ -207,26 +193,146 @@ function adicionarEstilos() {
       }
     }
     
-    /* Responsividade melhorada */
     @media (max-width: 768px) {
       .username {
         font-size: 0.9em;
         line-height: 1.4;
       }
     }
+
+    /* Estilos do avião de papel */
+    .paper-plane {
+      position: fixed;
+      top: 20px;
+      left: -100px;
+      width: 50px;
+      height: auto;
+      z-index: 10000;
+      animation: paper-plane-fly 1.5s ease forwards;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes paper-plane-fly {
+      0% {
+        transform: translateX(-100px) translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(110vw) translateY(-20px) rotate(20deg);
+        opacity: 0;
+      }
+    }
   `;
-  
-  // Remover estilo anterior se existir
+
   const existingStyle = document.getElementById('greeting-styles');
-  if (existingStyle) {
-    existingStyle.remove();
-  }
-  
-  style.id = 'greeting-styles';
+  if (existingStyle) existingStyle.remove();
+
   document.head.appendChild(style);
 }
 
-// Função para debug - verificar se tudo está funcionando
+// ============================
+// FEED INFINITO
+// ============================
+const POSTS_LIMIT = 10;
+let lastVisiblePost = null;
+let loadingPosts = false;
+let allPostsLoaded = false;
+
+async function carregarPosts(username, append = true) {
+  if (loadingPosts || allPostsLoaded) return;
+  loadingPosts = true;
+
+  const postsContainer = document.querySelector('#posts-container');
+  if (!postsContainer) {
+    console.error('Container de posts não encontrado');
+    loadingPosts = false;
+    return;
+  }
+
+  try {
+    const postsRef = collection(db, 'users', username, 'posts');
+    let postsQuery;
+
+    if (lastVisiblePost) {
+      postsQuery = query(postsRef, orderBy('criadoem', 'desc'), startAfter(lastVisiblePost), limit(POSTS_LIMIT));
+    } else {
+      postsQuery = query(postsRef, orderBy('criadoem', 'desc'), limit(POSTS_LIMIT));
+    }
+
+    const querySnapshot = await getDocs(postsQuery);
+
+    if (querySnapshot.empty) {
+      allPostsLoaded = true;
+      loadingPosts = false;
+      return;
+    }
+
+    lastVisiblePost = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    querySnapshot.forEach(doc => {
+      const postData = doc.data();
+      const postElement = criarElementoPost(postData, doc.id); // Você precisa definir essa função no seu código
+      postsContainer.appendChild(postElement);
+    });
+
+  } catch (error) {
+    console.error('Erro ao carregar posts:', error);
+  }
+
+  loadingPosts = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (loadingPosts || allPostsLoaded) return;
+
+  const scrollTop = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const docHeight = document.documentElement.offsetHeight;
+
+  if (scrollTop + windowHeight > docHeight - 200) {
+    const username = sessionStorage.getItem('username');
+    if (username) {
+      carregarPosts(username, true);
+    }
+  }
+});
+
+function iniciarFeed(username) {
+  lastVisiblePost = null;
+  allPostsLoaded = false;
+  const postsContainer = document.querySelector('#posts-container');
+  if (postsContainer) postsContainer.innerHTML = '';
+  carregarPosts(username, false);
+}
+
+// ============================
+// ANIMAÇÃO DO AVIÃO DE PAPEL (PNG)
+// ============================
+function animarAviaoPapel() {
+  const plane = document.createElement('img');
+  plane.src = './path/to/paper-plane.png'; // Ajuste o caminho para o PNG do aviãozinho
+  plane.alt = 'Avião de papel';
+  plane.className = 'paper-plane';
+
+  document.body.appendChild(plane);
+
+  plane.addEventListener('animationend', () => {
+    plane.remove();
+  });
+}
+
+// Exemplo de função de envio de post integrando animação (adicione no seu fluxo)
+async function enviarPost(username, conteudo) {
+  // Seu código para enviar o post ao Firestore aqui
+
+  // Após sucesso:
+  animarAviaoPapel();
+}
+
+// ============================
+// DEBUG e inicialização
+// ============================
 function debugSistema() {
   console.log('=== DEBUG SISTEMA SAUDAÇÃO ===');
   console.log('URL atual:', window.location.href);
@@ -239,23 +345,21 @@ function debugSistema() {
   console.log('===============================');
 }
 
-// Inicializar sistema quando DOM estiver pronto
 function inicializar() {
   console.log('Inicializando sistema de saudação...');
   
-  // Aguardar um pouco para garantir que o DOM está completamente carregado
   setTimeout(() => {
     debugSistema();
     adicionarEstilos();
     carregarSaudacao();
     iniciarAtualizacaoAutomatica();
+
+    const username = sessionStorage.getItem('username');
+    if (username) iniciarFeed(username);  // Inicia feed ao carregar o sistema
   }, 100);
 }
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', inicializar);
-
-// Fallback caso DOMContentLoaded já tenha disparado
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', inicializar);
 } else {
@@ -265,6 +369,9 @@ if (document.readyState === 'loading') {
 // Exportar funções para uso global
 window.carregarSaudacao = carregarSaudacao;
 window.debugSaudacao = debugSistema;
+window.iniciarFeed = iniciarFeed;
+window.animarAviaoPapel = animarAviaoPapel;
+window.enviarPost = enviarPost;
 
 // Exportar para módulos ES6
-export { carregarSaudacao, debugSistema };
+export { carregarSaudacao, debugSistema, iniciarFeed, animarAviaoPapel, enviarPost };

@@ -1,0 +1,369 @@
+/* ===================
+   CSS PARA DEPOIMENTOS
+   =================== */
+
+.loading-depoimentos, .empty-depoimentos, .error-depoimentos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-depoimentos .empty-icon,
+.error-depoimentos .error-icon {
+  font-size: 3em;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.error-depoimentos .error-icon {
+  color: #dc3545;
+}
+
+.enviar-depoimento-container {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.btn-enviar-depoimento {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-enviar-depoimento:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+}
+
+.depoimento-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.depoimento-card:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.dep-header {
+  margin-bottom: 15px;
+}
+
+.dep-autor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dep-autor-foto {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+}
+
+.dep-autor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dep-autor-nome {
+  font-weight: 700;
+  color: #333;
+  font-size: 1.05em;
+}
+
+.dep-autor-username {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.dep-data {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.dep-conteudo {
+  line-height: 1.6;
+}
+
+.dep-conteudo p {
+  margin: 0;
+  color: #333;
+  font-size: 1em;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Modal de Depoimento */
+.depoimento-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.depoimento-modal .modal-overlay {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.depoimento-modal .modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  cursor: default;
+  animation: slideUp 0.3s ease-out;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3em;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.modal-body {
+  padding: 0 24px 20px;
+}
+
+.modal-body textarea {
+  width: 100%;
+  min-height: 120px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 15px;
+  font-family: inherit;
+  font-size: 1em;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.modal-body textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.char-count {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 0.85em;
+  color: #666;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 24px 24px;
+}
+
+.btn-cancelar, .btn-enviar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-cancelar {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background: #545b62;
+}
+
+.btn-enviar {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+}
+
+.btn-enviar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================
+   CSS PARA SISTEMA DE SEGUIR
+   =================== */
+
+/* ===================
+   CSS PARA NOTIFICAÇÕES
+   =================== */
+
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  border-left: 4px solid #007bff;
+  z-index: 10000;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 350px;
+  min-width: 250px;
+}
+
+.notification-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-toast.success {
+  border-left-color: #28a745;
+}
+
+.notification-toast.error {
+  border-left-color: #dc3545;
+}
+
+.notification-toast.warning {
+  border-left-color: #ffc107;
+}
+
+.notification-toast.info {
+  border-left-color: #007bff;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-content i {
+  font-size: 1.2em;
+}
+
+.notification-toast.success .notification-content i {
+  color: #28a745;
+}
+
+.notification-toast.error .notification-content i {
+  color: #dc3545;
+}
+
+.notification-toast.warning .notification-content i {
+  color: #ffc107;
+}
+
+.notification-toast.info .notification-content i {
+  color: #007bff;
+}
+
+.notification-content span {
+  color: #333;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ===================
+   CSS PARA BACKGROUND DO BODY
+   =================== */
+
+.body-background-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: -1 !important;
+  opacity: 0.1 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease !important;
+}
