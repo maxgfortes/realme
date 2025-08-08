@@ -1,0 +1,35 @@
+#searchResults {
+  position: fixed;
+  top: 60px; /* ajuste baseado na altura da sua navbar */
+  left: 33%;
+  transform: translateX(-50%);
+  width: 320px;
+  background: rgba(20, 20, 20, 0.61);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  z-index: 9999;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  display: none;
+}
+
+#searchResults.visible {
+  display: block;
+}
+
+#searchResults li {
+  padding: 12px 16px;
+  border: 1px solid #2a2a2a;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#searchResults li:hover {
+  background: rgba(20, 20, 20, 0.747);
+  color: #007bff;
+  backdrop-filter: blur(22px);
+}

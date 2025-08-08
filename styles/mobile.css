@@ -1,0 +1,72 @@
+.overlay-message {
+  display: none;
+    overflow: hidden;
+}
+
+body {
+  overflow: hidden;
+}
+
+
+.overlay {
+  display: none;
+}
+
+.text {
+  display: none;
+}
+@media (max-width: 768px) {
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        z-index: 2;
+        height: 100%;
+        width: 100%;     }
+      .text {
+  display: block;
+          color: white;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        display: block;
+}
+
+      .overlay-message {
+        color: white;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        display: block;
+      }
+      /* Esconder sidebar lateral */
+  .sidebar {
+    display: none;
+  }
+  
+  /* Mostrar navbar bottom */
+  .navbar-bottom {
+    display:none;
+  }
+  
+  /* Ajustar container principal */
+  .profile-container {
+    margin-left: 0;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  /* Ajustar navbar superior */
+  nav {
+    display: none;
+  }
+  
+    }

@@ -1,0 +1,104 @@
+/* Container de Notificações */
+.notifications-container {
+  width: 1050px;
+  height: 520px; /* Altura da tela */
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.637);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 250px;
+  margin-top: 80px;
+}
+
+/* Scroll estilizado */
+.notifications-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.notifications-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notifications-container::-webkit-scrollbar-thumb {
+  background: rgba(74, 144, 226, 0.6);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.notifications-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 144, 226, 0.9);
+  background-clip: content-box;
+}
+
+/* Cabeçalho fixo da notificação */
+.notifications-header {
+  position: sticky;
+  top: 0;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #333;
+  padding: 15px 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #4A90E2;
+  text-align: left;
+  padding: 20px;
+  z-index: 10;
+}
+
+.notifications-header p{
+    color: #fff;
+    font-size: 32px;
+}
+
+.notifications-header span{
+    color: #4A90E2;
+}
+
+
+/* Item de notificação */
+.notification-item {
+  background: rgba(30, 30, 30, 0.7);
+  border-radius: 10px;
+  border: 1px solid #333;
+  padding: 15px 20px;
+  margin: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: background 0.8s ease;
+}
+
+.notification-text p{
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.notification-text {
+    display: flex;
+}
+
+.notification-item:hover {
+  background: #4A90E2;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(74, 144, 226, 0.8);
+  border: 1px solid #4A90E2;
+}
+
+/* Texto da notificação */
+.notification-text {
+  font-size: 15px;
+  color: inherit;
+}
+
+/* Data/hora da notificação */
+.notification-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 6px;
+  text-align: right;
+}

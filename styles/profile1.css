@@ -1,0 +1,231 @@
+.full-profile-container {
+  width: 1050px;
+  height: 500px;
+  margin: 40px auto;
+  background: rgba(20, 20, 20, 0.322);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-left: 250px;
+  margin-top: 80px;
+}
+
+/* Topo do perfil */
+.profile-header {
+  display: flex;
+  padding: 30px;
+  gap: 20px;
+    background: rgba(20, 20, 20, 0.322);
+  background-image: url("https://rabart.co.uk/cdn/shop/files/GothicDamaskNoir106585.jpg?v=1699885820");
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #333;
+}
+
+.profile-pic-block {
+  flex-shrink: 0;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.profile-info-block {
+  flex-grow: 1;
+}
+
+.name-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pronouns {
+  font-size: 14px;
+  color: #aaa;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.tag {
+  color: white;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  border: 1px solid #333;
+    background: rgba(20, 20, 20, 0.322);
+  backdrop-filter: blur(8px);
+}
+
+.handle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.profile-stats strong {
+  color: #ec0000;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.action-buttons button {
+  background: transparent;
+  color: #eeeeee;
+  border: 1px solid #464646;
+  padding: 12px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+    font-size: 16px;
+      background: rgba(20, 20, 20, 0.322);
+  backdrop-filter: blur(8px);
+}
+
+.action-buttons button:hover {
+  background-color: #ce0000;
+  color: #fff;
+}
+
+/* Corpo do perfil */
+.profile-body {
+  display: flex;
+}
+
+/* Sidebar (menu à esquerda) */
+.profile-menu {
+  background: #1a1a1a;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #333;
+    background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+}
+
+.menu-item {
+  background: transparent;
+  border-bottom: 1px solid #2b2b2b;
+  border-top: none;
+  border-left: none ;
+  border-right: none;
+  color: #ffffff;
+  padding: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.3s;
+  font-size: 21px;
+}
+
+.menu-item:hover {
+  background-color: #4A90E2;
+  color: #fff;
+}
+
+/* Conteúdo principal */
+.profile-content {
+  flex: 1;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+}
+
+.profile-content h3 {
+    text-align: center;
+    background-color: #00000000;
+    padding: 20px;
+    border-bottom: 1px solid #2c2c2c;
+    margin-bottom: 10px;
+}
+/* Status box */
+.status-box {
+  background: #2c2c2c;
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border-left: 5px solid #4A90E2;
+  margin: 20px;
+}
+
+.status-text {
+  font-size: 15px;
+  color: #eee;
+  margin-top: 4px;
+}
+
+/* Grid dos posts */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.post-card {
+  background: #2b2b2b;
+  border-radius: 10px;
+  height: 120px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+    margin: 10px;
+}
+
+/* Tamanhos customizados */
+.post-card.large {
+  grid-column: span 2;
+  height: 140px;
+}
+
+.post-card.small {
+  height: 80px;
+}
+
+
+
+
+.folha {
+  position: fixed;
+  top: -100px;
+  width: 40px;
+  height: auto;
+  pointer-events: none;
+  opacity: 0.9;
+  z-index: 9999;
+  animation-name: cair;
+  animation-timing-function: linear;
+}
+
+@keyframes cair {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+    background-color: transparent;
+  }
+}
+
+

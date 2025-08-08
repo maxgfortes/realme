@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-image: url("https://img.freepik.com/free-photo/low-angle-shot-cathedral-ceiling-with-windows-black-white_181624-2526.jpg?semt=ais_hybrid&w=740");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  color: #dbdbdb;
+  display: flex;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.glass-overlay {
+
+}
