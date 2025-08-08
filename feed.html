@@ -560,7 +560,6 @@
 
 <script type="module" src="./src/js/main-main.js"></script>
 <script type="module">
-// Importações do Firebase (usar a mesma configuração do PF.html)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -579,7 +578,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Configuração do Firebase (mesma do PF.html)
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -600,16 +599,23 @@ const postInput = document.querySelector('.post-box input[type="text"]');
 const postButton = document.querySelector('.post-button');
 
 // Configurações
-const POSTS_LIMIT = 5;
+const POSTS_LIMIT = 10;
 let lastVisible = null;
 let loading = false;
-let allPosts = []; // Cache dos posts carregados
+let allPosts = [];
+let currentPage = 0;
+let hasMorePosts = true;
+
+// Lista de domínios maliciosos conhecidos
+const DOMINIOS_MALICIOSOS = [
+  'bit.ly', 'tinyurl.com', 'goo.gl', 'ow.ly', 't.co',
+  'phishing-example.com', 'malware-site.net', 'scam-website.org'
+];
 
 // ===================
 // SISTEMA DE POP-UPS
 // ===================
 function criarPopup(titulo, mensagem, tipo = 'info') {
-  // Remover pop-up existente se houver
   const popupExistente = document.querySelector('.custom-popup');
   if (popupExistente) {
     popupExistente.remove();
@@ -645,7 +651,6 @@ function criarPopup(titulo, mensagem, tipo = 'info') {
 
   document.body.appendChild(popup);
 
-  // Auto-remover após 5 segundos para mensagens de sucesso
   if (tipo === 'success') {
     setTimeout(() => {
       if (popup.parentNode) {
@@ -693,37 +698,145 @@ function mostrarPopupConfirmacao(titulo, mensagem, callback) {
   return popup;
 }
 
-// Mostrar pop-up de boas-vindas para novos usuários
-window.addEventListener('DOMContentLoaded', () => {
-  // Obter número de vezes que o popup foi exibido
-  let count = parseInt(localStorage.getItem('popupBoasVindasCount')) || 0;
-
-  if (count < 6) {
-    // Mostrar o popup
-    const popup = criarPopup(
-      'Novo por aqui?',
-      'Veja como usar o RealMe e suas funções',
-      'info'
-    );
-
-    // Substituir botão "OK" pelo botão de redirecionamento
-    const btn = popup.querySelector('.popup-btn-primary');
-    btn.textContent = 'Ver tutorial';
-    btn.onclick = () => {
-      window.location.href = 'how-use.html';
-    };
-
-    // Atualizar o contador no localStorage
-    localStorage.setItem('popupBoasVindasCount', (count + 1).toString());
+// ===================
+// ANIMAÇÃO DO AVIÃO DE PAPEL
+// ===================
+function criarAnimacaoAviaoPapel() {
+  const aviao = document.createElement('div');
+  aviao.className = 'aviao-papel';
+  aviao.innerHTML = '<i class="fas fa-paper-plane"></i>';
+  
+  // Estilo do avião
+  aviao.style.cssText = `
+    position: fixed;
+    left: -50px;
+    top: 50%;
+    z-index: 10000;
+    font-size: 24px;
+    color: #007bff;
+    animation: voarAviao 2s ease-in-out forwards;
+    pointer-events: none;
+  `;
+  
+  // CSS da animação (adicionar ao head se não existir)
+  if (!document.querySelector('#aviao-animation-style')) {
+    const style = document.createElement('style');
+    style.id = 'aviao-animation-style';
+    style.textContent = `
+      @keyframes voarAviao {
+        0% {
+          left: -50px;
+          transform: rotate(0deg) translateY(0px);
+          opacity: 1;
+        }
+        25% {
+          transform: rotate(5deg) translateY(-10px);
+        }
+        50% {
+          transform: rotate(-3deg) translateY(5px);
+        }
+        75% {
+          transform: rotate(2deg) translateY(-5px);
+        }
+        100% {
+          left: calc(100% + 50px);
+          transform: rotate(0deg) translateY(0px);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }
-});
+  
+  document.body.appendChild(aviao);
+  
+  // Remover após animação
+  setTimeout(() => {
+    if (aviao.parentNode) {
+      aviao.remove();
+    }
+  }, 2000);
+}
 
+// ===================
+// DETECTAR E FORMATAR HASHTAGS
+// ===================
+function formatarHashtags(texto) {
+  return texto.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+}
+
+// ===================
+// DETECTAR LINKS MALICIOSOS
+// ===================
+function detectarLinksMaliciosos(texto) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urls = texto.match(urlRegex) || [];
+  
+  for (const url of urls) {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname.toLowerCase();
+      
+      // Verificar domínios maliciosos conhecidos
+      if (DOMINIOS_MALICIOSOS.some(domain => hostname.includes(domain))) {
+        return { malicioso: true, url: url };
+      }
+      
+      // Verificar padrões suspeitos
+      const padroesSuspeitos = [
+        /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/, // IPs diretos
+        /[a-z0-9]{20,}\./, // Domínios com strings longas aleatórias
+        /\.tk$|\.ml$|\.ga$|\.cf$/, // TLDs gratuitos suspeitos
+      ];
+      
+      if (padroesSuspeitos.some(pattern => pattern.test(hostname))) {
+        return { malicioso: true, url: url };
+      }
+    } catch (e) {
+      // URL inválida também é suspeita
+      return { malicioso: true, url: url };
+    }
+  }
+  
+  return { malicioso: false };
+}
+
+// ===================
+// VALIDAR URL DE IMAGEM
+// ===================
+async function validarUrlImagem(url) {
+  if (!url || typeof url !== 'string') return false;
+  
+  try {
+    // Verificar se é uma URL válida
+    new URL(url);
+    
+    // Verificar se termina com extensões de imagem
+    const extensoesImagem = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const urlLower = url.toLowerCase();
+    
+    if (extensoesImagem.some(ext => urlLower.includes(ext))) {
+      return true;
+    }
+    
+    // Tentar fazer um HEAD request para verificar o tipo de conteúdo
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('content-type');
+      return contentType && contentType.startsWith('image/');
+    } catch {
+      // Se falhar o fetch, assumir que pode ser uma imagem se passou na validação básica
+      return true;
+    }
+  } catch {
+    return false;
+  }
+}
 
 // ===================
 // SISTEMA DE LOADING
 // ===================
 function mostrarLoading(texto = 'Carregando...') {
-  // Criar ou atualizar barra de loading
   let loadingBar = document.querySelector('.loading-bar');
   
   if (!loadingBar) {
@@ -740,15 +853,13 @@ function mostrarLoading(texto = 'Carregando...') {
   
   loadingBar.classList.add('active');
   
-  // Animar progresso
   const progress = loadingBar.querySelector('.loading-progress');
   progress.style.width = '0%';
   
-  // Simular progresso realista
   let width = 0;
   const interval = setInterval(() => {
     width += Math.random() * 15;
-    if (width > 90) width = 90; // Parar em 90% até completar
+    if (width > 90) width = 90;
     progress.style.width = width + '%';
   }, 100);
   
@@ -780,7 +891,7 @@ function atualizarTextoLoading(texto) {
 function tocarSomEnvio() {
   try {
     const audio = new Audio('./src/audio/send.mp3');
-    audio.volume = 0.5; // Volume moderado
+    audio.volume = 0.5;
     audio.play().catch(error => {
       console.warn("Não foi possível reproduzir o som de envio:", error);
     });
@@ -806,12 +917,12 @@ function verificarLogin() {
 }
 
 // ===================
-// GERAR ID ÚNICO PARA POSTS
+// GERAR ID ÚNICO
 // ===================
-function gerarIdUnicoPost() {
+function gerarIdUnico(prefixo = 'id') {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000000);
-  return `post-id${timestamp}${random}`;
+  return `${prefixo}-${timestamp}${random}`;
 }
 
 // ===================
@@ -835,7 +946,29 @@ async function buscarDadosUsuario(username) {
 }
 
 // ===================
-// CARREGAR TODOS OS POSTS DE TODOS OS USUÁRIOS
+// SCROLL INFINITO
+// ===================
+function configurarScrollInfinito() {
+  let isScrolling = false;
+  
+  window.addEventListener('scroll', async () => {
+    if (isScrolling || loading || !hasMorePosts) return;
+    
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Carregar mais quando estiver próximo do final (200px antes)
+    if (scrollTop + windowHeight >= documentHeight - 200) {
+      isScrolling = true;
+      await loadPosts();
+      isScrolling = false;
+    }
+  });
+}
+
+// ===================
+// CARREGAR POSTS COM PAGINAÇÃO
 // ===================
 async function carregarTodosOsPosts() {
   const loadingInfo = mostrarLoading('Buscando posts...');
@@ -845,7 +978,6 @@ async function carregarTodosOsPosts() {
     
     atualizarTextoLoading('Carregando usuários...');
     
-    // Primeiro, buscar todos os usuários
     const usersRef = collection(db, 'users');
     const usersSnapshot = await getDocs(usersRef);
     
@@ -853,7 +985,6 @@ async function carregarTodosOsPosts() {
     const totalUsers = usersSnapshot.docs.length;
     let processedUsers = 0;
     
-    // Para cada usuário, buscar seus posts
     for (const userDoc of usersSnapshot.docs) {
       const username = userDoc.id;
       const userData = userDoc.data();
@@ -867,7 +998,6 @@ async function carregarTodosOsPosts() {
         postsSnapshot.docs.forEach(postDoc => {
           const postData = postDoc.data();
           
-          // Adicionar informações do usuário ao post
           todosOsPosts.push({
             id: postDoc.id,
             username: username,
@@ -884,7 +1014,6 @@ async function carregarTodosOsPosts() {
     
     atualizarTextoLoading('Organizando posts...');
     
-    // Ordenar posts por data (mais recentes primeiro)
     todosOsPosts.sort((a, b) => {
       if (!a.postadoem || !b.postadoem) return 0;
       return b.postadoem.toMillis() - a.postadoem.toMillis();
@@ -907,6 +1036,135 @@ async function carregarTodosOsPosts() {
 }
 
 // ===================
+// CARREGAR COMENTÁRIOS
+// ===================
+async function carregarComentarios(username, postId) {
+  try {
+    const comentariosRef = collection(db, 'users', username, 'posts', postId, 'comentarios');
+    const comentariosSnapshot = await getDocs(comentariosRef);
+    
+    const comentarios = [];
+    for (const comentarioDoc of comentariosSnapshot.docs) {
+      const comentarioData = comentarioDoc.data();
+      
+      // Buscar dados do usuário que fez o comentário
+      const userData = await buscarDadosUsuario(comentarioData.username);
+      
+      comentarios.push({
+        id: comentarioDoc.id,
+        userData: userData,
+        ...comentarioData
+      });
+    }
+    
+    // Ordenar por data de criação
+    comentarios.sort((a, b) => {
+      if (!a.criadoem || !b.criadoem) return 0;
+      return a.criadoem.toMillis() - b.criadoem.toMillis();
+    });
+    
+    return comentarios;
+  } catch (error) {
+    console.error("Erro ao carregar comentários:", error);
+    return [];
+  }
+}
+
+// ===================
+// RENDERIZAR COMENTÁRIOS
+// ===================
+async function renderizarComentarios(username, postId, container) {
+  const loadingInfo = mostrarLoading('Carregando comentários...');
+  
+  try {
+    const comentarios = await carregarComentarios(username, postId);
+    
+    container.innerHTML = '';
+    
+    if (comentarios.length === 0) {
+      container.innerHTML = '<p class="no-comments">Nenhum comentário ainda.</p>';
+    } else {
+      comentarios.forEach(comentario => {
+        const nomeCompleto = comentario.userData?.displayname || 
+                            `${comentario.userData?.nome || ''} ${comentario.userData?.sobrenome || ''}`.trim();
+        const nomeParaExibir = nomeCompleto || comentario.userData?.username || comentario.username;
+        const fotoUsuario = obterFotoPerfil(comentario.userData, null);
+        
+        const comentarioEl = document.createElement('div');
+        comentarioEl.className = 'comentario-item';
+        
+        const conteudoFormatado = formatarHashtags(comentario.conteudo);
+        
+        comentarioEl.innerHTML = `
+          <div class="comentario-header">
+            <img src="${fotoUsuario}" alt="Avatar" class="comentario-avatar" 
+                 onerror="this.src='./src/icon/default.jpg'" />
+            <div class="comentario-meta">
+              <strong class="comentario-nome" data-username="${comentario.username}">${nomeParaExibir}</strong>
+              <small class="comentario-usuario">@${comentario.username}</small>
+              <small class="comentario-data">${formatarDataRelativa(comentario.criadoem)}</small>
+            </div>
+          </div>
+          <div class="comentario-conteudo">${conteudoFormatado}</div>
+        `;
+        
+        container.appendChild(comentarioEl);
+      });
+    }
+    
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    
+  } catch (error) {
+    console.error("Erro ao renderizar comentários:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    container.innerHTML = '<p class="error-comments">Erro ao carregar comentários.</p>';
+  }
+}
+
+// ===================
+// ADICIONAR COMENTÁRIO
+// ===================
+async function adicionarComentario(username, postId, conteudo) {
+  const usuarioLogado = verificarLogin();
+  if (!usuarioLogado) return;
+
+  // Verificar links maliciosos
+  const linkCheck = detectarLinksMaliciosos(conteudo);
+  if (linkCheck.malicioso) {
+    criarPopup('Link Bloqueado', `O link "${linkCheck.url}" foi identificado como potencialmente malicioso e não pode ser postado.`, 'warning');
+    return false;
+  }
+
+  const loadingInfo = mostrarLoading('Enviando comentário...');
+
+  try {
+    const comentarioId = gerarIdUnico('comentario');
+    
+    const comentarioData = {
+      username: usuarioLogado.username,
+      conteudo: conteudo,
+      criadoem: serverTimestamp()
+    };
+
+    const comentarioRef = doc(db, 'users', username, 'posts', postId, 'comentarios', comentarioId);
+    await setDoc(comentarioRef, comentarioData);
+
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    
+    return true;
+  } catch (error) {
+    console.error("Erro ao adicionar comentário:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao enviar comentário', 'error');
+    return false;
+  }
+}
+
+// ===================
 // FORMATAR DATA RELATIVA
 // ===================
 function formatarDataRelativa(timestamp) {
@@ -925,7 +1183,6 @@ function formatarDataRelativa(timestamp) {
     const agora = new Date();
     const diferenca = agora.getTime() - date.getTime();
     
-    // Converter para diferentes unidades
     const minutos = Math.floor(diferenca / (1000 * 60));
     const horas = Math.floor(diferenca / (1000 * 60 * 60));
     const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
@@ -936,17 +1193,17 @@ function formatarDataRelativa(timestamp) {
     if (minutos < 1) {
       return 'Agora mesmo';
     } else if (minutos < 60) {
-      return `Postado há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+      return `Há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
     } else if (horas < 24) {
-      return `Postado há ${horas} hora${horas !== 1 ? 's' : ''}`;
+      return `Há ${horas} hora${horas !== 1 ? 's' : ''}`;
     } else if (dias < 7) {
-      return `Postado há ${dias} dia${dias !== 1 ? 's' : ''}`;
+      return `Há ${dias} dia${dias !== 1 ? 's' : ''}`;
     } else if (semanas < 4) {
-      return `Postado há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
+      return `Há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
     } else if (meses < 12) {
-      return `Postado há ${meses} mês${meses !== 1 ? 'es' : ''}`;
+      return `Há ${meses} mês${meses !== 1 ? 'es' : ''}`;
     } else {
-      return `Postado há ${anos} ano${anos !== 1 ? 's' : ''}`;
+      return `Há ${anos} ano${anos !== 1 ? 's' : ''}`;
     }
   } catch (error) {
     console.error("Erro ao formatar data:", error);
@@ -958,42 +1215,55 @@ function formatarDataRelativa(timestamp) {
 // CARREGAR POSTS NO FEED
 // ===================
 async function loadPosts() {
-  if (loading) return;
+  if (loading || !hasMorePosts) return;
   loading = true;
-  loadMoreBtn.disabled = true;
-  loadMoreBtn.textContent = "Carregando...";
+  
+  if (loadMoreBtn) {
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.textContent = "Carregando...";
+  }
 
   try {
-    // Se é a primeira carga, buscar todos os posts
     if (allPosts.length === 0) {
       allPosts = await carregarTodosOsPosts();
     }
 
-    // Calcular quantos posts já foram exibidos
     const postsExibidos = feed.querySelectorAll('.post-card').length;
-    
-    // Pegar os próximos posts
     const proximosPosts = allPosts.slice(postsExibidos, postsExibidos + POSTS_LIMIT);
     
     if (proximosPosts.length === 0) {
-      loadMoreBtn.textContent = "Não há mais posts";
-      loadMoreBtn.disabled = true;
+      hasMorePosts = false;
+      if (loadMoreBtn) {
+        loadMoreBtn.textContent = "Não há mais posts";
+        loadMoreBtn.disabled = true;
+      }
       loading = false;
       return;
     }
 
-    // Exibir os posts
-    proximosPosts.forEach(post => {
+    for (const post of proximosPosts) {
       const postEl = document.createElement('div');
       postEl.className = 'post-card';
 
-      // Determinar nome para exibir
       const nomeCompleto = post.userData.displayname || 
                           `${post.userData.nome || ''} ${post.userData.sobrenome || ''}`.trim();
       const nomeParaExibir = nomeCompleto || post.userData.username || post.username;
       
-      // Determinar foto do usuário (sempre URL)
       const fotoUsuario = obterFotoPerfil(post.userData, null);
+      
+      // Formatar conteúdo com hashtags
+      const conteudoFormatado = formatarHashtags(post.conteudo || post.texto || 'Conteúdo não disponível');
+      
+      // Verificar se há imagem
+      let imagemHtml = '';
+      if (post.imagem && await validarUrlImagem(post.imagem)) {
+        imagemHtml = `
+          <div class="post-image">
+            <img src="${post.imagem}" alt="Imagem do post" loading="lazy" 
+                 onerror="this.parentElement.style.display='none'" />
+          </div>
+        `;
+      }
 
       postEl.innerHTML = `
         <div class="post-header">
@@ -1001,38 +1271,60 @@ async function loadPosts() {
             <img src="${fotoUsuario}" alt="Avatar do usuário" class="avatar" 
                  onerror="this.src='./src/icon/default.jpg'" />
             <div class="user-meta">
-              <strong>${nomeParaExibir}</strong>
+              <strong class="user-name-link" data-username="${post.username}">${nomeParaExibir}</strong>
               <small>@${post.username}</small>
             </div>
           </div>
         </div>
-        <div class="post-text">${post.conteudo || post.texto || 'Conteúdo não disponível'}</div>
+        <div class="post-text">${conteudoFormatado}</div>
+        ${imagemHtml}
         <div class="post-actions">
           <button class="btn-like" data-username="${post.username}" data-id="${post.id}">
             <i class="fas fa-heart"></i> <span>${post.curtidas || 0}</span>
+          </button>
+          <button class="btn-comment" data-username="${post.username}" data-id="${post.id}">
+            <i class="fas fa-comment"></i> Comentar
           </button>
           <button class="btn-report" data-username="${post.username}" data-id="${post.id}">
             <i class="fas fa-flag"></i> Denunciar
           </button>
         </div>
         <div class="post-date">${formatarDataRelativa(post.postadoem)}</div>
+        
+        <!-- Seção de comentários (oculta inicialmente) -->
+        <div class="comments-section" style="display: none;">
+          <div class="comment-form">
+            <input type="text" class="comment-input" placeholder="Escreva um comentário..." 
+                   data-username="${post.username}" data-post-id="${post.id}">
+            <button class="comment-submit" data-username="${post.username}" data-post-id="${post.id}">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+          <div class="comments-list"></div>
+        </div>
       `;
 
       feed.appendChild(postEl);
-    });
+    }
 
-    // Verificar se há mais posts para carregar
     if (postsExibidos + proximosPosts.length >= allPosts.length) {
-      loadMoreBtn.textContent = "Não há mais posts";
-      loadMoreBtn.disabled = true;
+      hasMorePosts = false;
+      if (loadMoreBtn) {
+        loadMoreBtn.textContent = "Não há mais posts";
+        loadMoreBtn.disabled = true;
+      }
     } else {
-      loadMoreBtn.textContent = "Carregar mais";
-      loadMoreBtn.disabled = false;
+      if (loadMoreBtn) {
+        loadMoreBtn.textContent = "Carregar mais";
+        loadMoreBtn.disabled = false;
+      }
     }
 
   } catch (error) {
     console.error("Erro ao carregar posts:", error);
-    loadMoreBtn.textContent = "Erro ao carregar";
+    if (loadMoreBtn) {
+      loadMoreBtn.textContent = "Erro ao carregar";
+    }
     criarPopup('Erro', 'Não foi possível carregar mais posts.', 'error');
   }
 
@@ -1052,18 +1344,36 @@ async function sendPost() {
     return;
   }
 
-  // Tocar som de envio no momento do clique
+  // Verificar links maliciosos
+  const linkCheck = detectarLinksMaliciosos(texto);
+  if (linkCheck.malicioso) {
+    criarPopup('Link Bloqueado', `O link "${linkCheck.url}" foi identificado como potencialmente malicioso e não pode ser postado.`, 'warning');
+    return;
+  }
+
+  // Verificar se há URL de imagem
+  const imagemInput = document.querySelector('.image-url-input');
+  let urlImagem = '';
+  
+  if (imagemInput) {
+    urlImagem = imagemInput.value.trim();
+    if (urlImagem && !(await validarUrlImagem(urlImagem))) {
+      criarPopup('Imagem Inválida', 'A URL da imagem não é válida ou não aponta para uma imagem.', 'warning');
+      return;
+    }
+  }
+
+  // Tocar som e mostrar animação
   tocarSomEnvio();
+  criarAnimacaoAviaoPapel();
 
   const loadingInfo = mostrarLoading('Enviando post...');
 
   try {
-    // Gerar ID único para o post
-    const postId = gerarIdUnicoPost();
+    const postId = gerarIdUnico('post');
     
     atualizarTextoLoading('Buscando dados do usuário...');
     
-    // Buscar dados atuais do usuário
     const userData = await buscarDadosUsuario(usuarioLogado.username);
     if (!userData) {
       clearInterval(loadingInfo.interval);
@@ -1074,7 +1384,6 @@ async function sendPost() {
 
     atualizarTextoLoading('Salvando post...');
 
-    // Criar o post no caminho: users/{username}/posts/{postId}
     const postData = {
       conteudo: texto,
       curtidas: 0,
@@ -1083,6 +1392,11 @@ async function sendPost() {
       username: usuarioLogado.username
     };
 
+    // Adicionar imagem se fornecida
+    if (urlImagem) {
+      postData.imagem = urlImagem;
+    }
+
     const postRef = doc(db, 'users', usuarioLogado.username, 'posts', postId);
     await setDoc(postRef, postData);
 
@@ -1090,12 +1404,15 @@ async function sendPost() {
 
     atualizarTextoLoading('Atualizando feed...');
 
-    // Limpar input
+    // Limpar inputs
     postInput.value = '';
+    if (imagemInput) imagemInput.value = '';
     
     // Recarregar posts
     feed.innerHTML = '';
-    allPosts = []; // Limpar cache
+    allPosts = [];
+    currentPage = 0;
+    hasMorePosts = true;
     await loadPosts();
 
     clearInterval(loadingInfo.interval);
@@ -1119,17 +1436,14 @@ async function curtirPost(username, postId, element) {
   try {
     const postRef = doc(db, 'users', username, 'posts', postId);
     
-    // Incrementar curtidas
     await updateDoc(postRef, {
       curtidas: increment(1)
     });
 
-    // Atualizar visualmente
     const spanCurtidas = element.querySelector('span');
     const curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
     spanCurtidas.textContent = curtidasAtuais + 1;
 
-    // Feedback visual
     element.style.color = '#dc3545';
     setTimeout(() => {
       element.style.color = '';
@@ -1147,25 +1461,9 @@ async function curtirPost(username, postId, element) {
 }
 
 // ===================
-// VALIDAR URL DE IMAGEM
-// ===================
-function validarUrlImagem(url) {
-  if (!url || typeof url !== 'string') return false;
-  
-  // Verificar se é uma URL válida
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// ===================
 // OBTER FOTO DE PERFIL DO USUÁRIO
 // ===================
 function obterFotoPerfil(userData, usuarioLogado) {
-  // Prioridade: userData.userphoto -> userData.foto -> usuarioLogado.userphoto -> default
   const possiveisFotos = [
     userData?.userphoto,
     userData?.foto,
@@ -1174,13 +1472,41 @@ function obterFotoPerfil(userData, usuarioLogado) {
   ];
   
   for (const foto of possiveisFotos) {
-    if (validarUrlImagem(foto)) {
-      return foto;
+    if (foto && typeof foto === 'string') {
+      try {
+        new URL(foto);
+        return foto;
+      } catch {
+        continue;
+      }
     }
   }
   
   return './src/icon/default.jpg';
 }
+
+// ===================
+// MOSTRAR POP-UP DE BOAS-VINDAS
+// ===================
+window.addEventListener('DOMContentLoaded', () => {
+  let count = parseInt(localStorage.getItem('popupBoasVindasCount')) || 0;
+
+  if (count < 6) {
+    const popup = criarPopup(
+      'Novo por aqui?',
+      'Veja como usar o RealMe e suas funções',
+      'info'
+    );
+
+    const btn = popup.querySelector('.popup-btn-primary');
+    btn.textContent = 'Ver tutorial';
+    btn.onclick = () => {
+      window.location.href = 'how-use.html';
+    };
+
+    localStorage.setItem('popupBoasVindasCount', (count + 1).toString());
+  }
+});
 
 // ===================
 // GREETING DINÂMICO COM FOTO DE PERFIL
@@ -1192,7 +1518,6 @@ async function atualizarGreeting() {
   const loadingInfo = mostrarLoading('Carregando dados do usuário...');
 
   try {
-    // Buscar dados atualizados do usuário
     const userData = await buscarDadosUsuario(usuarioLogado.username);
     
     const agora = new Date();
@@ -1207,7 +1532,6 @@ async function atualizarGreeting() {
       saudacao = "Boa noite";
     }
 
-    // Determinar nome para exibir
     const nome = userData?.displayname || 
                  userData?.nome || 
                  usuarioLogado.displayname || 
@@ -1216,22 +1540,18 @@ async function atualizarGreeting() {
     
     const greetingText = `${saudacao}`;
     
-    // Atualizar texto do greeting
     const greetingElement = document.getElementById('greeting');
     if (greetingElement) {
       greetingElement.textContent = greetingText;
     }
 
-    // Atualizar nome do usuário
     const usernameElement = document.getElementById('username');
     if (usernameElement) {
       usernameElement.textContent = nome;
     }
 
-    // Obter URL da foto de perfil
     const urlFotoPerfil = obterFotoPerfil(userData, usuarioLogado);
 
-    // Atualizar foto de perfil no welcome-box (estrutura específica fornecida)
     const fotoPerfilWelcome = document.querySelector('.user-welcome img') || 
                              document.querySelector('.welcome-box img') ||
                              document.querySelector('section.welcome-box .user-welcome img');
@@ -1255,7 +1575,6 @@ async function atualizarGreeting() {
     clearInterval(loadingInfo.interval);
     esconderLoading();
     
-    // Fallback para dados do localStorage
     const nome = usuarioLogado.displayname || usuarioLogado.nome || usuarioLogado.username;
     const greetingElement = document.getElementById('greeting');
     const usernameElement = document.getElementById('username');
@@ -1263,7 +1582,6 @@ async function atualizarGreeting() {
     if (greetingElement) greetingElement.textContent = "Olá";
     if (usernameElement) usernameElement.textContent = nome;
     
-    // Tentar usar foto do localStorage como fallback
     const urlFotoFallback = obterFotoPerfil(null, usuarioLogado);
     const fotoPerfilGreeting = document.querySelector('.greeting-profile-pic');
     if (fotoPerfilGreeting && urlFotoFallback !== './src/icon/default.jpg') {
@@ -1287,7 +1605,6 @@ function configurarLinks() {
   if (linkSidebar) linkSidebar.href = urlPerfil;
   if (linkMobile) linkMobile.href = urlPerfil;
 
-  // Botão de logout
   const btnsSair = document.querySelectorAll('#btnSair');
   btnsSair.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -1302,6 +1619,24 @@ function configurarLinks() {
       );
     });
   });
+}
+
+// ===================
+// CRIAR INPUT DE URL DE IMAGEM
+// ===================
+function criarInputImagem() {
+  const postBox = document.querySelector('.post-box');
+  if (!postBox || document.querySelector('.image-url-input')) return;
+
+  const imageInputContainer = document.createElement('div');
+  imageInputContainer.className = 'image-input-container';
+  
+  imageInputContainer.innerHTML = `
+    <input type="url" class="image-url-input" placeholder="Cole a URL da imagem aqui (opcional)">
+  `;
+
+  const postButton = postBox.querySelector('.post-button');
+  postBox.insertBefore(imageInputContainer, postButton);
 }
 
 // ===================
@@ -1328,11 +1663,14 @@ function configurarEventListeners() {
     loadMoreBtn.addEventListener('click', loadPosts);
   }
 
-  // Event delegation para curtidas e denúncias
+  // Event delegation para ações dos posts
   if (feed) {
-    feed.addEventListener('click', (e) => {
+    feed.addEventListener('click', async (e) => {
       const btnLike = e.target.closest('.btn-like');
       const btnReport = e.target.closest('.btn-report');
+      const btnComment = e.target.closest('.btn-comment');
+      const userNameLink = e.target.closest('.user-name-link');
+      const commentSubmit = e.target.closest('.comment-submit');
 
       if (btnLike) {
         const username = btnLike.dataset.username;
@@ -1342,6 +1680,65 @@ function configurarEventListeners() {
 
       if (btnReport) {
         criarPopup('Em Desenvolvimento', 'Funcionalidade de denúncia será implementada em breve', 'info');
+      }
+
+      if (btnComment) {
+        const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
+        if (commentsSection.style.display === 'none') {
+          commentsSection.style.display = 'block';
+          btnComment.innerHTML = '<i class="fas fa-comment"></i> Ocultar';
+          
+          // Carregar comentários
+          const username = btnComment.dataset.username;
+          const postId = btnComment.dataset.id;
+          const commentsList = commentsSection.querySelector('.comments-list');
+          await renderizarComentarios(username, postId, commentsList);
+        } else {
+          commentsSection.style.display = 'none';
+          btnComment.innerHTML = '<i class="fas fa-comment"></i> Comentar';
+        }
+      }
+
+      if (userNameLink) {
+        const username = userNameLink.dataset.username;
+        window.location.href = `PF.html?username=${encodeURIComponent(username)}`;
+      }
+
+      if (commentSubmit) {
+        const username = commentSubmit.dataset.username;
+        const postId = commentSubmit.dataset.postId;
+        const commentInput = document.querySelector(`input[data-username="${username}"][data-post-id="${postId}"]`);
+        
+        if (commentInput && commentInput.value.trim()) {
+          const sucesso = await adicionarComentario(username, postId, commentInput.value.trim());
+          if (sucesso) {
+            commentInput.value = '';
+            // Recarregar comentários
+            const commentsList = commentSubmit.closest('.comments-section').querySelector('.comments-list');
+            await renderizarComentarios(username, postId, commentsList);
+          }
+        } else {
+          criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
+        }
+      }
+    });
+
+    // Enter nos inputs de comentário
+    feed.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter' && e.target.classList.contains('comment-input')) {
+        e.preventDefault();
+        const username = e.target.dataset.username;
+        const postId = e.target.dataset.postId;
+        
+        if (e.target.value.trim()) {
+          const sucesso = await adicionarComentario(username, postId, e.target.value.trim());
+          if (sucesso) {
+            e.target.value = '';
+            // Recarregar comentários
+            const commentsList = e.target.closest('.comments-section').querySelector('.comments-list');
+            await renderizarComentarios(username, postId, commentsList);
+          }
+        }
       }
     });
   }
@@ -1381,7 +1778,6 @@ function atualizarDatasAutomaticamente() {
     datasPost.forEach(dateElement => {
       const postCard = dateElement.closest('.post-card');
       if (postCard) {
-        // Encontrar o post correspondente no cache
         const postIndex = Array.from(feed.children).indexOf(postCard);
         if (postIndex >= 0 && postIndex < allPosts.length) {
           const post = allPosts[postIndex];
@@ -1391,24 +1787,290 @@ function atualizarDatasAutomaticamente() {
         }
       }
     });
-  }, 60000); // Atualizar a cada minuto
+
+    // Atualizar datas dos comentários também
+    const datasComentario = document.querySelectorAll('.comentario-data');
+    datasComentario.forEach(dateElement => {
+      // Lógica similar para comentários se necessário
+    });
+  }, 60000);
+}
+
+// ===================
+// ADICIONAR ESTILOS CSS NECESSÁRIOS
+// ===================
+function adicionarEstilosCSS() {
+  if (document.querySelector('#enhanced-feed-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'enhanced-feed-styles';
+  style.textContent = `
+    /* Estilos para hashtags */
+    .hashtag {
+      color: #007bff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    /* Estilos para input de imagem */
+    .image-input-container {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .image-url-input {
+      width: 100%;
+      padding: 0px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: transparent;
+    }
+
+    .image-url-input:focus-within {
+      width: 100%;
+      padding: 0px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: transparent;
+      outline: none;
+    }
+
+    .image-help {
+      color: #666;
+      font-size: 12px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* Estilos para imagens nos posts */
+    .post-image {
+      margin: 12px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      max-height: 400px;
+    }
+
+    .post-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Estilos para seção de comentários */
+    .comments-section {
+      margin-top: 15px;
+      padding-top: 15px;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background: #474747; /* Quase preto, mas não absoluto */
+    border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+    box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+    }
+
+    .comment-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 14px;
+      border:none;
+      background-color: transparent;
+    }
+
+    .comment-input:focus-within {
+      border-color: #4A90E2;
+      border: 1px solid #4A90E2;
+      outline: none;
+      border: none; /* garante que não crie outra borda */
+    }
+    
+    .comment-form:focus-within {
+      border-color: #4A90E2;
+      box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+    }
+
+
+    .comment-submit {
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left:5px;
+      padding-right: 5px;
+    }
+
+    .comment-submit:hover {
+      background: #0056b3;
+    }
+
+    /* Estilos para comentários */
+    .comentario-item {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #141414a1;
+      backdrop-filter: blur(8px);
+    }
+
+    .comentario-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .comentario-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .comentario-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .comentario-nome {
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .comentario-nome:hover {
+      color: #4A90E2;
+    }
+
+    .comentario-usuario,
+    .comentario-data {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .comentario-conteudo {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .no-comments,
+    .error-comments {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 15px;
+    }
+
+    /* Estilos para nomes clicáveis */
+    .user-name-link {
+      cursor: pointer;
+    }
+
+    .user-name-link:hover {
+      color: #4A90E2;
+    }
+
+    /* Loading melhorado */
+    .loading-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(0, 123, 255, 0.1);
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-bar.active {
+      opacity: 1;
+    }
+
+    .loading-progress {
+      height: 100%;
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .loading-text {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 10000;
+      displey:none;
+    }
+
+    .post-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 15px;
+  border: none;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+    /* Responsivo para comentários */
+    @media (max-width: 768px) {
+      .comentario-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .comentario-meta {
+        flex-direction: row;
+        gap: 8px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 // ===================
 // INICIALIZAÇÃO
 // ===================
 window.addEventListener("DOMContentLoaded", async () => {
-  console.log("Inicializando feed...");
+  console.log("Inicializando feed aprimorado...");
   
-  // Verificar login
   if (!verificarLogin()) {
     return;
   }
+
+  // Adicionar estilos CSS
+  adicionarEstilosCSS();
+  
+  // Criar input de imagem
+  criarInputImagem();
 
   // Configurar interface
   await atualizarGreeting();
   configurarLinks();
   configurarEventListeners();
+  
+  // Configurar scroll infinito
+  configurarScrollInfinito();
   
   // Carregar conteúdo
   await atualizarMarquee();
@@ -1417,19 +2079,35 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Iniciar atualização automática das datas
   atualizarDatasAutomaticamente();
   
-  console.log("Feed inicializado com sucesso!");
+  console.log("Feed aprimorado inicializado com sucesso!");
 });
 
-// Também inicializar se DOM já carregou
+// Event listeners para nomes de usuários em comentários
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('comentario-nome')) {
+    const username = e.target.dataset.username;
+    if (username) {
+      window.location.href = `PF.html?username=${encodeURIComponent(username)}`;
+    }
+  }
+});
+
+// Inicialização alternativa
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', async () => {
     if (verificarLogin()) {
+      adicionarEstilosCSS();
+      criarInputImagem();
+      configurarScrollInfinito();
       await loadPosts();
       atualizarDatasAutomaticamente();
     }
   });
 } else {
   if (verificarLogin()) {
+    adicionarEstilosCSS();
+    criarInputImagem();
+    configurarScrollInfinito();
     loadPosts().then(() => {
       atualizarDatasAutomaticamente();
     });
