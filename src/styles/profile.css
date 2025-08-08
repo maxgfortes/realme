@@ -213,6 +213,50 @@
   margin-bottom: 10px;
 }
 
+
+
+
+
+
+.amigos-tab {
+  flex: 1;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  overflow-y: auto; /* Scroll só nos posts */
+  padding-right: 10px;
+  padding-left: 10px;
+  height: 100%;
+  
+}
+/* Scroll estilizado */
+.amigos-tab::-webkit-scrollbar {
+  width: 12px;
+}
+
+.amigos-tab::-webkit-scrollbar-track {
+  background: transparent; /* trilho invisível */
+}
+
+.amigos-tab::-webkit-scrollbar-thumb {
+  background: rgba(74, 144, 226, 0.6); /* azul suave */
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.amigos-tab::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 144, 226, 0.9);
+    background-clip: content-box;
+}
+
+.amigos-tab h3 {
+  text-align: center;
+  background-color: #00000000;
+  padding: 20px;
+  border-bottom: 1px solid #2c2c2c;
+  margin-bottom: 10px;
+}
+
 /* Status box */
 .status-box {
   background: #2c2c2c;
@@ -230,12 +274,43 @@
 }
 
 /* Grid dos posts */
-.post-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* duas colunas */
-  gap: 16px; /* espaçamento entre os posts */
+.mural-masonry {
+  column-count: 3; /* quantas colunas no desktop */
+  column-gap: 20px;
   padding: 20px;
 }
+
+.post-card {
+  display: inline-block; /* importante para colunas */
+  width: 100%;
+  margin-bottom: 20px;
+  break-inside: avoid; /* impede quebra do card entre colunas */
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .mural-masonry {
+    column-count: 2;
+  }
+}
+@media (max-width: 600px) {
+  .mural-masonry {
+    column-count: 1;
+  }
+}
+.mural-masonry {
+  column-count: 2; /* sempre 2 colunas */
+  column-gap: 20px;
+  padding: 20px;
+}
+
+.post-card {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+  break-inside: avoid; /* evita quebra entre colunas */
+}
+
 
 .post-card {
   border-radius: 10px;
