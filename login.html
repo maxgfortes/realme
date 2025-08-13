@@ -48,6 +48,10 @@
       width: 100%;
       max-width: 420px;
       margin-top: 80px;
+      background: rgba(20, 20, 20, 0.247);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
     }
 
     h1 {
@@ -94,13 +98,13 @@
 
     button {
       margin-top: 10px;
-      background: linear-gradient(0deg, rgb(192, 192, 192) 0%, rgba(248, 248, 248, 1) 100%);
+      background-color: #4A90E2;
       border: none;
       padding: 14px 20px;
       border-radius: 8px;
       font-size: 18px;
       font-weight: 700;
-      color: #444;
+      color: #ffffff;
       cursor: pointer;
       box-shadow: 0 3px 8px rgba(0,0,0,0.4);
     }
@@ -108,7 +112,6 @@
     button:hover {
       background: #0084ff;
       color: white;
-      box-shadow: 0 3px 12px rgba(0,132,255,0.7);
     }
 
     .link {
@@ -195,9 +198,24 @@ input:-moz-autofill {
   box-shadow: 0 0 0 1000px #474747 inset !important;
   -moz-text-fill-color: #dbdbdb !important;
 }
+
+    .glass-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: none;
+      z-index: -1;
+    }
   </style>
 </head>
 <body>
+    <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+  </nav>
 <div class="container">
   <h1>Login</h1>
   <form>
@@ -212,7 +230,7 @@ input:-moz-autofill {
     <button type="submit">Entrar</button>
   </form>
 </div>
-
+<div class="glass-overlay"></div>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";

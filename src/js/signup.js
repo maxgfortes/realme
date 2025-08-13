@@ -226,6 +226,22 @@ function configurarValidacaoIdade() {
   }
 }
 
+// Função para fazer download do arquivo HTML
+function downloadAccountInfo(formData) {
+  const htmlContent = '<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Minha Conta RealMe</title><style>* {margin: 0;padding: 0;box-sizing: border-box;font-family: Arial, sans-serif;}body {background-image: url("src/bg/bg.jpg");background-size: cover;color: #dbdbdb;display: flex;justify-content: center;align-items: center;height: 100vh;}.container {background: rgba(20, 20, 20, 0.247);backdrop-filter: blur(8px);border: 1px solid #2a2a2a;border-radius: 12px;padding: 30px 40px;width: 100%;max-width: 620px;margin-top: 80px;}h1 {text-align: center;color: #f7f7f7;margin-bottom: 25px;font-weight: 700;}nav {background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);border-bottom: 1px solid #121212;display: flex;align-items: center;padding: 0px 20px;position: fixed;top: 0;left: 0;right: 0;z-index: 1000;}.logo {font-weight: bold;font-size: 30px;color: #707070;padding: 10px;}.user-information {padding: 20px;}.alert{padding: 20px 0px;}b{color:#4A90E2}span{color:#4A90E2}p{font-size: 20px;}a{color:#4A90E2;}</style></head><body><nav><div class="logo_area"><div class="logo">RealMe</div></div></nav><div class="container"><h1>informações de conta <span>RealMe</span>!</h1><p>Olá ' + formData.nome + '! Logo abaixo está salvo seu usuário e senha da sua conta RealMe</p><div class="user-information"><p><b>Nome Completo:</b> ' + formData.nome + ' ' + formData.sobrenome + '</p><p><b>Usuário:</b> ' + formData.usuario + '</p><p><b>E-mail:</b> ' + formData.email + '</p><p><b>Senha:</b> ' + formData.senha + '</p></div><div class="alert">Este usuario e senha foi salva em ' + new Date().toLocaleDateString('pt-BR') + '</div></div></body></html>';
+  
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = formData.usuario + '_conta_realme.html';
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+// Chame essa função após criar a conta com sucesso:
+// downloadAccountInfo({nome: 'João', sobrenome: 'Silva', usuario: 'joao123', email: 'joao@email.com', senha: 'minhasenha'});
+
 // ===================
 // FUNÇÃO PARA VALIDAR EMAIL
 // ===================

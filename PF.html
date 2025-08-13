@@ -54,8 +54,20 @@
     <a href="#"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
-    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="ajuda.html"><i class="fas fa-question-circle"></i> Ajuda</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
   </aside>
 
   <ul id="searchResults"></ul>
@@ -273,5 +285,70 @@
   <script src="./src/js/modal-post.js"></script>
   <script type="module" src="./src/js/all.js"></script>
   <script src="./src/js/masonry-loader.js"></script>
+  <script>
+        const moreMenu = document.getElementById('moreMenu');
+        const moreToggle = document.getElementById('moreToggle');
+        const floatingMenu = document.getElementById('floatingMenu');
+        const overlay = document.getElementById('overlay');
+
+        // Toggle do menu flutuante
+        moreToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (moreMenu.classList.contains('active')) {
+                closeFloatingMenu();
+            } else {
+                openFloatingMenu();
+            }
+        });
+
+        // Função para abrir o menu
+        function openFloatingMenu() {
+            moreMenu.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        // Função para fechar o menu
+        function closeFloatingMenu() {
+            moreMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Fechar menu ao clicar no overlay
+        overlay.addEventListener('click', closeFloatingMenu);
+
+        // Fechar menu ao clicar em qualquer link dentro do menu flutuante
+        floatingMenu.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                closeFloatingMenu();
+            }
+        });
+
+        // Fechar menu ao pressionar ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && moreMenu.classList.contains('active')) {
+                closeFloatingMenu();
+            }
+        });
+
+        // Prevenir que cliques no menu flutuante fechem o menu
+        floatingMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Exemplo de função para abrir overlay de post
+        function openPostOverlay() {
+            alert('Abrir overlay para criar post');
+        }
+
+        // Exemplo de função para sair
+        document.getElementById('btnSair').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Tem certeza que deseja sair?')) {
+                alert('Saindo...');
+            }
+        });
+    </script>
 </body>
 </html>

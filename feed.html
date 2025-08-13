@@ -445,8 +445,20 @@
     <a href="#"><i class="fas fa-bell"></i> Notificações</a>
     <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
-    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="ajuda.html"><i class="fas fa-question-circle"></i> Ajuda</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
   </aside>
   
   <ul id="searchResults"></ul>
@@ -1824,6 +1836,7 @@ function adicionarEstilosCSS() {
       border-radius: 6px;
       font-size: 14px;
       background-color: transparent;
+      color: #fff;
     }
 
     .image-url-input:focus-within {
