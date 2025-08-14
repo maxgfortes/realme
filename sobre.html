@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="./src/styles/base.css" />
-  <link rel="stylesheet" href="./src/styles/config-layout.css" />
+  <link rel="stylesheet" href="./src/styles/sobre.css" />
   <link rel="stylesheet" href="./src/styles/config-components.css" />
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
@@ -84,256 +84,76 @@
 
 
 
-<section class="config-box-layout">
-  <div class="form-container">
-    <h2>Configurações do Perfil</h2>
+<div class="progress-bar" id="progressBar"></div>
+    
+    <!--<div class="floating-particles" id="particles"></div>-->
 
-    <!-- Tabs -->
-    <div class="config-tabs">
-      <button class="tab-button active" data-tab="perfil">
-        <i class="fas fa-user"></i> Perfil
-      </button>
-      <button class="tab-button" data-tab="preferencias">
-        <i class="fas fa-heart"></i> Preferências
-      </button>
-      <button class="tab-button" data-tab="conta">
-        <i class="fas fa-shield-alt"></i> Conta
-      </button>
-    </div>
+    <div class="about-box-layout">
+        <div class="about-container welcome-animation">
+            <h2 class="typing-effect">Sobre o RealMe</h2>
+            
+            <div class="control-buttons">
+                <button class="expand-all-btn" onclick="expandAll()">Expandir Tudo</button>
+                <button class="expand-all-btn" onclick="collapseAll()">Recolher Tudo</button>
+            </div>
 
-    <form>
-      <!-- Tab: Perfil -->
-      <div class="tab-content active" id="perfil">
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-id-card"></i>
-            <h3>Informações Básicas</h3>
-          </div>
-          <div class="form-grid two-column">
-            <div class="form-group">
-              <label>Nome de Usuário:</label>
-              <input type="text" name="username" minlength="3" required maxlength="100">
+            <div class="realme-section" onclick="toggleSection(this)">
+                <div class="section-header">
+                    <h1>Visão Geral</h1>
+                    <div class="toggle-icon"></div>
+                </div>
+                <div class="section-content">
+                    <p>Primeiramente Bem Vindo ao RealMe.</p>
+                    <p>O RealMe nasceu como um grito, um pedido de socorro para todos que cansaram da superficialidade e previsibilidade do mundo atual. O RealMe tem como objetivo a conexão profunda e complexa entre pessoas. O RealMe é uma Rede Social para conexões verdadeiras, quanto mais você se abre, mais vulnerável e real você é mais você irá se encontrar. No RealMe você encontra amigos como você ou como você deseja. Procure em nossa lupa detalhadamente a pessoa que deseja conversar e se aproximar. Procure amigos não só pela aparência mas pela essência. Procure por estilo, personalidade, traumas, sentimentos, medos, sonhos e gostos. Quanto mais você fala sobre você, quanto mais você se abre mais você encontra pessoas como você! Aqui não valorizamos likes nem número de seguidores mas sim até onde você se mostra real e sem máscaras.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Nome visível:</label>
-              <input type="text" name="displayname">
+
+            <div class="realme-section" onclick="toggleSection(this)">
+                <div class="section-header">
+                    <h1>Introdução</h1>
+                    <div class="toggle-icon"></div>
+                </div>
+                <div class="section-content">
+                    <p>Primeiramente Bem Vindo ao RealMe.</p>
+                    <p>O RealMe nasceu como um grito, um pedido de socorro para todos que cansaram da superficialidade e previsibilidade do mundo atual. O RealMe tem como objetivo a conexão profunda e complexa entre pessoas. O RealMe é uma Rede Social para conexões verdadeiras, quanto mais você se abre, mais vulnerável e real você é mais você irá se encontrar. No RealMe você encontra amigos como você ou como você deseja. Procure em nossa lupa detalhadamente a pessoa que deseja conversar e se aproximar. Procure amigos não só pela aparência mas pela essência. Procure por estilo, personalidade, traumas, sentimentos, medos, sonhos e gostos. Quanto mais você fala sobre você, quanto mais você se abre mais você encontra pessoas como você! Aqui não valorizamos likes nem número de seguidores mas sim até onde você se mostra real e sem máscaras.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Pronome 1:</label>
-              <input type="text" maxlength="5" name="pronoun1">
+
+            <div class="realme-section" onclick="toggleSection(this)">
+                <div class="section-header">
+                    <h1>Objetivos</h1>
+                    <div class="toggle-icon"></div>
+                </div>
+                <div class="section-content">
+                    <p>Primeiramente Bem Vindo ao RealMe.</p>
+                    <p>O RealMe nasceu como um grito, um pedido de socorro para todos que cansaram da superficialidade e previsibilidade do mundo atual. O RealMe tem como objetivo a conexão profunda e complexa entre pessoas. O RealMe é uma Rede Social para conexões verdadeiras, quanto mais você se abre, mais vulnerável e real você é mais você irá se encontrar. No RealMe você encontra amigos como você ou como você deseja. Procure em nossa lupa detalhadamente a pessoa que deseja conversar e se aproximar. Procure amigos não só pela aparência mas pela essência. Procure por estilo, personalidade, traumas, sentimentos, medos, sonhos e gostos. Quanto mais você fala sobre você, quanto mais você se abre mais você encontra pessoas como você! Aqui não valorizamos likes nem número de seguidores mas sim até onde você se mostra real e sem máscaras.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Pronome 2:</label>
-              <input type="text" maxlength="5" name="pronoun2">
+
+            <div class="realme-section" onclick="toggleSection(this)">
+                <div class="section-header">
+                    <h1>Dilemas</h1>
+                    <div class="toggle-icon"></div>
+                </div>
+                <div class="section-content">
+                    <p>Primeiramente Bem Vindo ao RealMe.</p>
+                    <p>O RealMe nasceu como um grito, um pedido de socorro para todos que cansaram da superficialidade e previsibilidade do mundo atual. O RealMe tem como objetivo a conexão profunda e complexa entre pessoas. O RealMe é uma Rede Social para conexões verdadeiras, quanto mais você se abre, mais vulnerável e real você é mais você irá se encontrar. No RealMe você encontra amigos como você ou como você deseja. Procure em nossa lupa detalhadamente a pessoa que deseja conversar e se aproximar. Procure amigos não só pela aparência mas pela essência. Procure por estilo, personalidade, traumas, sentimentos, medos, sonhos e gostos. Quanto mais você fala sobre você, quanto mais você se abre mais você encontra pessoas como você! Aqui não valorizamos likes nem número de seguidores mas sim até onde você se mostra real e sem máscaras.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Estado Civil:</label>
-              <select name="estadoCivil">
-                <option value="">Selecione...</option>
-                <option value="solteiro">Solteiro(a)</option>
-                <option value="namorando">Namorando</option>
-                <option value="casado">Casado(a)</option>
-                <option value="divorciado">Divorciado(a)</option>
-                <option value="viuvo">Viúvo(a)</option>
-                <option value="em compromisso">em Compromisso</option>
-              </select>
+
+            <div class="realme-section" onclick="toggleSection(this)">
+                <div class="section-header">
+                    <h1>Finalização</h1>
+                    <div class="toggle-icon"></div>
+                </div>
+                <div class="section-content">
+                    <p>Primeiramente Bem Vindo ao RealMe.</p>
+                    <p>O RealMe nasceu como um grito, um pedido de socorro para todos que cansaram da superficialidade e previsibilidade do mundo atual. O RealMe tem como objetivo a conexão profunda e complexa entre pessoas. O RealMe é uma Rede Social para conexões verdadeiras, quanto mais você se abre, mais vulnerável e real você é mais você irá se encontrar. No RealMe você encontra amigos como você ou como você deseja. Procure em nossa lupa detalhadamente a pessoa que deseja conversar e se aproximar. Procure amigos não só pela aparência mas pela essência. Procure por estilo, personalidade, traumas, sentimentos, medos, sonhos e gostos. Quanto mais você fala sobre você, quanto mais você se abre mais você encontra pessoas como você! Aqui não valorizamos likes nem número de seguidores mas sim até onde você se mostra real e sem máscaras.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Localização:</label>
-              <input type="text" name="localizacao" maxlength="100">
-              <div class="char-counter">0/100</div>
-            </div>
-          </div>
         </div>
 
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-image"></i>
-            <h3>Imagens do Perfil</h3>
-          </div>
-
-          <div class="form-grid two-column">
-            <div class="form-group">
-              <label>Foto de perfil:</label>
-              <input type="text" name="userphoto" maxlength="500" placeholder="URL da foto de perfil">
-            </div>
-            <div class="form-group">
-              <label>Imagem de Banner (background):</label>
-              <input type="text" name="backgroundphoto" maxlength="500" placeholder="URL da imagem de fundo">
-            </div>
-            <div class="form-group">
-              <label>Foto do fundo (somente em PCs):</label>
-              <input type="text" name="headerphoto" maxlength="500" placeholder="URL da foto do cabeçalho">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fa-solid fa-palette"></i>
-            <h3>Cores de Perfil</h3>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Cor Principal</label>
-              <input type="color" class="color-input" id="colorInput" value="#3498db">
-            </div>
-            <div class="form-group">
-              <label>Cor Secundaria</label>
-              <input type="color" class="color-input" id="colorInput" value="#3498db">
-            </div>
-          </div>
-        </div>
-        
-  
-
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-tags"></i>
-            <h3>Descrição</h3>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Tags:</label>
-              <input type="text" name="tags" maxlength="8">
-            </div>
-            <div class="form-group">
-              <label>Visão Geral:</label>
-              <textarea name="visaoGeral" maxlength="600"></textarea>
-              <div class="char-counter">0/600</div>
-            </div>
-            <div class="form-group">
-              <label>Estilo:</label>
-              <textarea name="estilo" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-brain"></i>
-            <h3>Personalidade</h3>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Sonhos e desejos:</label>
-              <textarea name="sonhos" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Medos:</label>
-              <textarea name="medos" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Personalidade:</label>
-              <textarea name="personalidade" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: Preferências -->
-      <div class="tab-content" id="preferencias">
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-heart"></i>
-            <h3>Gostos</h3>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Meus Gostos:</label>
-              <textarea name="gostos" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Músicas:</label>
-              <textarea name="musicas" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Filmes e Séries:</label>
-              <textarea name="filmesSeries" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Livros:</label>
-              <textarea name="livros" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Personagens:</label>
-              <textarea name="personagens" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Comidas e Bebidas:</label>
-              <textarea name="comidas" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Hobbies:</label>
-              <textarea name="hobbies" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Jogos favoritos:</label>
-              <textarea name="jogos" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-            <div class="form-group">
-              <label>Outros gostos:</label>
-              <textarea name="outrosGostos" maxlength="500"></textarea>
-              <div class="char-counter">0/500</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: Conta -->
-      <div class="tab-content" id="conta">
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-envelope"></i>
-            <h3>Informações de Contato</h3>
-          </div>
-          <div class="form-grid two-column">
-            <div class="form-group">
-              <label>Email:</label>
-              <input type="email" name="email" value="seuemail@exemplo.com">
-            </div>
-            <div class="form-group">
-              <label>Número de telefone:</label>
-              <input type="text" name="telefone" value="(00) 00000-0000">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="section-header">
-            <i class="fas fa-lock"></i>
-            <h3>Segurança</h3>
-          </div>
-          <div class="form-grid two-column">
-            <div class="form-group">
-              <label>Senha atual:</label>
-              <input type="password" name="senhaAtual">
-            </div>
-            <div class="form-group">
-              <label>Nova senha:</label>
-              <input type="password" name="novaSenha">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="submit-btn">Salvar Configurações</button>
-    </form>
-  </div>
-  
-  <footer>
+        <footer>
     <div>
       <a href="sobre.html">Sobre</a>
       <a href="contato.html">Contato</a>
@@ -341,7 +161,8 @@
     </div>
     <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
   </footer>
-</section>
+    </div>
+</div>
 <script src="/js/mobile-lock.js"></script>
 <script type="module" src="./src/js/main-main.js"></script>
 <script type="module">
@@ -767,6 +588,130 @@ document.addEventListener('DOMContentLoaded', () => {
             if (confirm('Tem certeza que deseja sair?')) {
                 alert('Saindo...');
             }
+        });
+    </script>
+    <script>
+        // Função para alternar seções
+        function toggleSection(section) {
+            section.classList.toggle('active');
+            
+            // Adiciona efeito de ondulação
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(52, 152, 219, 0.3)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s linear';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            
+            section.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // Função para expandir todas as seções
+        function expandAll() {
+            const sections = document.querySelectorAll('.realme-section');
+            sections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.classList.add('active');
+                }, index * 100);
+            });
+        }
+
+        // Função para recolher todas as seções
+        function collapseAll() {
+            const sections = document.querySelectorAll('.realme-section');
+            sections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.classList.remove('active');
+                }, index * 100);
+            });
+        }
+
+        // Criar partículas flutuantes
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Barra de progresso de scroll
+        function updateProgressBar() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        }
+
+        // Adicionar CSS para animação de ondulação
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Adicionar listener para barra de progresso
+            window.addEventListener('scroll', updateProgressBar);
+            
+            // Efeito de aparição suave dos elementos
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.realme-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // Adicionar efeitos de teclado para acessibilidade
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const focusedElement = document.activeElement;
+                if (focusedElement.classList.contains('section-header') || focusedElement.closest('.realme-section')) {
+                    e.preventDefault();
+                    const section = focusedElement.closest('.realme-section') || focusedElement.parentElement;
+                    toggleSection(section);
+                }
+            }
+        });
+
+        // Tornar seções focusáveis para acessibilidade
+        document.querySelectorAll('.realme-section').forEach(section => {
+            section.setAttribute('tabindex', '0');
+            section.setAttribute('role', 'button');
+            section.setAttribute('aria-expanded', 'false');
+            
+            section.addEventListener('click', function() {
+                const isActive = this.classList.contains('active');
+                this.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            });
         });
     </script>
 </body>

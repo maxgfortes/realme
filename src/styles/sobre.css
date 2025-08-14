@@ -1,0 +1,454 @@
+    .about-box-layout {
+      margin-left: 230px;
+      padding: 20px;
+      height: 520px;
+      width: 1000px;
+    }
+
+    .about-box {
+      display: flex;
+      width: 1050px;
+      min-height: 400px;
+      overflow: hidden;
+      background: rgba(20, 20, 20, 0.582);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+
+    .about-container {
+      max-width: 700px;
+      margin: 100px auto;
+      padding: 20px;
+      background: rgba(20, 20, 20, 0.582);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+      color: #fff;
+    }
+
+    .about-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+
+   footer {
+      border-top: 1px solid ;
+      border-image: linear-gradient(90deg,rgba(0, 0, 0, 0) 0%, rgba(51, 51, 51, 1) 20%, rgba(51, 51, 51, 1) 82%,rgba(0, 0, 0, 0) 100%) 1;
+      text-align: center;
+      margin-top: 20px;
+      padding: 20px;
+    }
+
+    footer a {
+      color: #fff;
+      margin: 0 10px;
+      text-decoration: none;
+      font-size: 14px;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    footer p {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+        .color-input {
+            width: 100%;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 16px;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .color-input:focus {
+            border-color: #3498db;
+        }
+
+.section-content {
+  padding: 5px;
+}
+
+.realmesections h1{
+  color: #a7a7a7;
+}
+
+.realmesections {
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+
+
+ .about-box-layout {
+            margin-left: 230px;
+            padding: 20px;
+            min-height: 100vh;
+            width: calc(100% - 250px);
+            position: relative;
+            margin-top: 70px;
+        }
+
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #3498db, transparent);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        .about-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid #333;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.8),
+                0 0 0 1px rgba(52, 152, 219, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+            animation: containerGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes containerGlow {
+            0% { box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(52, 152, 219, 0.1); }
+            100% { box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 50px rgba(52, 152, 219, 0.2); }
+        }
+
+        .about-container h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 3em;
+            background: linear-gradient(45deg, #3498db, #4A90E2, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .about-container h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, #3498db, #4A90E2, #3498db);
+            border-radius: 2px;
+            animation: underlineGrow 2s ease-out;
+        }
+
+
+        .realme-section {
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(25, 25, 25, 0.6);
+            border: 1px solid rgba(52, 152, 219, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .realme-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4A90E2, transparent);
+            transition: left 0.6s ease;
+        }
+
+        .realme-section:hover::before {
+            left: 100%;
+        }
+
+        .realme-section:hover {
+            transform: translateY(-5px);
+            background: rgba(35, 35, 35, 0.8);
+            border-color: rgba(74, 144, 226, 0.3);
+            box-shadow: 0 15px 40px rgba(74, 144, 226, 0.1);
+        }
+
+        .section-header {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+
+        .section-header:active::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .section-header h1 {
+            color: #4A90E2;
+            font-size: 1.8em;
+            margin: 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .section-header:hover h1 {
+            color: #5ba3f5;
+            text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+        }
+
+        .toggle-icon {
+            width: 30px;
+            height: 30px;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-icon::before,
+        .toggle-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 2px;
+            background: #4A90E2;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .toggle-icon::before {
+            transform: translate(-50%, -50%);
+        }
+
+        .toggle-icon::after {
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+
+        .realme-section.active .toggle-icon {
+            transform: rotate(45deg);
+        }
+
+        .realme-section.active .toggle-icon::before {
+            background: #e74c3c;
+        }
+
+        .realme-section.active .toggle-icon::after {
+            background: #e74c3c;
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            padding: 0 30px;
+        }
+
+        .realme-section.active .section-content {
+            max-height: 500px;
+            opacity: 1;
+            padding: 0 30px 30px 30px;
+        }
+
+        .section-content p {
+            line-height: 1.8;
+            color: #e8e8e8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            transform: translateY(20px);
+            transition: transform 0.6s ease 0.2s;
+        }
+
+        .realme-section.active .section-content p {
+            transform: translateY(0);
+        }
+
+        .section-content p:first-child {
+            color: #3498db;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .welcome-animation {
+            animation: welcomeSlide 1s ease-out;
+        }
+
+        @keyframes welcomeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efeito de digitação para o texto principal */
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            0%, 50% { border-right: 3px solid #3498db; }
+            51%, 100% { border-right: 3px solid transparent; }
+        }
+
+        /* Botão para expandir/recolher todas as seções */
+        .control-buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .expand-all-btn {
+            background: linear-gradient(45deg, #3498db, #4A90E2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .expand-all-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .expand-all-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .expand-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Efeitos de scroll suave */
+        .realme-section {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .realme-section:nth-child(1) { animation-delay: 0.1s; }
+        .realme-section:nth-child(2) { animation-delay: 0.2s; }
+        .realme-section:nth-child(3) { animation-delay: 0.3s; }
+        .realme-section:nth-child(4) { animation-delay: 0.4s; }
+        .realme-section:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Indicador de progresso de leitura */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .about-box-layout {
+                margin-left: 0;
+                width: 100%;
+                padding: 10px;
+            }
+
+            .about-container {
+                padding: 20px 15px;
+            }
+
+            .about-container h2 {
+                font-size: 2em;
+            }
+
+            .section-header h1 {
+                font-size: 1.4em;
+            }
+        }

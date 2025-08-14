@@ -47,6 +47,20 @@
   flex-shrink: 0;
 }
 
+.info-icon{
+  color: #4A90E2;
+  padding-right: 5px;
+}
+
+.info-details {
+  padding: 5px;
+}
+
+.about-contant {
+  margin-bottom: 5px;
+}
+
+
 /* Foto de perfil */
 .profile-pic-block {
   flex-shrink: 0;

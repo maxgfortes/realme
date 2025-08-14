@@ -1642,6 +1642,9 @@ function aplicarBackgroundHeaderPhoto(dados) {
 // ===================
 // FUNÇÕES DE ATUALIZAÇÃO DO PERFIL
 // ===================
+// ===================
+// FUNÇÕES DE ATUALIZAÇÃO DO PERFIL
+// ===================
 function atualizarInformacoesBasicas(dados, username) {
   const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
   const nomeElement = document.getElementById("nomeCompleto");
@@ -1694,11 +1697,62 @@ function atualizarInformacoesBasicas(dados, username) {
   }
 }
 
-function atualizarVisaoGeral(dados) {
+function criarAboutBoxSobre(dados, username) {
+  const nomeUsuario = dados.displayname || dados.username || username;
+  const genero = dados.genero || "Não informado";
+  const localizacao = dados.localizacao || "Não informada";
+  const estadoCivil = dados.estadoCivil || "Não informado";
+
+  return `
+    <div class="about-box sobre-box" id="sobreBox">
+      <div class="sobre-header">
+        <h4>Sobre ${nomeUsuario}</h4>
+      </div>
+      <div class="sobre-content">
+        <div class="info-item">
+          <div class="info-details">
+          <span class="info-icon"><i class="fas fa-user"></i></span>
+            <span class="info-label">Gênero:</span>
+            <span class="info-value">${genero}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-details">
+          <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+            <span class="info-label">Localização:</span>
+            <span class="info-value">${localizacao}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-details">
+          <span class="info-icon"><i class="fas fa-heart"> </i></span>
+            <span class="info-label">Estado Civil:</span>
+            <span class="info-value">${estadoCivil}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function atualizarVisaoGeral(dados, username) {
   const visaoTab = document.querySelector('.visao-tab .about-container');
   if (!visaoTab) return;
 
-  const aboutBoxes = visaoTab.querySelectorAll('.about-box');
+  // Verificar se já existe a about-box "sobre"
+  let sobreBox = document.getElementById('sobreBox');
+  
+  if (!sobreBox) {
+    // Criar a nova about-box no início do container
+    const sobreBoxHTML = criarAboutBoxSobre(dados, username);
+    visaoTab.insertAdjacentHTML('afterbegin', sobreBoxHTML);
+  } else {
+    // Atualizar a about-box existente
+    sobreBox.outerHTML = criarAboutBoxSobre(dados, username);
+  }
+
+  // Atualizar as outras about-boxes (ajustar índices por causa da nova box)
+  const aboutBoxes = visaoTab.querySelectorAll('.about-box:not(.sobre-box)');
   
   if (aboutBoxes[0]) {
     const visaoGeral = dados.visaoGeral || "Informação não disponível";
@@ -2824,7 +2878,7 @@ const postCSS = `
 
 /* Enhanced visual feedback */
 .depoimento-form textarea:valid {
-  border-color: #28a745;
+  border-color: #4A90E2;
 }
 
 .depoimento-form textarea:invalid:not(:placeholder-shown) {
