@@ -11,6 +11,7 @@
       right: 0;
       z-index: 1000;
       box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      z-index: 9999999 !important;
     }
 
     .logo {
@@ -477,3 +478,4 @@ display: none;
             opacity: 1;
             visibility: visible;
         }
+
