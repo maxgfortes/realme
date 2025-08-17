@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de DM - Dupla Atualização</title>
+</head>
+<body>
+  <h2>Chat DM Teste</h2>
+
+  <!-- Trocar usuário logado -->
+  <label>Usuário logado:</label>
+  <input id="userInput" type="text" value="maxgfortes">
+  <label>Outro usuário:</label>
+  <input id="otherUserInput" type="text" value="afliccoess">
+  <button id="changeUserBtn">Trocar</button>
+
+  <hr>
+
+  <div id="chatArea" style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+  <input id="msgInput" type="text" placeholder="Escreva uma mensagem..." style="width: 80%;">
+  <button id="sendBtn">Enviar</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      orderBy,
+      getDocs,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Config Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+      authDomain: "ifriendmatch.firebaseapp.com",
+      projectId: "ifriendmatch",
+      storageBucket: "ifriendmatch.appspot.com",
+      messagingSenderId: "306331636603",
+      appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+      measurementId: "G-D96BEW6RC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let loggedUser = "maxgfortes";
+    let outroUser = "afliccoess";
+    let chatId = gerarChatId(loggedUser, outroUser);
+
+    const chatArea = document.getElementById("chatArea");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const userInput = document.getElementById("userInput");
+    const otherUserInput = document.getElementById("otherUserInput");
+    const changeUserBtn = document.getElementById("changeUserBtn");
+
+    function gerarChatId(user1, user2) {
+      return `chat-${[user1, user2].sort().join("-")}`;
+    }
+
+    // Enviar mensagem para ambos os usuários
+    async function enviarMensagemParaTodos(conteudo) {
+      if (!conteudo) return;
+
+      const msgId = `msg-${Date.now()}-${Math.random().toString(36).substr(2,8)}`;
+      const caminhos = [
+        { usuario: loggedUser, tipo: `mensagem-${loggedUser}` },
+        { usuario: outroUser, tipo: `mensagem-${loggedUser}` } // duplica no outro usuário
+      ];
+
+      for (const {usuario, tipo} of caminhos) {
+        const mensagensRef = collection(db, "users", usuario, "conversas", chatId, tipo);
+        await addDoc(mensagensRef, {
+          conteudo: conteudo,
+          username: loggedUser,
+          enviadoEm: serverTimestamp(),
+          msgId: msgId
+        });
+      }
+
+      msgInput.value = "";
+      listarMensagens();
+    }
+
+    // Listar todas mensagens do chat
+    async function listarMensagens() {
+      chatArea.innerHTML = "";
+      const tipos = [`mensagem-${loggedUser}`, `mensagem-${outroUser}`];
+      let todasMensagens = [];
+
+      for (const tipo of tipos) {
+        const mensagensRef = collection(db, "users", loggedUser, "conversas", chatId, tipo);
+        const q = query(mensagensRef, orderBy("enviadoEm", "asc"));
+        const snapshot = await getDocs(q);
+
+        snapshot.docs.forEach(doc => {
+          todasMensagens.push(doc.data());
+        });
+      }
+
+      todasMensagens.sort((a,b) => a.enviadoEm?.toMillis() - b.enviadoEm?.toMillis());
+
+      todasMensagens.forEach(m => {
+        const p = document.createElement("p");
+        p.textContent = `${m.username}: ${m.conteudo}`;
+        chatArea.appendChild(p);
+      });
+
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // Eventos
+    sendBtn.addEventListener("click", () => enviarMensagemParaTodos(msgInput.value.trim()));
+    msgInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") enviarMensagemParaTodos(msgInput.value.trim());
+    });
+
+    changeUserBtn.addEventListener("click", () => {
+      loggedUser = userInput.value.trim() || "maxgfortes";
+      outroUser = otherUserInput.value.trim() || "afliccoess";
+      chatId = gerarChatId(loggedUser, outroUser);
+      listarMensagens();
+    });
+
+    setInterval(listarMensagens, 2000);
+    listarMensagens();
+  </script>
+</body>
+</html>
