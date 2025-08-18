@@ -20,10 +20,13 @@
     <link rel="stylesheet" href="./src/styles/mobile.css" />
     <link rel="stylesheet" href="./src/styles/new-popup.css" />
     <link rel="stylesheet" href="./src/styles/depoimentos.css" />
+    <link rel="stylesheet" href="./src/styles/loading.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
  <div class="glass-overlay"></div>
+     <!-- Barra de progresso para recarregamentos -->
+    <div class="progress-bar" id="progressBar"></div>
 
   <!-- Navbar -->
   <nav>
@@ -51,7 +54,7 @@
   <aside class="sidebar">
     <a href="feed.html"><i class="fas fa-home"></i> Início</a>
     <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
     <a href="#"><i class="fas fa-bell"></i> Notificações</a>
     <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
@@ -418,5 +421,6 @@ if (document.readyState === 'loading') {
   }
 }
 </script>
+<script src="./src/js/loading.js"></script>
 </body>
 </html>
