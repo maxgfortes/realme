@@ -1,0 +1,11 @@
+        /* Barra de loading */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background-color: #0088ff;
+            width: 0%;
+            z-index: 9999999999;
+            transition: width 0.3s ease;
+        }

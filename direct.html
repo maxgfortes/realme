@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+    <link rel="stylesheet" href="./src/styles/mensagens.css" />
+    <link rel="stylesheet" href="./src/styles/tags.css" />
+    <link rel="stylesheet" href="./src/styles/mobile.css" />
+    <link rel="stylesheet" href="./src/styles/new-popup.css" />
+    <link rel="stylesheet" href="./src/styles/depoimentos.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+ <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+<div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
+  </div>
+</div>
+
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="#"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+  </aside>
+
+
+
+  <ul id="searchResults"></ul>
+
+
+<div class="full-dm-container">
+  <div class="users-dms">
+    <h1>Mensagens</h1>
+    <input class="buscar-chats" type="text" placeholder="Buscar conversas..." autocomplete="off" />
+    <div class="recents-users">
+      <!-- Os botões serão carregados dinamicamente pelo JavaScript -->
+      <!-- Removendo os botões estáticos para que sejam substituídos pelos dados reais -->
+    </div>
+  </div>
+  <div class="chat-container">
+    <div class="user-selected">
+      <img src="./src/icon/default.jpg" alt="Foto do usuário">
+      <p><span></span></p>
+    </div>
+    <div class="chat-area">
+      <!-- As mensagens serão carregadas dinamicamente aqui -->
+      <div class="no-chat-selected" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: #999;">
+        <div style="font-size: 3em; margin-bottom: 20px; opacity: 0.5;"><i class="fas fa-comment-dots"></i></div>
+        <h3 style="color: #ccc;">Nenhuma conversa selecionada</h3>
+        <p>Escolha uma conversa da lista ao lado para começar.</p>
+      </div>
+    </div>
+    <div class="send-area">
+      <input class="msg-area" type="text" placeholder="Digite sua mensagem..." autocomplete="off" />
+      <button>Enviar!</button>
+    </div>
+  </div>
+</div>
+
+
+
+  <script src="./src/js/profile.js" defer></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/all-mensagens.js" type="module"></script>
+  <script src="./src/js/new-popup.js" defer></script>
+  <script src="./src/js/modal-post.js"></script>
+  <script type="module" src="./src/js/new-pf.js"></script>
+  <script src="./src/js/more.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  getDocs,
+  serverTimestamp,
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔹 Buscar usuário logado do localStorage
+function obterUsuarioLogado() {
+  try {
+    const usuarioSalvo = localStorage.getItem("usuarioLogado");
+    if (!usuarioSalvo) {
+      alert("Usuário não está logado. Redirecionando para o login...");
+      window.location.href = "login.html";
+      return null;
+    }
+    
+    const userData = JSON.parse(usuarioSalvo);
+    console.log("Usuário logado:", userData.username);
+    return userData.username;
+  } catch (error) {
+    console.error("Erro ao obter usuário logado:", error);
+    alert("Erro ao verificar login. Redirecionando...");
+    window.location.href = "login.html";
+    return null;
+  }
+}
+
+// Usuário logado
+const loggedUser = obterUsuarioLogado();
+if (!loggedUser) {
+  throw new Error("Usuário não logado");
+}
+
+// Seletores
+let chatArea = document.querySelector(".chat-area");
+let msgInput = document.querySelector(".msg-area");
+let sendBtn = document.querySelector(".send-area button");
+let recentsUsersDiv = document.querySelector(".recents-users");
+let userSelectedDiv = document.querySelector(".user-selected p");
+let userSelectedImg = document.querySelector(".user-selected img");
+let selectedUser = null;
+let unsubscribeMessages = null;
+
+// 🔹 Função para gerar ID único e consistente do chat
+function gerarChatId(user1, user2) {
+  return `chat-${[user1, user2].sort().join("-")}`;
+}
+
+// 🔹 Carregar conversas do usuário logado
+async function carregarConversas() {
+  recentsUsersDiv.innerHTML = "";
+  const friendsUnicos = new Set();
+
+  try {
+    // Buscar na coleção global de chats onde o usuário participa
+    const chatsRef = collection(db, "chats");
+    const chatsSnap = await getDocs(chatsRef);
+
+    for (const chatDoc of chatsSnap.docs) {
+      const chatData = chatDoc.data();
+      const chatId = chatDoc.id;
+      
+      // Verificar se o usuário logado participa deste chat
+      if (chatData.participants && chatData.participants.includes(loggedUser)) {
+        // Encontrar o outro participante
+        const friend = chatData.participants.find(p => p !== loggedUser);
+        
+        if (friend && !friendsUnicos.has(friend)) {
+          friendsUnicos.add(friend);
+
+          let friendPhotoUrl = "./src/icon/default.jpg";
+          try {
+            const friendDoc = await getDoc(doc(db, "users", friend));
+            if (friendDoc.exists() && friendDoc.data().userphoto) {
+              friendPhotoUrl = friendDoc.data().userphoto;
+            }
+          } catch (error) {
+            console.error(`Erro ao buscar foto de ${friend}:`, error);
+          }
+
+          // Criar botão para a conversa
+          const btn = document.createElement("button");
+          btn.innerHTML = `<img src="${friendPhotoUrl}" alt="Foto do usuário"><span>${friend}</span>`;
+          btn.addEventListener("click", () => selecionarUsuario(friend));
+          recentsUsersDiv.appendChild(btn);
+        }
+      }
+    }
+
+    console.log(`Carregadas ${friendsUnicos.size} conversas para ${loggedUser}`);
+    
+  } catch (error) {
+    console.error("Erro ao carregar conversas:", error);
+  }
+}
+
+// 🔹 Selecionar usuário
+async function selecionarUsuario(user) {
+  selectedUser = user;
+  userSelectedDiv.innerHTML = `${user} • online`;
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", user));
+    if (userDoc.exists() && userDoc.data().userphoto) {
+      userSelectedImg.src = userDoc.data().userphoto;
+    } else {
+      userSelectedImg.src = "./src/icon/default.jpg";
+    }
+
+    carregarMensagensTempoReal();
+  } catch (error) {
+    console.error("Erro ao selecionar usuário:", error);
+    userSelectedImg.src = "./src/icon/default.jpg";
+  }
+}
+
+// 🔹 Criar ou obter chat
+async function criarOuObterChat(user1, user2) {
+  const chatId = gerarChatId(user1, user2);
+  const chatRef = doc(db, "chats", chatId);
+  
+  try {
+    const chatDoc = await getDoc(chatRef);
+    
+    if (!chatDoc.exists()) {
+      // Criar novo chat se não existir
+      await setDoc(chatRef, {
+        participants: [user1, user2].sort(),
+        createdAt: serverTimestamp(),
+        lastMessage: null,
+        lastMessageTime: null,
+      });
+      console.log(`Chat ${chatId} criado`);
+    }
+    
+    return chatId;
+  } catch (error) {
+    console.error("Erro ao criar/obter chat:", error);
+    throw error;
+  }
+}
+
+// 🔹 Enviar mensagem
+async function enviarMensagem(conteudo) {
+  if (!conteudo || !selectedUser) return;
+
+  try {
+    const chatId = await criarOuObterChat(loggedUser, selectedUser);
+    const msgId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`;
+
+    // Adicionar mensagem à subcoleção do chat
+    const mensagensRef = collection(db, "chats", chatId, "messages");
+    await addDoc(mensagensRef, {
+      content: conteudo,
+      sender: loggedUser,
+      timestamp: serverTimestamp(),
+      msgId,
+    });
+
+    // Atualizar informações do último mensagem no chat
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, {
+      lastMessage: conteudo,
+      lastMessageTime: serverTimestamp(),
+    });
+
+    msgInput.value = "";
+    console.log("Mensagem enviada com sucesso");
+    
+  } catch (error) {
+    console.error("Erro ao enviar mensagem:", error);
+    alert("Erro ao enviar mensagem. Tente novamente.");
+  }
+}
+
+// 🔹 Carregar mensagens em tempo real
+function carregarMensagensTempoReal() {
+  if (unsubscribeMessages) unsubscribeMessages();
+
+  const chatId = gerarChatId(loggedUser, selectedUser);
+
+  try {
+    const mensagensRef = collection(db, "chats", chatId, "messages");
+    const mensagensQuery = query(mensagensRef, orderBy("timestamp", "asc"));
+
+    unsubscribeMessages = onSnapshot(
+      mensagensQuery,
+      (snapshot) => {
+        const mensagens = [];
+        snapshot.forEach((doc) => {
+          mensagens.push(doc.data());
+        });
+
+        renderizarMensagens(mensagens);
+        console.log(`Carregadas ${mensagens.length} mensagens`);
+      },
+      (error) => {
+        console.error("Erro no listener de mensagens:", error);
+      }
+    );
+  } catch (error) {
+    console.error("Erro ao configurar listener de mensagens:", error);
+  }
+}
+
+// 🔹 Função para formatar o tempo de envio
+function formatarTempo(timestamp) {
+  if (!timestamp) return "";
+  const agora = Date.now();
+  const tempoEmMilissegundos = agora - timestamp.toMillis();
+  const minutos = Math.floor(tempoEmMilissegundos / 60000);
+  const horas = Math.floor(minutos / 60);
+
+  if (minutos < 1) {
+    return "agora";
+  } else if (minutos < 60) {
+    return `há ${minutos} min`;
+  } else if (horas < 24) {
+    return `há ${horas}h`;
+  } else {
+    const data = new Date(timestamp.toMillis());
+    return data.toLocaleDateString('pt-BR');
+  }
+}
+
+// 🔹 Renderizar mensagens no chat
+function renderizarMensagens(mensagens) {
+  chatArea.innerHTML = "";
+  
+  mensagens.forEach((m) => {
+    const div = document.createElement("div");
+    div.classList.add("message");
+    div.classList.add(m.sender === loggedUser ? "sent" : "received");
+    
+    const tempoFormatado = formatarTempo(m.timestamp);
+    div.innerHTML = `<p>${m.content}</p><span class="time">${tempoFormatado}</span>`;
+    
+    chatArea.appendChild(div);
+  });
+  
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+// 🔹 Função para logout (opcional)
+function logout() {
+  if (unsubscribeMessages) unsubscribeMessages();
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "login.html";
+}
+
+// Eventos
+sendBtn?.addEventListener("click", () => enviarMensagem(msgInput.value.trim()));
+msgInput?.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") enviarMensagem(msgInput.value.trim());
+});
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  if (!chatArea || !msgInput || !sendBtn || !recentsUsersDiv || !userSelectedDiv || !userSelectedImg) {
+    console.error("Alguns elementos DOM não foram encontrados. Verifique os seletores.");
+    return;
+  }
+  
+  carregarConversas();
+  console.log(`Sistema de chat inicializado para o usuário: ${loggedUser}`);
+});
+
+// Se os elementos já existem, inicializar imediatamente
+if (document.readyState === 'loading') {
+  // DOM ainda está carregando, aguardar
+} else {
+  // DOM já está pronto
+  if (chatArea && msgInput && sendBtn && recentsUsersDiv && userSelectedDiv && userSelectedImg) {
+    carregarConversas();
+    console.log(`Sistema de chat inicializado para o usuário: ${loggedUser}`);
+  }
+}
+</script>
+</body>
+</html>

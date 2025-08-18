@@ -179,6 +179,7 @@
   flex: 1; /* se estiver usando flexbox */
   max-height: 400px; /* altura máxima visível */
   overflow-y: auto; /* ativa o scroll vertical */
+  overflow-x: hidden; /* ativa o scroll vertical */
 }
 
 .message {
@@ -1118,3 +1119,331 @@
   backdrop-filter: blur(22px);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos adicionais para o sistema de mensagens */
+
+/* Botão de chat ativo */
+.recents-users button.active {
+    background-color: #4A90E2 !important;
+    color: #fff !important;
+}
+
+.recents-users button.active:hover {
+    background-color: #007bff !important;
+}
+
+/* Mensagens do lado direito (enviadas) */
+.message.sent {
+    align-self: flex-end;
+    background-color: #4A90E2;
+    color: #fff;
+    border-bottom-right-radius: 5px;
+    margin-left: auto;
+    max-width: 70%;
+}
+
+/* Mensagens do lado esquerdo (recebidas) */
+.message.received {
+    align-self: flex-start;
+    background-color: #2c2c2c;
+    color: #cacaca;
+    border-bottom-left-radius: 5px;
+    margin-right: auto;
+    max-width: 70%;
+}
+
+/* Container de mensagens deve ser flex column */
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Estilo para quando não há chat selecionado */
+.no-chat-selected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #999;
+}
+
+.no-chat-selected h3 {
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+/* Mensagem de boas-vindas */
+.welcome-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #999;
+}
+
+.welcome-message h3 {
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+/* Contador de caracteres para o input */
+.msg-area {
+    color: #dbdbdb;
+    outline: none;
+    border: none;
+}
+
+.msg-area::placeholder {
+    color: #999;
+}
+
+/* Estado de carregamento */
+.loading-chats {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+
+.loading-chats::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4A90E2;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Melhorias no layout das mensagens */
+.message {
+    position: relative;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+}
+
+.message p {
+    margin: 0;
+    padding: 0;
+}
+
+.message .time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 5px;
+    display: block;
+}
+
+.message.sent .time {
+    text-align: right;
+}
+
+.message.received .time {
+    text-align: left;
+}
+
+/* Scroll suave para área de chat */
+.chat-area {
+    scroll-behavior: smooth;
+}
+
+/* Indicador de digitação (para futuras implementações) */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #2c2c2c;
+    border-radius: 20px;
+    margin: 10px 0;
+    max-width: 80px;
+    align-self: flex-start;
+}
+
+.typing-indicator span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #999;
+    margin: 0 2px;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { 
+        transform: scale(0);
+        opacity: 0.5;
+    } 
+    40% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .full-dm-container {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .full-dm-container {
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+        height: 70vh;
+    }
+    
+    .users-dms {
+        width: 280px;
+    }
+}
+
+@media (max-width: 600px) {
+    .full-dm-container {
+        flex-direction: column;
+        width: 95%;
+        height: 80vh;
+    }
+    
+    .users-dms {
+        width: 100%;
+        height: 200px;
+        border-right: none;
+        border-bottom: 1px solid #333;
+    }
+    
+    .chat-area {
+        height: 200px;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+}
+
+/* Estados de erro */
+.error-message {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px;
+    text-align: center;
+}
+
+.success-message {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px;
+    text-align: center;
+}
+
+/* Animações suaves */
+.message {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botão de enviar desabilitado */
+.send-area button:disabled {
+    background-color: #666;
+    border-color: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Indicador de mensagem não lida (para futuras implementações) */
+.chat-button.unread::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-color: #4A90E2;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.chat-button {
+    position: relative;
+}
+
+/* Melhor visualização do status online/offline removido */
+.user-selected span {
+    display: none; /* Remove o indicador de online/offline */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.foto-perfil-lista {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.info-conversa {
+  display: flex;
+  flex-direction: column;
+}
+
+.time {
+  font-size: 14px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 0px;
+}

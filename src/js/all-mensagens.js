@@ -1595,49 +1595,6 @@ async function carregarPerfilCompleto() {
   }
 }
 
-// ===================
-// FUNÇÃO PARA APLICAR BACKGROUND DO HEADERPHOTO
-// ===================
-function aplicarBackgroundHeaderPhoto(dados) {
-  if (dados.headerphoto) {
-    const body = document.body;
-    
-    // Aplicar background do headerphoto no body
-    body.style.backgroundImage = `url(${dados.headerphoto})`;
-    body.style.backgroundSize = 'cover';
-    body.style.backgroundPosition = 'center';
-    body.style.backgroundAttachment = 'fixed';
-    body.style.backgroundRepeat = 'no-repeat';
-    
-    // Adicionar overlay para melhor legibilidade
-    if (!document.querySelector('.body-overlay')) {
-      const overlay = document.createElement('div');
-      overlay.className = 'body-overlay';
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: -1;
-        pointer-events: none;
-      `;
-      body.appendChild(overlay);
-    }
-    
-    // Remover blur apenas se tiver foto
-    const glassOverlay = document.querySelector('.glass-overlay');
-    if (glassOverlay) {
-      glassOverlay.remove();
-    }
-    
-    console.log('✅ Background do headerphoto aplicado ao body e blur removido');
-  } else {
-    // Se não tiver foto, manter o blur/glass overlay
-    console.log('❌ Nenhuma foto de header encontrada - mantendo blur');
-  }
-}
 
 // ===================
 // FUNÇÕES DE ATUALIZAÇÃO DO PERFIL

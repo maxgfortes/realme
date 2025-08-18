@@ -19,14 +19,16 @@
       font-size: 30px;
       color: #707070;
       padding: 10px;
-      padding-right: 80px;
+      padding-right: 10px;
     }
+
 
     .logo_area{
     border-right: 1px solid #0f0f0f;
     padding: 0px;
     padding-right: 35px;
     padding-left: 20px;
+    display: flex;
     }
 
 .search-box {
