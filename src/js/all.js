@@ -2818,6 +2818,8 @@ const postCSS = `
   border-radius: 8px;
   box-shadow: 0 16px 64px rgba(0,0,0,0.5);
   max-width:600px;
+  max-heigth:100%;
+  overflow-y: auto;
 }
 
 .modal-close {
