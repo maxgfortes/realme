@@ -1,8 +1,7 @@
 .welcome-container {
   margin-left: 210px;
   margin-top: 40px;
-  padding: 40px 6px 40px 40px;
-  width: 840px;
+  padding: 40px;
 }
 
 .welcome-box {
@@ -47,10 +46,6 @@
   line-height: 1.6;
 }
 
-.welcome-start-mobile {
-  display: none;
-}
-
 .welcome-start {
   padding: 40px;
   padding-top: 20px;
@@ -76,7 +71,7 @@
   font-size: 24px;
   margin-bottom: 20px;
   border-left: 4px solid #4A90E2;
-  padding-left: 5px;
+  padding-left: 12px;
 }
 
 /* POST COMPLETO */
@@ -314,11 +309,7 @@
   margin-top: 0px;
   color: #fff;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  height: 520px;
-  position: fixed;
-  margin-left: 30px;
 }
-
 
 .new-people h2 {
   font-size: 16px;
@@ -327,9 +318,8 @@
 }
 
 
+.new-user-info {
 
-.new-user-info {  
-  flex: 1;
 }
 
 .follow-button {
@@ -346,7 +336,6 @@
 .new-user-username {
   font-weight: bold;
   font-size: 14px;
-  margin-right: 6px;
 }
 
 .user-info {
@@ -361,6 +350,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 0;
+  border-bottom: 1px solid #333;
 }
 
 .newuser img{
@@ -369,35 +359,7 @@
   height: 50px;
   width: 50px;
   border-bottom: 1px solid #333;
-  border-radius: 50%;
 }
-
-.new-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid #333;
-}
-
-.reload-new-users {
-  background-color: transparent;
-  border: 1px solid #357ABD;
-  color: white;
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s;
-  width: 50%;
-  align-items: center;
-}
-
-.reloadarea {
-  display: flex;
-  justify-content: center;
-}
-
 .new-user:last-child {
   border-bottom: none;
 }

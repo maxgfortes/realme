@@ -1,3 +1,6 @@
+/// ===================
+// SISTEMA DE LIVE STATUS AUTOMÁTICO INTEGRADO - VERSÃO COMPLETA
+// ===================
 
 import { 
   getDatabase, 
@@ -42,6 +45,291 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
+
+// ===================
+// CLASSE LIVE STATUS MANAGER (mantida igual)
+// ===================
+class LiveStatusManager {
+  constructor(username) {
+    this.username = username;
+    this.currentPage = this.getCurrentPage();
+    this.statusRef = ref(rtdb, `userStatus/${username}`);
+    this.heartbeatInterval = null;
+    this.lastActivity = Date.now();
+    this.isTabActive = true;
+    this.awayTimeout = null;
+    
+    this.init();
+  }
+
+  init() {
+    this.setupPresenceSystem();
+    this.setupActivityTracking();
+    this.setupPageTracking();
+    this.setupVisibilityTracking();
+    this.startHeartbeat();
+    this.monitorUserStatus();
+  }
+
+  getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'index.html';
+    
+    const pageMap = {
+      'index.html': 'Login',
+      'feed.html': 'Feed',
+      'PF.html': 'Perfil',
+      'config.html': 'Configurações',
+      'chat.html': 'Chat',
+      'search.html': 'Busca'
+    };
+
+    return pageMap[page] || page.replace('.html', '');
+  }
+
+  setupPresenceSystem() {
+    const statusData = {
+      username: this.username,
+      status: 'online',
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
+    };
+
+    set(this.statusRef, statusData);
+
+    onDisconnect(this.statusRef).set({
+      username: this.username,
+      status: 'offline',
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
+    });
+
+    const connectedRef = ref(rtdb, '.info/connected');
+    onValue(connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+        console.log('✅ Conectado ao Firebase Realtime');
+        set(this.statusRef, {
+          ...statusData,
+          status: this.isTabActive ? 'online' : 'away',
+          timestamp: serverTimestamp()
+        });
+      }
+    });
+  }
+
+  setupActivityTracking() {
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    const updateActivity = () => {
+      this.lastActivity = Date.now();
+      if (this.awayTimeout) {
+        clearTimeout(this.awayTimeout);
+      }
+      
+      if (this.isTabActive) {
+        this.setStatus('online');
+      }
+      
+      this.awayTimeout = setTimeout(() => {
+        if (this.isTabActive) {
+          this.setStatus('away');
+        }
+      }, 5 * 60 * 1000);
+    };
+
+    activityEvents.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+  }
+
+  setupPageTracking() {
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = (...args) => {
+      originalPushState.apply(history, args);
+      this.updateCurrentPage();
+    };
+
+    history.replaceState = (...args) => {
+      originalReplaceState.apply(history, args);
+      this.updateCurrentPage();
+    };
+
+    window.addEventListener('popstate', () => {
+      this.updateCurrentPage();
+    });
+  }
+
+  setupVisibilityTracking() {
+    document.addEventListener('visibilitychange', () => {
+      this.isTabActive = !document.hidden;
+      
+      if (this.isTabActive) {
+        this.setStatus('online');
+        this.lastActivity = Date.now();
+      } else {
+        this.setStatus('away');
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      this.setStatus('offline');
+    });
+
+    window.addEventListener('focus', () => {
+      this.isTabActive = true;
+      this.setStatus('online');
+    });
+
+    window.addEventListener('blur', () => {
+      this.isTabActive = false;
+      this.setStatus('away');
+    });
+  }
+
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      if (this.isTabActive) {
+        this.updateHeartbeat();
+      }
+    }, 30000);
+  }
+
+  updateCurrentPage() {
+    const newPage = this.getCurrentPage();
+    if (newPage !== this.currentPage) {
+      this.currentPage = newPage;
+      this.updateHeartbeat();
+    }
+  }
+
+  updateHeartbeat() {
+    const now = Date.now();
+    const timeSinceActivity = now - this.lastActivity;
+    
+    let status = 'online';
+    if (!this.isTabActive) {
+      status = 'away';
+    } else if (timeSinceActivity > 5 * 60 * 1000) {
+      status = 'away';
+    }
+
+    set(this.statusRef, {
+      username: this.username,
+      status: status,
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp(),
+      heartbeat: now
+    });
+  }
+
+  setStatus(status) {
+    set(this.statusRef, {
+      username: this.username,
+      status: status,
+      lastSeen: serverTimestamp(),
+      currentPage: this.currentPage,
+      timestamp: serverTimestamp()
+    });
+  }
+
+  monitorUserStatus() {
+    const params = new URLSearchParams(window.location.search);
+    const usernameParam = params.get("username") || params.get("user");
+    
+    if (usernameParam && usernameParam !== this.username) {
+      const targetUserRef = ref(rtdb, `userStatus/${usernameParam}`);
+      onValue(targetUserRef, (snapshot) => {
+        if (snapshot.exists()) {
+          this.updateStatusDisplay(snapshot.val());
+        } else {
+          this.updateStatusDisplay({ status: 'offline' });
+        }
+      });
+    }
+  }
+
+  updateStatusDisplay(statusData) {
+    const statusBox = document.querySelector('.status-box');
+    const statusText = document.querySelector('.status-text');
+    
+    if (!statusBox || !statusText) return;
+
+    const { status, lastSeen, currentPage } = statusData;
+    let displayText = '';
+    let statusClass = '';
+
+    switch (status) {
+      case 'online':
+        displayText = currentPage ? `Online • ${currentPage}` : 'Online';
+        statusClass = 'online';
+        break;
+      case 'away':
+        displayText = currentPage ? `Ausente • ${currentPage}` : 'Ausente';
+        statusClass = 'away';
+        break;
+      case 'offline':
+        const lastSeenText = this.formatLastSeen(lastSeen);
+        displayText = `Offline • ${lastSeenText}`;
+        statusClass = 'offline';
+        break;
+      default:
+        displayText = 'Status desconhecido';
+        statusClass = 'offline';
+    }
+
+    statusText.textContent = displayText;
+    statusText.className = `status-text ${statusClass}`;
+
+    const indicator = statusBox.querySelector('.status-indicator') || this.createStatusIndicator();
+    indicator.className = `status-indicator ${statusClass}`;
+    
+    if (!statusBox.querySelector('.status-indicator')) {
+      statusBox.querySelector('p:first-child').appendChild(indicator);
+    }
+  }
+
+  createStatusIndicator() {
+    const indicator = document.createElement('span');
+    indicator.className = 'status-indicator';
+    indicator.style.cssText = `
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 8px;
+      animation: pulse 2s infinite;
+    `;
+    return indicator;
+  }
+
+  formatLastSeen(timestamp) {
+    if (!timestamp) return 'há muito tempo';
+    
+    const now = Date.now();
+    const lastSeen = typeof timestamp === 'number' ? timestamp : timestamp.seconds * 1000;
+    const diff = now - lastSeen;
+    
+    if (diff < 60000) return 'agora mesmo';
+    if (diff < 3600000) return `há ${Math.floor(diff / 60000)} min`;
+    if (diff < 86400000) return `há ${Math.floor(diff / 3600000)}h`;
+    return `há ${Math.floor(diff / 86400000)}d`;
+  }
+
+  destroy() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+    if (this.awayTimeout) {
+      clearTimeout(this.awayTimeout);
+    }
+    this.setStatus('offline');
+  }
+}
 
 // ===================
 // FUNCIONALIDADE DE BUSCA (mantida igual)

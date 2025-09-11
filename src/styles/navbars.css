@@ -289,7 +289,6 @@
 /* Texto que vai animar */
 .marquee {
   display:none;
-  display: none !important;
 }
 .last-update p{
 display: none;
@@ -483,41 +482,3 @@ display: none;
             opacity: 1;
             visibility: visible;
         }
-
-
-          /* Navbar bottom mobile */
-@media (max-width: 768px) {
-
-  .navbar-bottom {
-    display: block !important;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 70px;
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(20px);
-      bottom: 0 !important;
-  top: auto !important;  /* garante que não vai colar no topo */
-  }
-
-  .navbar-bottom-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    padding: 0 16px;
-  }
-
-  .navbar-bottom a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #aaa;
-    font-size: 20px;
-    padding: 8px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    min-width: 44px;
-  }
-}
