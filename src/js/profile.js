@@ -33,21 +33,3 @@
   }
 });
 
-
-// Pega o usuário logado do localStorage
-const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-
-if (usuarioLogadoJSON) {
-  const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-  const username = usuarioLogado.username;
-
-  // Monta a URL do perfil (exemplo: perfil.html?user=username)
-  const urlPerfil = `PF.html?user=${encodeURIComponent(username)}`;
-
-  // Atualiza os links de perfil
-  const linkSidebar = document.getElementById('linkPerfilSidebar');
-  const linkMobile = document.getElementById('linkPerfilMobile');
-
-  if(linkSidebar) linkSidebar.href = urlPerfil;
-  if(linkMobile) linkMobile.href = urlPerfil;
-}

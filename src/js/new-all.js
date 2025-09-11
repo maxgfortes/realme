@@ -1,15 +1,14 @@
-
-import { 
-  getDatabase, 
-  ref, 
-  onValue, 
-  set, 
-  onDisconnect, 
-  serverTimestamp,
-  off
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+/// ===================
+// SISTEMA DE PERFIL MODERNIZADO COM FIREBASE AUTH - VERSÃO COMPLETA
+// ===================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  getIdToken
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -26,25 +25,309 @@ import {
   startAfter,
   deleteDoc,
   updateDoc,
-  increment
+  increment,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getDatabase, 
+  ref, 
+  onValue, 
+  set, 
+  onDisconnect
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
   projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
+  storageBucket: "ifriendmatch.appStorage.com",
   messagingSenderId: "306331636603",
   appId: "1:306331636603:web:c0ae0bd22501803995e3de",
   measurementId: "G-D96BEW6RC3"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
 
 // ===================
-// FUNCIONALIDADE DE BUSCA (mantida igual)
+// SISTEMA DE AUTENTICAÇÃO MODERNIZADO
+// ===================
+
+class AuthManager {
+  constructor() {
+    this.currentUser = null;
+    this.currentToken = null;
+    this.isInitialized = false;
+    this.authStateListeners = [];
+    
+    this.init();
+  }
+
+  init() {
+    onAuthStateChanged(auth, async (user) => {
+      console.log('🔐 Estado de autenticação mudou:', user ? user.displayName : 'Não logado');
+      
+      this.currentUser = user;
+      
+      if (user) {
+        try {
+          // Obter token JWT
+          this.currentToken = await getIdToken(user, true);
+          console.log('✅ Token JWT obtido');
+          
+          // Buscar dados do usuário no Firestore
+          const userData = await this.getUserData(user.displayName);
+          
+          if (userData) {
+            // Salvar no localStorage para compatibilidade
+            const userToSave = {
+              username: user.displayName,
+              nome: userData.nome || "",
+              email: userData.email || user.email || "",
+              sobrenome: userData.sobrenome || "",
+              userphoto: userData.userphoto || userData.foto || "",
+              firebaseUid: user.uid,
+              token: this.currentToken
+            };
+            
+            localStorage.setItem("usuarioLogado", JSON.stringify(userToSave));
+            
+            // Inicializar sistema de presença
+            this.initializePresence(user.displayName);
+            
+            console.log('✅ Usuário autenticado:', user.displayName);
+          } else {
+            console.error('❌ Dados do usuário não encontrados no Firestore');
+            await this.signOut();
+            return;
+          }
+        } catch (error) {
+          console.error('❌ Erro ao processar autenticação:', error);
+          await this.signOut();
+          return;
+        }
+      } else {
+        this.currentToken = null;
+        localStorage.removeItem("usuarioLogado");
+        this.clearPresence();
+        
+        // Redirecionar para login se não estiver logado
+        if (window.location.pathname !== '/index.html' && 
+            window.location.pathname !== '/' && 
+            !window.location.pathname.includes('index')) {
+          console.log('🔄 Redirecionando para login...');
+          window.location.href = 'index.html';
+          return;
+        }
+      }
+      
+      this.isInitialized = true;
+      this.notifyAuthStateListeners(user);
+    });
+  }
+
+  async getUserData(username) {
+    if (!username) return null;
+    
+    try {
+      const userRef = doc(db, "users", username);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        return userSnap.data();
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
+      return null;
+    }
+  }
+
+  async makeAuthenticatedRequest(request) {
+    if (!this.currentToken) {
+      throw new Error('Token não disponível');
+    }
+    
+    try {
+      // Refresh token se necessário
+      if (this.currentUser) {
+        this.currentToken = await getIdToken(this.currentUser, true);
+      }
+      
+      return await request(this.currentToken);
+    } catch (error) {
+      console.error('Erro na requisição autenticada:', error);
+      throw error;
+    }
+  }
+
+  initializePresence(username) {
+    if (!username) return;
+
+    const statusRef = ref(rtdb, `userStatus/${username}`);
+    const connectedRef = ref(rtdb, '.info/connected');
+
+    const setOnlineStatus = () => {
+      const statusData = {
+        username: username,
+        status: 'online',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      };
+      
+      set(statusRef, statusData);
+      
+      // Configurar para offline quando desconectar
+      onDisconnect(statusRef).set({
+        username: username,
+        status: 'offline',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      });
+    };
+
+    onValue(connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+        console.log('✅ Conectado ao Realtime Database');
+        setOnlineStatus();
+      }
+    });
+
+    // Monitorar atividade da página
+    this.setupActivityTracking(statusRef, username);
+    this.setupVisibilityTracking(statusRef, username);
+  }
+
+  setupActivityTracking(statusRef, username) {
+    let lastActivity = Date.now();
+    let awayTimeout = null;
+    let isActive = true;
+
+    const updateActivity = () => {
+      lastActivity = Date.now();
+      if (awayTimeout) {
+        clearTimeout(awayTimeout);
+      }
+      
+      if (isActive) {
+        this.updateStatus(statusRef, username, 'online');
+      }
+      
+      awayTimeout = setTimeout(() => {
+        if (isActive) {
+          this.updateStatus(statusRef, username, 'away');
+        }
+      }, 5 * 60 * 1000); // 5 minutos
+    };
+
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    activityEvents.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+  }
+
+  setupVisibilityTracking(statusRef, username) {
+    let isTabActive = true;
+
+    document.addEventListener('visibilitychange', () => {
+      isTabActive = !document.hidden;
+      
+      const status = isTabActive ? 'online' : 'away';
+      this.updateStatus(statusRef, username, status);
+    });
+
+    window.addEventListener('beforeunload', () => {
+      this.updateStatus(statusRef, username, 'offline');
+    });
+  }
+
+  updateStatus(statusRef, username, status) {
+    set(statusRef, {
+      username: username,
+      status: status,
+      lastSeen: serverTimestamp(),
+      currentPage: this.getCurrentPage(),
+      timestamp: Date.now()
+    });
+  }
+
+  clearPresence() {
+    if (this.currentUser) {
+      const statusRef = ref(rtdb, `userStatus/${this.currentUser.displayName}`);
+      set(statusRef, {
+        username: this.currentUser.displayName,
+        status: 'offline',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'index.html';
+    
+    const pageMap = {
+      'index.html': 'Login',
+      'feed.html': 'Feed',
+      'PF.html': 'Perfil',
+      'config.html': 'Configurações',
+      'chat.html': 'Chat',
+      'search.html': 'Busca'
+    };
+
+    return pageMap[page] || page.replace('.html', '');
+  }
+
+  addAuthStateListener(callback) {
+    this.authStateListeners.push(callback);
+  }
+
+  notifyAuthStateListeners(user) {
+    this.authStateListeners.forEach(callback => {
+      try {
+        callback(user);
+      } catch (error) {
+        console.error('Erro no listener de auth state:', error);
+      }
+    });
+  }
+
+  async signOut() {
+    try {
+      this.clearPresence();
+      await signOut(auth);
+      localStorage.clear();
+      console.log('✅ Logout realizado');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      throw error;
+    }
+  }
+
+  isAuthenticated() {
+    return !!this.currentUser && !!this.currentToken;
+  }
+
+  getCurrentUser() {
+    return this.currentUser;
+  }
+
+  getToken() {
+    return this.currentToken;
+  }
+}
+
+// Instância global do gerenciador de autenticação
+const authManager = new AuthManager();
+
+// ===================
+// SISTEMA DE BUSCA (com autenticação)
 // ===================
 const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('searchResults');
@@ -52,35 +335,41 @@ const searchButton = document.querySelector('.search-box button');
 
 if (searchInput && resultsList && searchButton) {
   async function performSearch() {
+    if (!authManager.isAuthenticated()) {
+      console.warn('Usuário não autenticado para busca');
+      return;
+    }
+
     const term = searchInput.value.trim().toLowerCase();
     resultsList.innerHTML = '';
     resultsList.classList.remove('visible');
 
     if (!term) return;
 
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
-
     try {
-      const snapshot = await getDocs(q);
+      await authManager.makeAuthenticatedRequest(async (token) => {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
+        const snapshot = await getDocs(q);
 
-      if (snapshot.empty) {
-        resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
-        resultsList.classList.add('visible');
-        return;
-      }
+        if (snapshot.empty) {
+          resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
+          resultsList.classList.add('visible');
+          return;
+        }
 
-      snapshot.forEach(docSnap => {
-        const user = docSnap.data();
-        const li = document.createElement('li');
-        li.textContent = user.username;
-        li.addEventListener('click', () => {
-          window.location.href = `PF.html?username=${user.username}`;
+        snapshot.forEach(docSnap => {
+          const user = docSnap.data();
+          const li = document.createElement('li');
+          li.textContent = user.username;
+          li.addEventListener('click', () => {
+            window.location.href = `PF.html?username=${user.username}`;
+          });
+          resultsList.appendChild(li);
         });
-        resultsList.appendChild(li);
-      });
 
-      resultsList.classList.add('visible');
+        resultsList.classList.add('visible');
+      });
     } catch (err) {
       console.error('Erro na busca:', err);
       resultsList.innerHTML = '<li>Erro na busca</li>';
@@ -103,163 +392,172 @@ if (searchInput && resultsList && searchButton) {
 }
 
 // ===================
-// SISTEMA DE SEGUIR/SEGUINDO
+// SISTEMA DE SEGUIR/SEGUINDO (com autenticação)
 // ===================
 
-// Variáveis globais para sistema de seguir
-let currentUserData = null;
-let targetUserData = null;
 let isFollowing = false;
 
-// Função para verificar se está seguindo
 async function verificarSeEstaSeguindo(currentUser, targetUser) {
+  if (!authManager.isAuthenticated()) return false;
+  
   try {
-    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
-    const seguidoresDoc = await getDoc(seguidoresRef);
-    
-    if (seguidoresDoc.exists()) {
-      const seguidoresData = seguidoresDoc.data();
-      return seguidoresData.hasOwnProperty(currentUser);
-    }
-    return false;
+    return await authManager.makeAuthenticatedRequest(async (token) => {
+      const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+      const seguidoresDoc = await getDoc(seguidoresRef);
+      
+      if (seguidoresDoc.exists()) {
+        const seguidoresData = seguidoresDoc.data();
+        return seguidoresData.hasOwnProperty(currentUser);
+      }
+      return false;
+    });
   } catch (error) {
     console.error('Erro ao verificar seguimento:', error);
     return false;
   }
 }
 
-// Função para seguir usuário
 async function seguirUsuario(currentUser, targetUser) {
+  if (!authManager.isAuthenticated()) return false;
+  
   try {
-    // Adicionar aos seguidores do usuário target
-    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
-    const seguidoresDoc = await getDoc(seguidoresRef);
-    let seguidoresData = seguidoresDoc.exists() ? seguidoresDoc.data() : {};
-    seguidoresData[currentUser] = currentUser;
-    await setDoc(seguidoresRef, seguidoresData);
+    return await authManager.makeAuthenticatedRequest(async (token) => {
+      // Adicionar aos seguidores do usuário target
+      const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+      const seguidoresDoc = await getDoc(seguidoresRef);
+      let seguidoresData = seguidoresDoc.exists() ? seguidoresDoc.data() : {};
+      seguidoresData[currentUser] = currentUser;
+      await setDoc(seguidoresRef, seguidoresData);
 
-    // Adicionar aos seguindo do usuário atual
-    const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
-    const seguindoDoc = await getDoc(seguindoRef);
-    let seguindoData = seguindoDoc.exists() ? seguindoDoc.data() : {};
-    seguindoData[targetUser] = targetUser;
-    await setDoc(seguindoRef, seguindoData);
+      // Adicionar aos seguindo do usuário atual
+      const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
+      const seguindoDoc = await getDoc(seguindoRef);
+      let seguindoData = seguindoDoc.exists() ? seguindoDoc.data() : {};
+      seguindoData[targetUser] = targetUser;
+      await setDoc(seguindoRef, seguindoData);
 
-    console.log(`${currentUser} agora está seguindo ${targetUser}`);
-    return true;
+      console.log(`${currentUser} agora está seguindo ${targetUser}`);
+      return true;
+    });
   } catch (error) {
     console.error('Erro ao seguir usuário:', error);
     return false;
   }
 }
 
-// Função para deixar de seguir usuário
 async function deixarDeSeguir(currentUser, targetUser) {
+  if (!authManager.isAuthenticated()) return false;
+  
   try {
-    // Remover dos seguidores do usuário target
-    const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
-    const seguidoresDoc = await getDoc(seguidoresRef);
-    if (seguidoresDoc.exists()) {
-      let seguidoresData = seguidoresDoc.data();
-      delete seguidoresData[currentUser];
-      await setDoc(seguidoresRef, seguidoresData);
-    }
+    return await authManager.makeAuthenticatedRequest(async (token) => {
+      // Remover dos seguidores do usuário target
+      const seguidoresRef = doc(db, 'users', targetUser, 'seguidores', 'users');
+      const seguidoresDoc = await getDoc(seguidoresRef);
+      if (seguidoresDoc.exists()) {
+        let seguidoresData = seguidoresDoc.data();
+        delete seguidoresData[currentUser];
+        await setDoc(seguidoresRef, seguidoresData);
+      }
 
-    // Remover dos seguindo do usuário atual
-    const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
-    const seguindoDoc = await getDoc(seguindoRef);
-    if (seguindoDoc.exists()) {
-      let seguindoData = seguindoDoc.data();
-      delete seguindoData[targetUser];
-      await setDoc(seguindoRef, seguindoData);
-    }
+      // Remover dos seguindo do usuário atual
+      const seguindoRef = doc(db, 'users', currentUser, 'seguindo', 'users');
+      const seguindoDoc = await getDoc(seguindoRef);
+      if (seguindoDoc.exists()) {
+        let seguindoData = seguindoDoc.data();
+        delete seguindoData[targetUser];
+        await setDoc(seguindoRef, seguindoData);
+      }
 
-    console.log(`${currentUser} deixou de seguir ${targetUser}`);
-    return true;
+      console.log(`${currentUser} deixou de seguir ${targetUser}`);
+      return true;
+    });
   } catch (error) {
     console.error('Erro ao deixar de seguir usuário:', error);
     return false;
   }
 }
 
-// Função para contar seguidores
 async function contarSeguidores(username) {
+  if (!authManager.isAuthenticated()) return 0;
+  
   try {
-    const seguidoresRef = doc(db, 'users', username, 'seguidores', 'users');
-    const seguidoresDoc = await getDoc(seguidoresRef);
-    
-    if (seguidoresDoc.exists()) {
-      const seguidoresData = seguidoresDoc.data();
-      return Object.keys(seguidoresData).length;
-    }
-    return 0;
+    return await authManager.makeAuthenticatedRequest(async (token) => {
+      const seguidoresRef = doc(db, 'users', username, 'seguidores', 'users');
+      const seguidoresDoc = await getDoc(seguidoresRef);
+      
+      if (seguidoresDoc.exists()) {
+        const seguidoresData = seguidoresDoc.data();
+        return Object.keys(seguidoresData).length;
+      }
+      return 0;
+    });
   } catch (error) {
     console.error('Erro ao contar seguidores:', error);
     return 0;
   }
 }
 
-// Função para contar seguindo
 async function contarSeguindo(username) {
+  if (!authManager.isAuthenticated()) return 0;
+  
   try {
-    const seguindoRef = doc(db, 'users', username, 'seguindo', 'users');
-    const seguindoDoc = await getDoc(seguindoRef);
-    
-    if (seguindoDoc.exists()) {
-      const seguindoData = seguindoDoc.data();
-      return Object.keys(seguindoData).length;
-    }
-    return 0;
+    return await authManager.makeAuthenticatedRequest(async (token) => {
+      const seguindoRef = doc(db, 'users', username, 'seguindo', 'users');
+      const seguindoDoc = await getDoc(seguindoRef);
+      
+      if (seguindoDoc.exists()) {
+        const seguindoData = seguindoDoc.data();
+        return Object.keys(seguindoData).length;
+      }
+      return 0;
+    });
   } catch (error) {
     console.error('Erro ao contar seguindo:', error);
     return 0;
   }
 }
 
-// Função para atualizar estatísticas do perfil
 async function atualizarEstatisticasPerfil(username) {
+  if (!authManager.isAuthenticated()) return;
+  
   try {
-    const postsRef = collection(db, 'users', username, 'posts');
-    const postsSnapshot = await getDocs(postsRef);
-    const numPosts = postsSnapshot.size;
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const postsRef = collection(db, 'users', username, 'posts');
+      const postsSnapshot = await getDocs(postsRef);
+      const numPosts = postsSnapshot.size;
 
-    const numSeguidores = await contarSeguidores(username);
-    const numSeguindo = await contarSeguindo(username);
+      const numSeguidores = await contarSeguidores(username);
+      const numSeguindo = await contarSeguindo(username);
 
-    const statsElement = document.querySelector('.profile-stats');
-    if (statsElement) {
-      statsElement.innerHTML = `
-        <span><strong>${numPosts}</strong> posts</span>
-        <span><strong>${numSeguidores}</strong> seguidores</span>
-        <span><strong>0</strong> amigos</span>
-        <span><strong>${numSeguindo}</strong> seguindo</span>
-      `;
-    }
+      const statsElement = document.querySelector('.profile-stats');
+      if (statsElement) {
+        statsElement.innerHTML = `
+          <span><strong>${numPosts}</strong> posts</span>
+          <span><strong>${numSeguidores}</strong> seguidores</span>
+          <span><strong>0</strong> amigos</span>
+          <span><strong>${numSeguindo}</strong> seguindo</span>
+        `;
+      }
 
-    console.log(`Estatísticas atualizadas: ${numPosts} posts, ${numSeguidores} seguidores, ${numSeguindo} seguindo`);
+      console.log(`Estatísticas atualizadas: ${numPosts} posts, ${numSeguidores} seguidores, ${numSeguindo} seguindo`);
+    });
   } catch (error) {
     console.error('Erro ao atualizar estatísticas:', error);
   }
 }
 
-// Função para configurar botão de seguir
-// Função para configurar botão de seguir ou editar perfil
 async function configurarBotaoSeguir() {
   const followBtn = document.querySelector('.btn-follow');
-  if (!followBtn) return;
+  if (!followBtn || !authManager.isAuthenticated()) return;
 
-  const currentUserJson = localStorage.getItem('usuarioLogado');
-  if (!currentUserJson) return;
-
-  const currentUser = JSON.parse(currentUserJson);
+  const currentUser = authManager.getCurrentUser();
   const params = new URLSearchParams(window.location.search);
   const targetUsername = params.get("username") || params.get("user");
 
   // Se for o próprio perfil
-  if (!targetUsername || targetUsername === currentUser.username) {
-    followBtn.style.display = 'none'; // esconde o botão seguir
+  if (!targetUsername || targetUsername === currentUser.displayName) {
+    followBtn.style.display = 'none';
 
-    // cria botão editar perfil
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar perfil';
     editBtn.className = 'btn-edit-profile';
@@ -267,33 +565,30 @@ async function configurarBotaoSeguir() {
       window.location.href = 'config.html';
     };
 
-    // adiciona no mesmo container do followBtn
     followBtn.parentNode.appendChild(editBtn);
     return;
   }
 
   // Verificar se já está seguindo
-  isFollowing = await verificarSeEstaSeguindo(currentUser.username, targetUsername);
+  isFollowing = await verificarSeEstaSeguindo(currentUser.displayName, targetUsername);
   
-  // Atualizar texto do botão
   followBtn.textContent = isFollowing ? 'seguindo' : 'seguir';
   followBtn.className = isFollowing ? 'btn-follow following' : 'btn-follow';
 
-  // Adicionar event listener
   followBtn.onclick = async () => {
     followBtn.disabled = true;
     followBtn.textContent = 'carregando...';
 
     try {
       if (isFollowing) {
-        const success = await deixarDeSeguir(currentUser.username, targetUsername);
+        const success = await deixarDeSeguir(currentUser.displayName, targetUsername);
         if (success) {
           isFollowing = false;
           followBtn.textContent = 'seguir';
           followBtn.className = 'btn-follow';
         }
       } else {
-        const success = await seguirUsuario(currentUser.username, targetUsername);
+        const success = await seguirUsuario(currentUser.displayName, targetUsername);
         if (success) {
           isFollowing = true;
           followBtn.textContent = 'seguindo';
@@ -301,7 +596,6 @@ async function configurarBotaoSeguir() {
         }
       }
       
-      // Atualizar estatísticas
       await atualizarEstatisticasPerfil(targetUsername);
       
     } catch (error) {
@@ -313,23 +607,20 @@ async function configurarBotaoSeguir() {
   };
 }
 
-
 // ===================
-// SISTEMA DE DEPOIMENTOS
+// SISTEMA DE DEPOIMENTOS (com autenticação)
 // ===================
 
-// Função para carregar depoimentos
 async function carregarDepoimentos(username) {
   console.log('🔄 Carregando depoimentos para:', username);
   
   const depoimentosContainer = document.querySelector('.deps-tab .about-container');
-  if (!depoimentosContainer) {
-    console.error('❌ Container de depoimentos não encontrado');
+  if (!depoimentosContainer || !authManager.isAuthenticated()) {
+    console.error('❌ Container de depoimentos não encontrado ou não autenticado');
     return;
   }
 
   try {
-    // Mostrar loading
     depoimentosContainer.innerHTML = `
       <div class="loading-container">
         <div class="loading-spinner"></div>
@@ -337,90 +628,79 @@ async function carregarDepoimentos(username) {
       </div>
     `;
 
-    // Buscar depoimentos
-    const depoimentosRef = collection(db, 'users', username, 'depoimentos');
-    const depoimentosQuery = query(depoimentosRef, orderBy('criadoem', 'desc'));
-    const snapshot = await getDocs(depoimentosQuery);
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const depoimentosRef = collection(db, 'users', username, 'depoimentos');
+      const depoimentosQuery = query(depoimentosRef, orderBy('criadoem', 'desc'));
+      const snapshot = await getDocs(depoimentosQuery);
 
-    // Limpar container
-    depoimentosContainer.innerHTML = '';
+      depoimentosContainer.innerHTML = '';
 
-    // Verificar se é perfil próprio para mostrar/esconder botão
-    const currentUserJson = localStorage.getItem('usuarioLogado');
-    const isOwnProfile = currentUserJson ? JSON.parse(currentUserJson).username === username : false;
+      const currentUser = authManager.getCurrentUser();
+      const isOwnProfile = currentUser ? currentUser.displayName === username : false;
 
-    // Adicionar botão de enviar depoimento (apenas para outros usuários)
-    if (!isOwnProfile) {
-      const depoimentoForm = document.createElement('div');
-      depoimentoForm.className = 'depoimento-form';
-      depoimentoForm.innerHTML = `
-        <h4>Deixar um depoimento</h4>
-        <textarea id="depoimentoTexto" placeholder="Escreva seu depoimento aqui..." maxlength="500"></textarea>
-        <div class="form-actions">
-          <span class="char-count">0/500</span>
-          <button class="btn-enviar-depoimento" onclick="enviarDepoimento('${username}')">
-            <i class="fas fa-paper-plane"></i> Enviar Depoimento
-          </button>
-        </div>
-      `;
-      depoimentosContainer.appendChild(depoimentoForm);
+      if (!isOwnProfile) {
+        const depoimentoForm = document.createElement('div');
+        depoimentoForm.className = 'depoimento-form';
+        depoimentoForm.innerHTML = `
+          <h4>Deixar um depoimento</h4>
+          <textarea id="depoimentoTexto" placeholder="Escreva seu depoimento aqui..." maxlength="500"></textarea>
+          <div class="form-actions">
+            <span class="char-count">0/500</span>
+            <button class="btn-enviar-depoimento" onclick="enviarDepoimento('${username}')">
+              <i class="fas fa-paper-plane"></i> Enviar Depoimento
+            </button>
+          </div>
+        `;
+        depoimentosContainer.appendChild(depoimentoForm);
 
-      // Contador de caracteres
-      const textarea = depoimentoForm.querySelector('#depoimentoTexto');
-      const charCount = depoimentoForm.querySelector('.char-count');
-      textarea.addEventListener('input', () => {
-        const count = textarea.value.length;
-        charCount.textContent = `${count}/500`;
-        charCount.style.color = count > 450 ? '#dc3545' : '#666';
-      });
-    }
-
-    if (snapshot.empty) {
-      console.log('📭 Nenhum depoimento encontrado');
-      const emptyDiv = document.createElement('div');
-      emptyDiv.className = 'empty-depoimentos';
-      emptyDiv.innerHTML = `
-        <div class="empty-icon">
-          <i class="fas fa-comments"></i>
-        </div>
-        <h3>Nenhum depoimento ainda</h3>
-        <p>${isOwnProfile ? 'Você ainda não recebeu depoimentos.' : 'Este usuário ainda não recebeu depoimentos.'}</p>
-      `;
-      depoimentosContainer.appendChild(emptyDiv);
-      return;
-    }
-
-    // Criar depoimentos
-    let depoimentosAdicionados = 0;
-    
-    for (const depoDoc of snapshot.docs) {
-      try {
-        const depoData = depoDoc.data();
-        console.log(`📄 Processando depoimento ${depoDoc.id}:`, {
-          conteudo: depoData.conteudo?.substring(0, 50) + '...',
-          username: depoData.username,
-          data: depoData.criadoem
+        const textarea = depoimentoForm.querySelector('#depoimentoTexto');
+        const charCount = depoimentoForm.querySelector('.char-count');
+        textarea.addEventListener('input', () => {
+          const count = textarea.value.length;
+          charCount.textContent = `${count}/500`;
+          charCount.style.color = count > 450 ? '#dc3545' : '#666';
         });
-
-        // Buscar dados do autor do depoimento
-        let autorData = {};
-        if (depoData.username) {
-          const autorRef = doc(db, 'users', depoData.username);
-          const autorDoc = await getDoc(autorRef);
-          if (autorDoc.exists()) {
-            autorData = autorDoc.data();
-          }
-        }
-
-        const depoElement = criarElementoDepoimento(depoData, autorData, depoDoc.id, username);
-        depoimentosContainer.appendChild(depoElement);
-        depoimentosAdicionados++;
-      } catch (error) {
-        console.error(`❌ Erro ao processar depoimento ${depoDoc.id}:`, error);
       }
-    }
 
-    console.log(`✅ ${depoimentosAdicionados} depoimentos carregados com sucesso!`);
+      if (snapshot.empty) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'empty-depoimentos';
+        emptyDiv.innerHTML = `
+          <div class="empty-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <h3>Nenhum depoimento ainda</h3>
+          <p>${isOwnProfile ? 'Você ainda não recebeu depoimentos.' : 'Este usuário ainda não recebeu depoimentos.'}</p>
+        `;
+        depoimentosContainer.appendChild(emptyDiv);
+        return;
+      }
+
+      let depoimentosAdicionados = 0;
+      
+      for (const depoDoc of snapshot.docs) {
+        try {
+          const depoData = depoDoc.data();
+          
+          let autorData = {};
+          if (depoData.username) {
+            const autorRef = doc(db, 'users', depoData.username);
+            const autorDoc = await getDoc(autorRef);
+            if (autorDoc.exists()) {
+              autorData = autorDoc.data();
+            }
+          }
+
+          const depoElement = criarElementoDepoimento(depoData, autorData, depoDoc.id, username);
+          depoimentosContainer.appendChild(depoElement);
+          depoimentosAdicionados++;
+        } catch (error) {
+          console.error(`❌ Erro ao processar depoimento ${depoDoc.id}:`, error);
+        }
+      }
+
+      console.log(`✅ ${depoimentosAdicionados} depoimentos carregados com sucesso!`);
+    });
 
   } catch (error) {
     console.error('❌ Erro ao carregar depoimentos:', error);
@@ -437,7 +717,6 @@ async function carregarDepoimentos(username) {
   }
 }
 
-// Função para criar elemento do depoimento
 function criarElementoDepoimento(depoData, autorData, depoId, targetUsername) {
   const depoElement = document.createElement('div');
   depoElement.className = 'depoimento-card';
@@ -448,13 +727,9 @@ function criarElementoDepoimento(depoData, autorData, depoId, targetUsername) {
   const dataFormatada = formatarDataPost(depoData.criadoem);
   const conteudo = depoData.conteudo || 'Depoimento sem conteúdo';
 
-  const currentUserJson = localStorage.getItem('usuarioLogado');
-  const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
-
-  // Verificar se usuário logado é dono do perfil (targetUsername) ou autor do depoimento (depoData.username)
-  const isOwner = currentUser && currentUser.username === targetUsername;
-  const isAuthor = currentUser && currentUser.username === depoData.username;
-
+  const currentUser = authManager.getCurrentUser();
+  const isOwner = currentUser && currentUser.displayName === targetUsername;
+  const isAuthor = currentUser && currentUser.displayName === depoData.username;
   const podeExcluir = isOwner || isAuthor;
 
   depoElement.innerHTML = `
@@ -483,13 +758,11 @@ function criarElementoDepoimento(depoData, autorData, depoId, targetUsername) {
   return depoElement;
 }
 
-
-// Função para enviar depoimento
 async function enviarDepoimento(targetUsername) {
   const textarea = document.getElementById('depoimentoTexto');
   const btnEnviar = document.querySelector('.btn-enviar-depoimento');
   
-  if (!textarea || !btnEnviar) return;
+  if (!textarea || !btnEnviar || !authManager.isAuthenticated()) return;
 
   const conteudo = textarea.value.trim();
   if (!conteudo) {
@@ -497,16 +770,9 @@ async function enviarDepoimento(targetUsername) {
     return;
   }
 
-  const currentUserJson = localStorage.getItem('usuarioLogado');
-  if (!currentUserJson) {
-    alert('Você precisa estar logado para enviar depoimentos.');
-    return;
-  }
+  const currentUser = authManager.getCurrentUser();
 
-  const currentUser = JSON.parse(currentUserJson);
-
-  // Verificar se não está tentando fazer autodepoimento
-  if (currentUser.username === targetUsername) {
+  if (currentUser.displayName === targetUsername) {
     alert('Você não pode deixar um depoimento para si mesmo.');
     return;
   }
@@ -515,76 +781,28 @@ async function enviarDepoimento(targetUsername) {
   btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
   try {
-    // Gerar ID único para o depoimento
-    const depoId = `dep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    const depoimentoData = {
-      conteudo: conteudo,
-      username: currentUser.username,
-      criadoem: new Date(),
-      targetUser: targetUsername
-    };
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const depoId = `dep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const depoimentoData = {
+        conteudo: conteudo,
+        username: currentUser.displayName,
+        criadoem: new Date(),
+        targetUser: targetUsername
+      };
 
-    // Salvar depoimento
-    const depoRef = doc(db, 'users', targetUsername, 'depoimentos', depoId);
-    await setDoc(depoRef, depoimentoData);
+      const depoRef = doc(db, 'users', targetUsername, 'depoimentos', depoId);
+      await setDoc(depoRef, depoimentoData);
+    });
 
     console.log('✅ Depoimento enviado com sucesso!');
     
-    // Limpar formulário
     textarea.value = '';
     const charCount = document.querySelector('.char-count');
     if (charCount) charCount.textContent = '0/500';
 
-    // Recarregar depoimentos
     await carregarDepoimentos(targetUsername);
 
-    // Mostrar mensagem de sucesso
-    const successMsg = document.createElement('div');
-    successMsg.className = 'success-message';
-    successMsg.textContent = 'Depoimento enviado com sucesso!';
-    successMsg.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 9999;
-      animation: slideIn 0.3s ease-out;
-    `;
-    document.body.appendChild(successMsg);
-    
-    setTimeout(() => {
-      successMsg.remove();
-    }, 3000);
-
-  } catch (error) {
-    console.error('❌ Erro ao enviar depoimento:', error);
-    alert('Erro ao enviar depoimento. Tente novamente.');
-  } finally {
-    btnEnviar.disabled = false;
-    btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Depoimento';
-  }
-}
-
-// Função para excluir depoimento
-async function excluirDepoimento(depoId, targetUsername) {
-  if (!confirm('Tem certeza que deseja excluir este depoimento?')) {
-    return;
-  }
-
-  try {
-    const depoRef = doc(db, 'users', targetUsername, 'depoimentos', depoId);
-    await deleteDoc(depoRef);
-
-    console.log('✅ Depoimento excluído com sucesso!');
-    
-    // Recarregar depoimentos
-    await carregarDepoimentos(targetUsername);
-
-    // Mostrar mensagem de sucesso
     const successMsg = document.createElement('div');
     successMsg.className = 'success-message';
     successMsg.textContent = 'Depoimento excluído com sucesso!';
@@ -609,108 +827,104 @@ async function excluirDepoimento(depoId, targetUsername) {
     console.error('❌ Erro ao excluir depoimento:', error);
     alert('Erro ao excluir depoimento. Tente novamente.');
   }
-  
 }
 
 // ===================
-// SISTEMA DE LINKS
+// SISTEMA DE LINKS (com autenticação)
 // ===================
 
-// Função para carregar links do usuário
 async function carregarLinks(username) {
   console.log('🔄 Carregando links para:', username);
   
   const linksContainer = document.querySelector('.links-tab .about-container');
-  if (!linksContainer) {
-    console.error('❌ Container de links não encontrado');
+  if (!linksContainer || !authManager.isAuthenticated()) {
+    console.error('❌ Container de links não encontrado ou não autenticado');
     return;
   }
 
   try {
-    // Buscar dados do usuário para pegar links
-    const userRef = doc(db, 'users', username);
-    const userDoc = await getDoc(userRef);
-    
-    linksContainer.innerHTML = '';
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const userRef = doc(db, 'users', username);
+      const userDoc = await getDoc(userRef);
+      
+      linksContainer.innerHTML = '';
 
-    if (!userDoc.exists()) {
-      linksContainer.innerHTML = `
-        <div class="empty-links">
-          <div class="empty-icon">
-            <i class="fas fa-link"></i>
+      if (!userDoc.exists()) {
+        linksContainer.innerHTML = `
+          <div class="empty-links">
+            <div class="empty-icon">
+              <i class="fas fa-link"></i>
+            </div>
+            <h3>Usuário não encontrado</h3>
           </div>
-          <h3>Usuário não encontrado</h3>
-        </div>
-      `;
-      return;
-    }
-
-    const userData = userDoc.data();
-    const links = userData.links || {};
-
-    // Se não há links
-    if (!links || Object.keys(links).length === 0) {
-      linksContainer.innerHTML = `
-        <div class="empty-links">
-          <div class="empty-icon">
-            <i class="fas fa-link"></i>
-          </div>
-          <h3>Nenhum link ainda</h3>
-          <p>Este usuário ainda não adicionou nenhum link.</p>
-        </div>
-      `;
-      return;
-    }
-
-    // Criar elementos de link
-    Object.entries(links).forEach(([key, url]) => {
-      if (url && url.trim()) {
-        const linkElement = document.createElement('div');
-        linkElement.className = 'link-box';
-        
-        // Detectar tipo de link e adicionar ícone apropriado
-        let icon = 'fas fa-external-link-alt';
-        let label = key;
-        
-        if (url.includes('instagram.com')) {
-          icon = 'fab fa-instagram';
-          label = 'Instagram';
-        } else if (url.includes('twitter.com') || url.includes('x.com')) {
-          icon = 'fab fa-twitter';
-          label = 'Twitter/X';
-        } else if (url.includes('tiktok.com')) {
-          icon = 'fab fa-tiktok';
-          label = 'TikTok';
-        } else if (url.includes('youtube.com')) {
-          icon = 'fab fa-youtube';
-          label = 'YouTube';
-        } else if (url.includes('github.com')) {
-          icon = 'fab fa-github';
-          label = 'GitHub';
-        } else if (url.includes('linkedin.com')) {
-          icon = 'fab fa-linkedin';
-          label = 'LinkedIn';
-        } else if (url.includes('discord')) {
-          icon = 'fab fa-discord';
-          label = 'Discord';
-        } else if (url.includes('spotify.com')) {
-          icon = 'fab fa-spotify';
-          label = 'Spotify';
-        }
-
-        linkElement.innerHTML = `
-          <a href="${url}" target="_blank" rel="noopener noreferrer" class="user-link">
-            <i class="${icon}"></i>
-            <span>${label}</span>
-            <i class="fas fa-external-link-alt link-arrow"></i>
-          </a>
         `;
-        
-        linksContainer.appendChild(linkElement);
+        return;
       }
-    });
 
-    console.log(`✅ ${Object.keys(links).length} links carregados com sucesso!`);
+      const userData = userDoc.data();
+      const links = userData.links || {};
+
+      if (!links || Object.keys(links).length === 0) {
+        linksContainer.innerHTML = `
+          <div class="empty-links">
+            <div class="empty-icon">
+              <i class="fas fa-link"></i>
+            </div>
+            <h3>Nenhum link ainda</h3>
+            <p>Este usuário ainda não adicionou nenhum link.</p>
+          </div>
+        `;
+        return;
+      }
+
+      Object.entries(links).forEach(([key, url]) => {
+        if (url && url.trim()) {
+          const linkElement = document.createElement('div');
+          linkElement.className = 'link-box';
+          
+          let icon = 'fas fa-external-link-alt';
+          let label = key;
+          
+          if (url.includes('instagram.com')) {
+            icon = 'fab fa-instagram';
+            label = 'Instagram';
+          } else if (url.includes('twitter.com') || url.includes('x.com')) {
+            icon = 'fab fa-twitter';
+            label = 'Twitter/X';
+          } else if (url.includes('tiktok.com')) {
+            icon = 'fab fa-tiktok';
+            label = 'TikTok';
+          } else if (url.includes('youtube.com')) {
+            icon = 'fab fa-youtube';
+            label = 'YouTube';
+          } else if (url.includes('github.com')) {
+            icon = 'fab fa-github';
+            label = 'GitHub';
+          } else if (url.includes('linkedin.com')) {
+            icon = 'fab fa-linkedin';
+            label = 'LinkedIn';
+          } else if (url.includes('discord')) {
+            icon = 'fab fa-discord';
+            label = 'Discord';
+          } else if (url.includes('spotify.com')) {
+            icon = 'fab fa-spotify';
+            label = 'Spotify';
+          }
+
+          linkElement.innerHTML = `
+            <a href="${url}" target="_blank" rel="noopener noreferrer" class="user-link">
+              <i class="${icon}"></i>
+              <span>${label}</span>
+              <i class="fas fa-external-link-alt link-arrow"></i>
+            </a>
+          `;
+          
+          linksContainer.appendChild(linkElement);
+        }
+      });
+
+      console.log(`✅ ${Object.keys(links).length} links carregados com sucesso!`);
+    });
 
   } catch (error) {
     console.error('❌ Erro ao carregar links:', error);
@@ -728,15 +942,13 @@ async function carregarLinks(username) {
 }
 
 // ===================
-// SISTEMA DE POSTS CORRIGIDO E MELHORADO
+// SISTEMA DE POSTS COM AUTENTICAÇÃO
 // ===================
 
-// Variáveis globais para controle de posts
 let isLoadingPosts = false;
 let lastPostDoc = null;
 let currentUsername = null;
 
-// Função para formatar data
 function formatarDataPost(timestamp) {
   if (!timestamp) return 'Data não disponível';
   
@@ -774,31 +986,25 @@ function formatarDataPost(timestamp) {
   }
 }
 
-// Função para formatar conteúdo do post
 function formatarConteudoPost(conteudo) {
   if (!conteudo) return '<p class="empty-content">Post sem conteúdo</p>';
   
   let conteudoFormatado = conteudo;
   
-  // Detectar URLs
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   conteudoFormatado = conteudoFormatado.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   
-  // Detectar hashtags
   const hashtagRegex = /#(\w+)/g;
   conteudoFormatado = conteudoFormatado.replace(hashtagRegex, '<span class="hashtag">#$1</span>');
   
-  // Detectar menções
   const mentionRegex = /@(\w+)/g;
   conteudoFormatado = conteudoFormatado.replace(mentionRegex, '<span class="mention">@$1</span>');
   
-  // Quebras de linha
   conteudoFormatado = conteudoFormatado.replace(/\n/g, '<br>');
   
   return `<p>${conteudoFormatado}</p>`;
 }
 
-// Função para criar elemento do post
 function criarElementoPost(postData, userPhoto, displayName, postId, username) {
   console.log('Criando post:', { postId, conteudo: postData.conteudo, data: postData.postadoem });
   
@@ -872,13 +1078,12 @@ function criarElementoPost(postData, userPhoto, displayName, postId, username) {
   return postCard;
 }
 
-// Função principal para carregar posts
 async function carregarPostsDoMural(username) {
   console.log('🔄 Iniciando carregamento de posts para:', username);
   
   const muralContainer = document.getElementById('muralPosts');
-  if (!muralContainer) {
-    console.error('❌ Container muralPosts não encontrado');
+  if (!muralContainer || !authManager.isAuthenticated()) {
+    console.error('❌ Container muralPosts não encontrado ou não autenticado');
     return;
   }
 
@@ -890,7 +1095,6 @@ async function carregarPostsDoMural(username) {
   isLoadingPosts = true;
   currentUsername = username;
 
-  // Mostrar loading
   muralContainer.innerHTML = `
     <div class="loading-container">
       <div class="loading-spinner"></div>
@@ -899,86 +1103,82 @@ async function carregarPostsDoMural(username) {
   `;
 
   try {
-    // Primeiro, buscar dados do usuário
-    console.log('📋 Buscando dados do usuário...');
-    const userRef = doc(db, 'users', username);
-    const userDoc = await getDoc(userRef);
-    
-    let userData = {};
-    if (userDoc.exists()) {
-      userData = userDoc.data();
-      console.log('✅ Dados do usuário encontrados:', userData.displayname || userData.username);
-    } else {
-      console.log('⚠️ Dados do usuário não encontrados, usando padrões');
-    }
-    
-    const userPhoto = userData.userphoto || userData.foto || './src/icon/default.jpg';
-    const displayName = userData.displayname || userData.username || username;
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      console.log('📋 Buscando dados do usuário...');
+      const userRef = doc(db, 'users', username);
+      const userDoc = await getDoc(userRef);
+      
+      let userData = {};
+      if (userDoc.exists()) {
+        userData = userDoc.data();
+        console.log('✅ Dados do usuário encontrados:', userData.displayname || userData.username);
+      } else {
+        console.log('⚠️ Dados do usuário não encontrados, usando padrões');
+      }
+      
+      const userPhoto = userData.userphoto || userData.foto || './src/icon/default.jpg';
+      const displayName = userData.displayname || userData.username || username;
 
-    // Buscar posts
-    console.log('📝 Buscando posts...');
-    const postsRef = collection(db, 'users', username, 'posts');
-    const postsQuery = query(postsRef, orderBy('postadoem', 'desc'), limit(10));
-    
-    const snapshot = await getDocs(postsQuery);
-    console.log(`📊 Encontrados ${snapshot.size} posts`);
+      console.log('📝 Buscando posts...');
+      const postsRef = collection(db, 'users', username, 'posts');
+      const postsQuery = query(postsRef, orderBy('postadoem', 'desc'), limit(10));
+      
+      const snapshot = await getDocs(postsQuery);
+      console.log(`📊 Encontrados ${snapshot.size} posts`);
 
-    // Limpar container
-    muralContainer.innerHTML = '';
+      muralContainer.innerHTML = '';
 
-    if (snapshot.empty) {
-      console.log('📭 Nenhum post encontrado');
-      muralContainer.innerHTML = `
-        <div class="empty-posts">
-          <div class="empty-icon">
-            <i class="fas fa-pen-alt"></i>
+      if (snapshot.empty) {
+        console.log('📭 Nenhum post encontrado');
+        muralContainer.innerHTML = `
+          <div class="empty-posts">
+            <div class="empty-icon">
+              <i class="fas fa-pen-alt"></i>
+            </div>
+            <h3>Nenhum post ainda</h3>
+            <p>Este usuário ainda não compartilhou nada.</p>
+            ${isPerfilProprio() ? '<a href="feed.html" class="btn-primary">Fazer primeiro post</a>' : ''}
           </div>
-          <h3>Nenhum post ainda</h3>
-          <p>Este usuário ainda não compartilhou nada.</p>
-          ${isPerfilProprio() ? '<a href="feed.html" class="btn-primary">Fazer primeiro post</a>' : ''}
-        </div>
-      `;
-      return;
-    }
+        `;
+        return;
+      }
 
-    // Criar posts
-    let postsAdicionados = 0;
-    snapshot.forEach(postDoc => {
-      try {
-        const postData = postDoc.data();
-        console.log(`📄 Processando post ${postDoc.id}:`, {
-          conteudo: postData.conteudo?.substring(0, 50) + '...',
-          data: postData.postadoem,
-          curtidas: postData.curtidas
-        });
-        
-        const postElement = criarElementoPost(postData, userPhoto, displayName, postDoc.id, username);
-        muralContainer.appendChild(postElement);
-        postsAdicionados++;
-      } catch (error) {
-        console.error(`❌ Erro ao processar post ${postDoc.id}:`, error);
+      let postsAdicionados = 0;
+      snapshot.forEach(postDoc => {
+        try {
+          const postData = postDoc.data();
+          console.log(`📄 Processando post ${postDoc.id}:`, {
+            conteudo: postData.conteudo?.substring(0, 50) + '...',
+            data: postData.postadoem,
+            curtidas: postData.curtidas
+          });
+          
+          const postElement = criarElementoPost(postData, userPhoto, displayName, postDoc.id, username);
+          muralContainer.appendChild(postElement);
+          postsAdicionados++;
+        } catch (error) {
+          console.error(`❌ Erro ao processar post ${postDoc.id}:`, error);
+        }
+      });
+
+      if (snapshot.docs.length > 0) {
+        lastPostDoc = snapshot.docs[snapshot.docs.length - 1];
+      }
+
+      console.log(`✅ ${postsAdicionados} posts carregados com sucesso!`);
+
+      if (snapshot.docs.length === 10) {
+        const loadMoreBtn = document.createElement('div');
+        loadMoreBtn.className = 'load-more-container';
+        loadMoreBtn.innerHTML = `
+          <button class="load-more-btn" onclick="carregarMaisPosts()">
+            <i class="fas fa-chevron-down"></i>
+            Carregar mais posts
+          </button>
+        `;
+        muralContainer.appendChild(loadMoreBtn);
       }
     });
-
-    // Configurar paginação
-    if (snapshot.docs.length > 0) {
-      lastPostDoc = snapshot.docs[snapshot.docs.length - 1];
-    }
-
-    console.log(`✅ ${postsAdicionados} posts carregados com sucesso!`);
-
-    // Adicionar botão "Carregar mais" se houver mais posts
-    if (snapshot.docs.length === 10) {
-      const loadMoreBtn = document.createElement('div');
-      loadMoreBtn.className = 'load-more-container';
-      loadMoreBtn.innerHTML = `
-        <button class="load-more-btn" onclick="carregarMaisPosts()">
-          <i class="fas fa-chevron-down"></i>
-          Carregar mais posts
-        </button>
-      `;
-      muralContainer.appendChild(loadMoreBtn);
-    }
 
   } catch (error) {
     console.error('❌ Erro ao carregar posts:', error);
@@ -997,9 +1197,8 @@ async function carregarPostsDoMural(username) {
   }
 }
 
-// Função para carregar mais posts
 async function carregarMaisPosts() {
-  if (!currentUsername || !lastPostDoc || isLoadingPosts) return;
+  if (!currentUsername || !lastPostDoc || isLoadingPosts || !authManager.isAuthenticated()) return;
 
   isLoadingPosts = true;
   
@@ -1010,61 +1209,57 @@ async function carregarMaisPosts() {
   }
 
   try {
-    const postsRef = collection(db, 'users', currentUsername, 'posts');
-    const postsQuery = query(postsRef, orderBy('postadoem', 'desc'), startAfter(lastPostDoc), limit(5));
-    const snapshot = await getDocs(postsQuery);
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const postsRef = collection(db, 'users', currentUsername, 'posts');
+      const postsQuery = query(postsRef, orderBy('postadoem', 'desc'), startAfter(lastPostDoc), limit(5));
+      const snapshot = await getDocs(postsQuery);
 
-    if (!snapshot.empty) {
-      const muralContainer = document.getElementById('muralPosts');
-      const loadMoreContainer = document.querySelector('.load-more-container');
-      
-      // Remover botão temporariamente
-      if (loadMoreContainer) {
-        loadMoreContainer.remove();
+      if (!snapshot.empty) {
+        const muralContainer = document.getElementById('muralPosts');
+        const loadMoreContainer = document.querySelector('.load-more-container');
+        
+        if (loadMoreContainer) {
+          loadMoreContainer.remove();
+        }
+
+        const userRef = doc(db, 'users', currentUsername);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.exists() ? userDoc.data() : {};
+        
+        const userPhoto = userData.userphoto || userData.foto || './src/icon/default.jpg';
+        const displayName = userData.displayname || userData.username || currentUsername;
+
+        snapshot.forEach(postDoc => {
+          const postData = postDoc.data();
+          const postElement = criarElementoPost(postData, userPhoto, displayName, postDoc.id, currentUsername);
+          muralContainer.appendChild(postElement);
+        });
+
+        lastPostDoc = snapshot.docs[snapshot.docs.length - 1];
+
+        if (snapshot.docs.length === 5) {
+          const loadMoreBtn = document.createElement('div');
+          loadMoreBtn.className = 'load-more-container';
+          loadMoreBtn.innerHTML = `
+            <button class="load-more-btn" onclick="carregarMaisPosts()">
+              <i class="fas fa-chevron-down"></i>
+              Carregar mais posts
+            </button>
+          `;
+          muralContainer.appendChild(loadMoreBtn);
+        }
+      } else {
+        const loadMoreContainer = document.querySelector('.load-more-container');
+        if (loadMoreContainer) {
+          loadMoreContainer.innerHTML = `
+            <div class="end-posts">
+              <i class="fas fa-check-circle"></i>
+              Todos os posts foram carregados
+            </div>
+          `;
+        }
       }
-
-      // Buscar dados do usuário novamente
-      const userRef = doc(db, 'users', currentUsername);
-      const userDoc = await getDoc(userRef);
-      const userData = userDoc.exists() ? userDoc.data() : {};
-      
-      const userPhoto = userData.userphoto || userData.foto || './src/icon/default.jpg';
-      const displayName = userData.displayname || userData.username || currentUsername;
-
-      // Adicionar novos posts
-      snapshot.forEach(postDoc => {
-        const postData = postDoc.data();
-        const postElement = criarElementoPost(postData, userPhoto, displayName, postDoc.id, currentUsername);
-        muralContainer.appendChild(postElement);
-      });
-
-      // Atualizar último documento
-      lastPostDoc = snapshot.docs[snapshot.docs.length - 1];
-
-      // Adicionar botão novamente se houver mais posts
-      if (snapshot.docs.length === 5) {
-        const loadMoreBtn = document.createElement('div');
-        loadMoreBtn.className = 'load-more-container';
-        loadMoreBtn.innerHTML = `
-          <button class="load-more-btn" onclick="carregarMaisPosts()">
-            <i class="fas fa-chevron-down"></i>
-            Carregar mais posts
-          </button>
-        `;
-        muralContainer.appendChild(loadMoreBtn);
-      }
-    } else {
-      // Não há mais posts
-      const loadMoreContainer = document.querySelector('.load-more-container');
-      if (loadMoreContainer) {
-        loadMoreContainer.innerHTML = `
-          <div class="end-posts">
-            <i class="fas fa-check-circle"></i>
-            Todos os posts foram carregados
-          </div>
-        `;
-      }
-    }
+    });
   } catch (error) {
     console.error('Erro ao carregar mais posts:', error);
     if (loadMoreBtn) {
@@ -1080,7 +1275,6 @@ async function carregarMaisPosts() {
 // SISTEMA DE NAVEGAÇÃO ENTRE TABS
 // ===================
 
-// Função para configurar navegação entre tabs
 function configurarNavegacaoTabs() {
   const menuItems = document.querySelectorAll('.menu-item');
   const tabs = document.querySelectorAll('.tab');
@@ -1089,17 +1283,19 @@ function configurarNavegacaoTabs() {
 
   menuItems.forEach((item, index) => {
     item.addEventListener('click', async () => {
-      // Remover classe active de todos os itens e tabs
+      if (!authManager.isAuthenticated()) {
+        console.warn('Usuário não autenticado para navegação');
+        return;
+      }
+
       menuItems.forEach(mi => mi.classList.remove('active'));
       tabs.forEach(tab => tab.classList.remove('active'));
       
-      // Adicionar classe active ao item clicado e tab correspondente
       item.classList.add('active');
       if (tabs[index]) {
         tabs[index].classList.add('active');
       }
 
-      // Carregar conteúdo específico baseado na tab
       const username = determinarUsuarioParaCarregar();
       if (!username) return;
 
@@ -1110,10 +1306,8 @@ function configurarNavegacaoTabs() {
           }
           break;
         case 1: // Visão Geral
-          // Já carregado no carregarPerfilCompleto
           break;
         case 2: // Gostos  
-          // Já carregado no carregarPerfilCompleto
           break;
         case 3: // Depoimentos
           await carregarDepoimentos(username);
@@ -1125,7 +1319,6 @@ function configurarNavegacaoTabs() {
     });
   });
 
-  // Ativar primeira tab por padrão
   if (menuItems[0] && tabs[0]) {
     menuItems[0].classList.add('active');
     tabs[0].classList.add('active');
@@ -1133,32 +1326,35 @@ function configurarNavegacaoTabs() {
 }
 
 // ===================
-// FUNÇÕES DE INTERAÇÃO COM POSTS
+// FUNÇÕES DE INTERAÇÃO COM POSTS (com autenticação)
 // ===================
 
-// Função para curtir post
 async function curtirPost(postId, username, btnElement) {
+  if (!authManager.isAuthenticated()) return;
+
   try {
     btnElement.classList.add('loading');
     
-    // Simular curtida (remova este bloco se quiser implementar curtida real)
-    const countElement = btnElement.querySelector('.action-count');
-    let currentCount = parseInt(countElement.textContent) || 0;
-    currentCount++;
-    countElement.textContent = currentCount;
-    btnElement.classList.add('liked', 'has-likes');
-    
-    // Animação
-    btnElement.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-      btnElement.style.transform = 'scale(1)';
-    }, 200);
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      // Simular curtida (implementar lógica real aqui)
+      const countElement = btnElement.querySelector('.action-count');
+      let currentCount = parseInt(countElement.textContent) || 0;
+      currentCount++;
+      countElement.textContent = currentCount;
+      btnElement.classList.add('liked', 'has-likes');
+      
+      // Animação
+      btnElement.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        btnElement.style.transform = 'scale(1)';
+      }, 200);
 
-    // Implementação real seria aqui:
-    // const postRef = doc(db, 'users', username, 'posts', postId);
-    // await updateDoc(postRef, {
-    //   curtidas: increment(1)
-    // });
+      // Implementação real:
+      // const postRef = doc(db, 'users', username, 'posts', postId);
+      // await updateDoc(postRef, {
+      //   curtidas: increment(1)
+      // });
+    });
     
   } catch (error) {
     console.error('Erro ao curtir post:', error);
@@ -1167,7 +1363,6 @@ async function curtirPost(postId, username, btnElement) {
   }
 }
 
-// Função para abrir modal de imagem
 function abrirModalImagem(imagemUrl) {
   const modal = document.createElement('div');
   modal.className = 'image-modal';
@@ -1185,7 +1380,6 @@ function abrirModalImagem(imagemUrl) {
   document.body.style.overflow = 'hidden';
 }
 
-// Função para fechar modal
 function fecharModal() {
   const modal = document.querySelector('.image-modal');
   if (modal) {
@@ -1194,15 +1388,12 @@ function fecharModal() {
   }
 }
 
-// Outras funções de interação
 function mostrarOpcoesPost(postId) {
   console.log('Opções do post:', postId);
-  // Implementar menu de opções
 }
 
 function abrirComentarios(postId) {
   console.log('Comentários do post:', postId);
-  // Implementar comentários
 }
 
 function compartilharPost(postId) {
@@ -1212,7 +1403,6 @@ function compartilharPost(postId) {
       url: window.location.href
     }).catch(console.error);
   } else {
-    // Fallback para copiar link
     navigator.clipboard.writeText(window.location.href)
       .then(() => alert('Link copiado!'))
       .catch(() => console.log('Erro ao copiar link'));
@@ -1221,7 +1411,6 @@ function compartilharPost(postId) {
 
 function salvarPost(postId) {
   console.log('Salvar post:', postId);
-  // Implementar salvamento
 }
 
 // ===================
@@ -1236,10 +1425,9 @@ function determinarUsuarioParaCarregar() {
     return usernameParam;
   }
   
-  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-  if (usuarioLogadoJSON) {
-    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-    return usuarioLogado.username;
+  const currentUser = authManager.getCurrentUser();
+  if (currentUser) {
+    return currentUser.displayName;
   }
   
   return null;
@@ -1249,10 +1437,9 @@ function isPerfilProprio() {
   const params = new URLSearchParams(window.location.search);
   const usernameParam = params.get("username") || params.get("user");
   
-  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-  if (usuarioLogadoJSON) {
-    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-    return !usernameParam || usernameParam === usuarioLogado.username;
+  const currentUser = authManager.getCurrentUser();
+  if (currentUser) {
+    return !usernameParam || usernameParam === currentUser.displayName;
   }
   
   return false;
@@ -1261,8 +1448,8 @@ function isPerfilProprio() {
 async function carregarPerfilCompleto() {
   const usernameParaCarregar = determinarUsuarioParaCarregar();
   
-  if (!usernameParaCarregar) {
-    console.log("Nenhum usuário para carregar");
+  if (!usernameParaCarregar || !authManager.isAuthenticated()) {
+    console.log("Nenhum usuário para carregar ou não autenticado");
     window.location.href = 'index.html';
     return;
   }
@@ -1270,58 +1457,49 @@ async function carregarPerfilCompleto() {
   console.log("Carregando perfil do usuário:", usernameParaCarregar);
 
   try {
-    const userRef = doc(db, "users", usernameParaCarregar);
-    const docSnap = await getDoc(userRef);
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const userRef = doc(db, "users", usernameParaCarregar);
+      const docSnap = await getDoc(userRef);
 
-    if (docSnap.exists()) {
-      const dados = docSnap.data();
-      console.log("Dados do usuário carregados:", dados);
-      
-      atualizarInformacoesBasicas(dados, usernameParaCarregar);
-      atualizarVisaoGeral(dados);
-      atualizarGostos(dados);
-      atualizarImagensPerfil(dados);
-      
-      // Aplicar background do headerphoto no body
-      aplicarBackgroundHeaderPhoto(dados);
-      
-      // Atualizar estatísticas e configurar botão de seguir
-      await atualizarEstatisticasPerfil(usernameParaCarregar);
-      await configurarBotaoSeguir();
-      
-      // Carregar posts do mural (versão corrigida)
-      await carregarPostsDoMural(usernameParaCarregar);
-      
-    } else {
-      console.log("Usuário não encontrado no banco de dados");
-      const nomeElement = document.getElementById("nomeCompleto");
-      if (nomeElement) nomeElement.textContent = "Usuário não encontrado";
-      const usernameElement = document.getElementById("username");
-      if (usernameElement) usernameElement.textContent = "";
-      
-      // Ainda assim tentar carregar posts
-      await carregarPostsDoMural(usernameParaCarregar);
-    }
+      if (docSnap.exists()) {
+        const dados = docSnap.data();
+        console.log("Dados do usuário carregados:", dados);
+        
+        atualizarInformacoesBasicas(dados, usernameParaCarregar);
+        atualizarVisaoGeral(dados);
+        atualizarGostos(dados);
+        atualizarImagensPerfil(dados);
+        aplicarBackgroundHeaderPhoto(dados);
+        
+        await atualizarEstatisticasPerfil(usernameParaCarregar);
+        await configurarBotaoSeguir();
+        await carregarPostsDoMural(usernameParaCarregar);
+        
+      } else {
+        console.log("Usuário não encontrado no banco de dados");
+        const nomeElement = document.getElementById("nomeCompleto");
+        if (nomeElement) nomeElement.textContent = "Usuário não encontrado";
+        const usernameElement = document.getElementById("username");
+        if (usernameElement) usernameElement.textContent = "";
+        
+        await carregarPostsDoMural(usernameParaCarregar);
+      }
+    });
   } catch (error) {
     console.error("Erro ao carregar perfil:", error);
   }
 }
 
-// ===================
-// FUNÇÃO PARA APLICAR BACKGROUND DO HEADERPHOTO
-// ===================
 function aplicarBackgroundHeaderPhoto(dados) {
   if (dados.headerphoto) {
     const body = document.body;
     
-    // Aplicar background do headerphoto no body
     body.style.backgroundImage = `url(${dados.headerphoto})`;
     body.style.backgroundSize = 'cover';
     body.style.backgroundPosition = 'center';
     body.style.backgroundAttachment = 'fixed';
     body.style.backgroundRepeat = 'no-repeat';
     
-    // Adicionar overlay para melhor legibilidade
     if (!document.querySelector('.body-overlay')) {
       const overlay = document.createElement('div');
       overlay.className = 'body-overlay';
@@ -1338,7 +1516,6 @@ function aplicarBackgroundHeaderPhoto(dados) {
       body.appendChild(overlay);
     }
     
-    // Remover blur apenas se tiver foto
     const glassOverlay = document.querySelector('.glass-overlay');
     if (glassOverlay) {
       glassOverlay.remove();
@@ -1346,17 +1523,10 @@ function aplicarBackgroundHeaderPhoto(dados) {
     
     console.log('✅ Background do headerphoto aplicado ao body e blur removido');
   } else {
-    // Se não tiver foto, manter o blur/glass overlay
     console.log('❌ Nenhuma foto de header encontrada - mantendo blur');
   }
 }
 
-// ===================
-// FUNÇÕES DE ATUALIZAÇÃO DO PERFIL
-// ===================
-// ===================
-// FUNÇÕES DE ATUALIZAÇÃO DO PERFIL
-// ===================
 function atualizarInformacoesBasicas(dados, username) {
   const nomeCompleto = dados.displayname || `${dados.nome || ''} ${dados.sobrenome || ''}`.trim();
   const nomeElement = document.getElementById("nomeCompleto");
@@ -1379,7 +1549,6 @@ function atualizarInformacoesBasicas(dados, username) {
     visaoGeralTitle.textContent = `Visão Geral de ${nomeCompleto || dados.username || username}`;
   }
 
-  // Atualizar títulos das outras tabs
   const gostosTitle = document.getElementById("gostos-title");
   if (gostosTitle) {
     gostosTitle.textContent = `Gostos de ${nomeCompleto || dados.username || username}`;
@@ -1415,7 +1584,7 @@ function criarAboutBoxSobre(dados, username) {
   const localizacao = dados.localizacao || "Não informada";
   const estadoCivil = dados.estadoCivil || "Não informado";
 
-  return `
+    return `
     <div class="about-box sobre-box" id="sobreBox">
       <div class="sobre-header">
         <h4>Sobre ${nomeUsuario}</h4>
@@ -1623,11 +1792,9 @@ function atualizarImagensPerfil(dados) {
 }
 
 function configurarLinks() {
-  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-  if (usuarioLogadoJSON) {
-    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-    const username = usuarioLogado.username;
-    
+  const currentUser = authManager.getCurrentUser();
+  if (currentUser) {
+    const username = currentUser.displayName;
     const urlPerfil = `PF.html?username=${encodeURIComponent(username)}`;
     
     const linkSidebar = document.getElementById('linkPerfilSidebar');
@@ -1639,29 +1806,38 @@ function configurarLinks() {
 
   const btnSair = document.getElementById('btnSair');
   if (btnSair) {
-    btnSair.addEventListener('click', (e) => {
+    btnSair.addEventListener('click', async (e) => {
       e.preventDefault();
-      localStorage.removeItem('usuarioLogado');
-      window.location.href = 'index.html';
+      try {
+        await authManager.signOut();
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        window.location.href = 'index.html';
+      }
     });
   }
 }
 
 async function atualizarMarqueeUltimoUsuario() {
+  if (!authManager.isAuthenticated()) return;
+
   try {
-    const lastUpdateRef = doc(db, "lastupdate", "latestUser");
-    const docSnap = await getDoc(lastUpdateRef);
+    await authManager.makeAuthenticatedRequest(async (token) => {
+      const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+      const docSnap = await getDoc(lastUpdateRef);
 
-    const marquee = document.querySelector(".marquee");
-    if (!marquee) return;
+      const marquee = document.querySelector(".marquee");
+      if (!marquee) return;
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const nomeUsuario = data.username || "Usuário";
-      marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
-    } else {
-      marquee.textContent = "Bem-vindo ao RealMe!";
-    }
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const nomeUsuario = data.username || "Usuário";
+        marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+      } else {
+        marquee.textContent = "Bem-vindo ao RealMe!";
+      }
+    });
   } catch (error) {
     console.error("Erro ao buscar último usuário:", error);
     const marquee = document.querySelector(".marquee");
@@ -1669,43 +1845,205 @@ async function atualizarMarqueeUltimoUsuario() {
   }
 }
 
-function verificarLogin() {
-  const usuarioLogado = localStorage.getItem('usuarioLogado');
-  if (!usuarioLogado) {
-    console.log("Usuário não está logado, redirecionando para login");
-    window.location.href = 'index.html';
-    return false;
+// ===================
+// SISTEMA DE STATUS ONLINE MODERNIZADO
+// ===================
+
+class LiveStatusManager {
+  constructor(username) {
+    this.username = username;
+    this.statusRef = null;
+    this.connectedRef = null;
+    this.listeners = [];
+    
+    if (username) {
+      this.init();
+    }
   }
-  return true;
+
+  init() {
+    this.statusRef = ref(rtdb, `userStatus/${this.username}`);
+    this.connectedRef = ref(rtdb, '.info/connected');
+
+    const setOnlineStatus = () => {
+      const statusData = {
+        username: this.username,
+        status: 'online',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      };
+      
+      set(this.statusRef, statusData);
+      
+      // Configurar para offline quando desconectar
+      onDisconnect(this.statusRef).set({
+        username: this.username,
+        status: 'offline',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      });
+    };
+
+    const connectedListener = onValue(this.connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+        console.log('✅ Conectado ao Realtime Database');
+        setOnlineStatus();
+      }
+    });
+
+    this.listeners.push(connectedListener);
+
+    // Monitorar atividade da página
+    this.setupActivityTracking();
+    this.setupVisibilityTracking();
+  }
+
+  setupActivityTracking() {
+    let lastActivity = Date.now();
+    let awayTimeout = null;
+    let isActive = true;
+
+    const updateActivity = () => {
+      lastActivity = Date.now();
+      if (awayTimeout) {
+        clearTimeout(awayTimeout);
+      }
+      
+      if (isActive) {
+        this.updateStatus('online');
+      }
+      
+      awayTimeout = setTimeout(() => {
+        if (isActive) {
+          this.updateStatus('away');
+        }
+      }, 5 * 60 * 1000); // 5 minutos
+    };
+
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    activityEvents.forEach(event => {
+      const listener = updateActivity;
+      document.addEventListener(event, listener, true);
+      this.listeners.push({ type: 'activity', event, listener });
+    });
+  }
+
+  setupVisibilityTracking() {
+    let isTabActive = true;
+
+    const visibilityListener = () => {
+      isTabActive = !document.hidden;
+      const status = isTabActive ? 'online' : 'away';
+      this.updateStatus(status);
+    };
+
+    const beforeUnloadListener = () => {
+      this.updateStatus('offline');
+    };
+
+    document.addEventListener('visibilitychange', visibilityListener);
+    window.addEventListener('beforeunload', beforeUnloadListener);
+
+    this.listeners.push({ type: 'visibility', listener: visibilityListener });
+    this.listeners.push({ type: 'beforeunload', listener: beforeUnloadListener });
+  }
+
+  updateStatus(status) {
+    if (this.statusRef) {
+      set(this.statusRef, {
+        username: this.username,
+        status: status,
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'index.html';
+    
+    const pageMap = {
+      'index.html': 'Login',
+      'feed.html': 'Feed',
+      'PF.html': 'Perfil',
+      'config.html': 'Configurações',
+      'chat.html': 'Chat',
+      'search.html': 'Busca'
+    };
+
+    return pageMap[page] || page.replace('.html', '');
+  }
+
+  destroy() {
+    // Limpar todos os listeners
+    this.listeners.forEach(listener => {
+      if (listener.type === 'activity') {
+        document.removeEventListener(listener.event, listener.listener, true);
+      } else if (listener.type === 'visibility') {
+        document.removeEventListener('visibilitychange', listener.listener);
+      } else if (listener.type === 'beforeunload') {
+        window.removeEventListener('beforeunload', listener.listener);
+      } else if (typeof listener === 'function') {
+        // Firebase listeners
+        listener();
+      }
+    });
+
+    // Definir status como offline
+    if (this.statusRef) {
+      set(this.statusRef, {
+        username: this.username,
+        status: 'offline',
+        lastSeen: serverTimestamp(),
+        currentPage: this.getCurrentPage(),
+        timestamp: Date.now()
+      });
+    }
+
+    this.listeners = [];
+  }
 }
 
 // ===================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO MODERNIZADA
 // ===================
 let liveStatusManager = null;
 
-window.addEventListener("DOMContentLoaded", async () => {
-  console.log("🚀 Carregando página de perfil...");
-  
-  if (!verificarLogin()) {
-    return;
+// Aguardar autenticação antes de inicializar
+authManager.addAuthStateListener(async (user) => {
+  if (user) {
+    console.log("🚀 Usuário autenticado, carregando página de perfil...");
+    
+    // Inicializar Live Status
+    if (liveStatusManager) {
+      liveStatusManager.destroy();
+    }
+    liveStatusManager = new LiveStatusManager(user.displayName);
+    
+    // Configurar navegação entre tabs
+    configurarNavegacaoTabs();
+    
+    await carregarPerfilCompleto();
+    await atualizarMarqueeUltimoUsuario();
+    configurarLinks();
+    
+    console.log("✅ Página de perfil carregada com sucesso!");
   }
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("🔄 Aguardando autenticação...");
   
-  // Inicializar Live Status
-  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
-  if (usuarioLogadoJSON) {
-    const usuarioLogado = JSON.parse(usuarioLogadoJSON);
-    liveStatusManager = new LiveStatusManager(usuarioLogado.username);
+  // Se o authManager já estiver inicializado e tiver usuário
+  if (authManager.isInitialized && authManager.getCurrentUser()) {
+    // Trigger manual do listener
+    const user = authManager.getCurrentUser();
+    // (o listener será chamado automaticamente)
   }
-  
-  // Configurar navegação entre tabs
-  configurarNavegacaoTabs();
-  
-  await carregarPerfilCompleto();
-  await atualizarMarqueeUltimoUsuario();
-  configurarLinks();
-  
-  console.log("✅ Página de perfil carregada com sucesso!");
 });
 
 // Cleanup ao sair da página
@@ -1728,6 +2066,10 @@ window.enviarDepoimento = enviarDepoimento;
 window.excluirDepoimento = excluirDepoimento;
 window.carregarDepoimentos = carregarDepoimentos;
 window.carregarLinks = carregarLinks;
+
+// Exportar o authManager para uso em outras partes da aplicação
+window.authManager = authManager;
+
 
 // ===================
 // CSS MELHORADO PARA POSTS E STATUS

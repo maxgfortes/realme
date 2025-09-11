@@ -17,11 +17,11 @@
   <link rel="stylesheet" href="./src/styles/navbars.css" />
   <link rel="stylesheet" href="./src/styles/profile.css" />
   <link rel="stylesheet" href="./src/styles/tags.css" />
-  <link rel="stylesheet" href="./src/styles/mobile.css" />
   <link rel="stylesheet" href="./src/styles/new-popup.css" />
   <link rel="stylesheet" href="./src/styles/depoimentos.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./src/styles/loading.css">
+  <link rel="stylesheet" href="./src/styles/mobile-profile.css">
 
 
 
@@ -93,16 +93,26 @@
 
   <ul id="searchResults"></ul>
 
-  <!-- Navbar Bottom (Mobile) -->
-  <div class="navbar-bottom">
-    <div class="navbar-bottom-content">
-      <a href="iFeed.html"><i class="fas fa-home"></i></a>
-      <a href="#"><i class="fas fa-user-friends"></i></a>
-      <a href="#"><i class="fas fa-comments"></i></a>
-      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
-      <a href="config.html"><i class="fas fa-cog"></i></a>
-    </div>
+
+  <nav class="navbar-bottom">
+  <div class="navbar-bottom-content">
+    <a href="feed.html">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="/amigos">
+      <i class="fas fa-users"></i>
+    </a>
+    <a href="/criar">
+      <i class="fas fa-plus"></i>
+    </a>
+    <a href="/mensagens">
+      <i class="fas fa-comments"></i>
+    </a>
+    <a href="PF.html">
+      <img src="./src/icon/default.jpg" alt="Perfil" id="nav-pic" class="profile-mini" style="width: 24px; height: 24px; border-radius: 50%;">
+    </a>
   </div>
+</nav>
 
     <!-- Barra de progresso para recarregamentos -->
     <div class="progress-bar" id="progressBar"></div>
@@ -111,13 +121,14 @@
   <div class="full-profile-container">
     <!-- Topo do perfil -->
     <div class="profile-header">
-      <div class="profile-pic-block">
+      <div class="full-header">
+        <div class="profile-pic-block">
         <img src="./src/icon/default.jpg" alt="Foto de perfil" class="profile-pic" />
       </div>
     
-      <div class="profile-info-block">
+    <div class="profile-info-block">
       <div class="name-line">
-        <h2 class="profile-name" id="nomeCompleto">usuario do RealMe</h2>
+        <h2 class="profile-name" id="displayname">usuario do RealMe</h2>
         <div class="tag-area">
           <span class="tag" data-id="1">Y2K</span>
           <span class="tag" data-id="2">Goth</span>
@@ -134,18 +145,28 @@
       <div class="handle" id="username">@username</div>
 
       <div class="profile-stats">
-        <span><strong>0</strong> posts</span>
-        <span><strong>0</strong> seguidores</span>
-        <span><strong>0</strong> amigos</span>
-        <span><strong>0</strong> seguindo</span>
-      </div>
-      <div class="action-buttons">
-        <button class="btn-follow">seguir</button>
-        <button class="btn-message">mensagem</button>
-        <button class="btn-nudge"><i class="fa-solid fa-bell ringing-bell"></i><p>nudge</p></button>
+        <div class="stats">
+          <span><strong>0</strong> posts</span>
+        </div>
+        <div class="stats">
+          <span><strong>0</strong> posts</span>
+        </div>
+        <div class="stats">
+          <span><strong>0</strong> posts</span>
+        </div>
+        <div class="stats">
+          <span><strong>0</strong> posts</span>
+        </div>
       </div>
     </div>
+      </div>
+    <div class="action-buttons">
+        <button class="btn-follow">seguir</button>
+        <button class="btn-message" id="btnMensagemPerfil">mensagem</button>
+        <button class="btn-nudge"><i class="fa-solid fa-bell ringing-bell"></i><p>nudge</p></button>
+      </div>
   </div>
+
 
   <!-- Corpo do perfil -->
   <div class="profile-body">
@@ -157,7 +178,6 @@
       <button class="menu-item"><i class="fas fa-heart"></i><p>Gostos</p></button>
       <button class="menu-item"><i class="fas fa-comments"></i><p>Depoimentos</p></button>
       <button class="menu-item"><i class="fas fa-link"></i><p>links</p></button>
-      <button class="menu-item" style="display: none;"><i class="fas fa-link"></i><p>Amigos</p></button>
       </div>
     </div>
 
@@ -175,6 +195,36 @@
     </div>
     <div class="tab visao-tab">
       <h3 id="visao-geral-title">Visão Geral desse usuario</h3>
+      <div class="about-box sobre-box" id="sobreBox">
+  <div class="sobre-header">
+    <h4>Sobre <span id="nomeUsuario">Nome</span></h4>
+  </div>
+  <div class="sobre-content">
+    <div class="info-item">
+      <div class="info-details">
+        <span class="info-icon"><i class="fas fa-user"></i></span>
+        <span class="info-label">Gênero:</span>
+        <span class="info-value" id="generoUsuario">Não informado</span>
+      </div>
+    </div>
+    <div class="info-item">
+      <div class="info-details">
+        <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+        <span class="info-label">Localização:</span>
+        <span class="info-value" id="localizacaoUsuario">Não informada</span>
+      </div>
+    </div>
+    <div class="info-item">
+      <div class="info-details">
+        <span class="info-icon"><i class="fas fa-heart"></i></span>
+        <span class="info-label">Estado Civil:</span>
+        <span class="info-value" id="estadoCivilUsuario">Não informado</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
       <div class="about-container">
         <div class="about-box">
           <p class="about-contant"><i>Visão geral:</i></p>
@@ -255,9 +305,9 @@
   </div>
   <div class="tab amigos-tab" style="display: none;">
       <h3 id="amigos-title">Amigos desse usuario</h3>
-       <div class="about-container">
+      <div class="about-container">
       </div>
-    </div>
+  </div>
 </div>
 
     <div class="container">
@@ -306,8 +356,10 @@
   <script src="/js/mobile-lock.js"></script>
   <script src="./src/js/new-popup.js" defer></script>
   <script src="./src/js/modal-post.js"></script>
-  <script type="module" src="./src/js/all.js"></script>
   <script src="./src/js/masonry-loader.js"></script>
   <script src="./src/js/more.js"></script>
+  <script type="module" src="codigo.js"></script>
+
 </body>
 </html>
+
