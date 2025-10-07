@@ -1,0 +1,836 @@
+
+
+.friends-container {
+  width: 1050px;
+  height: 520px; /* Altura da tela */
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 235px;
+  margin-right: 335px;
+  margin-top: 70px;
+  overflow-y: auto;     /* scroll vertical automático */
+}
+
+/* Scroll estilizado */
+.friends-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.friends-container::-webkit-scrollbar-track {
+  background: transparent; /* trilho invisível */
+}
+
+.friends-container::-webkit-scrollbar-thumb {
+  background: rgba(74, 144, 226, 0.6); /* azul suave */
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.friends-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 144, 226, 0.9);
+    background-clip: content-box;
+}
+
+.friends-header {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #333;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+}
+
+.friends-header span{
+  color: #4A90E2;
+}
+
+
+.user {
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  box-sizing: border-box; /* evita que padding quebre o grid */
+  overflow: hidden; /* evita que conteúdo vaze dos cantos arredondados */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none; /* remove sublinhado */
+  color: inherit;        /* mantém cor normal */
+  cursor: pointer;       /* mostra que é clicável */
+}
+
+.user img {
+  width: 100%;
+  height: 200px; /* define altura fixa pro card ficar uniforme */
+  object-fit: cover; /* mantém proporção sem distorcer */
+  display: block;
+  border-bottom: 1px solid #333; /* fica mais natural no card */
+}
+
+.friends-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.user-name {
+  padding: 10px 0;
+  text-align: center;
+}
+.profile-name {
+  width: 100%;
+  text-align: center;
+}
+
+.profile-name p {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.2;
+  /* sem overflow/ellipsis aqui! */
+}
+
+
+.profile-username p {
+  margin: 0;
+  text-align: center;
+  color: #a3a3a3;
+  font-size: 14px;
+}
+
+
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
+
+
+
+.option-bar {
+  position: fixed;
+  top: 50px; /* abaixo da barra superior */
+  right: 0px; /* lado direito da tela */
+  width: 320px;
+  height: calc(100%); /* altura total da tela menos navbar */
+  background: #141414;
+  border: 1px solid #181818;
+  border-radius: 0px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
+  z-index: 999;
+}
+
+/* Título */
+.option-bar h1 {
+  color: #fafafa;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 26px;
+  padding-top: 20px;
+}
+
+/* Checkbox “Igual a mim” */
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #fafafa;
+}
+
+/* Área de filtros rolável */
+.filter-group {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Quando desabilitado pelo checkbox principal */
+.filter-group.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Botão fixo na parte de baixo */
+.search-btn {
+  padding: 12px;
+  background-color: #4A90E2;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  flex-shrink: 0; /* garante que o botão não encolha */
+  font-size: 18px;
+}
+
+.search-btn:hover {
+  background-color: #357ABD;
+}
+
+.filtros{
+  overflow-y: auto;
+  max-height: 350px;
+  background-color: transparent;
+}
+
+/* Scroll estilizado */
+.filtros::-webkit-scrollbar {
+  width: 12px;
+}
+
+.filtros::-webkit-scrollbar-track {
+  background: transparent; /* trilho invisível */
+}
+
+.filtros::-webkit-scrollbar-thumb {
+  background: rgba(74, 144, 226, 0.6); /* azul suave */
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.filtros::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 144, 226, 0.9);
+  background-clip: content-box;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input.estilo {
+ width: 100%;
+ padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #474747; /* Quase preto, mas não absoluto */
+  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+  transition: all 0.3s ease;
+}
+
+input.estilo:focus {
+  outline: none;
+  border-color: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+}
+
+input.estilo::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.estilo {
+  padding: 10px;
+}
+
+.estilo p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #a3a3a3;
+  margin-bottom: 4px;
+}
+
+/* Container do switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+/* Esconde a checkbox real */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider visual */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+
+/* Bola do slider */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Quando checkbox está marcada */
+.switch input:checked + .slider {
+  background-color: #4A90E2;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Efeito hover */
+.slider:hover {
+  box-shadow: 0 0 5px rgba(74,144,226,0.6);
+}
+
+.lm {
+  padding: 20px;
+  display: flex;
+}
+
+.lm p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #a3a3a3;
+  padding: 5px 10px 5px 5px;
+}
+
+/* Container do select */
+label {
+  display: flex;
+  flex-direction: column;
+  color: #fafafa;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* Estilizando o select */
+select {
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background-color: #1f1f1f;
+  color: #fafafa;
+  font-size: 14px;
+  appearance: none; /* remove estilo padrão do navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover e foco */
+select:hover, select:focus {
+  border-color: #4A90E2;
+  box-shadow: 0 0 8px rgba(74,144,226,0.5);
+  outline: none;
+}
+
+/* Setinha personalizada */
+select {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px; /* espaço para a seta */
+}
+
+.selecoes {
+  padding: 10px;
+  margin-left: 2px;
+}
+
+.age-input {
+  background-color: red;
+  padding: 6px;
+  flex: 1;
+  border-radius: 8px;
+  margin: 8px 0px 12px 0px;
+  font-size: 16px;
+  background: #474747; /* Quase preto, mas não absoluto */
+  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+  transition: all 0.3s ease;
+}
+
+.age-input:focus {
+  outline: none;
+  border-color: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+}
+
+.age {
+  padding: 16px;
+  display: flex;
+}
+
+.age-range {
+  padding: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+ /* Container principal */
+        .friends-container {
+  width: 1050px;
+  height: 520px; /* Altura da tela */
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 235px;
+  margin-right: 335px;
+  margin-top: 70px;
+  overflow-y: auto;     /* scroll vertical automático */
+}
+
+        /* Header com toggle */
+        .friends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            background: rgba(20, 20, 20, 0.9);
+        }
+
+        .friends-header h1 {
+            font-size: 1.8rem;
+            color: #4A90E2;
+        }
+
+        /* Toggle entre modos */
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4A90E2;
+            border-radius: 20px;
+            color: #4A90E2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .toggle-btn.active {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            background: rgba(74, 144, 226, 0.3);
+        }
+
+        /* VIEW GRID (original) */
+        .grid-view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .grid-view.active {
+            display: block;
+        }
+
+        .friends-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .user {
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user:hover {
+            transform: translateY(-5px);
+            border-color: #4A90E2;
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.2);
+        }
+
+        .user img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #333;
+        }
+
+        .user-name {
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .profile-name p {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .profile-username p {
+            color: #a3a3a3;
+            font-size: 14px;
+        }
+
+        /* VIEW CAROUSEL */
+        .carousel-view {
+            display: none;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .carousel-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cards-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Cards do carrossel */
+        .friend-card {
+            position: absolute;
+            width: 250px;
+            height: 350px;
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.95));
+            border: 2px solid #333;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .friend-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .friend-card:hover::before {
+            left: 100%;
+        }
+
+        /* Card principal (centro) */
+        .friend-card.center {
+            z-index: 10;
+            transform: scale(1) translateX(0);
+            filter: brightness(1);
+        }
+
+        /* Cards laterais */
+        .friend-card.left {
+            z-index: 5;
+            transform: scale(0.8) translateX(-200px);
+            opacity: 0.7;
+            filter: brightness(0.7);
+        }
+
+        .friend-card.right {
+            z-index: 5;
+            transform: scale(0.8) translateX(200px);
+            opacity: 0.7;
+            filter: brightness(0.7);
+        }
+
+        /* Cards extremos (parcialmente visíveis) */
+        .friend-card.far-left {
+            z-index: 2;
+            transform: scale(0.6) translateX(-350px);
+            opacity: 0.4;
+            filter: brightness(0.5);
+        }
+
+        .friend-card.far-right {
+            z-index: 2;
+            transform: scale(0.6) translateX(350px);
+            opacity: 0.4;
+            filter: brightness(0.5);
+        }
+
+        /* Cards invisíveis */
+        .friend-card.hidden {
+            opacity: 0;
+            transform: scale(0.5);
+            z-index: 1;
+        }
+
+        /* Conteúdo do card */
+        .card-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin: 20px auto 15px;
+            border: 3px solid #4A90E2;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .card-info {
+            text-align: center;
+            padding: 0 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fafafa;
+            margin-bottom: 8px;
+        }
+
+        .card-username {
+            font-size: 1rem;
+            color: #4A90E2;
+            margin-bottom: 100px;
+        }
+
+        /* Botão ver perfil */
+        .view-profile-btn {
+            position: absolute;
+            bottom:20px;
+            top: auto;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 60px;
+            background: linear-gradient(45deg, #4A90E2, #357ABD);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            text-wrap: nowrap;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+
+        .view-profile-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+            background: linear-gradient(45deg, #357ABD, #4A90E2);
+        }
+
+        /* Controles de navegação */
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #4A90E2;
+            background: rgba(74, 144, 226, 0.1);
+            color: #4A90E2;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: #4A90E2;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Indicadores */
+        .indicators {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(74, 144, 226, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: #4A90E2;
+            transform: scale(1.2);
+        }
+
+        /* Animações */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .friend-card {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Loading skeleton */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .friends-container {
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .friend-card {
+                width: 200px;
+                height: 280px;
+            }
+            
+            .card-image {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .friends-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Scroll customizado para grid */
+        .grid-view::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .grid-view::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .grid-view::-webkit-scrollbar-thumb {
+            background: rgba(74, 144, 226, 0.6);
+            border-radius: 10px;
+            border: 3px solid transparent;
+            background-clip: content-box;
+        }
+
+        .grid-view::-webkit-scrollbar-thumb:hover {
+            background: rgba(74, 144, 226, 0.9);
+            background-clip: content-box;
+        }
+
+
+
+
+
+

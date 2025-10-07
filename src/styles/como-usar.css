@@ -1,0 +1,195 @@
+@media (max-width: 768px) {
+  body {
+    margin-bottom: 70px; /* Espaço para navbar bottom */
+  }
+  
+  /* Esconder sidebar lateral */
+  .tutorial-container {
+    margin-left: 0px;
+  }
+}
+
+.tutorial-container {
+  width: 1050px;
+  height: 520px; /* Altura da tela */
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 250px;
+  margin-top: 80px;
+}
+
+/* Topo fixo */
+.tutorial-header {
+  display: flex;
+  padding: 30px;
+  gap: 20px;
+  background: rgba(20, 20, 20, 0.61);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+/* Corpo do tutorial */
+.tutorial-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* Impede que o conteúdo ultrapasse */
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Seção do tutorial */
+.tutorial-section {
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  padding: 20px;
+  margin-bottom: 40px;
+  color: #eee;
+}
+
+/* Título da seção */
+.tutorial-section h3 {
+  color: #4A90E2;
+  margin-bottom: 12px;
+}
+
+/* Texto da seção */
+.tutorial-text {
+  font-size: 15px;
+  color: #eee;
+  margin-bottom: 16px;
+}
+
+/* Container das mídias (imagens + vídeos) */
+.tutorial-media {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Imagens e vídeos */
+.tutorial-media img,
+.tutorial-media video {
+  width: 48%;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Scroll estilizado para o corpo */
+.tutorial-body::-webkit-scrollbar {
+  width: 12px;
+}
+
+.tutorial-body::-webkit-scrollbar-track {
+  background: transparent; /* trilho invisível */
+}
+
+.tutorial-body::-webkit-scrollbar-thumb {
+  background: rgba(74, 144, 226, 0.6); /* azul suave */
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.tutorial-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 144, 226, 0.9);
+  background-clip: content-box;
+}
+
+/* Responsivo para mobile */
+@media (max-width: 768px) {
+  .tutorial-container {
+    display: grid;
+    grid-template-columns: 180px 1fr; /* barra lateral 180px, conteúdo principal o resto */
+    grid-template-rows: auto 1fr;    /* header tem altura automática, o resto ocupa */
+    grid-template-areas:
+      "header header"
+      "menu content";
+    width: 100vw;
+    max-width: 1050px;
+    height: 520px;
+    margin: 80px auto 0 auto;
+    background: rgba(20, 20, 20, 0.247);
+    backdrop-filter: blur(8px);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-left: 0;
+  }
+
+  .tutorial-header {
+    grid-area: header;
+  }
+
+  /* Se for usar menu, pode criar depois */
+  .tutorial-menu {
+    grid-area: menu;
+    width: 180px;
+    background: rgba(20, 20, 20, 0.63);
+    backdrop-filter: blur(8px);
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+  }
+
+  .tutorial-body {
+    grid-area: content;
+  }
+
+  .tutorial-media img,
+  .tutorial-media video {
+    width: 100%;
+  }
+}
+
+.text-section {
+    color:#ffffff; margin-bottom: 12px;
+    display: flex;
+}
+
+.text-section span{
+    color:#4A90E2; margin-bottom: 12px;
+}
+
+.top-header {
+    color:#ffffff; margin: 0 auto; font-weight: 700;
+}
+
+.top-header span{
+    color:#4A90E2; margin: 0 auto; font-weight: 700;
+}
+
+.tutorial-box {
+    padding-top: 20px;
+}
+
+.button-section {
+    border-radius: 8px;
+    color: #ffffff;
+    background-color: #4A90E2;
+    padding: 5px 8px;
+    border: none;
+}
+
+.button-section:hover{
+    border-radius: 8px;
+    color: #ffffff;
+    background-color: #407dc4;
+    padding: 5px 8px;
+    border: none;
+}

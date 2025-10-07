@@ -1,0 +1,77 @@
+.emo-blog {
+  width: 75%;
+  margin: 20px auto;
+  background: black url("https://i.imgur.com/8DL2JXf.gif");
+  border: 3px solid #ff00ff;
+  box-shadow: 0 0 25px #ff00ff;
+  padding: 15px;
+  font-family: "Verdana", "Comic Sans MS", cursive;
+  color: #fff;
+  text-align: center;
+}
+
+.emo-header {
+  background: #111;
+  padding: 20px;
+  border: 2px solid #ff0066;
+  text-shadow: 2px 2px 5px #ff00ff;
+}
+
+.emo-header h1 {
+  font-size: 2.8em;
+  color: #ff00aa;
+  font-weight: bold;
+}
+
+.emo-header p {
+  font-style: italic;
+  font-size: 1.2em;
+  color: #ccc;
+}
+
+.emo-marquee {
+  margin: 20px 0;
+  background: #222;
+  padding: 10px;
+  border: 1px dashed #ff00ff;
+}
+
+.emo-marquee img {
+  height: 60px;
+  margin: 0 10px;
+}
+
+.emo-post {
+  margin: 25px 0;
+  padding: 15px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px solid #ff00ff;
+}
+
+.emo-post h2 {
+  color: #ff0066;
+  text-shadow: 1px 1px #000;
+  margin-bottom: 10px;
+}
+
+.emo-post p {
+  font-size: 1.1em;
+  line-height: 1.5em;
+}
+
+.emo-post img {
+  display: block;
+  margin: 10px auto;
+  max-width: 220px;
+  border: 2px solid #ff00ff;
+  box-shadow: 0 0 10px #ff00ff;
+}
+
+.emo-footer {
+  margin-top: 20px;
+  padding: 15px;
+  background: #111;
+  color: #ff00ff;
+  font-size: 14px;
+  border-top: 2px solid #ff00aa;
+}

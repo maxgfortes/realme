@@ -1,0 +1,20 @@
+@media (max-width: 1024px) {
+  .sidebar { width: 180px; }
+  .welcome-container { margin-left: 190px; margin-right: 20px; }
+  .logo { font-size: 24px; }
+  .search-box input { width: 200px; }
+}
+
+@media (max-width: 768px) {
+  body { margin-bottom: 70px; }
+  .sidebar { display: none; }
+  .navbar-bottom { display: block; }
+  .welcome-container { margin: 100px 20px 20px 20px; }
+  .logo { font-size: 20px; }
+  .search-box input { width: 150px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 18px; }
+  .search-box input { width: 120px; }
+}

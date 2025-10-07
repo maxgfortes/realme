@@ -1,0 +1,123 @@
+
+    
+.config-box-layout {
+  width: 1050px;
+  height: 520px; /* Altura da tela */
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.637);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 250px;
+  margin-top: 80px;
+}
+
+.invite-tab {
+  padding: 35px 18px;
+  margin: 16px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #cacaca;
+  text-align: left;
+  border-bottom: 1px solid #2a2a2a;
+  background: rgba(20, 20, 20, 0.637);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  width: 600px;
+}
+
+.invite-code {
+  display: flex;
+}
+
+.invite-code button {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  color: #4A90E2;
+  cursor: pointer;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+}
+
+.info-container {
+    width: 400px;
+    border-bottom: 1px solid #2a2a2a;
+  background: rgba(20, 20, 20, 0.637);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  margin: 16px;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.info-container p {
+    margin-top: 12px;
+    color: #aaa;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.info-container i {
+    color: #4A90E2;
+    margin-right: 8px;
+}
+
+.form-header {
+    padding: 20px;
+    border-bottom: 1px solid #2a2a2a;
+    font-size: 24px;
+}
+
+.form-header span {
+    color: #4A90E2;
+}
+
+.invite-container {
+    width: 750px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.invite-tab h2 {
+  color: #fff;
+  font-size: 28px;
+  margin: 0;
+  margin-bottom: 18px;
+  padding: 0px;
+}
+
+.usedby {
+    font-size: 15px;
+    color: #aaa;
+    margin-top: 6px;
+    }
+
+.invite-block { margin-bottom:24px; padding:16px; border-radius:10px; background:#222; }
+.invite-title { font-weight:bold; font-size:18px; margin-bottom:8px; }
+.invite-code-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
+.invite-code { font-size:17px; letter-spacing:2px; }
+.invite-copy-btn { background:none; border:none; transition: color 0.2s; cursor:pointer; color:#4A90E2; font-size:18px; }
+.invite-usedby { margin-top:8px; font-size:15px; }
+.invite-user-info { display:flex;align-items:center;gap:10px;margin-top:6px; }
+.invite-user-photo { width:32px; height:32px; border-radius:50%; object-fit:cover; }
+.invite-user-name { font-weight:bold; }
+.invite-user-username { color:#aaa; font-size:13px; }
+
+.invite-copy-btn.copied {
+  background-color: transparent !important;
+  color: #aaa !important;
+  pointer-events: none;
+}
+.invite-copy-btn.copied i {
+  color: #e4e4e4 !important;
+  transition: color 0.2s;
+}

@@ -1,0 +1,43 @@
+.modal-denuncia {
+      position: fixed; z-index: 100000000001; top: 0; left: 0; width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-denuncia .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      background: rgba(20, 20, 20, 0.801);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+    }
+    .modal-denuncia .modal-content {
+      background: #232323; color: #fff; border-radius: 12px; padding: 28px 24px 18px 24px;
+      min-width: 320px; max-width: 95vw; box-shadow: 0 8px 32px #000a;
+      position: relative; z-index: 2;
+      background: rgba(20, 20, 20, 0.726);
+  backdrop-filter: blur(12px);
+  border: 1px solid #2a2a2a;
+  
+    }
+    .modal-denuncia h2 { margin-top: 0; font-size: 1.3em; }
+    .modal-denuncia label { display: block; margin: 12px 0 4px 0; font-size: 0.98em; }
+    .modal-denuncia select, .modal-denuncia input[type="text"], .modal-denuncia textarea {
+      width: 100%; padding: 7px 10px; border-radius: 6px; border: 1px solid #444; background: #181818; color: #fff;
+      margin-bottom: 6px; font-size: 1em;
+    }
+    .modal-denuncia textarea { 
+        height: 200px;
+     }
+    .modal-denuncia .modal-actions {
+      display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px;
+    }
+
+    .modal-denuncia textarea:focus, .modal-denuncia select:focus, .modal-denuncia input[type="text"]:focus {
+      outline: none; border-color: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+    }
+    .modal-denuncia .btn-cancel, .modal-denuncia .btn-submit {
+      padding: 7px 18px; border-radius: 6px; border: none; font-size: 1em; cursor: pointer;
+    }
+    .modal-denuncia .btn-cancel { background: #444; color: #fff; }
+    .modal-denuncia .btn-submit { background: #e74c3c; color: #fff; }
+    .modal-denuncia .btn-submit:hover { background: #c0392b; }

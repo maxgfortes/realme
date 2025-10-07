@@ -1,0 +1,28 @@
+
+.tag-area {
+  color: white;
+font-size: 12px;
+padding: 2px 8px;
+border-radius: 12px;
+text-transform: uppercase;
+font-weight: bold;
+
+}
+
+.tag {
+color: white;
+font-size: 12px;
+padding: 2px 8px;
+border-radius: 12px;
+text-transform: uppercase;
+font-weight: bold;
+background-color: #161616;
+}
+
+.verificado i{
+    color: #4A90E2;
+    font-size: 18px;
+    margin-top: 4px;
+    background-color: white;
+    border-radius: 80px;
+}
