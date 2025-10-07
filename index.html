@@ -1,24 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iFriendMatch</title>
-  <link rel="icon" href="./src/icon/icon.png" type="image/png">
-  <link rel="stylesheet" href="./src/styles/navbars.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Cor da barra de navegação no iPhone Safari e Android Chrome -->
-  <meta name="theme-color" content="#1F1F1F"> <!-- Cor desejada -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="./src/styles/styles-mobile/signup.css" />
 
-  <!-- Para iPhone quando o site é adicionado à tela inicial -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <!-- Opções: default | black | black-translucent -->
-   <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="./src/icon/icon.png">
-
-  <!-- Título do preview -->
+    <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
 
   <!-- Descrição -->
@@ -28,14 +22,13 @@
   <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
 
   <!-- Imagem de destaque -->
-  <meta property="og:image" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
 
   <!-- Tipo de conteúdo -->
   <meta property="og:type" content="website">
 
   <!-- Para Twitter -->
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
-  
   <style>
     * {
       margin: 0;
@@ -45,358 +38,456 @@
     }
 
     body {
-        background-image: url("src/bg/bg.jpg");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-attachment: fixed;
+      background-image: url("src/bg/bg.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
       color: #dbdbdb;
-      display: flex;
-        overflow-y: scroll; /* ativa o scroll */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+      height: 100vh;
+      overflow: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      margin: 0px;
     }
-      .glass-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        pointer-events: none;
-        z-index: -1;
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    .navarea {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .loginarea {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+
+    .main {
+      display: flex;
+      height: calc(100vh - 60px);
+      margin-top: 60px;
+    }
+
+    .greating {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px;
+      text-align: left;
+    }
+
+    .greating h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #f7f7f7;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .greating h2 span {
+      color: #4A90E2;
+    }
+    
+    .greating p {
+      font-size: 1.3rem;
+      color: #bbb;
+      line-height: 1.6;
+    }
+
+    .form-section {
+      width: 50%;
+      overflow-y: auto;
+      padding: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #4A90E2 transparent;
+    }
+
+    .form-section::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .form-section::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .form-section::-webkit-scrollbar-thumb {
+      background: #4A90E2;
+      border-radius: 10px;
+    }
+
+    .form-section::-webkit-scrollbar-thumb:hover {
+      background: #357ABD;
+    }
+
+    .container {
+      background: rgba(20, 20, 20, 0.247);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      max-width: 480px;
+      margin: 20px auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f7f7f7;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #bbb;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+      color: #ddd;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #0084ff;
+      box-shadow: 0 0 5px #0084ff;
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    input[type="emaillog"],
+    input[type="passwordlog"],
+    select {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+      color: #ddd;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
+    input[type="emaillog"]:focus,
+    input[type="passwordlog"]:focus,
+    select:focus {
+      border-color: #0084ff;
+      box-shadow: 0 0 5px #0084ff;
+      background: #1a1a1a;
+      color: #fff;
+    } 
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    @keyframes glow {
+  0% {
+    border-color: #333;
+    box-shadow: none;
+    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+    color: #ddd;
+  }
+  50% {
+    border-color: #0084ff;
+    box-shadow: 0 0 5px #0084ff;
+    background: #1a1a1a;
+    color: #fff;
+  }
+  100% {
+    border-color: #333;
+    box-shadow: none;
+    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+    color: #ddd;
+  }
+}
+
+.glow {
+  animation: glow 1.2s ease-in-out; /* duração curta */
+}
+
+
+    select {
+      cursor: pointer;
+    }
+
+    button {
+      display: inline-block;
+      background-color: #4A90E2;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      border-top: 1px solid #63a9fa;
+      transition: background-color 0.3s;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    nav {
+      background: #1C1C1C;
+      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+      border-bottom: 1px solid #121212;
+      display: flex;
+      align-items: center;
+      padding: 0px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      height: 60px;
+    }
+
+
+    .logo {
+      font-weight: bold;
+      font-size: 30px;
+      color: #707070;
+      padding: 10px;
+    }
+
+    .logo_area{
+      padding: 0px;
+      padding-right: 35px;
+      padding-left: 20px;
+    }
+    
+    .link {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .link a {
+      color: #0084ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    input:is(:-webkit-autofill, :autofill) {
+      display: flex !important;
+      align-items: center !important;
+      background: #000000 !important;
+      border-radius: 8px !important;
+      border: 1px solid #242424 !important;
+      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0) !important;
+      color: #dbdbdb !important;
+      padding: 10px 15px !important;
+      font-size: 16px !important;
+      outline: none !important;
+      width: 100% !important;
+
+      -webkit-box-shadow: 0 0 0 1000px #131313 inset !important;
+      -webkit-text-fill-color: #dbdbdb !important;
+    }
+
+    input:-moz-autofill {
+      display: flex !important;
+      align-items: center !important;
+      background: #474747 !important;
+      border-radius: 8px !important;
+      border: 1px solid #363636 !important;
+      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644) !important;
+      color: #dbdbdb !important;
+      padding: 10px 15px !important;
+      font-size: 16px !important;
+      outline: none !important;
+      width: 100% !important;
+
+      box-shadow: 0 0 0 1000px #474747 inset !important;
+      -moz-text-fill-color: #dbdbdb !important;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+        height: auto;
       }
-/* Tablets */
-@media (max-width: 1024px) {
-  .sidebar {
-    width: 180px;
-  }
-  
-  .profile-container {
-    margin-left: 180px;
-    padding: 20px;
-  }
-  
-  .logo {
-    font-size: 24px;
-  }
-  
-  .search-box input {
-    width: 200px;
-  }
-}
+      
+      .greating {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      .greating h2 {
+        font-size: 2rem;
+      }
+      
+      .greating p {
+        font-size: 1.1rem;
+      }
+      
+      .form-section {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+      }
+      
+      .container {
+        margin: 10px;
+      }
+    }
 
-
-/* Mobile pequeno */
-@media (max-width: 480px) {
-  .logo {
-    font-size: 18px;
-  }
-  
-  .search-box input {
-    width: 120px;
-  }
-}
-
-.welcome-container {
-  margin-left: 250px;
-  margin-top: 80px;
-  padding: 40px;
-  color: #dbdbdb;
-}
-
-.welcome-box {
-  background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 40px;
-  max-width: 800px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-}
-
-.welcome-box h1 {
-  font-size: 36px;
-  margin-bottom: 20px;
-}
-
-.welcome-box h1 span {
-  color: #4A90E2;
-}
-
-.welcome-box p {
-  font-size: 18px;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.start-button {
-  display: inline-block;
-  background-color: #4A90E2;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  border-top: 1px solid #63a9fa;
-  transition: background-color 0.3s;
-}
-
-.start-button:hover {
-  background-color: #357ABD;
-}
-
-@media (max-width: 1024px) {
-  .welcome-container {
-    margin-left: 190px;
-    margin-right: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .welcome-container {
-    margin: 100px 20px 20px 20px;
-  }
-}
-
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .form-section {
+        max-height: 60vh;
+      }
+    }
+    
   </style>
 </head>
 <body>
 
-<!-- Navbar topo -->
-<!-- Navbar topo -->
-<nav>
-    <div class="logo_area">
-        <div class="logo">RealMe</div>
-    </div>
-    <div class="search-area">
-      <div class="search-box">
-            <button><i class="fas fa-search"></i></button>
-        <input type="text" placeholder="Buscar">
+  <nav>
+    <div class="navarea">
+      <div class="logo">RealMe</div>
+      <form>
+        <div class="loginarea">
+        <p>Já tem uma conta?</p>
+        <div>
+          <input type="emaillog" id="emaillog" name="Email" placeholder="Email" required autocomplete="off" />
+        </div>
+        <div>
+          <input type="passwordlog" id="passwordlog" name="Senha" placeholder="Senha" required autocomplete="off"/>
+        </div>
+        <button type="submit">Entrar</button>
       </div>
+      </form>
     </div>
-    <div class="last-update-area">
-      <div class="last-update">
-        <p>Novidades!</p>
+  </nav>
+
+  <div class="main">
+    <div class="greating">
+      <h2>Bem-vindo ao <span>RealMe</span>!</h2>
+      <p>Conecte-se, descubra e faça novas amizades.</p>
+    </div>
+    
+    <div class="form-section">
+      <div class="container">
+        <h1>Criar Conta</h1>
+        <form>
+      <div>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
       </div>
-    </div>
-  <div class="marquee-container">
-    <div class="marquee">
-      Em Breve o RealMe terá a opção de cores de perfil customizados!
+      <div>
+        <label for="sobrenome">Sobrenome</label>
+        <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required />
+      </div>
+      <div>
+        <label for="usuario">Nome de Usuário</label>
+        <input type="text" id="usuario" name="usuario" placeholder="Escolha um nome de usuário" required />
+      </div>
+      <div>
+        <label for="idade">Idade</label>
+        <input type="number" id="idade" name="idade" min="10" max="120" placeholder="Sua idade" required />
+      </div>
+      <div>
+        <label for="sobrenome">E-mail</label>
+        <input type="text" id="email" name="email" placeholder="meunome@email.com" required />
+      </div>
+      
+      <div>
+        <label for="genero">Gênero</label>
+        <select id="genero" name="genero" required>
+          <option value="" disabled selected>Selecione o gênero</option>
+          <option value="masculino">Masculino</option>
+          <option value="feminino">Feminino</option>
+          <option value="outro">Outro</option>
+          <option value="prefiro_nao_dizer">Prefiro não dizer</option>
+        </select>
+      </div>
+      <div>
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
+      </div>
+      <div>
+        <label for="convite">Convite</label>
+        <input type="text" id="convite" name="convite" placeholder="Código do convite" required />
+      </div>
+      <div>
+        <label for="nascimento">Data de Nascimento</label>
+        <input type="date" id="nascimento" name="nascimento" required />
+      </div>
+      
+      <button type="submit">Criar Conta</button>
+    </form>
+        <div class="link">
+          <p>já tem uma conta? <a id="entrarBtn">Entrar</a></p>
+        </div>
+      </div>
     </div>
   </div>
 
-
-<!-- Ícones Font Awesome -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</nav>
-
-<!-- Sidebar Desktop -->
-<div class="sidebar">
-  <a href="login.html"><i class="fas fa-home"></i> Início</a>
-  <a href="login.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-  <a href="login.html"><i class="fas fa-comments"></i> Mensagens</a>
-  <a href="login.html"><i class="fas fa-bell"></i> Notificações</a>
-  <a href="login.html"><i class="fas fa-plus-square"></i> Criar</a>
-  <a href="login.html"><i class="fas fa-user"></i> Perfil</a>
-  <a href="login.html"><i class="fas fa-bars"></i> Mais</a>
-</div>
-
-<!-- Navbar Bottom Mobile -->
-<div class="navbar-bottom">
-  <div class="navbar-bottom-content">
-    <a href="login.html"><i class="fas fa-home"></i></a>
-    <a href="login.html"><i class="fas fa-search"></i></a>
-    <a href="login.html"><i class="fas fa-user-friends"></i></a>
-    <a href="login.html"><i class="fas fa-comments"></i></a>
-    <a href="login.html"><i class="fas fa-plus-square"></i></a>
-    <a href="login.html"><i class="fas fa-user"></i></a>
-    <a href="login.html"><i class="fas fa-bars"></i></a>
-  </div>
-</div>
   <div class="glass-overlay"></div>
 
-  <main class="welcome-container">
-  <div class="welcome-box">
-    <h1>Bem-vindo ao <span>RealMe</span>!</h1>
-    <p>Conecte-se, descubra e faça novas amizades. Aqui, encontrar pessoas com interesses em comum é fácil, divertido e seguro.</p>
-    <p>Explore os perfis, envie mensagens e comece sua jornada social agora mesmo.</p>
-    <a href="signup.html" class="start-button"><i class="fas fa-user-friends"></i> Criar conta e achar amigos</a>
-  </div>
-</main>
-
-
+  <script type="module" src="./src/js/signup.js"></script>
 
   <script>
-    // Função JavaScript para alternar visibilidade do conteúdo
-    function toggleContent(sectionId) {
-      var content = document.getElementById(sectionId); // Seleciona o conteúdo da seção
-      // Verifica se o conteúdo está visível ou não
-      if (content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'block';  // Mostra o conteúdo
-      } else {
-        content.style.display = 'none';  // Esconde o conteúdo
-      }
-    }
+  document.getElementById("entrarBtn").addEventListener("click", () => {
+    const emailInput = document.getElementById("emaillog");
+    const passInput  = document.getElementById("passwordlog");
 
+    // aplica a classe
+    [emailInput, passInput].forEach(input => {
+      input.classList.add("glow");
 
-
-    const musica = document.getElementById("musica");
-    const botao = document.getElementById("music-button");
-
-    botao.addEventListener("click", () => {
-      if (musica.paused) {
-        musica.play();
-        botao.textContent = "❚❚";
-      } else {
-        musica.pause();
-        botao.textContent = "►";
-      }
+      // remove depois que animação acabar (senão não repete)
+      input.addEventListener("animationend", () => {
+        input.classList.remove("glow");
+      }, { once: true });
     });
-  function toggleSettings() {
-    const menu = document.getElementById('settingsMenu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
-
-  function applySettings() {
-    const newName = document.getElementById('usernameInput').value;
-    const newColor = document.getElementById('bannerColorInput').value;
-    const newBgUrl = document.getElementById('bgUrlInput').value;
-
-    if (newName) {
-      document.querySelector('.username').textContent = newName;
-    }
-    if (newColor) {
-      document.querySelector('.profile-header').style.backgroundColor = newColor;
-    }
-    if (newBgUrl) {
-      document.body.style.backgroundImage = `url('${newBgUrl}')`;
-    }
-
-    toggleSettings(); // fecha o menu
-  }
-
-const modal = document.getElementById('postModal');
-const modalImg = modal.querySelector('.modal-image img');
-const galleryItems = document.querySelectorAll('.gallery .item img');
-const closeBtn = modal.querySelector('.close');
-const buttons = modal.querySelectorAll('.modal-buttons i');
-const commentBtn = modal.querySelector('.fa-comment');
-const commentsSection = modal.querySelector('.comments-section');
-
-const posts = Array.from(galleryItems).map(img => img.src);
-let currentIndex = 0;
-
-// Abre modal ao clicar na imagem
-galleryItems.forEach((img, index) => {
-  img.parentElement.addEventListener('click', () => {
-    openModal(index);
   });
-});
-
-function openModal(index) {
-  currentIndex = index;
-  modal.style.display = 'flex';
-  modalImg.src = posts[currentIndex];
-  commentsSection.classList.add('hidden');
-  clearActive();
-}
-
-// Fecha modal
-closeBtn.addEventListener('click', () => {
-  modal.style.display = 'none';
-  commentsSection.classList.add('hidden');
-  clearActive();
-});
-
-// Botões: curtir, comentar, enviar, denunciar
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.classList.contains('fa-comment')) {
-      commentsSection.classList.toggle('hidden');
-    } else {
-      btn.classList.toggle('active');
-    }
-  });
-});
-
-function clearActive() {
-  buttons.forEach(btn => btn.classList.remove('active'));
-}
-
-// Scroll para trocar post (desconsidera scroll se estiver em comentários)
-modal.addEventListener('wheel', e => {
-  if (e.target.closest('.comments-section')) return; // deixa rolar só os comentários
-
-  if (e.deltaY > 0) nextPost();
-  else prevPost();
-});
-
-// Swipe para mobile
-let startX = 0;
-modal.addEventListener('touchstart', e => {
-  startX = e.touches[0].clientX;
-});
-modal.addEventListener('touchend', e => {
-  const endX = e.changedTouches[0].clientX;
-  if (startX - endX > 50) nextPost();
-  else if (endX - startX > 50) prevPost();
-});
-
-function nextPost() {
-  currentIndex = (currentIndex + 1) % posts.length;
-  modalImg.src = posts[currentIndex];
-  commentsSection.classList.add('hidden');
-  clearActive();
-}
-
-function prevPost() {
-  currentIndex = (currentIndex - 1 + posts.length) % posts.length;
-  modalImg.src = posts[currentIndex];
-  commentsSection.classList.add('hidden');
-  clearActive();
-}
-
-// Função do Nudge
-function sendNudge() {
-  const profile = document.querySelector('.profile-header'); // Elemento que vai tremer
-  const sound = document.getElementById('nudgeSound');       // Elemento de áudio
-
-  // Tocar o som
-  if (sound) {
-    sound.currentTime = 0; // Reinicia o som se estiver no meio
-    sound.play();
-  }
-
-  // Adiciona a classe que faz tremer
-  profile.classList.add('shake');
-
-
-  // Remove o tremor depois de 1 segundo
-  setTimeout(() => {
-    profile.classList.remove('shake');
-  }, 1000);
-}
-
-const area = document.querySelector('.button-container');
-
-area.addEventListener('wheel', function(e) {
-  const delta = e.deltaY;
-  const scrollTop = area.scrollTop;
-  const scrollHeight = area.scrollHeight;
-  const offsetHeight = area.offsetHeight;
-
-  if (
-    (delta > 0 && scrollTop + offsetHeight >= scrollHeight) ||  // rolando pra baixo e chegou no fim
-    (delta < 0 && scrollTop <= 0)  // rolando pra cima e está no topo
-  ) {
-    e.preventDefault(); // impede o scroll "vazar" para a página
-  }
-});
-
-
-  </script>
-
+</script>
 </body>
 </html>
+

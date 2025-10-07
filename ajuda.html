@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iFriendMatch</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/config-layout.css" />
+  <link rel="stylesheet" href="./src/styles/config-components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  
+</head>
+<body>
+
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+      <div class="search-box">
+        <button><i class="fas fa-search"></i></button>
+        <input type="text" placeholder="Buscar" />
+      </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee">marcio_marques acabou de postar uma foto...</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <aside class="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#"><i class="fas fa-user"></i> Perfil</a>
+    <a href="#"><i class="fas fa-bars"></i> Mais</a>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="#"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="#"><i class="fas fa-plus-square"></i></a>
+      <a href="#"><i class="fas fa-user"></i></a>
+      <a href="#"><i class="fas fa-bars"></i></a>
+    </div>
+  </div>
+<section class="config-box-layout">
+  <div class="config-box">
+<div class="config-sidebar">
+  <h2>configurações</h2>
+  <ul>
+    <li><a href="conta.html">Conta</a></li>
+    <li><a href="perfil.html">Perfil</a></li>
+    <li><a href="conta.html">Ajuda & Suporte</a></li>
+  </ul>
+</div>
+    <div class="config-content">
+<h2>Ajuda & Suporte</h2>
+    <form class="config-form">
+      <div class="form-field">
+        <label>Relatar um problema:</label>
+        <textarea rows="4" placeholder="Descreva o problema... (max 120 caracteres)"></textarea>
+      </div>
+      <button class="button-bar" type="submit">Enviar</button>
+    </form>
+    <p>
+      <a href="#">Termos de Uso</a> • 
+      <a href="#">Política de Privacidade</a>
+    </p>
+
+    </div>
+  </div>
+  
+  <footer>
+    <div>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="privacidade.html">Privacidade</a>
+    </div>
+    <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
+  </footer>
+</section>
+</body>
+</html>

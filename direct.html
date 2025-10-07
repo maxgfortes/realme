@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+    <link rel="stylesheet" href="./src/styles/mensagens.css" />
+    <link rel="stylesheet" href="./src/styles/search.css" />
+    <link rel="stylesheet" href="./src/styles/tags.css" />
+    <link rel="stylesheet" href="./src/styles/mobile.css" />
+    <link rel="stylesheet" href="./src/styles/new-popup.css" />
+    <link rel="stylesheet" href="./src/styles/depoimentos.css" />
+    <link rel="stylesheet" href="./src/styles/loading.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+ <div class="glass-overlay"></div>
+     <!-- Barra de progresso para recarregamentos -->
+    <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+<div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
+  </div>
+</div>
+
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+  <ul id="searchResults"></ul>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+  </aside>
+
+
+<div class="chat-search-results"></div>
+<div class="full-dm-container">
+  <div class="users-dms">
+    <h1>Mensagens</h1>
+    <input class="buscar-chats" type="text" placeholder="Buscar conversas..." autocomplete="off" />
+    <div class="recents-users">
+      <!-- Os botões serão carregados dinamicamente pelo JavaScript -->
+      <!-- Removendo os botões estáticos para que sejam substituídos pelos dados reais -->
+    </div>
+  </div>
+  <div class="chat-container">
+    <div class="user-selected">
+      <div class="selected-left">
+        <img src="./src/icon/default.jpg" alt="Foto do usuário">
+        <p><span></span></p>
+      </div>
+      <div class="selected-right">
+        <button class="more-options" title="Mais opções"><i class="fa-solid fa-ellipsis"></i></button>
+        <button class="delete-button" title="Deletar Conversa"><i class="fas fa-trash-alt"></i></button>
+      </div>
+    </div>
+    <div class="chat-area">
+      <!-- As mensagens serão carregadas dinamicamente aqui -->
+      <div class="no-chat-selected" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: #999;">
+        <div style="font-size: 3em; margin-bottom: 20px; opacity: 0.5;"><i class="fas fa-comment-dots"></i></div>
+        <h3 style="color: #ccc;">Nenhuma conversa selecionada</h3>
+        <p>Escolha uma conversa da lista ao lado para começar.</p>
+      </div>
+    </div>
+    <div class="send-area">
+      <input class="msg-area" id="textbox" type="text" placeholder="Digite sua mensagem..." autocomplete="off" />
+      <button>Enviar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- Options Msg -->
+<div id="msg-context-menu">
+  <div class="menu-item" data-action="reply">Responder</div>
+  <div class="menu-item" data-action="copy">Copiar</div>
+  <div class="menu-item" data-action="deleteforyou">Excluir só para mim</div>
+</div>
+
+
+
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/new-popup.js" defer></script>
+  <script src="./src/js/modal-post.js"></script>
+  <script type="module" src="./src/js/new-pf.js"></script>
+  <script src="./src/js/typing.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  getDocs,
+  serverTimestamp,
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Áudios
+const audioSend = new Audio('./src/audio/msg send.mp3');
+const audioReceive = new Audio('./src/audio/msg recive.mp3');
+
+// Variáveis globais
+let loggedUser = null; // UID do usuário autenticado
+let chatArea = document.querySelector(".chat-area");
+let msgInput = document.querySelector(".msg-area");
+let sendBtn = document.querySelector(".send-area button");
+let recentsUsersDiv = document.querySelector(".recents-users");
+let userSelectedDiv = document.querySelector(".user-selected p");
+let userSelectedImg = document.querySelector(".user-selected img");
+let selectedUser = null;
+let unsubscribeMessages = null;
+let ultimaQtdMensagens = 0;
+
+// Função para gerar ID único do chat usando userids
+function gerarChatId(user1, user2) {
+  return `chat-${[user1, user2].sort().join("-")}`;
+}
+
+// Função para formatar tempo relativo
+function formatarTempoRelativo(date) {
+  const agora = new Date();
+  const diffMs = agora - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return "agora";
+  if (diffMin < 60) return `há ${diffMin} minuto${diffMin > 1 ? "s" : ""}`;
+  if (diffHour < 24) return `há ${diffHour} hora${diffHour > 1 ? "s" : ""}`;
+  return `há ${diffDay} dia${diffDay > 1 ? "s" : ""}`;
+}
+
+// Selecionar usuário
+async function selecionarUsuario(userId) {
+  selectedUser = userId;
+  try {
+    // Busca o documento de user-infos/user-media
+    const userMediaDoc = await getDoc(doc(db, "users", userId, "user-infos", "user-media"));
+    let displayName = userId;
+    let photoUrl = "./src/icon/default.jpg";
+    if (userMediaDoc.exists()) {
+      const data = userMediaDoc.data();
+      if (data.userphoto) photoUrl = data.userphoto;
+    }
+    // Busca displayname normalmente
+    const userDoc = await getDoc(doc(db, "users", userId));
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      displayName = data.displayname || data.username || userId;
+    }
+    userSelectedDiv.innerHTML = `${displayName} • online`;
+    userSelectedImg.src = photoUrl;
+    carregarMensagensTempoReal();
+  } catch (error) {
+    userSelectedDiv.innerHTML = `${userId} • online`;
+    userSelectedImg.src = "./src/icon/default.jpg";
+  }
+}
+
+// Criar ou obter chat
+async function criarOuObterChat(user1, user2) {
+  const chatId = gerarChatId(user1, user2);
+  const chatRef = doc(db, "chats", chatId);
+
+  const chatDoc = await getDoc(chatRef);
+  if (!chatDoc.exists()) {
+    await setDoc(chatRef, {
+      participants: [user1, user2].sort(),
+      createdAt: serverTimestamp(),
+      lastMessage: null,
+      lastMessageTime: null
+    });
+  }
+  return chatId;
+}
+
+// Enviar mensagem
+// ...existing code...
+
+// Função única para enviar mensagem
+async function enviarMensagem() {
+  const conteudo = msgInput.value.trim();
+  if (!conteudo || !selectedUser) return;
+  msgInput.value = ""; // Limpa imediatamente para evitar duplo envio
+
+  const replyId = msgInput.getAttribute("data-reply");
+  const chatId = await criarOuObterChat(loggedUser, selectedUser);
+  const msgDocRef = doc(collection(db, "chats", chatId, "messages"));
+  const msgData = {
+    content: conteudo,
+    sender: loggedUser,
+    timestamp: serverTimestamp()
+  };
+  if (replyId) {
+    msgData.reply = replyId;
+    msgInput.removeAttribute("data-reply");
+  }
+  await setDoc(msgDocRef, msgData);
+  const chatRef = doc(db, "chats", chatId);
+  await updateDoc(chatRef, {
+    lastMessage: conteudo,
+    lastMessageTime: serverTimestamp()
+  });
+  audioSend.play();
+}
+
+// Clique no botão
+sendBtn?.addEventListener("click", enviarMensagem);
+
+// Enter para enviar (mas não Shift+Enter)
+msgInput?.addEventListener("keypress", function(e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    enviarMensagem();
+  }
+});
+
+// ...existing code...
+
+// Carregar mensagens em tempo real
+function carregarMensagensTempoReal() {
+  if (unsubscribeMessages) unsubscribeMessages();
+
+  const chatId = gerarChatId(loggedUser, selectedUser);
+
+  const mensagensRef = collection(db, "chats", chatId, "messages");
+  // Ordena do mais recente para o mais antigo
+  const mensagensQuery = query(mensagensRef, orderBy("timestamp", "desc"));
+
+  unsubscribeMessages = onSnapshot(mensagensQuery, (snapshot) => {
+    const mensagens = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      data.id = doc.id;
+      mensagens.push(data);
+    });
+
+    // Detecta se chegou mensagem nova recebida
+    if (
+      mensagens.length > ultimaQtdMensagens &&
+      mensagens.length > 0 &&
+      mensagens[0].sender !== loggedUser
+    ) {
+      audioReceive.play();
+    }
+    ultimaQtdMensagens = mensagens.length;
+
+    renderizarMensagens(mensagens);
+  });
+}
+
+// Renderizar mensagens
+// ...existing code...
+
+// ...existing code...
+
+function renderizarMensagens(mensagens) {
+  chatArea.innerHTML = "";
+
+  // Remove mensagens duplicadas pelo id
+  const mensagensUnicas = [];
+  const idsVistos = new Set();
+  for (const m of mensagens.slice().reverse()) {
+    if (!m.id || idsVistos.has(m.id)) continue;
+    idsVistos.add(m.id);
+    mensagensUnicas.push(m);
+  }
+
+  // Renderiza do mais antigo para o mais recente, sem duplicatas
+  mensagensUnicas.forEach((m) => {
+    // Ignora mensagens deletadas para todos
+    if (m.deleted) return;
+    // Ignora mensagens deletadas só para o usuário logado
+    if (m[`deletedforyou_${loggedUser}`]) return;
+
+    const div = document.createElement("div");
+    div.classList.add("message");
+    div.classList.add(m.sender === loggedUser ? "sent" : "received");
+    div.setAttribute("data-msgid", m.id || "");
+
+    let tempoFormatado = "";
+    if (m.timestamp) {
+      const date = m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000);
+      tempoFormatado = formatarTempoRelativo(date);
+    }
+
+    // Reply visual: balão roxo acima da mensagem
+    let replyHtml = "";
+    if (m.reply) {
+      const replyMsg = mensagensUnicas.find(msg => msg.id === m.reply);
+      if (replyMsg) {
+        replyHtml = `
+        <div class="reply-container">
+          <div class="reply-border"></div>
+          <div class="reply-balao">
+            <span class="reply-user">${replyMsg.sender === loggedUser ? "Você:" : "Outro:"}</span>
+            <span class="reply-content">${replyMsg.content || "[mensagem apagada]"}</span>
+          </div>
+        </div>
+        `;
+      }
+    }
+
+    div.innerHTML = `
+      ${replyHtml}
+      <p>${m.content}</p>
+      <span class="time">${tempoFormatado}</span>
+    `;
+    chatArea.appendChild(div);
+  });
+
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+// ...existing code...
+// ...existing code...
+
+// Adicione o CSS para o balão roxo do reply:
+const style = document.createElement('style');
+style.textContent = `
+.reply-balao {
+  color: #e6e6e6;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-bottom: 4px;
+  font-size: 0.95em;
+  max-width: 80%;
+  word-break: break-word;
+  display: inline-block;
+}
+
+.reply-container {
+display: flex;
+margin-bottom: 4px;
+}
+
+
+  
+.reply-border {
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #cacaca;
+  border-radius: 2px;
+}
+.reply-balao .reply-user {
+  font-weight: bold;
+  margin-right: 6px;
+  opacity: 0.8;
+  font-size: 0.92em;
+  color: #e6e6e6;
+}
+.reply-balao .reply-content {
+  font-style: italic;
+  opacity: 0.95;
+}
+`;
+document.head.appendChild(style);
+
+// Carregar conversas ordenadas por último envio
+async function carregarConversas() {
+  if (!loggedUser) return;
+  recentsUsersDiv.innerHTML = "";
+  const chatsRef = collection(db, "chats");
+  // Busca todos os chats onde o usuário participa
+  const chatsSnap = await getDocs(chatsRef);
+
+
+  // Monta array com dados e ordena por lastMessageTime (mais recente primeiro)
+  const chatsArray = [];
+  for (const chatDoc of chatsSnap.docs) {
+    const chatData = chatDoc.data();
+    if (chatData.participants && chatData.participants.includes(loggedUser)) {
+      const friendId = chatData.participants.find(p => p !== loggedUser);
+      if (friendId) {
+        chatsArray.push({
+          friendId,
+          lastMessageTime: chatData.lastMessageTime ? chatData.lastMessageTime.toMillis ? chatData.lastMessageTime.toMillis() : chatData.lastMessageTime.seconds * 1000 : 0,
+          chatData
+        });
+      }
+    }
+  }
+  // Ordena por lastMessageTime decrescente
+  chatsArray.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
+
+  // Renderiza os botões
+  const friendsUnicos = new Set();
+  for (const chatObj of chatsArray) {
+    const friendId = chatObj.friendId;
+    if (friendsUnicos.has(friendId)) continue;
+    friendsUnicos.add(friendId);
+
+    let friendPhotoUrl = "./src/icon/default.jpg";
+    let friendDisplayName = friendId;
+    try {
+      // Busca o documento de user-infos/user-media
+      const friendMediaDoc = await getDoc(doc(db, "users", friendId, "user-infos", "user-media"));
+      if (friendMediaDoc.exists()) {
+        const data = friendMediaDoc.data();
+        if (data.userphoto) friendPhotoUrl = data.userphoto;
+      }
+      // Busca displayname normalmente
+      const friendDoc = await getDoc(doc(db, "users", friendId));
+      if (friendDoc.exists()) {
+        const data = friendDoc.data();
+        friendDisplayName = data.displayname || data.username || friendId;
+      }
+    } catch (error) {}
+
+    const lastMsg = chatObj.chatData.lastMessage || "";
+const lastMsgHtml = lastMsg
+  ? `<div class="last-message">${lastMsg.length > 40 ? lastMsg.slice(0, 40) + "..." : lastMsg}</div>`
+  : `<div class="last-message" style="color:#888;">Nenhuma mensagem ainda</div>`;
+
+const ts = chatObj.chatData.lastMessageTime?.seconds ? chatObj.chatData.lastMessageTime.seconds * 1000 : null;
+const tempo = ts ? tempoRelativo(ts) : "";
+
+const btn = document.createElement("button");
+btn.innerHTML = `
+  <img src="${friendPhotoUrl}" alt="Foto do usuário">
+  <div class="info-conversa">
+    <span>${friendDisplayName}</span>
+    <span class="last-msg-time">${tempo}</span>
+  </div>
+`;
+btn.addEventListener("click", () => selecionarUsuario(friendId));
+recentsUsersDiv.appendChild(btn);
+  }
+}
+
+
+function tempoRelativo(timestamp) {
+  if (!timestamp) return "";
+  const agora = Date.now();
+  const diff = agora - timestamp;
+  const segundos = Math.floor(diff / 1000);
+  const minutos = Math.floor(segundos / 60);
+  const horas = Math.floor(minutos / 60);
+  const dias = Math.floor(horas / 24);
+
+  if (dias > 0) return `Enviado há ${dias} dia${dias > 1 ? 's' : ''}`;
+  if (horas > 0) return `Enviado há ${horas} h${horas > 1 ? '' : ''}`;
+  if (minutos > 0) return `Enviado há ${minutos} min${minutos > 1 ? '' : ''}`;
+  return "Enviado agora mesmo";
+}
+// ...após definir loggedUser e carregarConversas...
+
+const buscarChatsInput = document.querySelector('.buscar-chats');
+const chatResultsDiv = document.querySelector('.chat-search-results');
+
+let todosSeusChats = []; // Armazena todos os chats do usuário
+
+// Carrega todos os chats do usuário ao logar
+async function carregarTodosSeusChats() {
+  if (!loggedUser) return;
+  todosSeusChats = [];
+  const chatsRef = collection(db, "chats");
+  const chatsSnap = await getDocs(chatsRef);
+
+ for (const chatDoc of chatsSnap.docs) {
+  const chatData = chatDoc.data();
+  if (chatData.participants && chatData.participants.includes(loggedUser)) {
+    const friendId = chatData.participants.find(p => p !== loggedUser);
+    let friendDisplayName = friendId;
+    let friendPhotoUrl = "./src/icon/default.jpg";
+    try {
+      // Primeiro tenta buscar a foto na subcoleção user-infos/user-media
+      const friendMediaDoc = await getDoc(doc(db, "users", friendId, "user-infos", "user-media"));
+      if (friendMediaDoc.exists()) {
+        const data = friendMediaDoc.data();
+        if (data.userphoto) friendPhotoUrl = data.userphoto;
+      }
+      // Busca displayname normalmente
+      const friendDoc = await getDoc(doc(db, "users", friendId));
+      if (friendDoc.exists()) {
+        const data = friendDoc.data();
+        friendDisplayName = data.displayname || data.username || friendId;
+        // Se não achou foto antes, tenta pegar do userDoc
+        if (data.userphoto && friendPhotoUrl === "./src/icon/default.jpg") friendPhotoUrl = data.userphoto;
+      }
+    } catch {}
+    todosSeusChats.push({
+      friendId,
+      friendDisplayName,
+      friendPhotoUrl
+    });
+  }
+}
+}
+
+// Chame ao logar:
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loggedUser = user.uid;
+    carregarConversas();
+    carregarTodosSeusChats();
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+// Busca dinâmica
+buscarChatsInput?.addEventListener('input', function() {
+  const termo = buscarChatsInput.value.trim().toLowerCase();
+  if (!termo) {
+    chatResultsDiv.innerHTML = '';
+    chatResultsDiv.classList.remove('visible');
+    return;
+  }
+  const filtrados = todosSeusChats.filter(chat =>
+    chat.friendDisplayName.toLowerCase().includes(termo)
+  );
+  if (filtrados.length === 0) {
+    chatResultsDiv.innerHTML = '<div class="chat-result">Nenhuma conversa encontrada</div>';
+  } else {
+    chatResultsDiv.innerHTML = filtrados.map(chat => `
+      <div class="chat-result" data-id="${chat.friendId}">
+        <img src="${chat.friendPhotoUrl}" alt="Foto">
+        <span>${chat.friendDisplayName}</span>
+      </div>
+    `).join('');
+  }
+  chatResultsDiv.classList.add('visible');
+});
+
+// Clique no resultado para abrir o chat
+chatResultsDiv.addEventListener('click', function(e) {
+  const el = e.target.closest('.chat-result');
+  if (el && el.dataset.id) {
+    selecionarUsuario(el.dataset.id);
+    chatResultsDiv.classList.remove('visible');
+    buscarChatsInput.value = '';
+  }
+});
+
+// Esconde resultados ao clicar fora
+document.addEventListener('click', function(e) {
+  if (!chatResultsDiv.contains(e.target) && e.target !== buscarChatsInput) {
+    chatResultsDiv.classList.remove('visible');
+  }
+});
+
+// Logout
+function logout() {
+  if (unsubscribeMessages) unsubscribeMessages();
+  auth.signOut();
+  window.location.href = "login.html";
+}
+window.logout = logout;
+
+
+// Eventos
+sendBtn?.addEventListener("click", () => enviarMensagem(msgInput.value.trim()));
+msgInput?.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") enviarMensagem(msgInput.value.trim());
+});
+
+// Clique na área selected-left leva ao perfil do usuário da conversa
+document.querySelector(".selected-left")?.addEventListener("click", () => {
+  if (selectedUser) {
+    window.location.href = `PF.html?userid=${selectedUser}`;
+  }
+});
+
+// ===================
+// MENU DE CONTEXTO E SWIPE PARA MENSAGENS
+// ===================
+const contextMenu = document.getElementById("msg-context-menu");
+let contextMsgId = null;
+let contextMsgDiv = null;
+
+// Mostra menu ao clicar com botão direito
+chatArea.addEventListener("contextmenu", function(e) {
+  const msgDiv = e.target.closest(".message");
+  if (msgDiv) {
+    e.preventDefault();
+    contextMsgId = msgDiv.getAttribute("data-msgid");
+    contextMsgDiv = msgDiv;
+    contextMenu.style.display = "block";
+    contextMenu.style.left = e.pageX + "px";
+    contextMenu.style.top = e.pageY + "px";
+  } else {
+    contextMenu.style.display = "none";
+  }
+});
+
+// Esconde menu ao clicar fora
+document.addEventListener("click", function() {
+  contextMenu.style.display = "none";
+});
+
+// Ações do menu
+contextMenu.addEventListener("click", async function(e) {
+  if (!contextMsgId) return;
+  const action = e.target.getAttribute("data-action");
+  if (action === "copy") {
+    const text = contextMsgDiv.querySelector("p")?.innerText || "";
+    navigator.clipboard.writeText(text);
+  }
+  if (action === "reply") {
+    // Apenas marca o id da mensagem para reply, sem adicionar texto no input
+    msgInput.setAttribute("data-reply", contextMsgId);
+    msgInput.focus();
+  }
+  if (action === "delete") {
+    const chatId = gerarChatId(loggedUser, selectedUser);
+    const msgRef = doc(db, "chats", chatId, "messages", contextMsgId);
+    await updateDoc(msgRef, { deleted: true });
+  }
+  if (action === "deleteforyou") {
+    const chatId = gerarChatId(loggedUser, selectedUser);
+    const msgRef = doc(db, "chats", chatId, "messages", contextMsgId);
+    await updateDoc(msgRef, { [`deletedforyou_${loggedUser}`]: true });
+  }
+  contextMenu.style.display = "none";
+});
+
+
+// Swipe para a esquerda (mobile)
+let touchStartX = 0;
+chatArea.addEventListener("touchstart", function(e) {
+  const msgDiv = e.target.closest(".message");
+  if (msgDiv && e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    msgDiv.setAttribute("data-touch", "start");
+  }
+});
+chatArea.addEventListener("touchend", function(e) {
+  const msgDiv = e.target.closest(".message");
+  if (msgDiv && msgDiv.getAttribute("data-touch") === "start") {
+    const touchEndX = e.changedTouches[0].clientX;
+    if (touchStartX - touchEndX > 60) { // swiped left
+      contextMsgId = msgDiv.getAttribute("data-msgid");
+      contextMsgDiv = msgDiv;
+      // Mostra menu no centro da tela
+      contextMenu.style.display = "block";
+      contextMenu.style.left = (window.innerWidth/2-60) + "px";
+      contextMenu.style.top = (window.innerHeight/2-40) + "px";
+    }
+    msgDiv.removeAttribute("data-touch");
+  }
+});
+
+// Enviar mensagem com reply
+sendBtn?.addEventListener("click", async () => {
+  const conteudo = msgInput.value.trim();
+  if (!conteudo || !selectedUser) return;
+  const replyId = msgInput.getAttribute("data-reply");
+  const chatId = await criarOuObterChat(loggedUser, selectedUser);
+  const msgDocRef = doc(collection(db, "chats", chatId, "messages"));
+  const msgData = {
+    content: conteudo,
+    sender: loggedUser,
+    timestamp: serverTimestamp()
+  };
+  if (replyId) {
+    msgData.reply = replyId;
+    msgInput.removeAttribute("data-reply");
+  }
+  await setDoc(msgDocRef, msgData);
+  const chatRef = doc(db, "chats", chatId);
+  await updateDoc(chatRef, {
+    lastMessage: conteudo,
+    lastMessageTime: serverTimestamp()
+  });
+  msgInput.value = "";
+  audioSend.play();
+});
+
+// Enter para enviar com reply
+msgInput?.addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    const conteudo = msgInput.value.trim();
+    if (!conteudo || !selectedUser) return;
+    const replyId = msgInput.getAttribute("data-reply");
+    const chatId = await criarOuObterChat(loggedUser, selectedUser);
+    const msgDocRef = doc(collection(db, "chats", chatId, "messages"));
+    const msgData = {
+      content: conteudo,
+      sender: loggedUser,
+      timestamp: serverTimestamp()
+    };
+    if (replyId) {
+      msgData.reply = replyId;
+      msgInput.removeAttribute("data-reply");
+    }
+    await setDoc(msgDocRef, msgData);
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, {
+      lastMessage: conteudo,
+      lastMessageTime: serverTimestamp()
+    });
+    msgInput.value = "";
+    audioSend.play();
+  }
+});
+
+async function atualizarMarqueeUltimoUsuario() {
+  const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+  const docSnap = await getDoc(lastUpdateRef);
+  const marquee = document.querySelector(".marquee");
+  if (!marquee) return;
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const nomeUsuario = data.username || "Usuário";
+    marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+  } else {
+    marquee.textContent = "Bem-vindo ao RealMe!";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
+</script>
+
+<script src="./src/js/loading.js"></script>
+<script type="module" src="./src/js/search.js"></script>
+<script type="module" src="./src/js/navbar.js" defer></script>
+<script type="module" src="./src/js/more.js" defer></script>
+<script src="./block.js"></script>
+</body>
+</html>

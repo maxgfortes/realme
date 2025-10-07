@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Convites RealMe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/loading.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+
+  <style>
+
+    .invite-list-container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      padding: 32px 24px;
+      background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  margin-top: 80px;
+  width: 900px;
+
+    }
+    .invite-list-container h1 {
+      margin-bottom: 24px;
+      color: #4A90E2;
+    }
+
+    .logo a {
+      font-weight: bold;
+      font-size: 30px;
+      color: #707070;
+      padding: 10px;
+      padding-right: 10px;
+      text-decoration: none;
+    }
+    
+    .invite-list-container h1 span {
+      color: #fff;
+    }
+    .invite-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #2929293b;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      font-size: 1.1em;
+      transition: background 0.3s;
+    }
+    .invite-item.used {
+      background: #4444443a;
+      opacity: 0.7;
+    }
+    .invite-code {
+      font-family: monospace;
+      font-size: 1.1em;
+      letter-spacing: 2px;
+    }
+    .invite-status {
+      margin-left: 18px;
+      font-size: 0.95em;
+      color: #51cf66;
+    }
+    .invite-status.used {
+      color: #ff6b6b;
+    }
+    .copy-btn {
+      background: #4A90E2;
+      border-top: 2px solid #4f9fee;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      cursor: pointer;
+      margin-left: 18px;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+    .copy-btn:hover {
+      background: #357ABD;
+    }
+  </style>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+      authDomain: "ifriendmatch.firebaseapp.com",
+      projectId: "ifriendmatch",
+      storageBucket: "ifriendmatch.appspot.com",
+      messagingSenderId: "306331636603",
+      appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+      measurementId: "G-D96BEW6RC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Lista dos convites que você pediu
+    const codigos = ["REALME012025", "REALME122025", "REALME022025", "REALME032025", "REALME042025", "REALME052025", "REALME062025", "REALME072025", "REALME082025", "REALME092025", "REALME102025", "REALME112025", "REALME122025", "REALME132025", "REALME142025", "REALME152025", "REALME162025", "REALME172025", "REALME182025", "REALME192025", "REALME202025", "REALME212025", "REALME222025", "REALME232025", "REALME242025", "REALME252025", "REALME262025", "REALME272025", "REALME282025", "REALME292025", "REALME302025", "REALME312025"];
+
+    async function buscarConvites() {
+      const invites = [];
+      for (const codigo of codigos) {
+        const ref = doc(db, "invites", codigo);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          invites.push({
+            codigo: codigo,
+            usado: !!data.usado,
+            usadoPor: data.usadoPor || null
+          });
+        } else {
+          invites.push({
+            codigo: codigo,
+            usado: null,
+            usadoPor: null
+          });
+        }
+      }
+      renderConvites(invites);
+    }
+
+    function renderConvites(invites) {
+      const list = document.getElementById('inviteList');
+      list.innerHTML = '';
+      invites.forEach(invite => {
+        let statusHtml = '';
+        let btnHtml = '';
+        if (invite.usado === null) {
+          statusHtml = `<span class="invite-status used"><i class="fa fa-question-circle"></i> Não encontrado</span>`;
+        } else if (invite.usado) {
+          statusHtml = `<span class="invite-status used"><i class="fa fa-times-circle"></i> Usado</span>`;
+        } else {
+          statusHtml = `<span class="invite-status"><i class="fa fa-check-circle"></i> Disponível</span>`;
+          btnHtml = `<button class="copy-btn" onclick="copyInvite('${invite.codigo}', this)">Copiar</button>`;
+        }
+        const item = document.createElement('div');
+        item.className = 'invite-item' + (invite.usado ? ' used' : '');
+        item.innerHTML = `
+          <span class="invite-code">${invite.codigo}</span>
+          ${statusHtml}
+          ${btnHtml}
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    window.copyInvite = function(codigo, btn) {
+      navigator.clipboard.writeText(codigo);
+      btn.textContent = "Copiado!";
+      setTimeout(() => { btn.textContent = "Copiar"; }, 1200);
+    };
+
+    buscarConvites();
+  </script>
+</head>
+<body>
+    <nav class="navbar">
+    <div class="logo_area">
+      <div class="logo"><a href="index.html">RealMe</a></div>
+    </div>
+  </nav>
+
+  <div class="invite-list-container">
+    <h1><i class="fa-solid fa-envelope"></i> <span>Convites</span> RealMe</h1>
+    <div id="inviteList">
+      <div style="text-align:center;color:#aaa; margin-bottom: 12px;">Carregando...</div>
+    </div>
+    <div class="use">
+        <p>Para usar um convite, insira o código na tela de registro do RealMe. <a href="index.html" style="color:#4A90E2; text-decoration:none;">Voltar para a página inicial</a></p>
+    </div>
+  </div>
+</body>
+</html>

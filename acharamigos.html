@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/sobre.css" />
+  <link rel="stylesheet" href="./src/styles/amigos.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/post-modal.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+</head>
+<body>
+
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+  </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+   <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" class="postmodal"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <div class="more-menu" id="moreMenu">
+      <a href="#" class="more-toggle" id="moreToggle">
+        <i class="fa-solid fa-bars"></i>
+        Mais
+      </a>
+      <div class="floating-menu" id="floatingMenu">
+        <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+        <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+        <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+        <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+        <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+      </div>
+    </div>
+  </aside>
+  <ul id="searchResults"></ul>
+
+  <div class="friends-container">
+        <div class="friends-header">
+            <h1>Pessoas parecidas com você!</h1>
+            <div class="view-toggle">
+                <button class="toggle-btn active" data-view="carousel">Cards</button>
+                <button class="toggle-btn" data-view="grid">Grid</button>
+            </div>
+        </div>
+
+        <!-- VIEW GRID (Original) -->
+        <div class="grid-view" id="gridView">
+            <div class="friends-list">
+                <a class="user" href="#" data-username="afliccoess">
+                    <img src="https://lastfm.freetls.fastly.net/i/u/avatar170s/3c04e79db06c605e5de3897555a9a34e.png" alt="Vini demarco">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>Vini demarco</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@afliccoess</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="vampirinhaz7">
+                    <img src="https://cdn.pfps.gg/pfps/1869-goth-egirl-27.png" alt="Mari">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>𖤍𖤌𖤍 Mari Saverio</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@vampirinhaz7</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="maxgfortes">
+                    <img src="https://i.pinimg.com/736x/d6/fc/2a/d6fc2ab598fdc5ffee863bd5835746c8.jpg" alt="Max">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>maxgfortes</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@maxgfortes</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="maxine">
+                    <img src="https://i.pinimg.com/736x/0e/10/35/0e1035c960796eccbc18608793cfa3e9.jpg" alt="Maxine">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>⋆˚｡⋆୨✧୧˚ 𝑴𝒂𝒙𝒊𝒏𝒆 ˚୨✧୧⋆｡˚⋆</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@maxine</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="davix">
+                    <img src="https://i.pinimg.com/736x/12/d3/dd/12d3dd5ac7a32f43cf867161cb95774f.jpg" alt="David">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>warrsex</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@davix</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="haspkey">
+                    <img src="https://i.postimg.cc/CK3qy1w5/image.png" alt="Haspkey">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>haspkey</p>
+                        </div>
+                        <div class="profile-username">
+                            <p>@haspkey</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+  <!-- VIEW CAROUSEL (Novo) -->
+        <div class="carousel-view active" id="carouselView">
+            <div class="carousel-container">
+                <div class="cards-wrapper" id="cardsWrapper">
+                    <!-- Cards serão gerados dinamicamente -->
+                </div>
+            </div>
+            <div class="carousel-controls">
+                <button class="nav-btn" id="prevBtn">‹</button>
+                <div class="indicators" id="indicators"></div>
+                <button class="nav-btn" id="nextBtn">›</button>
+            </div>
+        </div>
+    </div>
+
+<aside class="option-bar">
+  <h1>Preferencias</h1>
+  <div class="options">
+      <!-- Checkbox “Igual a mim” -->
+      <div class="lm">
+        <p>Igual a mim</p>
+        <label class="switch">
+          <input type="checkbox" id="igualAMim">
+          <span class="slider"></span>
+        </label>
+      </div>
+  <div class="filtros">
+    <div class="estilo">
+      <p>Estilo</p>
+      <input class="estilo" type="text" placeholder="gotico, alternativo, sk8 archive...">
+    </div>
+
+    <div class="estilo">
+      <p>Personalidade</p>
+      <input class="estilo" type="text" placeholder="extrovertido, introvertido...">
+    </div>
+
+    <div class="estilo">
+      <p>Medos</p>
+      <input class="estilo" type="text" placeholder="Medo de Acabar Sozinho...">
+    </div>
+
+    <div class="estilo">
+      <p>Sonhos e Desejos</p>
+      <input class="estilo" type="text" placeholder="Conexão real, Amor, Dinheiro...">
+    </div>
+
+    <div class="estilo">
+      <p>Musicas</p>
+      <input class="estilo" type="text" placeholder="Rock, Grunge, Pop, Alt, Indie...">
+    </div>
+
+    <div class="estilo">
+      <p>Personagens</p>
+      <input class="estilo" type="text" placeholder="Jesse Pinkman, Cassie, Marla...">
+    </div>
+
+    <div class="estilo">
+      <p>localização</p>
+      <input class="estilo" type="text" placeholder="São Paulo, Porto Alegre...">
+    </div>
+
+    <div class="estilo">
+      <p>Hobbies</p>
+      <input class="estilo" type="text" placeholder="Esportes, Pintura, Musica...">
+    </div>
+
+    <div class="selecoes">
+      <p>Genero</p>
+      <select id="genero">
+        <option value="">Qualquer</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="binario">Não Binario</option>
+      </select>
+    </div>
+
+    <div class="selecoes">
+      <p>Estado Civil</p>
+      <select id="genero">
+        <option value="">Namorando</option>
+        <option value="Masculino">Solteiro</option>
+        <option value="Feminino">Casado</option>
+        <option value="binario">Em compromisso</option>
+        <option value="binario">Viuvo</option>
+      </select>
+    </div>
+
+    <div class="selecoes">
+      <p>MBTI</p>
+      <select id="genero">
+        <option value="">ISTJ</option>
+        <option value="Masculino">ISFJ</option>
+        <option value="Feminino">INFJ</option>
+        <option value="binario">INTJ</option>
+        <option value="binario">ISTP</option>
+        <option value="binario">ISFP</option>
+        <option value="binario">INTJ</option>
+        <option value="binario">INFP</option>
+        <option value="binario">INTP</option>
+        <option value="binario">ESTP</option>
+        <option value="binario">ESFP</option>
+        <option value="binario">ENFP</option>
+        <option value="binario">ENTP</option>
+        <option value="binario">ESTJ</option>
+        <option value="binario">ESFJ</option>
+        <option value="binario">ENFJ</option>
+        <option value="binario">ENTJ</option>
+      </select>
+    </div>    
+    <div class="age">
+      <div class="age-range">
+        <p>Idade minima</p>
+        <input class="age-input" type="number" id="idade-min" min="13" max="78" value="14">
+      </div>
+      <div class="age-range">
+        <p>Idade Maxima</p>
+        <input class="age-input" type="number" id="idade-max" min="13" max="78" step="1" value="17">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <!-- Botão fixo -->
+  <button class="search-btn" type="submit" form="search-form">Buscar!</button>
+  </div>
+</aside>
+</div>
+
+<!-- Modal Post Container -->
+    <div id="postmodal" class="modal-post-container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Novo <span>Post</span>!</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-greeting">
+              <p>Como está sendo o seu dia? Faça um post sobre isso.</p>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="textarea-post" placeholder="Escreva um pensamento..." maxlength="100">
+                <button class="btn-sending">Enviar!</button>
+            </div>
+        </div>
+    </div>
+
+<script src="./src/js/postmodal.js"></script>
+<script src="./src/js/more.js"></script>
+
+
+<script>
+        // Dados dos usuários
+        const users = [
+            {
+                name: "Vini demarco",
+                username: "@afliccoess",
+                image: "https://lastfm.freetls.fastly.net/i/u/avatar170s/3c04e79db06c605e5de3897555a9a34e.png",
+                profile: "PF.html?username=afliccoess"
+            },
+            {
+                name: "𖤍𖤌𖤍 Mari Saverio",
+                username: "@vampirinhaz7",
+                image: "https://cdn.pfps.gg/pfps/1869-goth-egirl-27.png",
+                profile: "PF.html?username=vampirinhaz7"
+            },
+            {
+                name: "maxgfortes",
+                username: "@maxgfortes",
+                image: "https://i.pinimg.com/736x/d6/fc/2a/d6fc2ab598fdc5ffee863bd5835746c8.jpg",
+                profile: "PF.html?username=maxgfortes"
+            },
+            {
+                name: "⋆˚｡⋆୨✧୧˚ 𝑴𝒂𝒙𝒊𝒏𝒆 ˚୨✧୧⋆｡˚⋆",
+                username: "@maxine",
+                image: "https://i.pinimg.com/736x/0e/10/35/0e1035c960796eccbc18608793cfa3e9.jpg",
+                profile: "PF.html?username=maxine"
+            },
+            {
+                name: "warrsex",
+                username: "@davix",
+                image: "https://i.pinimg.com/736x/12/d3/dd/12d3dd5ac7a32f43cf867161cb95774f.jpg",
+                profile: "PF.html?username=davix"
+            },
+            {
+                name: "haspkey",
+                username: "@haspkey",
+                image: "https://i.postimg.cc/CK3qy1w5/image.png",
+                profile: "PF.html?username=haspkey"
+            }
+        ];
+
+        class FriendsCarousel {
+            constructor() {
+                this.currentIndex = 0;
+                this.users = users;
+                this.cardsWrapper = document.getElementById('cardsWrapper');
+                this.indicators = document.getElementById('indicators');
+                this.isTransitioning = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.createCards();
+                this.createIndicators();
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            createCards() {
+                this.cardsWrapper.innerHTML = '';
+                
+                this.users.forEach((user, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'friend-card';
+                    card.innerHTML = `
+                        <div class="card-content">
+                            <img src="${user.image}" alt="${user.name}" class="card-image">
+                            <div class="card-info">
+                                <div class="card-name">${user.name}</div>
+                                <div class="card-username">${user.username}</div>
+                            </div>
+                            <a href="${user.profile}" class="view-profile-btn"><p>Ver Perfil</p>
+                            </a>
+                        </div>
+                    `;
+                    
+                    // Adicionar event listener para navegação por clique
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.view-profile-btn')) {
+                            this.goToSlide(index);
+                        }
+                    });
+                    
+                    this.cardsWrapper.appendChild(card);
+                });
+            }
+
+            createIndicators() {
+                this.indicators.innerHTML = '';
+                
+                this.users.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    if (index === 0) indicator.classList.add('active');
+                    
+                    indicator.addEventListener('click', () => {
+                        this.goToSlide(index);
+                    });
+                    
+                    this.indicators.appendChild(indicator);
+                });
+            }
+
+            updateDisplay() {
+                const cards = this.cardsWrapper.children;
+                const totalCards = cards.length;
+                
+                // Remover todas as classes de posição
+                Array.from(cards).forEach(card => {
+                    card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
+                });
+
+                // Aplicar classes baseadas na posição relativa ao currentIndex
+                Array.from(cards).forEach((card, index) => {
+                    const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
+                    
+                    switch (relativePos) {
+                        case 0: card.classList.add('center'); break;
+                        case 1: card.classList.add('right'); break;
+                        case -1: card.classList.add('left'); break;
+                        case 2: card.classList.add('far-right'); break;
+                        case -2: card.classList.add('far-left'); break;
+                        default: card.classList.add('hidden'); break;
+                    }
+                });
+
+                // Atualizar indicadores
+                const indicatorElements = this.indicators.children;
+                Array.from(indicatorElements).forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            getRelativePosition(cardIndex, currentIndex, totalCards) {
+                let diff = cardIndex - currentIndex;
+                
+                // Normalizar para o intervalo [-totalCards/2, totalCards/2]
+                if (diff > totalCards / 2) {
+                    diff -= totalCards;
+                } else if (diff < -totalCards / 2) {
+                    diff += totalCards;
+                }
+                
+                return diff;
+            }
+
+            goToSlide(index) {
+                if (this.isTransitioning || index === this.currentIndex) return;
+                
+                this.isTransitioning = true;
+                this.currentIndex = index;
+                this.updateDisplay();
+                
+                // Permitir nova transição após animação
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, 400);
+            }
+
+            next() {
+                const nextIndex = (this.currentIndex + 1) % this.users.length;
+                this.goToSlide(nextIndex);
+            }
+
+            prev() {
+                const prevIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
+                this.goToSlide(prevIndex);
+            }
+
+            bindEvents() {
+                document.getElementById('nextBtn').addEventListener('click', () => this.next());
+                document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+                
+                // Navegação por teclado
+                document.addEventListener('keydown', (e) => {
+                    if (document.getElementById('carouselView').classList.contains('active')) {
+                        if (e.key === 'ArrowRight') this.next();
+                        if (e.key === 'ArrowLeft') this.prev();
+                    }
+                });
+
+                // Auto-play (opcional)
+                // setInterval(() => {
+                //     if (document.getElementById('carouselView').classList.contains('active')) {
+                //         this.next();
+                //     }
+                // }, 5000);
+            }
+        }
+
+        // Toggle entre views
+        class ViewToggle {
+            constructor() {
+                this.currentView = 'carousel';
+                this.init();
+            }
+
+            init() {
+                const toggleButtons = document.querySelectorAll('.toggle-btn');
+                
+                toggleButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const viewType = btn.dataset.view;
+                        this.switchView(viewType);
+                        
+                        // Atualizar botões
+                        toggleButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+            }
+
+            switchView(viewType) {
+                const gridView = document.getElementById('gridView');
+                const carouselView = document.getElementById('carouselView');
+                
+                if (viewType === 'grid') {
+                    gridView.classList.add('active');
+                    carouselView.classList.remove('active');
+                    this.currentView = 'grid';
+                } else {
+                    carouselView.classList.add('active');
+                    gridView.classList.remove('active');
+                    this.currentView = 'carousel';
+                }
+            }
+        }
+
+        // Inicializar quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = new FriendsCarousel();
+            const viewToggle = new ViewToggle();
+            
+            console.log('Sistema de amigos inicializado!');
+        });
+
+        // Função para fittar texto (mantendo a funcionalidade original)
+        (function () {
+            function getAvailableWidth(el) {
+                const cs = getComputedStyle(el);
+                const paddingX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+                const borderX = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+                return el.getBoundingClientRect().width - paddingX - borderX;
+            }
+
+            function fitOne(el, min = 12, max = 22) {
+                const parent = el.parentElement;
+                if (!parent) return;
+
+                el.style.whiteSpace = 'nowrap';
+                el.style.overflow = 'visible';
+                el.style.textOverflow = 'clip';
+                el.style.display = 'inline-block';
+                el.style.maxWidth = '100%';
+
+                const avail = Math.floor(getAvailableWidth(parent));
+                if (avail <= 0) return;
+
+                let lo = min, hi = max, best = min;
+                el.style.fontSize = max + 'px';
+
+                while (lo <= hi) {
+                    const mid = Math.floor((lo + hi) / 2);
+                    el.style.fontSize = mid + 'px';
+                    const tooWide = el.scrollWidth > avail;
+                    if (tooWide) hi = mid - 1;
+                    else { best = mid; lo = mid + 1; }
+                }
+                el.style.fontSize = best + 'px';
+            }
+
+            function fitAll(selector = '.profile-name p', min = 12, max = 22) {
+                document.querySelectorAll(selector).forEach(el => fitOne(el, min, max));
+            }
+
+            function bootstrap() {
+                fitAll();
+                window.addEventListener('resize', () => fitAll());
+                const ro = new ResizeObserver(() => fitAll());
+                document.querySelectorAll('.profile-name').forEach(p => ro.observe(p));
+            }
+
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(bootstrap);
+            } else if (document.readyState === 'complete') {
+                bootstrap();
+            } else {
+                window.addEventListener('load', bootstrap);
+            }
+        })();
+</script>
+
+<script src="./src/js/search.js"></script>
+<script src="./block.js"></script>
+<script type="module" src="./src/js/search.js"></script>
+<script src="./src/js/more.js"></script>
+<script type="module" src="./src/js/loading.js"></script>
+<script type="module" src="./src/js/navbar.js" defer></script>
+</body>
+</html>

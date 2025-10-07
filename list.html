@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/list.css" />
+  <link rel="stylesheet" href="./src/styles/tags.css" />
+  <link rel="stylesheet" href="./src/styles/new-popup.css" />
+  <link rel="stylesheet" href="./src/styles/depoimentos.css" />
+  <link rel="stylesheet" href="./src/styles/loading.css">
+  <link rel="stylesheet" href="./src/styles/mobile-profile.css">
+  <link rel="stylesheet" href="./src/styles/post-modal.css">
+  <link rel="stylesheet" href="./src/styles/nudge-popup.css">
+  <link rel="stylesheet" href="./src/styles/search.css">
+
+  <!-- Social preview -->
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<body>
+  <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+      <div class="search-box">
+        <button><i class="fas fa-search"></i></button>
+        <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+      </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="#" class="postmodal"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <div class="more-menu" id="moreMenu">
+      <a href="#" class="more-toggle" id="moreToggle">
+        <i class="fa-solid fa-bars"></i>
+        Mais
+      </a>
+      <div class="floating-menu" id="floatingMenu">
+        <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+        <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+        <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+        <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+        <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+      </div>
+    </div>
+  </aside>
+
+  <ul id="searchResults"></ul>
+
+<nav class="navbar-bottom">
+  <div class="navbar-bottom-content">
+    <a href="">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="/amigos">
+      <i class="fas fa-users"></i>
+    </a>
+    <a href="/criar">
+      <i class="fas fa-plus"></i>
+    </a>
+    <a href="/mensagens">
+      <i class="fas fa-comments"></i>
+    </a>
+    <a href="PF.html">
+      <img src="./src/icon/default.jpg" alt="Perfil" id="nav-pic" class="profile-mini" style="width: 24px; height: 24px; border-radius: 50%;">
+    </a>
+  </div>
+</nav>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="list-container">
+    <div class="list-seguidores">
+        <div class="list-header">
+            <h1>Seguidores</h1>
+            <p>de maxgfortes</p>
+        </div>
+        <div class="completelist">
+        </div>
+    </div>
+    <div class="list-seguindo">
+        <div class="list-header">
+            <h1>Seguindo</h1>
+            <p>de maxgfortes</p>
+        </div>
+        <div class="completelist">
+        </div>
+    </div>
+    <div class="list-amigos">
+        <div class="list-header">
+            <h1>Amigos</h1>
+            <p>de maxgfortes</p>
+        </div>
+        <div class="completelist">
+        </div>
+    </div>
+  </div>
+
+  <script src="./src/js/loading.js"></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/more.js"></script>
+  <script type="module" src="./src/js/list.js"></script>
+  <script type="module" src="./src/js/navbar.js" defer></script>
+</body>
+</html>

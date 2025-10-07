@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
+  <link rel="stylesheet" href="./src/styles/components.css" />
+  <link rel="stylesheet" href="./src/styles/como-usar.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+    <link rel="stylesheet" href="./src/styles/profile.css" />
+    <link rel="stylesheet" href="./src/styles/tags.css" />
+    <link rel="stylesheet" href="./src/styles/mobile.css" />
+    <link rel="stylesheet" href="./src/styles/new-popup.css" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<body>
+ <div class="glass-overlay"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+<div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
+  </div>
+</div>
+
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="#"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="#"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="#"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+  </aside>
+
+
+  <ul id="searchResults"></ul>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="iFeed.html"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
+      <a href="config.html"><i class="fas fa-cog"></i></a>
+    </div>
+  </div>
+
+
+    <div class="container">
+    <div class="overlay">
+      <div class="text">Realme</div>
+      <div class="overlay-message">Disponível apenas em computadores.</div>
+    </div>
+  </div>
+
+<div class="post-modal" id="postModal">
+  <div class="post-modal-content">
+    <button class="close-post-modal" onclick="closePostOverlay()"><i class="fas fa-times"></i></button>
+    <h2>Fazer Nova <span>Postagem</span>!</h2>
+
+    <textarea id="postText" placeholder="Compartilhe algo..."></textarea>
+
+    <label class="file-input-label">
+      <i class="fas fa-image"></i> Adicionar imagem
+      <input type="file" id="postImageInput" accept="image/*" />
+    </label>
+
+    <div id="imagePreview" class="image-preview"></div>
+    <button id="removeImageBtn" class="remove-image-btn" style="display:none;" onclick="removeImage()">Remover Imagem</button>
+
+
+    <button class="submit-post-btn" onclick="submitPost()">Postar!</button>
+  </div>
+</div>
+
+<div class="tutorial-container">
+
+  <!-- Header fixo -->
+  <div class="tutorial-header">
+    <h2 class="top-header"><p>Como Usar o <Span>RealMe</Span></p></h2>
+    <button class="button-section" id="log">cadastro e login</button>
+    <button class="button-section" id="post">Criando seu primeiro post</button>
+    <button class="button-section" id="users">Interagindo com outros usuários</button>
+    <button class="button-section" id="profile">Personalizando seu Perfil</button>
+  </div>
+
+  <div class="tutorial-body" style="flex-direction: column; overflow-y: auto; padding: 20px;">
+
+    <!-- Seção 1: Cadastro e Login -->
+    <section class="tutorial-box" style="margin-bottom: 40px;" id="section-log">
+      <h3 class="text-section"><p>1. <span> Cadastro e Login</span></p></h3>
+      <p class="tutorial-text">
+        Para começar a usar, crie sua conta clicando no botão "Registrar". Preencha seu nome, e-mail e senha.
+        Após o cadastro, faça login para acessar seu perfil e todas as funcionalidades.
+      </p>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <img src="./src/bg/bg.jpg" alt="Tela de cadastro" style="width: 48%; border-radius: 12px; object-fit: cover;">
+        <video controls style="width: 48%; border-radius: 12px; background: #000;">
+          <source src="https://sample-videos.com/video123/mp4/240/big_buck_bunny_240p_1mb.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+    </section>
+
+    <!-- Seção 2: Criando seu primeiro post -->
+    <section class="tutorial-box" style="margin-bottom: 40px;" id="section-post">
+      <h3 class="text-section"><p>2. <span>Criando seu primeiro post</span></p></h3>
+      <p class="tutorial-text">
+        Para postar algo, clique no campo de "Nova publicação". Você pode adicionar texto, fotos ou vídeos.  
+        Use as ferramentas para formatar seu texto e adicionar mídias que quiser compartilhar com seus amigos.
+      </p>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <img src="./src/bg/bg.jpg" alt="Criar post" style="width: 48%; border-radius: 12px; object-fit: cover;">
+        <video controls style="width: 48%; border-radius: 12px; background: #000;">
+          <source src="https://sample-videos.com/video123/mp4/240/big_buck_bunny_240p_1mb.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+    </section>
+
+    <!-- Seção 3: Interagindo com outros usuários -->
+    <section class="tutorial-box" style="margin-bottom: 40px;" id="section-users">
+      <h3 class="text-section"><p>3. <span> Interagindo com outros usuários</span></p></h3>
+      <p class="tutorial-text">
+        Curta, comente e compartilhe posts de seus amigos para interagir.  
+        Use o sistema de mensagens para conversar privadamente e participar dos grupos para discussões em comum.
+      </p>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <img src="./src/bg/bg.jpg" alt="Interações" style="width: 48%; border-radius: 12px; object-fit: cover;">
+        <video controls style="width: 48%; border-radius: 12px; background: #000;">
+          <source src="https://sample-videos.com/video123/mp4/240/big_buck_bunny_240p_1mb.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+    </section>
+
+    <section class="tutorial-box" style="margin-bottom: 40px;" id="section-profile">
+      <h3 class="text-section"><p>4. <span> Personalizando seu Perfil</span></p></h3>
+      <p class="tutorial-text">
+        Curta, comente e compartilhe posts de seus amigos para interagir.  
+        Use o sistema de mensagens para conversar privadamente e participar dos grupos para discussões em comum.
+      </p>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <img src="./src/assets/img/cu_profile.png" alt="Interações" style="width: 48%; border-radius: 12px; object-fit: cover;">
+        <video controls style="width: 48%; border-radius: 12px; background: #000;">
+          <source src="./src/assets/video/cu_profile_video.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+
+  <script src="./src/js/profile.js" defer></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="/js/mobile-lock.js"></script>
+  <script src="./src/js/new-popup.js" defer></script>
+  <script type="module" src="./src/js/main-main.js"></script>
+  <script>
+    // Espera o DOM carregar antes de adicionar o evento
+document.addEventListener("DOMContentLoaded", function () {
+  const botao = document.getElementById("users");
+
+  botao.addEventListener("click", function () {
+    const secaoSobre = document.getElementById("section-users");
+    secaoSobre.scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const botao = document.getElementById("log");
+
+  botao.addEventListener("click", function () {
+    const secaoSobre = document.getElementById("section-log");
+    secaoSobre.scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const botao = document.getElementById("profile");
+
+  botao.addEventListener("click", function () {
+    const secaoSobre = document.getElementById("section-profile");
+    secaoSobre.scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const botao = document.getElementById("post");
+
+  botao.addEventListener("click", function () {
+    const secaoSobre = document.getElementById("section-post");
+    secaoSobre.scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+
+  </script>
+  <script>
+        const moreMenu = document.getElementById('moreMenu');
+        const moreToggle = document.getElementById('moreToggle');
+        const floatingMenu = document.getElementById('floatingMenu');
+        const overlay = document.getElementById('overlay');
+
+        // Toggle do menu flutuante
+        moreToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (moreMenu.classList.contains('active')) {
+                closeFloatingMenu();
+            } else {
+                openFloatingMenu();
+            }
+        });
+
+        // Função para abrir o menu
+        function openFloatingMenu() {
+            moreMenu.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        // Função para fechar o menu
+        function closeFloatingMenu() {
+            moreMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Fechar menu ao clicar no overlay
+        overlay.addEventListener('click', closeFloatingMenu);
+
+        // Fechar menu ao clicar em qualquer link dentro do menu flutuante
+        floatingMenu.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                closeFloatingMenu();
+            }
+        });
+
+        // Fechar menu ao pressionar ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && moreMenu.classList.contains('active')) {
+                closeFloatingMenu();
+            }
+        });
+
+        // Prevenir que cliques no menu flutuante fechem o menu
+        floatingMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Exemplo de função para abrir overlay de post
+        function openPostOverlay() {
+            alert('Abrir overlay para criar post');
+        }
+
+        // Exemplo de função para sair
+        document.getElementById('btnSair').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Tem certeza que deseja sair?')) {
+                alert('Saindo...');
+            }
+        });
+    </script>
+</body>
+</html>

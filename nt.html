@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>iFriendMatch</title>
+  <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
   <meta name="theme-color" content="#1F1F1F" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./src/styles/navbars.css" />
   <link rel="stylesheet" href="./src/styles/notifications.css" />
   <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/nt-modal.css">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -40,20 +41,32 @@
       </div>
     </div>
     <div class="marquee-container">
-      <div class="marquee">Blessed_ranixw acabou de entrar no RealMe!</div>
+      <div class="marquee">Conectando...</div>
     </div>
   </nav>
 
-  <!-- Sidebar Desktop -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <a href="feed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="aa.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-    <a href="dm.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
     <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
-    <a href="#" onclick="openPostOverlay()"><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
-    <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
   </aside>
   <!-- Navbar Bottom (Mobile) -->
   <div class="navbar-bottom">
@@ -68,7 +81,7 @@
   <ul id="searchResults"></ul>
 
 <div class="notifications-container">
-  <div class="notifications-header"><p>Notificações de <span>maxgfortes</span>!</p></div>
+  <div class="notifications-header"><p>Notificações de <span>Usuário</span>!</p></div>
 
   <div class="notification-item">
     <div class="notification-text"><i class="fas fa-comments"></i><p>Você recebeu uma nova mensagem de <b><i>affliccoess</i></b></p></div>
@@ -86,7 +99,17 @@
   </div>
   
   <div class="notification-item">
-    <div class="notification-text">Atualização do sistema disponível.</div>
+    <div class="notification-text"><i class="fa-solid fa-circle-info"></i><p>O Sistema de Notificações ainda esta em desenvolvimento</p></div>
+    <div class="notification-time">1 hora atrás</div>
+  </div>
+
+  <div class="notification-item">
+    <div class="notification-text"><i class="fa-solid fa-circle-info"></i><p>O RealMe agora esta na versão 1.0</p></div>
+    <div class="notification-time">1 hora atrás</div>
+  </div>
+
+  <div class="notification-item">
+    <div class="notification-text"><i class="fa-solid fa-circle-info"></i><p>O RealMe ainda está em versão de testes, em breve novas funcionalidades estarão disponíveis.</p></div>
     <div class="notification-time">1 hora atrás</div>
   </div>
 
@@ -120,5 +143,31 @@
 
   <ul id="searchResults"></ul>
   <script type="module" src="./src/js/main-main.js"></script>
+  <script src="./src/js/more.js"></script>
+  <script src="./src/js/nt-modal.js"></script>
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const auth = getAuth();
+const db = getFirestore();
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Busca o displayname do usuário logado
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    let displayname = user.email;
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      displayname = data.displayname || displayname;
+    }
+    // Atualiza o texto do span
+    const span = document.querySelector('.notifications-header span');
+    if (span) span.textContent = displayname;
+  }
+});
+  </script>
+  <script type="module" src="./src/js/navbar.js"></script>
 </body>
 </html>
