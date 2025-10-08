@@ -1015,6 +1015,7 @@ async function sendPost() {
     clearInterval(loadingInfo.interval);
     esconderLoading();
     criarPopup('Sucesso!', 'Post enviado com sucesso!', 'success');
+    window.location.reload();
     
   } catch (error) {
     console.error("Erro ao enviar post:", error);

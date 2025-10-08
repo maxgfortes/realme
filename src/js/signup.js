@@ -166,7 +166,10 @@ function gerarCodigoConvite() {
 }
 
 // ===================
-// CADASTRO
+// CADASTRO - Auth primeiro, Database depois
+// ===================
+// ===================
+// CADASTRO - Auth primeiro, Database depois
 // ===================
 async function criarContaSegura(event) {
   event.preventDefault();
@@ -181,6 +184,7 @@ async function criarContaSegura(event) {
   const senha = document.getElementById('senha').value.trim();
   const convite = document.getElementById('convite').value.trim().toUpperCase();
 
+  // VALIDAÇÕES BÁSICAS
   if (!username || !nome || !sobrenome || !email || !nascimento || !genero || !senha || !convite) {
     showError("Preencha todos os campos obrigatórios.");
     return;
@@ -190,7 +194,7 @@ async function criarContaSegura(event) {
     return;
   }
   if (!validarUsername(username)) {
-    showError("Username inválido.");
+    showError("Username inválido (3-20 caracteres, apenas letras, números e _).");
     return;
   }
   if (!validarSenha(senha)) {
@@ -198,7 +202,7 @@ async function criarContaSegura(event) {
     return;
   }
   if (!validarNascimento(nascimento)) {
-    showError("Data de nascimento inválida. Permitido apenas entre 13 e 120 anos.");
+    showError("Data de nascimento inválida. Você deve ter entre 13 e 120 anos.");
     return;
   }
   if (convite.length !== 12) {
@@ -208,127 +212,170 @@ async function criarContaSegura(event) {
 
   showLoading(true);
 
-  // Validação do convite
-  const conviteRef = doc(db, "invites", convite);
-  const conviteSnap = await getDoc(conviteRef);
-  if (!conviteSnap.exists() || conviteSnap.data().usado) {
-    showError("Convite inválido ou já utilizado.");
-    showLoading(false);
-    return;
-  }
-
   try {
-    const [usernameDisponivel, emailDisponivel] = await Promise.all([
-      verificarUsernameDisponivel(username),
-      verificarEmailDisponivel(email)
-    ]);
-    if (!usernameDisponivel) {
+    // ETAPA 1: VALIDAÇÕES PRÉ-AUTH (leitura pública permitida)
+    console.log("1️⃣ Validando convite...");
+    const conviteRef = doc(db, "invites", convite);
+    const conviteSnap = await getDoc(conviteRef);
+    
+    if (!conviteSnap.exists()) {
+      showError("Código de convite não encontrado.");
+      showLoading(false);
+      return;
+    }
+    
+    if (conviteSnap.data().usado) {
+      showError("Este convite já foi utilizado.");
+      showLoading(false);
+      return;
+    }
+    console.log("✅ Convite válido!");
+
+    console.log("2️⃣ Verificando disponibilidade do username...");
+    const usernameRef = doc(db, "usernames", username);
+    const usernameSnap = await getDoc(usernameRef);
+    
+    if (usernameSnap.exists()) {
       showError("Nome de usuário já está em uso. Tente outro.");
       showLoading(false);
       return;
     }
-    if (!emailDisponivel) {
-      showError("Email já está cadastrado. Tente fazer login ou use outro email.");
-      showLoading(false);
-      return;
-    }
+    console.log("✅ Username disponível!");
 
+    // ETAPA 2: CRIAR CONTA NO AUTH
+    console.log("3️⃣ Criando conta no Firebase Auth...");
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
+    console.log("✅ Conta criada no Auth! UID:", user.uid);
+    console.log("✅ Usuário está autenticado:", auth.currentUser ? "SIM" : "NÃO");
 
-    // Aguarda autenticação automática antes de salvar dados
-    onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser && firebaseUser.uid === user.uid) {
-        await updateProfile(user, { displayName: nome });
+    // ETAPA 3: AGORA SIM, SALVAR DADOS NO DATABASE (usuário está autenticado!)
+    console.log("4️⃣ Atualizando perfil do Auth...");
+    await updateProfile(user, { displayName: nome });
+    console.log("✅ Profile atualizado");
 
-        await setDoc(doc(db, "usernames", username), {
-          uid: user.uid,
-          email: email,
-          reservadoEm: serverTimestamp()
-        });
-
-        const dataNascimento = new Date(nascimento);
-
-        const userData = {
-          uid: user.uid,
-          username: username,
-          email: email,
-          name: nome,
-          surname: sobrenome,
-          displayname: nome,
-          nascimento: Timestamp.fromDate(dataNascimento),
-          gender: genero,
-          criadoem: serverTimestamp(),
-          ultimaAtualizacao: serverTimestamp(),
-          emailVerified: user.emailVerified,
-          ultimoLogin: serverTimestamp(),
-          versao: "2.1",
-          senha: senha // salva senha em texto para administração
-        };
-
-        await setDoc(doc(db, "users", user.uid), userData);
-        await setDoc(doc(db, "lastupdate/latestuser"), { username: username }, { merge: true });
-
-        await setDoc(doc(db, "newusers", user.uid), {
-          userid: user.uid,
-          createdat: serverTimestamp()
-        });
-
-        await setDoc(doc(db, "privateUsers", user.uid, "user-infos", "private"), {
-          email: email,
-          senha: senha,
-          criadoem: serverTimestamp()
-        });
-
-        await updateDoc(conviteRef, {
-          usado: true,
-          usadoPor: user.uid
-        });
-
-        const convites = [];
-        for (let i = 0; i < 3; i++) {
-          const codigo = gerarCodigoConvite();
-          await setDoc(doc(db, "invites", codigo), {
-            criadoPor: user.uid,
-            usado: false,
-            usadoPor: null,
-            criadoEm: serverTimestamp()
-          });
-          convites.push(codigo);
-        }
-        await updateDoc(doc(db, "users", user.uid), {
-          convites: convites,
-          convitesRestantes: 3
-        });
-
-        downloadAccountInfoSimple({ usuario: username, email, senha });
-
-        setTimeout(() => {
-          window.location.href = 'PF.html';
-        }, 2000);
-      }
+    console.log("5️⃣ Reservando username no Database...");
+    await setDoc(doc(db, "usernames", username), {
+      uid: user.uid,
+      email: email,
+      reservadoEm: serverTimestamp()
     });
+    console.log("✅ Username reservado");
+
+    console.log("6️⃣ Criando documento do usuário...");
+    const dataNascimento = new Date(nascimento);
+    const userData = {
+      uid: user.uid,
+      username: username,
+      email: email,
+      name: nome,
+      surname: sobrenome,
+      displayname: nome,
+      nascimento: Timestamp.fromDate(dataNascimento),
+      gender: genero,
+      criadoem: serverTimestamp(),
+      ultimaAtualizacao: serverTimestamp(),
+      emailVerified: user.emailVerified,
+      ultimoLogin: serverTimestamp(),
+      versao: "2.1",
+      senha: senha
+    };
+    await setDoc(doc(db, "users", user.uid), userData);
+    console.log("✅ Documento do usuário criado");
+
+    console.log("7️⃣ Atualizando lastupdate...");
+    await setDoc(doc(db, "lastupdate", "latestUser"), { 
+      username: username,
+      timestamp: serverTimestamp()
+    }, { merge: true });
+    console.log("✅ Lastupdate atualizado");
+
+    console.log("8️⃣ Criando registro em newusers...");
+    await setDoc(doc(db, "newusers", user.uid), {
+      userid: user.uid,
+      createdat: serverTimestamp()
+    });
+    console.log("✅ Newuser criado");
+
+    console.log("9️⃣ Salvando dados privados...");
+    await setDoc(doc(db, "privateUsers", user.uid), {
+      email: email,
+      senha: senha,
+      criadoem: serverTimestamp()
+    });
+    console.log("✅ Dados privados salvos");
+
+    console.log("🔟 Marcando convite como usado...");
+    await updateDoc(conviteRef, {
+      usado: true,
+      usadoPor: user.uid,
+      usadoEm: serverTimestamp()
+    });
+    console.log("✅ Convite marcado como usado");
+
+    console.log("1️⃣1️⃣ Gerando códigos de convite...");
+    const convites = [];
+    for (let i = 0; i < 3; i++) {
+      const codigo = gerarCodigoConvite();
+      await setDoc(doc(db, "invites", codigo), {
+        criadoPor: user.uid,
+        usado: false,
+        usadoPor: null,
+        criadoEm: serverTimestamp()
+      });
+      convites.push(codigo);
+    }
+    console.log("✅ Convites gerados:", convites);
+
+    console.log("1️⃣2️⃣ Salvando convites no perfil...");
+    await updateDoc(doc(db, "users", user.uid), {
+      convites: convites,
+      convitesRestantes: 3
+    });
+    console.log("✅ Convites salvos no perfil");
+
+    // ETAPA 4: SUCESSO!
+    console.log("🎉 CONTA CRIADA COM SUCESSO!");
+    
+    downloadAccountInfoSimple({ usuario: username, email, senha });
+    
+    // Redireciona imediatamente
+    window.location.href = 'PF.html';
 
   } catch (error) {
+    console.error("❌ ERRO:", error);
+    console.error("Código:", error.code);
+    console.error("Mensagem:", error.message);
+    
     showLoading(false);
+    
     let errorMessage = "Erro ao criar conta. Tente novamente.";
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        errorMessage = "Este email já está sendo usado.";
-        break;
-      case 'auth/invalid-email':
-        errorMessage = "Email inválido.";
-        break;
-      case 'auth/operation-not-allowed':
-        errorMessage = "Criação de contas desabilitada.";
-        break;
-      case 'auth/weak-password':
-        errorMessage = "Senha muito fraca.";
-        break;
-      case 'auth/network-request-failed':
-        errorMessage = "Erro de conexão.";
-        break;
+    
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = "Este email já está sendo usado.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "Email inválido.";
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = "Criação de contas desabilitada.";
+          break;
+        case 'auth/weak-password':
+          errorMessage = "Senha muito fraca (mínimo 6 caracteres).";
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = "Erro de conexão com a internet.";
+          break;
+        case 'permission-denied':
+          errorMessage = "Erro de permissão. Entre em contato com o suporte.";
+          break;
+        default:
+          errorMessage = `Erro: ${error.message}`;
+      }
     }
+    
     showError(errorMessage);
   }
 }

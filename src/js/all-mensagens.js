@@ -2735,7 +2735,7 @@ const postCSS = `
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999999;
+  z-index: 999999999;
   animation: fadeIn 0.3s ease-out;
 }
 
