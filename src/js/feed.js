@@ -912,7 +912,22 @@ async function loadPosts() {
           if (username) username.textContent = userData.username ? `@${userData.username}` : '';
         }
       });
+
+      const btnLike = postEl.querySelector('.btn-like');
+  const usuarioLogado = auth.currentUser;
+  if (btnLike && usuarioLogado) {
+    const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
+    getDoc(likerRef).then(likerSnap => {
+      if (likerSnap.exists() && likerSnap.data().like === true) {
+        btnLike.style.color = '#dc3545';
+      } else {
+        btnLike.style.color = '';
+      }
+    });
+  }
     }
+
+    
 
     if (postsSnapshot.size < POSTS_LIMIT) {
       hasMorePosts = false;
