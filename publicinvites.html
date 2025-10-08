@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="./src/styles/loading.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
   <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
 
   <style>
-
     .invite-list-container {
       max-width: 500px;
       margin: 40px auto;
@@ -20,19 +20,17 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.4);
       padding: 32px 24px;
       background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  margin-top: 80px;
-  width: 900px;
-
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+      margin-top: 80px;
+      width: 900px;
     }
     .invite-list-container h1 {
       margin-bottom: 24px;
       color: #4A90E2;
     }
-
     .logo a {
       font-weight: bold;
       font-size: 30px;
@@ -41,7 +39,6 @@
       padding-right: 10px;
       text-decoration: none;
     }
-    
     .invite-list-container h1 span {
       color: #fff;
     }
@@ -88,13 +85,46 @@
     .copy-btn:hover {
       background: #357ABD;
     }
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4A90E2, #357ABD);
+      width: 0%;
+      transition: width 0.3s;
+    }
   </style>
-  <!-- Firebase SDKs -->
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo_area">
+      <div class="logo"><a href="index.html">RealMe</a></div>
+    </div>
+  </nav>
+
+  <div class="invite-list-container">
+    <h1><i class="fa-solid fa-envelope"></i> <span>Convites</span> RealMe</h1>
+    <div class="progress-bar" id="progressBar" style="display:none;">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div id="inviteList">
+      <div style="text-align:center;color:#aaa; margin-bottom: 12px;">Carregando...</div>
+    </div>
+    <div class="use">
+      <p>Para usar um convite, insira o código na tela de registro do RealMe. <a href="index.html" style="color:#4A90E2; text-decoration:none;">Voltar para a página inicial</a></p>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
       authDomain: "ifriendmatch.firebaseapp.com",
@@ -108,38 +138,86 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Lista dos convites que você pediu
-    const codigos = ["REALME012025", "REALME122025", "REALME022025", "REALME032025", "REALME042025", "REALME052025", "REALME062025", "REALME072025", "REALME082025", "REALME092025", "REALME102025", "REALME112025", "REALME122025", "REALME132025", "REALME142025", "REALME152025", "REALME162025", "REALME172025", "REALME182025", "REALME192025", "REALME202025", "REALME212025", "REALME222025", "REALME232025", "REALME242025", "REALME252025", "REALME262025", "REALME272025", "REALME282025", "REALME292025", "REALME302025", "REALME312025"];
+    const codigos = ["REALME010025", "REALME010125", "REALME010225", "REALME010325", "REALME010425", "REALME010525", "REALME010625", "REALME010725", "REALME010825", "REALME010925", "REALME011025", "REALME011125", "REALME011225", "REALME011325", "REALME011425", "REALME011525", "REALME012025", "REALME022025", "REALME032025", "REALME042025", "REALME052025", "REALME062025", "REALME072025", "REALME082025", "REALME092025", "REALME102025", "REALME112025", "REALME122025", "REALME132025", "REALME142025", "REALME152025", "REALME162025", "REALME172025", "REALME182025", "REALME192025", "REALME202025", "REALME212025", "REALME222025", "REALME232025", "REALME242025", "REALME252025", "REALME262025", "REALME272025", "REALME282025", "REALME292025", "REALME302025", "REALME312025", "REALME322025", "REALME332025", "REALME342025", "REALME352025", "REALME362025", "REALME372025", "REALME382025", "REALME392025", "REALME402025", "REALME412025", "REALME422025", "REALME432025", "REALME442025", "REALME452025", "REALME462025", "REALME472025", "REALME482025", "REALME492025", "REALME502025", "REALME512025", "REALME522025", "REALME532025", "REALME542025", "REALME552025", "REALME562025", "REALME572025", "REALME582025", "REALME592025", "REALME602025", "REALME612025", "REALME622025", "REALME632025", "REALME642025", "REALME652025", "REALME662025", "REALME672025", "REALME682025", "REALME692025", "REALME702025", "REALME712025", "REALME722025", "REALME732025", "REALME742025", "REALME752025", "REALME762025", "REALME772025", "REALME782025", "REALME792025", "REALME802025", "REALME812025", "REALME822025", "REALME832025", "REALME842025", "REALME852025", "REALME862025", "REALME872025", "REALME882025", "REALME892025", "REALME902025", "REALME912025", "REALME922025", "REALME932025", "REALME942025", "REALME952025", "REALME962025", "REALME972025", "REALME982025", "REALME992025"];
+
+    // Cache de resultados
+    let cachedInvites = null;
 
     async function buscarConvites() {
+      const progressBar = document.getElementById('progressBar');
+      const progressFill = document.getElementById('progressFill');
+      progressBar.style.display = 'block';
+
       const invites = [];
-      for (const codigo of codigos) {
-        const ref = doc(db, "invites", codigo);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          invites.push({
-            codigo: codigo,
-            usado: !!data.usado,
-            usadoPor: data.usadoPor || null
-          });
-        } else {
-          invites.push({
-            codigo: codigo,
-            usado: null,
-            usadoPor: null
-          });
-        }
+      const batchSize = 10; // Processar 10 por vez
+      
+      // Renderiza a lista inicial vazia imediatamente
+      renderConvites([]);
+
+      for (let i = 0; i < codigos.length; i += batchSize) {
+        const batch = codigos.slice(i, i + batchSize);
+        
+        // Busca paralela dentro do lote
+        const promises = batch.map(async (codigo) => {
+          try {
+            const ref = doc(db, "invites", codigo);
+            const snap = await getDoc(ref);
+            
+            if (snap.exists()) {
+              const data = snap.data();
+              return {
+                codigo: codigo,
+                usado: !!data.usado,
+                usadoPor: data.usadoPor || null
+              };
+            } else {
+              return {
+                codigo: codigo,
+                usado: null,
+                usadoPor: null
+              };
+            }
+          } catch (error) {
+            console.error(`Erro ao buscar ${codigo}:`, error);
+            return {
+              codigo: codigo,
+              usado: null,
+              usadoPor: null
+            };
+          }
+        });
+
+        const results = await Promise.all(promises);
+        invites.push(...results);
+
+        // Atualiza progresso
+        const progress = (invites.length / codigos.length) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        // Renderiza incrementalmente
+        renderConvites(invites);
       }
-      renderConvites(invites);
+
+      progressBar.style.display = 'none';
+      cachedInvites = invites;
     }
 
     function renderConvites(invites) {
       const list = document.getElementById('inviteList');
       list.innerHTML = '';
+
+      if (invites.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#aaa;">Carregando convites...</div>';
+        return;
+      }
+
+      // Usar fragment para melhor performance
+      const fragment = document.createDocumentFragment();
+
       invites.forEach(invite => {
         let statusHtml = '';
         let btnHtml = '';
+        
         if (invite.usado === null) {
           statusHtml = `<span class="invite-status used"><i class="fa fa-question-circle"></i> Não encontrado</span>`;
         } else if (invite.usado) {
@@ -148,6 +226,7 @@
           statusHtml = `<span class="invite-status"><i class="fa fa-check-circle"></i> Disponível</span>`;
           btnHtml = `<button class="copy-btn" onclick="copyInvite('${invite.codigo}', this)">Copiar</button>`;
         }
+
         const item = document.createElement('div');
         item.className = 'invite-item' + (invite.usado ? ' used' : '');
         item.innerHTML = `
@@ -155,8 +234,10 @@
           ${statusHtml}
           ${btnHtml}
         `;
-        list.appendChild(item);
+        fragment.appendChild(item);
       });
+
+      list.appendChild(fragment);
     }
 
     window.copyInvite = function(codigo, btn) {
@@ -167,22 +248,5 @@
 
     buscarConvites();
   </script>
-</head>
-<body>
-    <nav class="navbar">
-    <div class="logo_area">
-      <div class="logo"><a href="index.html">RealMe</a></div>
-    </div>
-  </nav>
-
-  <div class="invite-list-container">
-    <h1><i class="fa-solid fa-envelope"></i> <span>Convites</span> RealMe</h1>
-    <div id="inviteList">
-      <div style="text-align:center;color:#aaa; margin-bottom: 12px;">Carregando...</div>
-    </div>
-    <div class="use">
-        <p>Para usar um convite, insira o código na tela de registro do RealMe. <a href="index.html" style="color:#4A90E2; text-decoration:none;">Voltar para a página inicial</a></p>
-    </div>
-  </div>
 </body>
 </html>
