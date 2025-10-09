@@ -175,6 +175,7 @@
 .post-actions {
   display: flex;
   gap: 20px;
+  border-top: none !important;
 }
 
 .post-actions button {

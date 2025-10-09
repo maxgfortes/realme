@@ -81,20 +81,24 @@ async function renderUserList(listType, userId) {
     const uid = docUser.id;
     const userData = await getUserData(uid);
     if (!userData) continue;
-    html += `
-      <div class="user-list">
-        <div class="user-item">
-          <img src="${userData.userphoto}" alt="Avatar do Usuário" class="user-avatar" onerror="this.src='./src/icon/default.jpg'">
-          <div class="user-info">
-            <span class="user-name">${userData.displayname}</span>
-            <span class="user-username">@${userData.username}</span>
-          </div>
-          <div class="action">
-            <button class="remove" data-uid="${uid}" data-type="${listType}">Remover</button>
-          </div>
+    const usuarioLogado = auth.currentUser?.uid;
+
+html += `
+  <div class="user-list">
+    <div class="user-item">
+      <a href="PF.html?userid=${uid}" class="user-link" style="display: contents;">
+        <img src="${userData.userphoto}" alt="Avatar do Usuário" class="user-avatar" onerror="this.src='./src/icon/default.jpg'">
+        <div class="user-info">
+          <span class="user-name">${userData.displayname}</span>
+          <span class="user-username">@${userData.username}</span>
         </div>
+      </a>
+      <div class="action">
+        ${uid === usuarioLogado ? `<button class="remove" data-uid="${uid}" data-type="${listType}">Remover</button>` : ""}
       </div>
-    `;
+    </div>
+  </div>
+`;
   }
   listContainer.innerHTML = html;
 }
