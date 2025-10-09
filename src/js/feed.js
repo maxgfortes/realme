@@ -858,6 +858,8 @@ async function loadPosts() {
         continue;
       }
 
+      
+
       // Renderiza o post normalmente
       const postEl = document.createElement('div');
       postEl.className = 'post-card';
@@ -913,18 +915,22 @@ async function loadPosts() {
         }
       });
 
-      const btnLike = postEl.querySelector('.btn-like');
-  const usuarioLogado = auth.currentUser;
-  if (btnLike && usuarioLogado) {
-    const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
-    getDoc(likerRef).then(likerSnap => {
-      if (likerSnap.exists() && likerSnap.data().like === true) {
-        btnLike.style.color = '#dc3545';
-      } else {
-        btnLike.style.color = '';
-      }
-    });
-  }
+const btnLike = postEl.querySelector('.btn-like');
+const usuarioLogado = auth.currentUser;
+if (btnLike && usuarioLogado) {
+  const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
+  getDoc(likerRef).then(likerSnap => {
+    if (likerSnap.exists() && likerSnap.data().like === true) {
+      btnLike.style.color = '#dc3545';
+    } else {
+      btnLike.style.color = '';
+    }
+  });
+}
+
+  contarLikes(postData.postid).then(totalLikes => {
+    btnLike.querySelector('span').textContent = totalLikes;
+  });
     }
 
     
@@ -950,6 +956,8 @@ async function loadPosts() {
   }
   loading = false;
 }
+
+
 // ...existing code...
 // ===================
 // ENVIAR POST - VERSÃO OTIMIZADA
@@ -979,7 +987,7 @@ async function sendPost() {
       return;
     }
   }
-  
+
   tocarSomEnvio();
   criarAnimacaoAviaoPapel();
   
@@ -1044,52 +1052,34 @@ async function sendPost() {
 // CURTIR POST (posts/{postid})
 // ===================
 // Função para alternar entre like e deslike
+
+async function contarLikes(postId) {
+  const likersRef = collection(db, 'posts', postId, 'likers');
+  const q = query(likersRef, where('like', '==', true));
+  const snapshot = await getDocs(q);
+  return snapshot.size;
+}
+
 async function toggleLikePost(uid, postId, element) {
-  const postRef = doc(db, 'posts', postId);
   const likerRef = doc(db, `posts/${postId}/likers/${uid}`);
 
   try {
-    // Verifica se o usuário já interagiu com o post
     const likerSnap = await getDoc(likerRef);
+    const spanCurtidas = element.querySelector('span');
+    let curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
 
-    if (likerSnap.exists()) {
-      const likerData = likerSnap.data();
-
-      if (likerData.like === true) {
-        // Se o like está ativo, alterna para false (deslike/remover like)
-        await updateDoc(likerRef, { like: false, likein: new Date() });
-        await updateDoc(postRef, { likes: increment(-1) });
-
-        // Atualiza o contador no frontend
-        const spanCurtidas = element.querySelector('span');
-        const curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
-        spanCurtidas.textContent = curtidasAtuais - 1;
-        element.style.color = ''; // Reseta a cor do botão
-      } else {
-        // Se o like está inativo, alterna para true (like)
-        await updateDoc(likerRef, { like: true, likein: new Date() });
-        await updateDoc(postRef, { likes: increment(1) });
-
-        // Atualiza o contador no frontend
-        const spanCurtidas = element.querySelector('span');
-        const curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
-        spanCurtidas.textContent = curtidasAtuais + 1;
-        element.style.color = '#dc3545'; // Destaca o botão
-      }
+    if (likerSnap.exists() && likerSnap.data().like === true) {
+      await updateDoc(likerRef, { like: false, likein: new Date() });
+      element.style.color = '';
+      spanCurtidas.textContent = Math.max(0, curtidasAtuais - 1);
     } else {
-      // Se o usuário nunca interagiu, cria o documento com like = true
-      await setDoc(likerRef, {
-        uid: uid,
-        like: true,
-        likein: new Date() // Timestamp do like
-      });
-      await updateDoc(postRef, { likes: increment(1) });
-
-      // Atualiza o contador no frontend
-      const spanCurtidas = element.querySelector('span');
-      const curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
+      if (likerSnap.exists()) {
+        await updateDoc(likerRef, { like: true, likein: new Date() });
+      } else {
+        await setDoc(likerRef, { uid: uid, like: true, likein: new Date() });
+      }
+      element.style.color = '#dc3545';
       spanCurtidas.textContent = curtidasAtuais + 1;
-      element.style.color = '#dc3545'; // Destaca o botão
     }
   } catch (error) {
     console.error("Erro ao curtir/descurtir post:", error);
@@ -1253,6 +1243,7 @@ fileBtn.addEventListener('click', () => {
 });
 }
 
+
 // ===================
 // EVENT LISTENERS
 // ===================
@@ -1414,6 +1405,18 @@ if (avisoEl) {
       }
     });
   }
+  feed.addEventListener('click', async (e) => {
+  const btnLike = e.target.closest('.btn-like');
+  if (btnLike) {
+    const uid = auth.currentUser?.uid; // ID do usuário logado
+    const postId = btnLike.dataset.id; // ID do post
+    if (uid && postId) {
+      await toggleLikePost(uid, postId, btnLike);
+    } else {
+      criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
+    }
+  }
+});
 }
 
 
