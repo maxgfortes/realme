@@ -137,6 +137,7 @@ import {
   query,
   orderBy,
   getDocs,
+  where,
   serverTimestamp,
   onSnapshot,
   doc,
@@ -434,8 +435,9 @@ async function carregarConversas() {
   if (!loggedUser) return;
   recentsUsersDiv.innerHTML = "";
   const chatsRef = collection(db, "chats");
-  // Busca todos os chats onde o usuário participa
-  const chatsSnap = await getDocs(chatsRef);
+const q = query(chatsRef, where("participants", "array-contains", loggedUser));
+const chatsSnap = await getDocs(q);
+
 
 
   // Monta array com dados e ordena por lastMessageTime (mais recente primeiro)
