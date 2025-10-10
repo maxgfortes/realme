@@ -339,6 +339,24 @@
                 username: "@haspkey",
                 image: "https://i.postimg.cc/CK3qy1w5/image.png",
                 profile: "PF.html?username=haspkey"
+            },
+            {
+                name: "haspkey",
+                username: "@haspkey",
+                image: "https://i.postimg.cc/CK3qy1w5/image.png",
+                profile: "PF.html?username=haspkey"
+            },
+            {
+                name: "haspkey",
+                username: "@haspkey",
+                image: "https://i.postimg.cc/CK3qy1w5/image.png",
+                profile: "PF.html?username=haspkey"
+            },
+            {
+                name: "haspkey",
+                username: "@haspkey",
+                image: "https://i.postimg.cc/CK3qy1w5/image.png",
+                profile: "PF.html?username=haspkey"
             }
         ];
 
@@ -362,7 +380,6 @@
 
             createCards() {
                 this.cardsWrapper.innerHTML = '';
-                
                 this.users.forEach((user, index) => {
                     const card = document.createElement('div');
                     card.className = 'friend-card';
@@ -377,30 +394,24 @@
                             </a>
                         </div>
                     `;
-                    
-                    // Adicionar event listener para navegação por clique
                     card.addEventListener('click', (e) => {
                         if (!e.target.closest('.view-profile-btn')) {
                             this.goToSlide(index);
                         }
                     });
-                    
                     this.cardsWrapper.appendChild(card);
                 });
             }
 
             createIndicators() {
                 this.indicators.innerHTML = '';
-                
                 this.users.forEach((_, index) => {
                     const indicator = document.createElement('div');
                     indicator.className = 'indicator';
                     if (index === 0) indicator.classList.add('active');
-                    
                     indicator.addEventListener('click', () => {
                         this.goToSlide(index);
                     });
-                    
                     this.indicators.appendChild(indicator);
                 });
             }
@@ -408,16 +419,13 @@
             updateDisplay() {
                 const cards = this.cardsWrapper.children;
                 const totalCards = cards.length;
-                
-                // Remover todas as classes de posição
+
                 Array.from(cards).forEach(card => {
                     card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
                 });
 
-                // Aplicar classes baseadas na posição relativa ao currentIndex
                 Array.from(cards).forEach((card, index) => {
                     const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
-                    
                     switch (relativePos) {
                         case 0: card.classList.add('center'); break;
                         case 1: card.classList.add('right'); break;
@@ -428,67 +436,54 @@
                     }
                 });
 
-                // Atualizar indicadores
+                // Corrige as bolinhas para sempre mostrar todas e ativar a correta
                 const indicatorElements = this.indicators.children;
                 Array.from(indicatorElements).forEach((indicator, index) => {
                     indicator.classList.toggle('active', index === this.currentIndex);
                 });
             }
 
+            // Corrige o cálculo para sempre ser infinito
             getRelativePosition(cardIndex, currentIndex, totalCards) {
                 let diff = cardIndex - currentIndex;
-                
-                // Normalizar para o intervalo [-totalCards/2, totalCards/2]
+                // Mantém o carrossel infinito sem pular bolinhas
                 if (diff > totalCards / 2) {
                     diff -= totalCards;
                 } else if (diff < -totalCards / 2) {
                     diff += totalCards;
                 }
-                
                 return diff;
             }
 
             goToSlide(index) {
                 if (this.isTransitioning || index === this.currentIndex) return;
-                
                 this.isTransitioning = true;
                 this.currentIndex = index;
                 this.updateDisplay();
-                
-                // Permitir nova transição após animação
                 setTimeout(() => {
                     this.isTransitioning = false;
                 }, 400);
             }
 
             next() {
-                const nextIndex = (this.currentIndex + 1) % this.users.length;
-                this.goToSlide(nextIndex);
+                this.currentIndex = (this.currentIndex + 1) % this.users.length;
+                this.updateDisplay();
             }
 
             prev() {
-                const prevIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
-                this.goToSlide(prevIndex);
+                this.currentIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
+                this.updateDisplay();
             }
 
             bindEvents() {
                 document.getElementById('nextBtn').addEventListener('click', () => this.next());
                 document.getElementById('prevBtn').addEventListener('click', () => this.prev());
-                
-                // Navegação por teclado
                 document.addEventListener('keydown', (e) => {
                     if (document.getElementById('carouselView').classList.contains('active')) {
                         if (e.key === 'ArrowRight') this.next();
                         if (e.key === 'ArrowLeft') this.prev();
                     }
                 });
-
-                // Auto-play (opcional)
-                // setInterval(() => {
-                //     if (document.getElementById('carouselView').classList.contains('active')) {
-                //         this.next();
-                //     }
-                // }, 5000);
             }
         }
 
@@ -501,13 +496,10 @@
 
             init() {
                 const toggleButtons = document.querySelectorAll('.toggle-btn');
-                
                 toggleButtons.forEach(btn => {
                     btn.addEventListener('click', () => {
                         const viewType = btn.dataset.view;
                         this.switchView(viewType);
-                        
-                        // Atualizar botões
                         toggleButtons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                     });
@@ -517,7 +509,6 @@
             switchView(viewType) {
                 const gridView = document.getElementById('gridView');
                 const carouselView = document.getElementById('carouselView');
-                
                 if (viewType === 'grid') {
                     gridView.classList.add('active');
                     carouselView.classList.remove('active');
@@ -530,68 +521,670 @@
             }
         }
 
-        // Inicializar quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             const carousel = new FriendsCarousel();
             const viewToggle = new ViewToggle();
-            
             console.log('Sistema de amigos inicializado!');
         });
+</script>
+<script type="module">
+// ===============================
+//  acharAmigos.js
+//  Busca usuários semelhantes no Firestore por pontos de similaridade
+// ===============================
 
-        // Função para fittar texto (mantendo a funcionalidade original)
-        (function () {
-            function getAvailableWidth(el) {
-                const cs = getComputedStyle(el);
-                const paddingX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-                const borderX = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
-                return el.getBoundingClientRect().width - paddingX - borderX;
-            }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-            function fitOne(el, min = 12, max = 22) {
-                const parent = el.parentElement;
-                if (!parent) return;
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
 
-                el.style.whiteSpace = 'nowrap';
-                el.style.overflow = 'visible';
-                el.style.textOverflow = 'clip';
-                el.style.display = 'inline-block';
-                el.style.maxWidth = '100%';
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-                const avail = Math.floor(getAvailableWidth(parent));
-                if (avail <= 0) return;
+let currentUserId = null;
+onAuthStateChanged(auth, (user) => {
+  if (user) currentUserId = user.uid;
+});
 
-                let lo = min, hi = max, best = min;
-                el.style.fontSize = max + 'px';
+const btnBuscar = document.querySelector('.search-btn');
+const switchIgualAMim = document.getElementById('igualAMim');
+const filtrosInputs = document.querySelectorAll('.filtros input, .filtros select');
+const cardsWrapper = document.getElementById('cardsWrapper');
+const friendsList = document.querySelector('.friends-list'); // grid view
 
-                while (lo <= hi) {
-                    const mid = Math.floor((lo + hi) / 2);
-                    el.style.fontSize = mid + 'px';
-                    const tooWide = el.scrollWidth > avail;
-                    if (tooWide) hi = mid - 1;
-                    else { best = mid; lo = mid + 1; }
+function normalizar(str) {
+  return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+if (btnBuscar) btnBuscar.addEventListener('click', buscarUsuariosSemelhantes);
+if (switchIgualAMim) switchIgualAMim.addEventListener('change', alternarIgualAMim);
+
+async function alternarIgualAMim() {
+  if (switchIgualAMim.checked) {
+    filtrosInputs.forEach(el => {
+      el.disabled = true;
+      el.classList.add('cinza');
+    });
+    await preencherComDadosDoUsuarioAtual();
+  } else {
+    filtrosInputs.forEach(el => {
+      el.disabled = false;
+      el.classList.remove('cinza');
+      el.value = '';
+    });
+  }
+}
+
+async function preencherComDadosDoUsuarioAtual() {
+  if (!currentUserId) return;
+  const userRef = doc(db, "users", currentUserId);
+  const userSnap = await getDoc(userRef);
+  const mediaRef = doc(db, "users", currentUserId, "user-infos", "user-media");
+  const aboutRef = doc(db, "users", currentUserId, "user-infos", "about");
+  const likesRef = doc(db, "users", currentUserId, "user-infos", "likes");
+  const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
+    getDoc(mediaRef), getDoc(aboutRef), getDoc(likesRef)
+  ]);
+  const userData = userSnap.exists() ? userSnap.data() : {};
+  const media = mediaSnap.exists() ? mediaSnap.data() : {};
+  const about = aboutSnap.exists() ? aboutSnap.data() : {};
+  const likes = likesSnap.exists() ? likesSnap.data() : {};
+
+  filtrosInputs.forEach(input => {
+    const label = input.previousElementSibling?.textContent?.toLowerCase() || '';
+    if (label.includes('estilo')) input.value = about.styles || '';
+    if (label.includes('personalidade')) input.value = about.personality || '';
+    if (label.includes('medo')) input.value = about.fears || '';
+    if (label.includes('sonho')) input.value = about.dreams || '';
+    if (label.includes('musica')) input.value = likes.music || '';
+    if (label.includes('personagem')) input.value = likes.characters || '';
+    if (label.includes('hobbies')) input.value = likes.hobbies || '';
+    if (label.includes('local')) input.value = userData.location || userData.localizacao || '';
+    if (label.includes('genero')) input.value = userData.gender || '';
+    if (label.includes('estado civil')) input.value = userData.maritalStatus || '';
+    if (label.includes('mbti')) input.value = userData.MBTI || userData.mbti || '';
+    if (input.classList.contains('age-input')) {
+      if (userData.nascimento) {
+        const nasc = new Date(userData.nascimento);
+        const hoje = new Date();
+        const idade = hoje.getFullYear() - nasc.getFullYear();
+        input.value = idade;
+      }
+    }
+  });
+}
+
+function mostrarLoading() {
+  if (cardsWrapper) {
+    cardsWrapper.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner-center">
+          <div class="spinner"></div>
+          <p>Carregando pessoas...</p>
+        </div>
+      </div>
+    `;
+  }
+  if (friendsList) {
+    friendsList.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner-center">
+          <div class="spinner"></div>
+          <p>Carregando pessoas...</p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function removerLoading() {
+  if (cardsWrapper) {
+    const spinner = cardsWrapper.querySelector('.loading-spinner');
+    if (spinner) spinner.remove();
+  }
+  if (friendsList) {
+    const spinner = friendsList.querySelector('.loading-spinner');
+    if (spinner) spinner.remove();
+  }
+}
+
+let cacheUltimosUsuarios = [];
+let carouselInstance = null;
+
+function renderizarResultados(resultados) {
+  if (!cardsWrapper) return;
+  cardsWrapper.innerHTML = '';
+  if (!resultados.length) {
+    cardsWrapper.innerHTML = '<p>Nenhum usuário parecido encontrado.</p>';
+    return;
+  }
+
+  // Remove duplicados pelo id
+  const vistos = new Set();
+  const resultadosUnicos = resultados.filter(u => {
+    if (vistos.has(u.id)) return false;
+    vistos.add(u.id);
+    return true;
+  });
+
+  resultadosUnicos.forEach(u => {
+    const card = document.createElement('div');
+    card.className = 'friend-card';
+    card.innerHTML = `
+      <div class="card-content">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image">
+        <div class="card-info">
+          <div class="card-name">${u.displayname}</div>
+          <div class="card-username">@${u.username}</div>
+        </div>
+        <a href="PF.html?userid=${u.id}" class="view-profile-btn">
+          <p>Ver Perfil</p>
+        </a>
+        <p class="similarity">Compatibilidade: ${(u.score * 100).toFixed(0)}%</p>
+      </div>
+    `;
+    cardsWrapper.appendChild(card);
+  });
+
+  // Salva no cache
+  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
+  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+
+  // Atualiza o carrossel com os dados buscados
+  if (carouselInstance) {
+    const users = resultadosUnicos.map(u => ({
+      name: u.displayname,
+      username: '@' + u.username,
+      image: u.userphoto,
+      profile: `PF.html?userid=${u.id}`
+    }));
+    carouselInstance.setUsers(users);
+  }
+}
+
+function renderizarGrid(resultados) {
+  if (!friendsList) return;
+  friendsList.innerHTML = '';
+  if (!resultados.length) {
+    friendsList.innerHTML = '<p>Nenhum usuário parecido encontrado.</p>';
+    return;
+  }
+
+  // Remove duplicados pelo id
+  const vistos = new Set();
+  const resultadosUnicos = resultados.filter(u => {
+    if (vistos.has(u.id)) return false;
+    vistos.add(u.id);
+    return true;
+  });
+
+  resultadosUnicos.forEach(u => {
+    const userEl = document.createElement('a');
+    userEl.className = 'user';
+    userEl.href = `PF.html?userid=${u.id}`;
+    userEl.setAttribute('data-username', u.username);
+    userEl.innerHTML = `
+      <img src="${u.userphoto}" alt="${u.displayname}">
+      <div class="user-name">
+        <div class="profile-name">
+          <p>${u.displayname}</p>
+        </div>
+        <div class="profile-username">
+          <p>@${u.username}</p>
+        </div>
+        <div style="font-size:12px;color:#4e8cff;">Compatibilidade: ${(u.score * 100).toFixed(0)}%</div>
+      </div>
+    `;
+    friendsList.appendChild(userEl);
+  });
+
+  // Salva no cache
+  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
+  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+}
+
+// Exibe cache ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+  carouselInstance = new FriendsCarousel();
+  carouselInstance.bindEvents();
+  const cache = localStorage.getItem('ultimosUsuarios');
+  if (cache) {
+    const usuarios = JSON.parse(cache);
+    renderizarResultados(usuarios);
+    renderizarGrid(usuarios);
+  }
+  const viewToggle = new ViewToggle();
+  console.log('Sistema de amigos inicializado!');
+});
+
+async function buscarUsuariosSemelhantes() {
+  mostrarLoading();
+  const filtros = coletarFiltros();
+  const usersRef = collection(db, 'users');
+  const snapshot = await getDocs(usersRef);
+  const resultados = [];
+
+  for (const docSnap of snapshot.docs) {
+    const userId = docSnap.id;
+    if (userId === currentUserId) continue;
+
+    const userData = docSnap.data();
+    const mediaRef = doc(db, "users", userId, "user-infos", "user-media");
+    const aboutRef = doc(db, "users", userId, "user-infos", "about");
+    const likesRef = doc(db, "users", userId, "user-infos", "likes");
+    const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
+      getDoc(mediaRef), getDoc(aboutRef), getDoc(likesRef)
+    ]);
+    const media = mediaSnap.exists() ? mediaSnap.data() : {};
+    const about = aboutSnap.exists() ? aboutSnap.data() : {};
+    const likes = likesSnap.exists() ? likesSnap.data() : {};
+
+    // Junta todos os dados relevantes
+    const perfil = {
+      ...userData,
+      ...media,
+      ...about,
+      ...likes
+    };
+
+    // Calcula idade
+    let idade = null;
+    if (perfil.nascimento) {
+      const nasc = new Date(perfil.nascimento);
+      const hoje = new Date();
+      idade = hoje.getFullYear() - nasc.getFullYear();
+    }
+
+    // Calcula score de similaridade
+    const score = calcularSimilaridadeCampos(perfil, filtros, idade);
+
+    if (score > 0) {
+      resultados.push({
+        id: userId,
+        displayname: perfil.displayname || perfil.username || perfil.name || 'Usuário',
+        username: perfil.username || '',
+        userphoto: perfil.userphoto || './src/icon/default.jpg',
+        score
+      });
+      // Mostra incremental
+      resultados.sort((a, b) => b.score - a.score);
+      renderizarResultados(resultados);
+      renderizarGrid(resultados);
+    }
+  }
+
+  removerLoading();
+  resultados.sort((a, b) => b.score - a.score);
+  renderizarResultados(resultados);
+  renderizarGrid(resultados);
+  if (!resultados.length) {
+    if (cardsWrapper) cardsWrapper.innerHTML = '<p>Nenhum usuário parecido encontrado.</p>';
+    if (friendsList) friendsList.innerHTML = '<p>Nenhum usuário parecido encontrado.</p>';
+  }
+}
+
+function coletarFiltros() {
+  const filtros = {};
+  filtrosInputs.forEach(el => {
+    const label = el.previousElementSibling?.textContent?.trim().toLowerCase() || el.id;
+    filtros[label] = el.value.trim().toLowerCase();
+  });
+  filtros['idade-minima'] = document.getElementById('idade-min')?.value || '';
+  filtros['idade-maxima'] = document.getElementById('idade-max')?.value || '';
+  return filtros;
+}
+
+function calcularSimilaridadeCampos(perfil, filtros, idade) {
+  let score = 0;
+  let campos = 0;
+
+  // Permite múltiplos termos separados por vírgula ou espaço
+  function termosFiltro(valor) {
+    if (!valor) return [];
+    return valor.split(',').map(t => t.trim()).filter(Boolean).flatMap(t => t.split(' ')).filter(Boolean);
+  }
+
+  // Estilo
+  if (filtros['estilo']) {
+    const termos = termosFiltro(filtros['estilo']);
+    const campo = normalizar(perfil.styles || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Personalidade
+  if (filtros['personalidade']) {
+    const termos = termosFiltro(filtros['personalidade']);
+    const campo = normalizar(perfil.personality || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Medos
+  if (filtros['medos']) {
+    const termos = termosFiltro(filtros['medos']);
+    const campo = normalizar(perfil.fears || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Sonhos
+  if (filtros['sonhos e desejos']) {
+    const termos = termosFiltro(filtros['sonhos e desejos']);
+    const campo = normalizar(perfil.dreams || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Musicas
+  if (filtros['musicas']) {
+    const termos = termosFiltro(filtros['musicas']);
+    const campo = normalizar(perfil.music || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Personagens
+  if (filtros['personagens']) {
+    const termos = termosFiltro(filtros['personagens']);
+    const campo = normalizar(perfil.characters || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Hobbies
+  if (filtros['hobbies']) {
+    const termos = termosFiltro(filtros['hobbies']);
+    const campo = normalizar(perfil.hobbies || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Localização
+  if (filtros['localização']) {
+    const termos = termosFiltro(filtros['localização']);
+    const campo = normalizar(perfil.location || perfil.localizacao || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Genero
+  if (filtros['genero']) {
+    const termos = termosFiltro(filtros['genero']);
+    const campo = normalizar(perfil.gender || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // Estado Civil
+  if (filtros['estado civil']) {
+    const termos = termosFiltro(filtros['estado civil']);
+    const campo = normalizar(perfil.maritalStatus || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // MBTI
+  if (filtros['mbti']) {
+    const termos = termosFiltro(filtros['mbti']);
+    const campo = normalizar(perfil.MBTI || perfil.mbti || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // Idade
+  if (filtros['idade-minima'] || filtros['idade-maxima']) {
+    const min = parseInt(filtros['idade-minima']) || 0;
+    const max = parseInt(filtros['idade-maxima']) || 200;
+    if (idade !== null && idade >= min && idade <= max) score += 2;
+    campos++;
+  }
+
+  // Busca por palavras-chave em todos os textos do usuário
+  const palavrasFiltro = Object.values(filtros)
+    .filter(Boolean)
+    .flatMap(termosFiltro)
+    .map(normalizar);
+
+  const textoUsuario = [
+    perfil.bio || '',
+    perfil.displayname || '',
+    perfil.username || '',
+    perfil.name || '',
+    perfil.surname || '',
+    perfil.music || '',
+    perfil.hobbies || '',
+    perfil.characters || '',
+    perfil.dreams || '',
+    perfil.fears || '',
+    perfil.location || '',
+    perfil.localizacao || '',
+    perfil.tags || '',
+    perfil.books || '',
+    perfil.foods || '',
+    perfil.games || '',
+    perfil.movies || '',
+    perfil.overview || '',
+    perfil.others || ''
+  ].join(' ').toLowerCase();
+
+  palavrasFiltro.forEach(palavra => {
+    if (textoUsuario.includes(palavra)) score += 1;
+  });
+
+  return campos ? score / campos : 0;
+}
+
+// Carrossel dinâmico
+class FriendsCarousel {
+    constructor() {
+        this.currentIndex = 0;
+        this.users = [];
+        this.cardsWrapper = document.getElementById('cardsWrapper');
+        this.indicators = document.getElementById('indicators');
+        this.isTransitioning = false;
+    }
+
+    setUsers(newUsers) {
+        // Remove duplicados pelo profile (url) ou username
+        const vistos = new Set();
+        this.users = newUsers.filter(u => {
+            const key = u.profile || u.username;
+            if (vistos.has(key)) return false;
+            vistos.add(key);
+            return true;
+        });
+        this.currentIndex = 0;
+        this.createCards();
+        this.createIndicators();
+        this.updateDisplay();
+    }
+
+    createCards() {
+        this.cardsWrapper.innerHTML = '';
+        this.users.forEach((user, index) => {
+            const card = document.createElement('div');
+            card.className = 'friend-card';
+            card.innerHTML = `
+                <div class="card-content">
+                    <img src="${user.image}" alt="${user.name}" class="card-image">
+                    <div class="card-info">
+                        <div class="card-name">${user.name}</div>
+                        <div class="card-username">${user.username}</div>
+                    </div>
+                    <a href="${user.profile}" class="view-profile-btn"><p>Ver Perfil</p>
+                    </a>
+                </div>
+            `;
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.view-profile-btn')) {
+                    this.goToSlide(index);
                 }
-                el.style.fontSize = best + 'px';
-            }
+            });
+            this.cardsWrapper.appendChild(card);
+        });
+    }
 
-            function fitAll(selector = '.profile-name p', min = 12, max = 22) {
-                document.querySelectorAll(selector).forEach(el => fitOne(el, min, max));
-            }
+    createIndicators() {
+        this.indicators.innerHTML = '';
+        this.users.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => {
+                this.goToSlide(index);
+            });
+            this.indicators.appendChild(indicator);
+        });
+    }
 
-            function bootstrap() {
-                fitAll();
-                window.addEventListener('resize', () => fitAll());
-                const ro = new ResizeObserver(() => fitAll());
-                document.querySelectorAll('.profile-name').forEach(p => ro.observe(p));
-            }
+    updateDisplay() {
+        const cards = this.cardsWrapper.children;
+        const totalCards = cards.length;
 
-            if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(bootstrap);
-            } else if (document.readyState === 'complete') {
-                bootstrap();
-            } else {
-                window.addEventListener('load', bootstrap);
+        Array.from(cards).forEach(card => {
+            card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
+        });
+
+        Array.from(cards).forEach((card, index) => {
+            const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
+            switch (relativePos) {
+                case 0: card.classList.add('center'); break;
+                case 1: card.classList.add('right'); break;
+                case -1: card.classList.add('left'); break;
+                case 2: card.classList.add('far-right'); break;
+                case -2: card.classList.add('far-left'); break;
+                default: card.classList.add('hidden'); break;
             }
-        })();
+        });
+
+        // Corrige as bolinhas para sempre mostrar todas e ativar a correta
+        const indicatorElements = this.indicators.children;
+        Array.from(indicatorElements).forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === this.currentIndex);
+        });
+    }
+
+    getRelativePosition(cardIndex, currentIndex, totalCards) {
+        let diff = cardIndex - currentIndex;
+        if (diff > totalCards / 2) {
+            diff -= totalCards;
+        } else if (diff < -totalCards / 2) {
+            diff += totalCards;
+        }
+        return diff;
+    }
+
+    goToSlide(index) {
+        if (this.isTransitioning || index === this.currentIndex) return;
+        this.isTransitioning = true;
+        this.currentIndex = index;
+        this.updateDisplay();
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, 400);
+    }
+
+    next() {
+        this.currentIndex = (this.currentIndex + 1) % this.users.length;
+        this.updateDisplay();
+    }
+
+    prev() {
+        this.currentIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
+        this.updateDisplay();
+    }
+
+    bindEvents() {
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('carouselView').classList.contains('active')) {
+                if (e.key === 'ArrowRight') this.next();
+                if (e.key === 'ArrowLeft') this.prev();
+            }
+        });
+    }
+}
+
+// Toggle entre views
+class ViewToggle {
+    constructor() {
+        this.currentView = 'carousel';
+        this.init();
+    }
+
+    init() {
+        const toggleButtons = document.querySelectorAll('.toggle-btn');
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const viewType = btn.dataset.view;
+                this.switchView(viewType);
+                toggleButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
+    switchView(viewType) {
+        const gridView = document.getElementById('gridView');
+        const carouselView = document.getElementById('carouselView');
+        if (viewType === 'grid') {
+            gridView.classList.add('active');
+            carouselView.classList.remove('active');
+            this.currentView = 'grid';
+        } else {
+            carouselView.classList.add('active');
+            gridView.classList.remove('active');
+            this.currentView = 'carousel';
+        }
+    }
+}
+
+// Spinner CSS
+const style = document.createElement('style');
+style.innerHTML = `
+.loading-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(30,30,30,0.8);
+  border-radius: 12px;
+  padding: 24px 32px;
+}
+.spinner-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #ccc;
+  border-top: 6px solid #4e8cff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
+
 </script>
 
 <script src="./src/js/search.js"></script>
