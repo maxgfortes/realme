@@ -1031,21 +1031,34 @@ function gerarChatId(user1, user2) {
 }
 
 async function iniciarChatComUsuario(targetUserId) {
-  if (!currentUserId || !targetUserId || currentUserId === targetUserId) return;
+  if (!currentUserId || !targetUserId || currentUserId === targetUserId) {
+    console.error("IDs inválidos:", { currentUserId, targetUserId });
+    return;
+  }
+  
   const chatId = gerarChatId(currentUserId, targetUserId);
   const chatRef = doc(db, "chats", chatId);
-  const chatDoc = await getDoc(chatRef);
-  if (!chatDoc.exists()) {
+  
+  try {
+    // Tenta criar o chat diretamente (sem verificar se existe antes)
+    // Se já existir, o Firestore vai ignorar ou você pode usar merge
     await setDoc(chatRef, {
       participants: [currentUserId, targetUserId].sort(),
       createdAt: new Date(),
       lastMessage: "",
       lastMessageTime: null
-    });
+    }, { merge: true }); // merge: true evita sobrescrever se já existir
+    
+    console.log("Chat criado/acessado com sucesso!");
+    window.location.href = `direct.html?chatid=${chatId}`;
+    
+  } catch (error) {
+    console.error("Erro ao criar/acessar chat:", error);
+    console.error("Código do erro:", error.code);
+    console.error("Mensagem:", error.message);
+    alert("Erro ao iniciar conversa. Verifique suas permissões.");
   }
-  window.location.href = `direct.html?chatid=${chatId}`;
 }
-
 // ===================
 // ATUALIZAÇÃO DE INFORMAÇÕES BÁSICAS
 // ===================
@@ -1054,14 +1067,27 @@ function atualizarInformacoesBasicas(userData, userid) {
   const nomeElement = document.getElementById("displayname");
   if (nomeElement) nomeElement.textContent = nomeCompleto;
 
+  const usernameElement = document.getElementById("username");
+  // Junta os pronomes se existirem
+  let pronouns = "";
+  if (userData.pronoun1 && userData.pronoun2) {
+    pronouns = `${userData.pronoun1}/${userData.pronoun2}`;
+  } else if (userData.pronoun1) {
+    pronouns = userData.pronoun1;
+  } else if (userData.pronoun2) {
+    pronouns = userData.pronoun2;
+  }
+  if (usernameElement) {
+    usernameElement.textContent = userData.username ? `@${userData.username}` : `@${userid}`;
+    if (pronouns) {
+      usernameElement.textContent += ` • ${pronouns}`;
+    }
+  }
   const statususername = document.getElementById('statususername');
   if (statususername) statususername.textContent = `${nomeCompleto} esta:`;
 
   const nomeUsuario = document.getElementById('nomeUsuario');
   if (nomeUsuario) nomeUsuario.textContent = `${nomeCompleto}`;
-
-  const usernameElement = document.getElementById("username");
-  if (usernameElement) usernameElement.textContent = userData.username ? `@${userData.username}` : `@${userid}`;
 
   const tituloMural = document.getElementById("tituloMural");
   if (tituloMural) tituloMural.textContent = `Mural de ${nomeCompleto}`;
