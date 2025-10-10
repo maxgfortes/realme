@@ -175,7 +175,6 @@ let loggedUser = null; // UID do usuário autenticado
 let chatArea = document.querySelector(".chat-area");
 let msgInput = document.querySelector(".msg-area");
 let sendBtn = document.querySelector(".send-area button");
-let recentsUsersDiv = document.querySelector(".recents-users");
 let userSelectedDiv = document.querySelector(".user-selected p");
 let userSelectedImg = document.querySelector(".user-selected img");
 let selectedUser = null;
@@ -520,8 +519,11 @@ function tempoRelativo(timestamp) {
 }
 // ...após definir loggedUser e carregarConversas...
 
+
+// Busca dinâmica de conversas
 const buscarChatsInput = document.querySelector('.buscar-chats');
 const chatResultsDiv = document.querySelector('.chat-search-results');
+const recentsUsersDiv = document.querySelector('.recents-users');
 
 let todosSeusChats = []; // Armazena todos os chats do usuário
 
@@ -530,37 +532,35 @@ async function carregarTodosSeusChats() {
   if (!loggedUser) return;
   todosSeusChats = [];
   const chatsRef = collection(db, "chats");
-  const chatsSnap = await getDocs(chatsRef);
+  const q = query(chatsRef, where("participants", "array-contains", loggedUser));
+  const chatsSnap = await getDocs(q);
 
- for (const chatDoc of chatsSnap.docs) {
-  const chatData = chatDoc.data();
-  if (chatData.participants && chatData.participants.includes(loggedUser)) {
-    const friendId = chatData.participants.find(p => p !== loggedUser);
-    let friendDisplayName = friendId;
-    let friendPhotoUrl = "./src/icon/default.jpg";
-    try {
-      // Primeiro tenta buscar a foto na subcoleção user-infos/user-media
-      const friendMediaDoc = await getDoc(doc(db, "users", friendId, "user-infos", "user-media"));
-      if (friendMediaDoc.exists()) {
-        const data = friendMediaDoc.data();
-        if (data.userphoto) friendPhotoUrl = data.userphoto;
-      }
-      // Busca displayname normalmente
-      const friendDoc = await getDoc(doc(db, "users", friendId));
-      if (friendDoc.exists()) {
-        const data = friendDoc.data();
-        friendDisplayName = data.displayname || data.username || friendId;
-        // Se não achou foto antes, tenta pegar do userDoc
-        if (data.userphoto && friendPhotoUrl === "./src/icon/default.jpg") friendPhotoUrl = data.userphoto;
-      }
-    } catch {}
-    todosSeusChats.push({
-      friendId,
-      friendDisplayName,
-      friendPhotoUrl
-    });
+  for (const chatDoc of chatsSnap.docs) {
+    const chatData = chatDoc.data();
+    if (chatData.participants && chatData.participants.includes(loggedUser)) {
+      const friendId = chatData.participants.find(p => p !== loggedUser);
+      let friendDisplayName = friendId;
+      let friendPhotoUrl = "./src/icon/default.jpg";
+      try {
+        // Busca displayname e foto
+        const friendMediaDoc = await getDoc(doc(db, "users", friendId, "user-infos", "user-media"));
+        if (friendMediaDoc.exists()) {
+          const data = friendMediaDoc.data();
+          if (data.userphoto) friendPhotoUrl = data.userphoto;
+        }
+        const friendDoc = await getDoc(doc(db, "users", friendId));
+        if (friendDoc.exists()) {
+          const data = friendDoc.data();
+          friendDisplayName = data.displayname || data.username || friendId;
+        }
+      } catch {}
+      todosSeusChats.push({
+        friendId,
+        friendDisplayName,
+        friendPhotoUrl
+      });
+    }
   }
-}
 }
 
 // Chame ao logar:
@@ -580,6 +580,7 @@ buscarChatsInput?.addEventListener('input', function() {
   if (!termo) {
     chatResultsDiv.innerHTML = '';
     chatResultsDiv.classList.remove('visible');
+    recentsUsersDiv.style.display = '';
     return;
   }
   const filtrados = todosSeusChats.filter(chat =>
@@ -596,6 +597,7 @@ buscarChatsInput?.addEventListener('input', function() {
     `).join('');
   }
   chatResultsDiv.classList.add('visible');
+  recentsUsersDiv.style.display = 'none';
 });
 
 // Clique no resultado para abrir o chat
@@ -605,6 +607,7 @@ chatResultsDiv.addEventListener('click', function(e) {
     selecionarUsuario(el.dataset.id);
     chatResultsDiv.classList.remove('visible');
     buscarChatsInput.value = '';
+    recentsUsersDiv.style.display = '';
   }
 });
 
@@ -612,6 +615,7 @@ chatResultsDiv.addEventListener('click', function(e) {
 document.addEventListener('click', function(e) {
   if (!chatResultsDiv.contains(e.target) && e.target !== buscarChatsInput) {
     chatResultsDiv.classList.remove('visible');
+    recentsUsersDiv.style.display = '';
   }
 });
 
