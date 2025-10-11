@@ -307,6 +307,30 @@
       text-decoration: underline;
     }
 
+    .user-contract {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 18px;
+      text-align: center;
+    }
+    .user-contract a {
+      color: #0084ff;
+      text-decoration: none;
+    }
+
+    .input[type=date] {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+      color: #ddd;
+      background-color: #1a1a1a;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
     input:is(:-webkit-autofill, :autofill) {
       display: flex !important;
       align-items: center !important;
@@ -382,7 +406,54 @@
         max-height: 60vh;
       }
     }
-    
+.form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .form-group input[type="date"] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+      border-radius: 8px !important;
+      border: 1px solid #242424 !important;
+      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0) !important;
+      color: #dbdbdb !important;
+  }
+
+  .form-group input[type="date"]:hover {
+    border-color: #999;
+  }
+
+  .form-group input[type="date"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+
+  /* Estiliza o ícone do calendário (funciona em navegadores baseados em Webkit) */
+  .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    background-color: #333;
+  }
   </style>
 </head>
 <body>
@@ -454,7 +525,7 @@
         <label for="convite">Convite</label>
         <input type="text" id="convite" name="convite" placeholder="Código do convite" required />
       </div>
-      <div>
+      <div class="form-group">
         <label for="nascimento">Data de Nascimento</label>
         <input type="date" id="nascimento" name="nascimento" required />
       </div>
@@ -463,6 +534,9 @@
     </form>
         <div class="link">
           <p>já tem uma conta? <a id="entrarBtn">Entrar</a></p>
+        </div>
+        <div class="user-contract">
+          <p>Ao se inscrever, você concorda com nossos <a href="termos.html">Termos</a>, <a href="politica_dados.html">Política de Dados</a> e <a href="cookies.html">Política de Cookies</a>.</p>
         </div>
       </div>
     </div>
