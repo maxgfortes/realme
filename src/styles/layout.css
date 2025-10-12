@@ -803,7 +803,8 @@ textarea#postText:focus {
   box-shadow: 0 16px 64px rgba(0,0,0,0.5);
   max-width:600px;
   overflow-y: auto;
-  max-height: 500px;
+  max-height: 500px !important;
+  min-height: 300px !important;
 }
 
 .modal-close {
