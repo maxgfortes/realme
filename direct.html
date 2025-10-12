@@ -287,6 +287,16 @@ msgInput?.addEventListener("keypress", function(e) {
 });
 
 // ...existing code...
+// Marcar mensagens como lidas ao abrir o chat
+async function marcarMensagensComoLidas(chatId, mensagens) {
+  for (const m of mensagens) {
+    // Só marca como lida se não for do usuário logado e ainda não estiver lida
+    if (m.sender !== loggedUser && !m.read) {
+      const msgRef = doc(db, "chats", chatId, "messages", m.id);
+      await updateDoc(msgRef, { read: true });
+    }
+  }
+}
 
 // Carregar mensagens em tempo real
 function carregarMensagensTempoReal() {
@@ -295,16 +305,18 @@ function carregarMensagensTempoReal() {
   const chatId = gerarChatId(loggedUser, selectedUser);
 
   const mensagensRef = collection(db, "chats", chatId, "messages");
-  // Ordena do mais recente para o mais antigo
   const mensagensQuery = query(mensagensRef, orderBy("timestamp", "desc"));
 
-  unsubscribeMessages = onSnapshot(mensagensQuery, (snapshot) => {
+  unsubscribeMessages = onSnapshot(mensagensQuery, async (snapshot) => {
     const mensagens = [];
     snapshot.forEach((doc) => {
       const data = doc.data();
       data.id = doc.id;
       mensagens.push(data);
     });
+
+    // Marcar como lidas as mensagens recebidas
+    await marcarMensagensComoLidas(chatId, mensagens);
 
     // Detecta se chegou mensagem nova recebida
     if (
@@ -320,11 +332,7 @@ function carregarMensagensTempoReal() {
   });
 }
 
-// Renderizar mensagens
-// ...existing code...
-
-// ...existing code...
-
+// Renderizar mensagens com "visto"
 function renderizarMensagens(mensagens) {
   chatArea.innerHTML = "";
 
@@ -337,11 +345,12 @@ function renderizarMensagens(mensagens) {
     mensagensUnicas.push(m);
   }
 
+  let ultimaMsgEnviadaId = null;
+  let ultimaMsgEnviadaLida = false;
+
   // Renderiza do mais antigo para o mais recente, sem duplicatas
-  mensagensUnicas.forEach((m) => {
-    // Ignora mensagens deletadas para todos
+  mensagensUnicas.forEach((m, idx) => {
     if (m.deleted) return;
-    // Ignora mensagens deletadas só para o usuário logado
     if (m[`deletedforyou_${loggedUser}`]) return;
 
     const div = document.createElement("div");
@@ -378,12 +387,33 @@ function renderizarMensagens(mensagens) {
       <span class="time">${tempoFormatado}</span>
     `;
     chatArea.appendChild(div);
+
+    // Se for mensagem enviada pelo usuário, salva para mostrar "visto"
+    if (m.sender === loggedUser) {
+      ultimaMsgEnviadaId = m.id;
+      // Verifica se foi lida por alguém (read: true)
+      ultimaMsgEnviadaLida = !!m.read;
+    }
   });
+
+  // Exibe "visto" abaixo da última mensagem enviada pelo usuário
+  if (ultimaMsgEnviadaId && ultimaMsgEnviadaLida) {
+    const ultimaDiv = chatArea.querySelector(`[data-msgid="${ultimaMsgEnviadaId}"]`);
+    if (ultimaDiv) {
+      const vistoSpan = document.createElement("span");
+      vistoSpan.className = "msg-visto";
+      vistoSpan.textContent = "visto";
+      vistoSpan.style.display = "block";
+      vistoSpan.style.fontSize = "0.95em";
+      vistoSpan.style.color = "#4e8cff";
+      vistoSpan.style.marginTop = "2px";
+      ultimaDiv.appendChild(vistoSpan);
+    }
+  }
 
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// ...existing code...
 // ...existing code...
 
 // Adicione o CSS para o balão roxo do reply:
