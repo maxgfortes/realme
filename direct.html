@@ -336,7 +336,7 @@ function carregarMensagensTempoReal() {
 function renderizarMensagens(mensagens) {
   chatArea.innerHTML = "";
 
-  // Remove mensagens duplicadas pelo id
+  // Remove duplicadas
   const mensagensUnicas = [];
   const idsVistos = new Set();
   for (const m of mensagens.slice().reverse()) {
@@ -347,8 +347,8 @@ function renderizarMensagens(mensagens) {
 
   let ultimaMsgEnviadaId = null;
   let ultimaMsgEnviadaLida = false;
+  let ultimaMsgEnviadaTempo = "";
 
-  // Renderiza do mais antigo para o mais recente, sem duplicatas
   mensagensUnicas.forEach((m, idx) => {
     if (m.deleted) return;
     if (m[`deletedforyou_${loggedUser}`]) return;
@@ -364,7 +364,7 @@ function renderizarMensagens(mensagens) {
       tempoFormatado = formatarTempoRelativo(date);
     }
 
-    // Reply visual: balão roxo acima da mensagem
+    // Reply visual
     let replyHtml = "";
     if (m.reply) {
       const replyMsg = mensagensUnicas.find(msg => msg.id === m.reply);
@@ -381,35 +381,21 @@ function renderizarMensagens(mensagens) {
       }
     }
 
-    div.innerHTML = `
-      ${replyHtml}
-      <p>${m.content}</p>
-      <span class="time">${tempoFormatado}</span>
-    `;
+div.innerHTML = `
+  ${replyHtml}
+  <p>${m.content}</p>
+  <span class="time">${tempoFormatado}${m.sender === loggedUser && m.read ? `<span class="msg-visto-externo"> • visto</span>` : ""}</span>
+`;
+
     chatArea.appendChild(div);
 
-    // Se for mensagem enviada pelo usuário, salva para mostrar "visto"
+    // Salva última mensagem enviada pelo usuário
     if (m.sender === loggedUser) {
       ultimaMsgEnviadaId = m.id;
-      // Verifica se foi lida por alguém (read: true)
       ultimaMsgEnviadaLida = !!m.read;
+      ultimaMsgEnviadaTempo = tempoFormatado;
     }
   });
-
-  // Exibe "visto" abaixo da última mensagem enviada pelo usuário
-  if (ultimaMsgEnviadaId && ultimaMsgEnviadaLida) {
-    const ultimaDiv = chatArea.querySelector(`[data-msgid="${ultimaMsgEnviadaId}"]`);
-    if (ultimaDiv) {
-      const vistoSpan = document.createElement("span");
-      vistoSpan.className = "msg-visto";
-      vistoSpan.textContent = "visto";
-      vistoSpan.style.display = "block";
-      vistoSpan.style.fontSize = "0.95em";
-      vistoSpan.style.color = "#4e8cff";
-      vistoSpan.style.marginTop = "2px";
-      ultimaDiv.appendChild(vistoSpan);
-    }
-  }
 
   chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -434,7 +420,12 @@ style.textContent = `
 display: flex;
 margin-bottom: 4px;
 }
-
+.msg-visto-externo {
+  color: #4e8cff;
+  font-size: 0.95em;
+  margin-left: 4px;
+  font-weight: 500;
+}
 
   
 .reply-border {
