@@ -128,8 +128,20 @@ function downloadAccountInfoSimple({ usuario, email, senha }) {
   <meta charset="UTF-8">
   <title>Dados RealMe</title>
   <style>
-    body { background: #222; color: #eee; font-family: Arial; padding: 40px; }
-    .container { background: #333; border-radius: 10px; padding: 30px; max-width: 400px; margin: auto; }
+    body { background-image: url('https://i.postimg.cc/9FcFz827/bg.jpg');  
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  color: #dbdbdb;
+  display: flex;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none; color: #eee; font-family: Arial; padding: 40px; }
+    .container { background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px; padding: 30px; max-width: 400px; margin: auto; }
     h2 { color: #4A90E2; }
     p { font-size: 18px; margin: 10px 0; }
   </style>

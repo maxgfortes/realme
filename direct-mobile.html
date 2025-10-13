@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mensagens | RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="stylesheet" href="./src/styles/direct-mobile.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+</head>
+<body>
+  <nav class="dm-navbar" id="dmNavbar">
+    <button class="dm-back-btn" id="dmListBackBtn"><i class="fas fa-arrow-left"></i></button>
+    <span class="dm-title" id="dmTitle">Usuário</span>
+    <button class="dm-new-chat-btn"><i class="fas fa-edit"></i></button>
+  </nav>
+  <div class="dm-container">
+    <div class="dm-users-list" id="dmUsersList">
+      <div class="dm-search-box">
+        <input type="text" id="dmSearchInput" placeholder="Buscar conversas..." autocomplete="off" />
+        <button id="dmSearchBtn"><i class="fas fa-search"></i></button>
+      </div>
+      <!-- Lista de conversas será renderizada aqui -->
+    </div>
+    <div class="dm-chat-area" id="dmChatArea">
+      <div class="dm-chat-header" id="dmChatHeader" style="display:none;">
+        <button class="dm-back-btn" id="dmBackBtn"><i class="fas fa-arrow-left"></i></button>
+        <img src="./src/icon/default.jpg" alt="Foto" id="dmChatUserImg">
+        <span id="dmChatUserName" class="dm-chat-username" style="cursor:pointer;">Selecione uma conversa</span>
+        <button class="dm-chat-options"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+      <div class="dm-messages" id="dmMessages">
+        <div class="dm-no-chat">Selecione uma conversa para começar</div>
+      </div>
+      <div class="dm-send-area">
+        <input type="text" id="dmMsgInput" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button id="dmSendBtn" type="button"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="feed.html">
+        <i class="fas fa-home"></i>
+      </a>
+      <a href="acharamigos.html">
+        <i class="fa-solid fa-user-plus"></i>
+      </a>
+      <a href="direct-mobile.html">
+        <i class="fa-regular fa-paper-plane"></i>
+      </a>
+      <a href="direct-mobile.html">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </a>
+      <a href="PF.html">
+        <img src="./src/icon/default.jpg" alt="Perfil" id="nav-pic" class="profile-mini" style="width: 24px; height: 24px; border-radius: 50%;">
+      </a>
+    </div>
+  </nav>
+  <script type="module" src="./src/js/direct-mobile.js"></script>
+</body>
+</html>

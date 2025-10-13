@@ -55,7 +55,6 @@ nav {
   font-size: 28px;
   font-weight: bold;
   line-height: 50px;
-  padding-left: 14px;
   margin-top: 4px;
 }
 
@@ -192,8 +191,8 @@ nav {
 }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #4A90E2;
@@ -852,7 +851,7 @@ html, body{
 }  
 
 
-  .nav-mobile {
+.nav-mobile {
   position: fixed;
   top: 0;
   left: 0;
@@ -922,5 +921,28 @@ html, body{
   transition: color 0.3s;
   padding-right: 12px;
 }
+
+.post-mobile-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 14px;
+  transition: color 0.3s;
+  padding-left: 12px;
+  margin-left: 14px;
+}
+
+.btn-report p {
+  display: none;
+}
+
+.profile-mini {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+
 
 }

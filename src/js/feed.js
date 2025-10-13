@@ -884,7 +884,7 @@ async function loadPosts() {
             <i class="fas fa-comment"></i> Comentar
           </button>
           <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> Denunciar
+            <i class="fas fa-flag"></i> <p>Denunciar</p>
           </button>
         </div>
         <div class="post-date">${formatarDataRelativa(postData.create)}</div>

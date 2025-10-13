@@ -53,26 +53,47 @@ loadShownMsgIds();
 
 function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
   let popup = document.getElementById('global-msg-popup');
+  const isMobile = window.innerWidth <= 768;
   if (!popup) {
     popup = document.createElement('div');
     popup.id = 'global-msg-popup';
     popup.style.position = 'fixed';
-    popup.style.bottom = '32px';
-    popup.style.right = '32px';
     popup.style.zIndex = '9999';
     popup.style.background = 'rgba(40,44,52,0.98)';
     popup.style.color = '#fff';
-    popup.style.borderRadius = '14px';
-    popup.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
-    popup.style.padding = '18px 24px';
+    popup.style.fontFamily = 'Inter, Arial, sans-serif';
+    popup.style.cursor = 'pointer';
     popup.style.display = 'flex';
     popup.style.alignItems = 'center';
     popup.style.gap = '16px';
-    popup.style.fontFamily = 'Inter, Arial, sans-serif';
-    popup.style.transition = 'opacity 0.3s';
-    popup.style.cursor = 'pointer';
+    popup.style.transition = isMobile
+      ? 'transform 0.35s, opacity 0.3s'
+      : 'opacity 0.3s';
+    popup.style.boxSizing = 'border-box';
+
+    if (isMobile) {
+      popup.style.top = '0';
+      popup.style.left = '0';
+      popup.style.right = '0';
+      popup.style.margin = '6px';
+      popup.style.borderRadius = '14px';
+      popup.style.padding = '18px 24px';
+      popup.style.maxWidth = '97vw';
+      popup.style.width = '100vw';
+      popup.style.transform = 'translateY(-100%)';
+      popup.style.opacity = '0';
+    } else {
+      popup.style.bottom = '32px';
+      popup.style.right = '32px';
+      popup.style.borderRadius = '14px';
+      popup.style.padding = '18px 24px';
+      popup.style.maxWidth = '340px';
+      popup.style.transform = '';
+      popup.style.opacity = '0';
+    }
     document.body.appendChild(popup);
   }
+
   popup.innerHTML = `
     <img src="${senderPhoto}" alt="Foto" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
     <div>
@@ -81,11 +102,22 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
       <div style="margin-top:6px;font-size:1.05em;">${content.length > 80 ? content.slice(0,80)+'...' : content}</div>
     </div>
   `;
-  popup.style.opacity = '1';
+
+  if (isMobile) {
+    popup.style.opacity = '1';
+    popup.style.transform = 'translateY(0)';
+  } else {
+    popup.style.opacity = '1';
+    popup.style.transform = '';
+  }
 
   popup.onclick = () => {
+  if (isMobile) {
+    window.location.href = `direct-mobile.html?chat=${chatId}`;
+  } else {
     window.location.href = `direct.html?chat=${chatId}`;
-  };
+  }
+};
 
   showingPopup = true;
   audioReceive.play();
@@ -93,7 +125,12 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
   saveShownMsgIds();
 
   setTimeout(() => {
-    popup.style.opacity = '0';
+    if (isMobile) {
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(-100%)';
+    } else {
+      popup.style.opacity = '0';
+    }
     showingPopup = false;
     setTimeout(() => {
       if (popupQueue.length > 0) {
