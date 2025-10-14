@@ -2,7 +2,7 @@
   "name": "RealMe",
   "short_name": "RealMe",
   "description": "Conecte-se com amigos e encontre novas pessoas no RealMe!",
-  "start_url": "/feed.html",
+  "start_url": "/login.html?source=pwa",
   "scope": "/",
   "id": "/manifest.json",
   "display": "standalone",
@@ -16,7 +16,7 @@
       "name": "Novo Post",
       "short_name": "Post",
       "description": "Crie um novo post rapidamente",
-      "url": "/feed",
+      "url": "/feed.html",
       "icons": [
         {
           "src": "./src/icon/shortcut-post.png",
@@ -29,7 +29,20 @@
       "name": "Perfil",
       "short_name": "Perfil",
       "description": "Veja seu perfil",
-      "url": "/PF",
+      "url": "/PF.html",
+      "icons": [
+        {
+          "src": "./src/icon/shortcut-friends.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mensagens",
+      "short_name": "Direct",
+      "description": "Veja suas mensagens",
+      "url": "/direct-mobile.html",
       "icons": [
         {
           "src": "./src/icon/shortcut-friends.png",
@@ -53,11 +66,11 @@
   "prefer_related_applications": false,
   "iarc_rating_id": "e10c-1234-5678-9abc",
   "launch_handler": {
-    "client_mode": "navigate-new"
+    "client_mode": "focus-existing"
   },
   "protocol_handlers": [
     {
-      "protocol": "web+ifriend",
+      "protocol": "web+realme",
       "url": "/protocol-handler?url=%s"
     }
   ],
