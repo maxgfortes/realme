@@ -193,5 +193,12 @@ nav {
     font-size: 24px !important;
     padding: 20px 74px !important;
 }
+.friends-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+    padding: 20px 10px !important;
+    margin-top: 100px !important;
+    margin-bottom: 70px !important;
+}
 
 }
