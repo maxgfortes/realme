@@ -1,0 +1,94 @@
+/* Estilos para telas móveis */
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+        height: auto;
+      }
+
+      nav {
+        display: none;
+      }
+      
+      .greating {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      .greating h2 {
+        font-size: 2rem;
+        display: none;
+      }
+      
+      .greating p {
+        font-size: 1.1rem;
+      }
+      
+      .form-section {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        margin: 0px;
+      }
+      
+      .container {
+        margin: 10px;
+        border: none;
+        margin: 0px;
+        box-shadow: none;
+        backdrop-filter: blur(none);
+        -webkit-backdrop-filter: blur(none);
+        background-color: #00000000;
+      }
+
+      .mobilelogo h1 {
+        display: block;
+        border-left: 6px solid #4A90E2;
+        text-align: left;
+        padding-left: 10px;
+        color: #cacaca;
+      }
+
+      input {
+        font-size: 28px;
+        padding: 10px;
+        -webkit-autofill: none;
+      }
+
+      .greating-desktop {
+        display: none;
+      }
+
+      .greating-mobile {
+        display: block;
+      }
+
+      .greating-mobile h1 {
+        display: block;
+        border-left: 1px solid #4A90E2;
+      }
+
+
+      .greating p {
+        display: none;
+      }
+
+      .link {
+        font-size: 0.9rem;
+        margin-top: 50px;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .form-section {
+        max-height: 60vh;
+      }
+    }
+    

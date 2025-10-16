@@ -1,0 +1,445 @@
+body {
+  margin: 0;
+  background: #181818;
+  font-family: 'Inter', Arial, sans-serif;
+  background-image: url("../bg/bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  color: #dbdbdb;
+}
+
+.dm-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1C1C1C;
+  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+  padding: 12px 16px;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.dm-back-btn, .dm-new-chat-btn, .dm-chat-options {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4em;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+
+.dm-back-btn:active, .dm-new-chat-btn:active, .dm-chat-options:active {
+  background: #22262e;
+}
+
+.dm-title {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dm-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: block;
+}
+
+.dm-users-list,
+.dm-chat-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transition: transform 0.35s cubic-bezier(.7,.2,.3,1);
+  will-change: transform;
+  background: #18181800;
+}
+
+.dm-users-list {
+  z-index: 2;
+  transform: translateX(0);
+  overflow-y: auto;
+  border-bottom: none;
+  max-height: 100vh;
+}
+
+.dm-chat-area {
+  z-index: 3;
+  transform: translateX(100vw);
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-container.show-chat .dm-users-list {
+  transform: translateX(-100vw);
+}
+
+.dm-container.show-chat .dm-chat-area {
+  transform: translateX(0);
+}
+
+.dm-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  width: 100%;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 22px;
+}
+
+.dm-user-btn.active, .dm-user-btn:hover {
+  background: #4A90E2;
+  color: #fff;
+}
+
+.dm-user-btn img {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dm-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #1C1C1C;
+  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%) !important;
+}
+
+.dm-chat-header img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dm-chat-header span {
+  flex: 1;
+  font-size: 1.4em;
+  color: #fff;
+  font-weight: 500;
+}
+
+.dm-messages {
+  flex: 1;
+  padding: 12px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #18181800;
+}
+
+.dm-message {
+  max-width: 80%;
+  padding: 0px 16px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+  margin-bottom: 6px;
+  margin: 0px;
+  animation: fadeInMsg 0.3s;
+}
+
+.dm-message.sent {
+  background: #4A90E2;
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+}
+
+.dm-message.received {
+  background: #23272f;
+  color: #cacaca;
+  align-self: flex-start;
+  border-bottom-left-radius: 6px;
+}
+
+.dm-message .dm-time {
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 4px;
+  display: block;
+  text-align: right;
+}
+
+.dm-no-chat {
+  color: #888;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1.1em;
+}
+
+.dm-send-area {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: #23272f00;
+}
+
+#dmMsgInput {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #333;
+  background: #22262e;
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+  margin-right: 8px;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-right: 0px;
+  border: 1px solid #2a2a2a;
+  background: #474747; /* Quase preto, mas não absoluto */
+  display: flex;
+  align-items: center;
+  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644);
+}
+
+#dmSendBtn {
+    background-color: #4A90E2;
+  border: 1px solid #4A90E2;
+  padding: 11px 20px;
+  border-bottom-right-radius: 16px;
+  border-top-right-radius: 16px;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+#dmSendBtn:active {
+    background-color: #007bff;
+  border-color: #007bff;
+  outline: none;
+}
+
+
+
+
+.msg-area {
+  background: rgba(20, 20, 20, 0.6);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: none;
+  border-top-left-radius: 16px;
+  max-width: 600px; /* ajuste conforme precisar */
+  gap: 10px;
+  border: 1px solid #2a2a2a;
+  background: #474747; /* Quase preto, mas não absoluto */
+  display: flex;
+  align-items: center;
+  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+  padding: 15px 0px;
+  padding-right: 200px;
+  padding-left: 10px;
+  font-size: 16px;
+  width: 100vh;
+  height: auto;
+}
+
+.msg-area:focus-within {
+  border: 1px solid #4A90E2;
+  border-color: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+  outline: none;
+}
+
+
+
+@keyframes fadeInMsg {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.dm-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #23272f;
+  border-bottom: 1px solid #333;
+}
+.dm-chat-header[style*="display:none"] {
+  display: none !important;
+}
+.dm-navbar[style*="display:none"] {
+  display: none !important;
+}
+
+
+/* Adicione ao final de direct-mobile.css */
+.dm-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 12px 18px;
+  background: none;
+}
+
+#dmSearchInput {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #22262e;
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+}
+
+#dmSearchBtn {
+  background: #4A90E2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: none;
+}
+
+.dm-user-btn {
+  position: relative;
+  gap: 2px;
+  padding-bottom: 10px;
+}
+
+.dm-user-btn span {
+  text-align: left;
+  margin-left: 10px;
+
+}
+
+.dm-user-name {
+  font-size: 1.0em;
+  color: #fff;
+}
+.dm-user-time {
+  font-size: 14px;
+  color: #bbb;
+}
+
+
+.dm-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 12px;
+  color: #4A90E2;
+  margin-top: 2px;
+  margin-bottom: 8px;
+  padding-right: 8px;
+}
+
+.dm-message-footer .dm-visto {
+  color: #4A90E2;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.dm-chat-username {
+  cursor: pointer;
+}
+
+.navbar-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background: #232323;
+  border-top: 1px solid #333;
+  z-index: 1001;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-bottom-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-bottom a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 22px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+.navbar-bottom a img.profile-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.dm-chat-header a {
+  text-decoration: none;
+}
+
+.dm-container.show-chat ~ .navbar-bottom {
+  display: none !important;
+}
+
+.dm-message-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 2px;
+  margin-bottom: 8px;
+  padding-right: 8px;
+  justify-content: flex-end; /* para mensagens enviadas */
+}
+
+.dm-message.sent + .dm-message-footer {
+  justify-content: flex-end;
+}
+
+.dm-message.received + .dm-message-footer {
+  justify-content: flex-start;
+  color: #bbb;
+}
+
+.dm-visto {
+  color: #4A90E2;
+  font-weight: 500;
+  margin-left: 4px;
+}

@@ -1,0 +1,89 @@
+.navbar {
+    position: fixed;
+    z-index: 99999999999999 !important;
+}
+
+.topbar {
+    display: flex;
+}
+
+.realmebar {
+    background-color: green;
+    display: flex;
+    padding: 12px;
+    background: #1C1C1C;
+      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+      border-bottom: 1px solid #121212;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      z-index: 9999999 !important;
+      border-bottom-right-radius: 16px;
+      padding-right: 56px;
+      height: 70px;
+      width: 350px;
+      padding-left: 20px;
+}
+
+.realmebar p {
+    font-size: 22px;
+    font-weight: bold;
+    color: #999999;
+    padding-left: 20px;
+    font-style: italic;
+    padding-right: 20px;
+    margin-top: 2px;
+}
+
+.edit {
+    background-color: transparent;
+}
+
+.edit button{
+    background-color: #4A90E2;
+    border: none;
+    color: #fff;
+    padding: 14px 16px;
+    margin: 5px;
+    border-radius: 50%;
+    font-size: 22px;
+    font-weight: lighter;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    transition: background-color 0.3s ease;
+}
+
+.edit button:hover {
+    background-color: #357ABD;
+}
+
+.edit i {
+    color: #fff;
+}
+
+.back {
+    background-color: rgb(41, 41, 41);
+    display: flex;
+    padding: 10px 20px;
+    color: #fff;
+    border-bottom: 1px solid #333;
+    border-bottom-right-radius: 16px;
+    margin-right: 80px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+.back p {
+    padding: 8px 0px;
+}
+
+.back a {
+    background-color: #4A90E2;
+    border: none;
+    margin-right: 10px;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.back a:hover {
+    background-color: #357ABD;
+}
