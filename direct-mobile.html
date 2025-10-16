@@ -59,5 +59,15 @@
     </div>
   </nav>
   <script type="module" src="./src/js/direct-mobile.js"></script>
+  <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('Service Worker registrado com sucesso'))
+      .catch(err => console.error('Falha ao registrar o SW:', err));
+  });
+}
+</script>
+
 </body>
 </html>

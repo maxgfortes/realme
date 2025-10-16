@@ -559,7 +559,6 @@
     </a>
   </div>
 </nav>
-  <script src="./iText/src/js/welcome.js"></script>
   <script src="/js/mobile-lock.js"></script>
   <script src="/src/js/search-function.js"></script>
 
@@ -729,6 +728,15 @@ document.addEventListener('DOMContentLoaded', () => {
     animarAviao();
     alert('Post enviado com sucesso!');
   });
+</script> 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('Service Worker registrado com sucesso'))
+      .catch(err => console.error('Falha ao registrar o SW:', err));
+  });
+}
 </script>
 
 <script src="./src/js/more.js"></script>
