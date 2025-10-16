@@ -1,45 +1,84 @@
 {
   "name": "RealMe",
   "short_name": "RealMe",
-  "description": "RealMe — rede social e mensagens. Instale como PWA para acesso rápido e offline.",
-  "lang": "pt-BR",
-  "start_url": "/realme-mobile/index.html?source=pwa",
-  "scope": "/realme-mobile/",
+  "description": "Conecte-se com amigos e encontre novas pessoas no RealMe!",
+  "start_url": "/realme-mobile/index.html",
+  "scope": "/",
+  "id": "/manifest.json",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "categories": ["social", "messaging", "communication"],
-  "icons": [
-    { "src": "assets/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "assets/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ],
+  "display_override": ["standalone", "fullscreen"],
+  "background_color": "#000000",
+  "theme_color": "#4A90E2",
+  "orientation": "portrait-primary",
+  "categories": ["social", "networking", "lifestyle"],
   "shortcuts": [
+    {
+      "name": "Novo Post",
+      "short_name": "Post",
+      "description": "Crie um novo post rapidamente",
+      "url": "/feed.html",
+      "icons": [
+        {
+          "src": "./src/icon/shortcut-post.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Perfil",
+      "short_name": "Perfil",
+      "description": "Veja seu perfil",
+      "url": "/PF.html",
+      "icons": [
+        {
+          "src": "./src/icon/shortcut-friends.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
     {
       "name": "Mensagens",
       "short_name": "Direct",
-      "description": "Abrir Direct",
-      "url": "/realme-mobile/index.html#direct",
-      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Novo post",
-      "short_name": "Novo",
-      "description": "Criar novo post",
-      "url": "/realme-mobile/index.html#new-post",
-      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+      "description": "Veja suas mensagens",
+      "url": "/direct-mobile.html",
+      "icons": [
+        {
+          "src": "./src/icon/shortcut-friends.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
-  "screenshots": [
-    { "src": "assets/screen-1.png", "sizes": "1080x1920", "type": "image/png" },
-    { "src": "assets/screen-2.png", "sizes": "1080x1920", "type": "image/png" }
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.ifriendmatch.app",
+      "id": "com.ifriendmatch.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/id123456789"
+    }
   ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e10c-1234-5678-9abc",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+realme",
+      "url": "/protocol-handler?url=%s"
+    }
+  ],
+  "permissions_policy": {
+    "geolocation": [],
+    "camera": [],
+    "microphone": []
+  },
+  "dir": "ltr",
+  "lang": "pt-BR"
 }
