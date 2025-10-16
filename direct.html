@@ -398,9 +398,27 @@ div.innerHTML = `
   });
 
   chatArea.scrollTop = chatArea.scrollHeight;
+
+  unsubscribeMessages = onSnapshot(mensagensQuery, async (snapshot) => {
+  const mensagens = [];
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    data.id = doc.id;
+    mensagens.push(data);
+  });
+
+  // Marcar como lidas as mensagens recebidas
+  await marcarMensagensComoLidas(chatId, mensagens);
+
+  renderizarMensagens(mensagens);
+});
 }
 
+
+
 // ...existing code...
+
+
 
 // Adicione o CSS para o balão roxo do reply:
 const style = document.createElement('style');

@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="./src/styles/search.css" />
   <link rel="stylesheet" href="./src/styles/post-modal.css" />
   <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/amigos-mobile.css" />
 </head>
 <body>
 
@@ -66,6 +67,7 @@
       </div>
     </div>
   </aside>
+  <div class="sidebar-overlay"></div>
   <ul id="searchResults"></ul>
 
   <div class="friends-container">
@@ -74,6 +76,7 @@
             <div class="view-toggle">
                 <button class="toggle-btn active" data-view="carousel">Cards</button>
                 <button class="toggle-btn" data-view="grid">Grid</button>
+                <button class="toggle-btn filter-btn" id="filterBtn">Filtros</button>
             </div>
         </div>
 
@@ -280,22 +283,35 @@
 </aside>
 </div>
 
-<!-- Modal Post Container -->
-    <div id="postmodal" class="modal-post-container">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Criar Novo <span>Post</span>!</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-greeting">
-              <p>Como está sendo o seu dia? Faça um post sobre isso.</p>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="textarea-post" placeholder="Escreva um pensamento..." maxlength="100">
-                <button class="btn-sending">Enviar!</button>
-            </div>
-        </div>
-    </div>
+  <div class="nav-mobile">
+      <button class="post-mobile-btn" aria-label="Menu">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <div class="logo-mobile">RealMe</div>
+      <button class="search-mobile-btn" aria-label="Buscar">
+        <i class="far fa-heart"></i>
+      </button>
+  </div>
+
+<nav class="navbar-bottom">
+  <div class="navbar-bottom-content">
+    <a href="feed.html">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="acharamigos.html">
+      <i class="fa-solid fa-user-plus"></i>
+    </a>
+    <a href="direct-mobile.html">
+      <i class="fa-regular fa-paper-plane"></i>
+    </a>
+    <a href="direct.html">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
+    <a href="PF.html">
+      <img src="./src/icon/default.jpg" alt="Perfil" id="nav-pic" class="profile-mini" style="width: 24px; height: 24px; border-radius: 50%;">
+    </a>
+  </div>
+</nav>
 
 <script src="./src/js/postmodal.js"></script>
 <script src="./src/js/more.js"></script>
@@ -525,6 +541,23 @@
             const carousel = new FriendsCarousel();
             const viewToggle = new ViewToggle();
             console.log('Sistema de amigos inicializado!');
+
+            // Botão de filtros para mobile
+            const filterBtn = document.getElementById('filterBtn');
+            const optionBar = document.querySelector('.option-bar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            if (filterBtn && optionBar && overlay) {
+                filterBtn.addEventListener('click', () => {
+                    optionBar.classList.add('open');
+                    overlay.classList.add('show');
+                });
+
+                overlay.addEventListener('click', () => {
+                    optionBar.classList.remove('open');
+                    overlay.classList.remove('show');
+                });
+            }
         });
 </script>
 <script type="module">
@@ -1217,10 +1250,10 @@ document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
 </script>
 
 <script src="./src/js/search.js"></script>
-<script src="./block.js"></script>
 <script type="module" src="./src/js/search.js"></script>
 <script src="./src/js/more.js"></script>
 <script type="module" src="./src/js/loading.js"></script>
 <script type="module" src="./src/js/navbar.js" defer></script>
+<script type="module" src="./src/js/global-messages.js"></script>
 </body>
 </html>

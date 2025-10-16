@@ -889,7 +889,103 @@ async function carregarPerfilCompleto() {
   } else if (btnMsg) {
     btnMsg.style.display = 'none';
   }
+
+  async function aplicarCorPersonalizada(userid) {
+  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+  const mediaSnap = await getDoc(mediaRef);
+
+  // Só aplica se existir cor personalizada
+  if (!mediaSnap.exists() || !mediaSnap.data().profileColor) {
+    // Remove estilos dinâmicos se existirem
+    const style = document.getElementById('menu-item-hover-color');
+    if (style) style.remove();
+    const styleHoverPic = document.getElementById('pic-hover-color');
+    if (styleHoverPic) styleHoverPic.remove();
+    // Opcional: pode remover outros estilos personalizados aqui
+    return;
+  }
+
+
+  const cor = mediaSnap.data().profileColor;
+
+// Bloqueia cor com transparência
+const corEhTransparente =
+  (typeof cor === "string" && cor.trim().toLowerCase().startsWith("rgba")) ||
+  (typeof cor === "string" && cor.trim().length === 9 && cor.trim().startsWith("#"));
+
+if (corEhTransparente) return; // Não aplica cor personalizada
+
+  // Adiciona CSS dinâmico para o hover do menu
+  const style = document.getElementById('menu-item-hover-color') || document.createElement('style');
+  style.id = 'menu-item-hover-color';
+  style.textContent = `
+    .menu-item:hover {
+      background-color: ${cor} !important;
+      color: #fff !important;
+    }
+  `;
+  if (!document.head.contains(style)) document.head.appendChild(style);
+
+  // ...já dentro de aplicarCorPersonalizada...
+
+// Altera cor dos botões .action-buttons
+document.querySelectorAll('.action-buttons button').forEach(btn => {
+  btn.style.color = cor;
+  btn.style.borderColor = cor;
+  btn.style.background = 'transparent';
+});
+
+// Altera cor do hover dos botões .action-buttons
+const styleBtnHover = document.getElementById('action-btn-hover-color') || document.createElement('style');
+styleBtnHover.id = 'action-btn-hover-color';
+styleBtnHover.textContent = `
+  .action-buttons button:hover {
+    background-color: ${cor} !important;
+    color: #fff !important;
+    border-color: ${cor} !important;
+  }
+`;
+if (!document.head.contains(styleBtnHover)) document.head.appendChild(styleBtnHover);
+
+  // Adiciona CSS dinâmico para hover das fotos de perfil
+  const styleHoverPic = document.getElementById('pic-hover-color') || document.createElement('style');
+  styleHoverPic.id = 'pic-hover-color';
+  styleHoverPic.textContent = `
+    .autor-pic:hover,
+    .user-pic:hover {
+      border-color: ${cor} !important;
+    }
+  `;
+  if (!document.head.contains(styleHoverPic)) document.head.appendChild(styleHoverPic);
+
+  // Altera todos elementos com cor principal
+  document.querySelectorAll(`
+    .info-icon,
+    .profile-stats strong,
+    .action-buttons button,
+    .action-buttons button:hover,
+    .menu-item:hover,
+    .status-box,
+    .btn-enviar-depoimento,
+    .btn-enviar-depoimento:hover,
+    .btn-follow,
+    .btn-follow.following,
+    .like-btn:hover,
+    .like-btn.liked,
+    .load-more-btn,
+    .load-more-btn:hover,
+    .msg-visto-externo
+  `).forEach(el => {
+    el.style.color = cor;
+    el.style.borderColor = cor;
+    if (el.classList.contains('btn-enviar-depoimento') || el.classList.contains('load-more-btn')) {
+      el.style.background = cor;
+    }
+  });
 }
+await aplicarCorPersonalizada(userid);
+}
+
 
 // ===================
 // SISTEMA DE NUDGE ENTRE USUÁRIOS
@@ -1247,3 +1343,21 @@ document.addEventListener('DOMContentLoaded', removerShrinkHeaderMobile);
 window.addEventListener('resize', removerShrinkHeaderMobile);
 
 
+function esconderNoteBubbleSeShrink() {
+  const header = document.querySelector('.profile-header');
+  const note = document.querySelector('.note-bubble');
+  if (header && note) {
+    if (header.classList.contains('shrink')) {
+      note.classList.add('fade-out');
+    } else {
+      note.classList.remove('fade-out');
+    }
+  }
+}
+// Chame sempre que o header mudar:
+const header = document.querySelector('.profile-header');
+if (header) {
+  const observer = new MutationObserver(esconderNoteBubbleSeShrink);
+  observer.observe(header, { attributes: true, attributeFilter: ['class'] });
+  esconderNoteBubbleSeShrink();
+}

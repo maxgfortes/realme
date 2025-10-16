@@ -207,6 +207,7 @@
   max-height: 400px; /* altura máxima visível */
   overflow-y: auto; /* ativa o scroll vertical */
   overflow-x: hidden; /* ativa o scroll vertical */
+  max-width: 800px;
 }
 
 .message {

@@ -1,0 +1,197 @@
+
+@media (max-width: 768px) {
+    .option-bar{
+        display: none !important;
+    }
+
+    .options {
+        height: 70% !important;
+    }
+
+    .filtros {
+        height: 800px !important;
+    }
+
+    .friends-container{
+        margin: 0 !important;
+        margin-top: 60px !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: calc(100vh - 60px) !important; /* Preenche da navbar até o fundo */
+        margin-bottom: 120px !important; /* Remove margem inferior para ocupar tudo */
+        overflow-y: auto !important; /* Permite rolagem vertical se necessário */
+        border-radius: 0 !important; /* Remove bordas arredondadas */
+    }
+
+    /* Botão de filtros visível apenas em mobile */
+    .filter-btn {
+        display: block !important;
+        background: rgba(74, 144, 226, 0.2) !important;
+        border: 1px solid #4A90E2 !important;
+        color: #4A90E2 !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .filter-btn:hover {
+        background: rgba(74, 144, 226, 0.3) !important;
+    }
+
+    /* Sidebar como drawer em mobile (direita) */
+    .option-bar {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        right: -320px !important; /* Escondida inicialmente à direita */
+        width: 320px !important;
+        height: 100vh !important;
+        background: #141414 !important;
+        border: 1px solid #181818 !important;
+        border-radius: 0 !important;
+        padding: 20px !important;
+        z-index: 3000 !important;
+        transition: right 0.3s ease !important;
+        overflow-y: auto !important;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.5) !important;
+    }
+
+    .option-bar.open {
+        right: 0 !important; /* Visível quando tem classe 'open' */
+    }
+
+    /* Overlay para fechar sidebar */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 2999;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    .user {
+        max-width: 100% !important;
+    }
+
+    .user img {
+        height: 120px !important; /* Ajustar altura para caber melhor */
+        width: 100% !important; /* Largura total do container */
+        object-fit: cover !important; /* Cobre o container sem distorcer */
+    }
+
+.nav-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 60px;
+  z-index: 2000;
+  background: #232323;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.friends-header h1 {
+    text-align: left;
+    font-size: 24px;
+}
+
+.friends-header {
+    background-color: #161616f6;
+    backdrop-filter: blur(24px);
+    position: fixed;
+    width: 100vw;
+    height: 105px;
+    z-index: 999999;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    border: none;
+}
+
+.user {
+    font-size: 14px;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.user img {
+    width: 62px;
+    height: 62px;
+    object-fit: cover;
+}
+
+nav {
+    display: none !important;
+}
+
+
+.search-mobile-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 14px;
+  transition: color 0.3s;
+  padding-right: 12px;
+}
+
+.post-mobile-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 14px;
+  transition: color 0.3s;
+  padding-left: 12px;
+  margin-left: 14px;
+}
+
+.logo-mobile {
+  color: #cacaca;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 50px;
+  margin-top: 4px;
+}
+
+.friend-card {
+    margin-top: 100px !important;
+    height: 70% !important;
+    width: 70% !important;
+}
+
+.friend-card img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 400px !important;
+    object-fit: cover !important;
+    margin-top: 0px !important;
+    border: none !important;
+}
+
+.card-info .card-name{
+    font-size: 28px !important;
+}
+
+.view-profile-btn {
+    font-size: 24px !important;
+    padding: 20px 74px !important;
+}
+
+}
