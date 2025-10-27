@@ -1,0 +1,22 @@
+@media (max-width: 768px) {
+    .config-box-layout {
+        margin: 0 !important;
+        padding: 0px !important;
+        width: 100vw !important;
+        height: calc(100vh - 60px) !important; /* Altura total da viewport menos a navbar */
+        overflow-y: auto !important; /* Permite rolagem vertical se necessário */
+    }
+
+    .form-container {
+        margin: 0px !important;
+        margin-top: 60px !important;
+        border-radius: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        
+    }
+
+    .navbar {
+        display: none;
+    }
+}

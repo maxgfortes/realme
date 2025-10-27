@@ -514,6 +514,8 @@ display: none;
   top: auto !important;  /* garante que não vai colar no topo */
   background: #1C1C1C;
       background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+      background: rgba(0, 0, 0, 0.637) !important;
+  backdrop-filter: blur(20px) !important;
   }
 
   .navbar-bottom-content {

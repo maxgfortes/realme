@@ -2161,3 +2161,101 @@
   color: #ccc;
   text-shadow: 2px 2px 4px black;
 }
+
+
+@media (max-width: 768px) {
+.sobre-content {
+  display: flex;
+  gap: 80px;
+}
+
+.iframe-btn {
+  margin-top: 1px;
+  border: none;
+  border-radius: 50px;
+  padding: 6px 10px;
+  width: fit-content;
+  background-color: #33333377;
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 10px;
+}
+
+.music {
+  display: flex;
+  padding: 4px;
+}
+
+.music span {
+  margin-left: 8px;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #ccc;
+  text-shadow: 2px 2px 4px black;
+}
+
+
+.navbar-top {
+  display: flex;
+  justify-content: space-between; /* joga um grupo p/ esquerda e outro p/ direita */
+  align-items: center;            /* centraliza na vertical */
+}
+
+.tabnav {
+    text-align: center;
+    padding: 8px 12px;
+}
+
+.top-left, .top-right {
+  color: white;
+  text-decoration: none;
+  display: flex;
+}
+
+.top-left i, .top-right i {
+  margin-right: 8px;
+  font-size: 18px;
+}
+ .navbar-top button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+ }
+
+.profile-menu-area {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.profile-menu {
+    display: flex !important;
+}
+
+.profile-menu p {
+    display: none;
+}
+
+.profile-menu i {
+    display: flex;
+}
+
+.profile-body {
+    display: flex;
+    flex-direction: column !important;
+}
+
+.full-profile-container {
+    display: flex;
+    flex-direction: column !important;
+}
+
+.profile-menu-area {
+    margin-top: 0 !important;
+}
+}
