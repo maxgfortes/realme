@@ -117,6 +117,9 @@ if (selectMarital && maritalStatus) {
     fillField('input[name="userphoto"]', 'userphoto');
     fillField('input[name="background"]', 'background');
     fillField('input[name="headerphoto"]', 'headerphoto');
+    fillField('input[name="musicTheme"]', 'musicTheme');
+    fillField('input[name="musicThemeName"]', 'musicThemeName');
+    fillField('input[name="profileColor"]', 'profileColor');
 
     // Likes
     fillField('textarea[name="dreams"]', 'dreams');
@@ -159,7 +162,11 @@ async function salvarConfigPerfil(userId, formData) {
     const dadosMedia = {
         userphoto: formData.get('userphoto') || "",
         background: formData.get('background') || "",
-        headerphoto: formData.get('headerphoto') || ""
+        headerphoto: formData.get('headerphoto') || "",
+        musicTheme: formData.get('musicTheme') || "",
+        musicThemeName: formData.get('musicThemeName') || "",
+        profileColor: String(formData.get('profileColor') || ""),
+        profileColor2: String(formData.get('profileColor2') || ""),
     };
 
     // Likes (agora: livros, personagens, comidas, jogos, hobbies, filmes, músicas, outros)

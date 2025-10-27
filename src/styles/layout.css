@@ -1,5 +1,5 @@
 .welcome-container {
-  margin-left: 150px;
+  margin-left: 150px !important;
   margin-top: 40px;
   padding: 40px 6px 40px 40px;
   width: 840px;

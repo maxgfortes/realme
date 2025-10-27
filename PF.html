@@ -54,11 +54,21 @@
       <div class="marquee"></div>
     </div>
   </nav>
+  
 
   <!-- Sidebar -->
   <aside class="sidebar">
     <a href="feed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <div class="more-friend-menu" id="moreFriendMenu">
+      <a href="#" class="more-friend-toggle" id="moreFriendToggle">
+        <i class="fas fa-user-friends"></i> 
+        Achar Amigos
+      </a>
+      <div class="floating-friend-menu" id="floatingFriendMenu">
+        <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Mapa</a>
+        <a href="acharamigos.html"><i class="fa-solid fa-user-plus"></i> Achar Amigos</a>
+      </div>
+    </div>
     <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
     <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
     <a href="feed.html" class="postmodal"><i class="fas fa-plus-square"></i> Criar</a>
@@ -142,6 +152,7 @@
   </div> -->
 
   <div class="full-profile-container">
+    
     <!-- Topo do perfil -->
     <div class="profile-header">
       <div class="full-header">
@@ -159,6 +170,12 @@
             <div class="stats"><span><strong>0</strong> seguidores</span></div>
             <div class="stats"><span><strong>0</strong> amigos</span></div>
             <div class="stats"><span><strong>0</strong> seguindo</span></div>
+            <div style="margin-top:12px;text-align:center;">
+            </div>
+          </div>
+          <div class="music">
+            <button id="btnPauseMusic" class="iframe-btn"><i class="fa-solid fa-pause"></i> </button>
+          <span id="musicTitle" style="margin-left:8px;font-weight:500;"></span>
           </div>
         </div>
       </div>
@@ -197,18 +214,19 @@
             <h4>Sobre <span id="nomeUsuario">Nome</span></h4>
           </div>
           <div class="sobre-content">
+          <div class="sobre-left">
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+                <span class="info-label">Nome:</span>
+                <span class="info-value" id="nomeRealUsuario">Não informada</span>
+              </div>
+            </div>
             <div class="info-item">
               <div class="info-details">
                 <span class="info-icon"><i class="fas fa-user"></i></span>
                 <span class="info-label">Gênero:</span>
                 <span class="info-value" id="generoUsuario">Não informado</span>
-              </div>
-            </div>
-            <div class="info-item">
-              <div class="info-details">
-                <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
-                <span class="info-label">Localização:</span>
-                <span class="info-value" id="localizacaoUsuario">Não informada</span>
               </div>
             </div>
             <div class="info-item">
@@ -219,6 +237,30 @@
               </div>
             </div>
           </div>
+          <div class="sobre-right">
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+                <span class="info-label">Localização:</span>
+                <span class="info-value" id="localizacaoUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                <span class="info-label">Area:</span>
+                <span class="info-value" id="areaUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-cake-candles"></i></span>
+                <span class="info-label">Idade:</span>
+                <span class="info-value" id="idadeUsuario">Não informada</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
         <div class="about-container">
           <div class="about-box"><p class="about-title">Visão geral:</p><p>esta opção nao esta disponível no momento...</p></div>
@@ -277,7 +319,42 @@
       <a href="how-use.html"><button>Ver tutorial</button></a>
     </div>
   </div>
+<!-- Iframe invisível -->
+<iframe 
+  id="bgMusic"
+  width="0" 
+  height="0" 
+  src="" 
+  allow="autoplay; encrypted-media" 
+  frameborder="0"
+  style="position: fixed; bottom: 0; right: 0; opacity: 0; pointer-events: none;">
+</iframe>
 
+<script>
+
+  
+let musicStarted = false;
+
+function startMusic() {
+  if (!musicStarted) {
+    const iframe = document.getElementById('bgMusic');
+    iframe.src = musicUrl || "";
+    musicStarted = true;
+    
+    // Remove os event listeners depois de tocar
+    document.removeEventListener('click', startMusic);
+    document.removeEventListener('keydown', startMusic);
+    document.removeEventListener('scroll', startMusic);
+    document.removeEventListener('mousemove', startMusic);
+  }
+}
+
+// Toca na PRIMEIRA interação
+document.addEventListener('click', startMusic);
+document.addEventListener('keydown', startMusic);
+document.addEventListener('scroll', startMusic);
+document.addEventListener('mousemove', startMusic);
+</script>
   <script src="./src/js/profile.js" defer></script>
   <script src="./src/js/loading.js"></script>
   <script src="./src/js/search.js" defer></script>
@@ -341,7 +418,31 @@ document.addEventListener("DOMContentLoaded", function() {
       lastTouchY = null;
     });
   });
+
+  
+
+  // Botão de pausa/despausa da música
+  const btnPauseMusic = document.getElementById('btnPauseMusic');
+  const bgMusic = document.getElementById('bgMusic');
+  let paused = false;
+  let lastSrc = "";
+  if (bgMusic) lastSrc = bgMusic.src;
+  if (btnPauseMusic && bgMusic) {
+    btnPauseMusic.addEventListener('click', function() {
+      if (!paused) {
+        lastSrc = bgMusic.src;
+        bgMusic.src = "";
+        btnPauseMusic.innerHTML = "<i class='fa-solid fa-play'></i>";
+        paused = true;
+      } else {
+        bgMusic.src = lastSrc;
+        btnPauseMusic.innerHTML = "<i class='fa-solid fa-pause'></i>";
+        paused = false;
+      }
+    });
+  }
 });
+
   </script>
   <script src="./block.js"></script>
   <script type="module" src="./src/js/global-messages.js"></script>

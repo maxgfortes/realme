@@ -1,4 +1,6 @@
-
+.filter-btn {
+  display: none;
+}
 
 .friends-container {
   width: 1050px;

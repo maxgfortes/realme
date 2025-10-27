@@ -1,3 +1,7 @@
+/* Esconde a música no header shrink */
+.profile-header.shrink .music {
+  display: none !important;
+}
 
 
   .action-buttons .btn-nudge i {
@@ -2125,4 +2129,35 @@
   opacity: 0;
   pointer-events: none;
   transform: scale(0.7);
+}
+
+
+.sobre-content {
+  display: flex;
+  gap: 80px;
+}
+
+.iframe-btn {
+  margin-top: 1px;
+  border: none;
+  border-radius: 50px;
+  padding: 6px 10px;
+  width: fit-content;
+  background-color: #33333377;
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 10px;
+}
+
+.music {
+  display: flex;
+  padding: 4px;
+}
+
+.music span {
+  margin-left: 8px;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #ccc;
+  text-shadow: 2px 2px 4px black;
 }
