@@ -858,7 +858,6 @@ async function atualizarMarqueeUltimoUsuario() {
 
 document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
 
-
 async function carregarPerfilCompleto() {
   const userid = determinarUsuarioParaCarregar();
   if (!userid) {
@@ -879,6 +878,43 @@ async function carregarPerfilCompleto() {
   await carregarPostsDoMural(userid);
   await removerBlurSeTemFundo(userid);
   await tocarMusicaDoUsuario(userid);
+  
+
+  // Atualiza src do iframe bgMusic com a música do perfil
+  try {
+    const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+    const mediaSnap = await getDoc(mediaRef);
+    const iframe = document.getElementById('bgMusic');
+    let musicUrl = "";
+    let musicName = "";
+    let profileColor = "";
+    if (mediaSnap.exists()) {
+      const mediaData = mediaSnap.data();
+      if (mediaData.musicTheme) musicUrl = mediaData.musicTheme;
+      if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
+      if (mediaData.profileColor) profileColor = mediaData.profileColor;
+    }
+    if (iframe) {
+      iframe.src = musicUrl || "";
+    }
+    // Atualiza o nome da música ao lado do botão
+    const musicTitleEl = document.getElementById('musicTitle');
+    if (musicTitleEl) musicTitleEl.textContent = musicName || "";
+    // Oculta o bloco .music se não houver música
+    const musicBlock = document.querySelector('.music');
+    if (musicBlock) {
+      if (!musicUrl) {
+        musicBlock.style.display = 'none';
+      } else {
+        musicBlock.style.display = '';
+      }
+    }
+    // Atualiza cor do perfil (exemplo)
+    if (profileColor) {
+      document.body.style.setProperty('--profile-main-color', profileColor);
+      // Ou aplique onde quiser no seu CSS/JS
+    }
+  } catch (e) {}
 
 
   // Configura botão de mensagem
@@ -1242,9 +1278,15 @@ function atualizarSobre(userData) {
   const generoEl = document.getElementById('generoUsuario');
   const localizacaoEl = document.getElementById('localizacaoUsuario');
   const estadoCivilEl = document.getElementById('estadoCivilUsuario');
+  const idadeEl = document.getElementById('idadeUsuario');
+  const areaUsuario = document.getElementById('areaUsuario');
+  const nomeRealUsuario = document.getElementById('nomeRealUsuario');
   if (generoEl) generoEl.textContent = userData.gender || "Não informado";
   if (localizacaoEl) localizacaoEl.textContent = userData.location || "Não informada";
   if (estadoCivilEl) estadoCivilEl.textContent = userData.maritalStatus || "Não informado";
+  if (idadeEl) idadeEl.textContent = userData.age || "Não informada";
+  if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
+  if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
 }
 
 // ===================
