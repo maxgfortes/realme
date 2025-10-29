@@ -763,3 +763,65 @@ nav {
     display: none !important;
   }
 }
+/* Navbar bottom mobile */
+@media (max-width: 768px) {
+  .navbar-bottom {
+    display: block !important;
+    position: fixed;
+    bottom: 0 !important;
+    top: auto !important;
+    left: 0;
+    right: 0;
+    
+    /* IMPORTANTE: padding-bottom para safe area do iPhone */
+    padding-bottom: env(safe-area-inset-bottom);
+    
+    /* Background com blur */
+    background: rgba(28, 28, 28, 0.8) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    
+    /* Borda superior sutil */
+    border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+    
+    z-index: 9999;
+  }
+
+  .navbar-bottom-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 60px; /* Altura fixa do conteúdo */
+    padding: 0 16px;
+  }
+
+  .navbar-bottom a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 20px;
+    padding: 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    min-width: 44px; /* Área de toque mínima iOS */
+    min-height: 44px;
+  }
+
+  .navbar-bottom i {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+  
+  .navbar-bottom a:hover,
+  .navbar-bottom a.active {
+    color: #4A90E2;
+    background: rgba(74, 144, 226, 0.1);
+  }
+  
+  /* Ajusta o body para não ficar atrás da navbar */
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+}
