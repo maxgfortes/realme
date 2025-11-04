@@ -1,12 +1,12 @@
 // js/mobile-lock.js
-document.addEventListener("DOMContentLoaded", () => {
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+//document.addEventListener("DOMContentLoaded", () => {
+  //const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  if (isMobile) {
-    const lockDiv = document.createElement("div");
-    lockDiv.id = "mobile-lock";
-    lockDiv.innerHTML = `
-      <style>
+  //if (isMobile) {
+    //const lockDiv = document.createElement("div");
+    //lockDiv.id = "mobile-lock";
+    //lockDiv.innerHTML = `
+     // <style>
         #mobile-lock {
           position: fixed;
           top: 0;
@@ -33,11 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
           font-size: 1.2em;
           max-width: 90%;
         }
-      </style>
-      <h1>RealMe</h1>
-      <p>Por enquanto, nossa rede social está disponível apenas no computador. Agradecemos pela compreensão.</p>
-    `;
-    document.body.appendChild(lockDiv);
-    document.body.style.overflow = "hidden";
-  }
-});
+     // </style>
+      //<h1>RealMe</h1>
+     // <p>Por enquanto, nossa rede social está disponível apenas no computador. Agradecemos pela compreensão.</p>
+    //`;
+   // document.body.appendChild(lockDiv);
+ //   document.body.style.overflow = "hidden";
+//  }
+//});
