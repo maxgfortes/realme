@@ -8,6 +8,7 @@ body {
   background-position: center;
   background-attachment: fixed;
   color: #dbdbdb;
+  overflow-x: hidden;
 }
 
 .dm-navbar {
@@ -373,43 +374,62 @@ body {
   cursor: pointer;
 }
 
+
+
+
+  .navbar-bottom i {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+
+
+  
 .navbar-bottom {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100vw;
-  background: #232323;
-  border-top: 1px solid #333;
+  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+  background: rgba(0, 0, 0, 0.637) !important;
+  border-top: 1px solid #181818;
+  backdrop-filter: blur(20px) !important;
   z-index: 1001;
-  height: 60px;
+  height:40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px 0px 20px;
 }
 
-.navbar-bottom-content {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
+    .navbar-bottom-content {
+      display: flex;
+      justify-content: space-around !important;
+      align-items: center;
+      padding: 0px 16px 0px 0px;
+        max-width: 100% !important;  /* ← adicione isso */
+  width: 100%;                  /* ← e isso */
+    }
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
 
 .navbar-bottom a {
-  color: #fff;
+  color: #aaa;
   text-decoration: none;
-  font-size: 22px;
-  padding: 0 12px;
+  font-size: 24px;
+  padding: 8px;
   display: flex;
   align-items: center;
-  height: 60px;
 }
 
 .navbar-bottom a img.profile-mini {
-  width: 32px;
-  height: 32px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profile-mini {
+  width: 36px !important;
+  height: 36px !important;
 }
 
 
@@ -447,3 +467,4 @@ body {
   font-weight: 500;
   margin-left: 4px;
 }
+
