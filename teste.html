@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe - Sofia Martins</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* Navbar Top */
+    .navbar-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 9999;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .top-left, .top-right {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-left button, .top-right a {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .tabnav h2 {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Container Principal */
+    .full-profile-container {
+      margin-top: 60px;
+      margin-bottom: 70px;
+      padding: 0;
+    }
+
+    /* Profile Header */
+    .profile-header {
+      padding: 20px 16px;
+      position: relative;
+    }
+
+    .profile-header::after {
+      content: '';
+      position: absolute;
+      top: 90%; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 10%;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 1) 100%);
+      z-index: 0;
+    }
+
+    .full-header {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 15px;
+      object-fit: cover;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+    }
+
+    .profile-info-block {
+      flex: 1;
+      padding-top: 8px;
+    }
+
+    .name-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .verificado {
+      color: #4A90E2;
+      font-size: 18px;
+    }
+
+    .handle {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 12px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      color: #ddd;
+      text-align: center;
+    }
+
+    .stats span {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stats strong {
+      color: #4A90E2;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .action-buttons button {
+      background: #4A90E2;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .action-buttons button:hover {
+      background: #3a7bc8;
+      transform: translateY(-1px);
+    }
+
+    .btn-nudge {
+      min-width: 44px;
+      padding: 10px 24px !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .btn-nudge i {
+      display: none;
+    }
+
+    /* Profile Menu */
+    .profile-menu-area {
+      background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 4, 8, 1) 20%, rgba(0, 2, 3, 1) 80%, rgba(0, 0, 0, 0) 100%);
+      padding: 20px 0 10px;
+    }
+
+    .profile-menu {
+      display: flex;
+      overflow-x: auto;
+      padding: 0 8px;
+      gap: 20px;
+      scrollbar-width: none;
+    }
+
+    .profile-menu::-webkit-scrollbar {
+      display: none;
+    }
+
+    .menu-item {
+      min-width: auto;
+      background: transparent;
+      border: none;
+      color: #aaa;
+      padding: 10px 20px;
+      font-size: 26px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .menu-item.active {
+      color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .menu-item p {
+      display: none;
+    }
+
+    /* Content Area */
+    .profile-body {
+      padding: 16px;
+    }
+
+    /* Status Box */
+    .status-box {
+      background: rgba(20, 20, 20, 0.8);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-box p {
+      margin: 0;
+    }
+
+    .status-text {
+      color: #4A90E2;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* Masonry Grid */
+    .mural-masonry {
+      column-count: 2;
+      column-gap: 12px;
+    }
+
+    .post-card {
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 12px;
+      break-inside: avoid;
+      background: rgba(20, 20, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .post-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .post-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-info {
+      flex: 1;
+    }
+
+    .post-author {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .post-time {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      object-fit: cover;
+    }
+
+    .post-text {
+      font-size: 14px;
+      color: #ddd;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      color: #888;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .post-actions i {
+      margin-right: 4px;
+    }
+
+    /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 9999;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .navbar-bottom-content {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding: 0 16px;
+    }
+
+    .navbar-bottom a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #aaa;
+      font-size: 20px;
+      padding: 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
+
+    .profile-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+      }
+
+      .profile-name {
+        font-size: 20px;
+      }
+
+      .mural-masonry {
+        column-count: 1;
+      }
+
+      .action-buttons button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar Top -->
+  <nav class="navbar-top">
+    <div class="top-left">
+      <button onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    </div>
+    <div class="tabnav">
+      <h2>Sofia Martins</h2>
+    </div>
+    <div class="top-right">
+      <a href="#">
+        <i class="fa-solid fa-gear"></i>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Profile Container -->
+  <div class="full-profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="full-header">
+        <img src="https://i.pravatar.cc/240?img=47" alt="Foto de perfil" class="profile-pic" />
+        <div class="profile-info-block">
+          <div class="name-line">
+            <h2 class="profile-name">Sofia Martins</h2>
+            <span class="verificado"><i class="fas fa-check-circle"></i></span>
+          </div>
+          <div class="handle">@sofiamart</div>
+          <div class="profile-stats">
+            <div class="stats"><span><strong>127</strong> posts</span></div>
+            <div class="stats"><span><strong>2.4k</strong> seguidores</span></div>
+            <div class="stats"><span><strong>45</strong> amigos</span></div>
+            <div class="stats"><span><strong>892</strong> seguindo</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-follow">seguir</button>
+        <button class="btn-message">mensagem</button>
+        <button class="btn-nudge"><p>nudge</p></button>
+      </div>
+    </div>
+
+    <!-- Profile Menu -->
+    <div class="profile-menu-area">
+      <div class="profile-menu">
+        <button class="menu-item active"><i class="fas fa-chalkboard"></i></button>
+        <button class="menu-item"><i class="fas fa-comment-dots"></i></button>
+        <button class="menu-item"><i class="fas fa-heart"></i></button>
+        <button class="menu-item"><i class="fas fa-comments"></i></button>
+        <button class="menu-item"><i class="fas fa-link"></i></button>
+      </div>
+    </div>
+
+    <!-- Profile Body -->
+    <div class="profile-body">
+      <!-- Status Box -->
+      <div class="status-box">
+        <p><strong>@sofiamart</strong></p>
+        <p class="status-text">Online</p>
+      </div>
+
+      <!-- Masonry Posts -->
+      <div class="mural-masonry">
+        <!-- Post 1 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">2h atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/500?random=1" alt="Post" class="post-image" />
+          <p class="post-text">Finalmente consegui terminar meu projeto de arte digital! 🎨✨</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 234</span>
+            <span><i class="fas fa-comment"></i> 18</span>
+          </div>
+        </div>
+
+        <!-- Post 2 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">5h atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/600?random=2" alt="Post" class="post-image" />
+          <p class="post-text">Café da tarde perfeito ☕️</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 189</span>
+            <span><i class="fas fa-comment"></i> 12</span>
+          </div>
+        </div>
+
+        <!-- Post 3 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">8h atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/400?random=3" alt="Post" class="post-image" />
+          <p class="post-text">Novas inspirações para os próximos trabalhos 💭</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 312</span>
+            <span><i class="fas fa-comment"></i> 24</span>
+          </div>
+        </div>
+
+        <!-- Post 4 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">1d atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/550?random=4" alt="Post" class="post-image" />
+          <p class="post-text">Explorando novos lugares pela cidade 🌆</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 421</span>
+            <span><i class="fas fa-comment"></i> 31</span>
+          </div>
+        </div>
+
+        <!-- Post 5 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">1d atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/450?random=5" alt="Post" class="post-image" />
+          <p class="post-text">Sessão de fotos com a equipe hoje! 📸</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 267</span>
+            <span><i class="fas fa-comment"></i> 19</span>
+          </div>
+        </div>
+
+        <!-- Post 6 -->
+        <div class="post-card">
+          <div class="post-header">
+            <img src="https://i.pravatar.cc/64?img=47" alt="Avatar" class="post-avatar" />
+            <div class="post-info">
+              <div class="post-author">Sofia Martins</div>
+              <div class="post-time">2d atrás</div>
+            </div>
+          </div>
+          <img src="https://picsum.photos/400/520?random=6" alt="Post" class="post-image" />
+          <p class="post-text">Momento relax no fim de semana 🌿</p>
+          <div class="post-actions">
+            <span><i class="fas fa-heart"></i> 356</span>
+            <span><i class="fas fa-comment"></i> 27</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar Bottom -->
+  <nav class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="#">
+        <i class="fas fa-home"></i>
+      </a>
+      <a href="#">
+        <i class="fa-solid fa-user-plus"></i>
+      </a>
+      <a href="#">
+        <i class="fa-regular fa-paper-plane"></i>
+      </a>
+      <a href="#">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </a>
+      <a href="#">
+        <img src="https://i.pravatar.cc/56?img=47" alt="Perfil" class="profile-mini">
+      </a>
+    </div>
+  </nav>
+</body>
+</html>
