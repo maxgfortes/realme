@@ -405,7 +405,6 @@ body {
       display: flex;
       justify-content: space-around !important;
       align-items: center;
-      padding: 0px 16px 0px 0px;
         max-width: 100% !important;  /* ← adicione isso */
   width: 100%;                  /* ← e isso */
     }
@@ -467,4 +466,5 @@ body {
   font-weight: 500;
   margin-left: 4px;
 }
+
 
