@@ -209,6 +209,12 @@ async function configurarBotaoSeguir(targetUserId) {
   if (!followBtn || !currentUserId) return;
   if (targetUserId === currentUserId) {
     followBtn.style.display = 'none';
+    // Oculta botão de mensagem e nudge se for o próprio perfil
+    const msgBtn = document.querySelector('.btn-message');
+    if (msgBtn) msgBtn.style.display = 'none';
+    const nudgeBtn = document.querySelector('.btn-nudge');
+    if (nudgeBtn) nudgeBtn.style.display = 'none';
+    // Adiciona botão de editar perfil
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar perfil';
     editBtn.className = 'btn-edit-profile';
@@ -237,6 +243,7 @@ async function configurarBotaoSeguir(targetUserId) {
     followBtn.disabled = false;
   };
 }
+
 
 // ===================
 // SISTEMA DE DEPOIMENTOS
@@ -1008,7 +1015,6 @@ if (!document.head.contains(styleBtnHover)) document.head.appendChild(styleBtnHo
     .btn-follow.following,
     .like-btn:hover,
     .like-btn.liked,
-    .load-more-btn,
     .load-more-btn:hover,
     .msg-visto-externo
   `).forEach(el => {

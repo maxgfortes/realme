@@ -209,6 +209,12 @@ async function configurarBotaoSeguir(targetUserId) {
   if (!followBtn || !currentUserId) return;
   if (targetUserId === currentUserId) {
     followBtn.style.display = 'none';
+    // Oculta botão de mensagem e nudge se for o próprio perfil
+    const msgBtn = document.querySelector('.btn-message');
+    if (msgBtn) msgBtn.style.display = 'none';
+    const nudgeBtn = document.querySelector('.btn-nudge');
+    if (nudgeBtn) nudgeBtn.style.display = 'none';
+    // Adiciona botão de editar perfil
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar perfil';
     editBtn.className = 'btn-edit-profile';
@@ -909,11 +915,6 @@ async function carregarPerfilCompleto() {
         musicBlock.style.display = '';
       }
     }
-    // Atualiza cor do perfil (exemplo)
-    if (profileColor) {
-      document.body.style.setProperty('--profile-main-color', profileColor);
-      // Ou aplique onde quiser no seu CSS/JS
-    }
   } catch (e) {}
 
 
@@ -926,100 +927,7 @@ async function carregarPerfilCompleto() {
     btnMsg.style.display = 'none';
   }
 
-  async function aplicarCorPersonalizada(userid) {
-  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
-  const mediaSnap = await getDoc(mediaRef);
-
-  // Só aplica se existir cor personalizada
-  if (!mediaSnap.exists() || !mediaSnap.data().profileColor) {
-    // Remove estilos dinâmicos se existirem
-    const style = document.getElementById('menu-item-hover-color');
-    if (style) style.remove();
-    const styleHoverPic = document.getElementById('pic-hover-color');
-    if (styleHoverPic) styleHoverPic.remove();
-    // Opcional: pode remover outros estilos personalizados aqui
-    return;
-  }
-
-
-  const cor = mediaSnap.data().profileColor;
-
-// Bloqueia cor com transparência
-const corEhTransparente =
-  (typeof cor === "string" && cor.trim().toLowerCase().startsWith("rgba")) ||
-  (typeof cor === "string" && cor.trim().length === 9 && cor.trim().startsWith("#"));
-
-if (corEhTransparente) return; // Não aplica cor personalizada
-
-  // Adiciona CSS dinâmico para o hover do menu
-  const style = document.getElementById('menu-item-hover-color') || document.createElement('style');
-  style.id = 'menu-item-hover-color';
-  style.textContent = `
-    .menu-item:hover {
-      background-color: ${cor} !important;
-      color: #fff !important;
-    }
-  `;
-  if (!document.head.contains(style)) document.head.appendChild(style);
-
-  // ...já dentro de aplicarCorPersonalizada...
-
-// Altera cor dos botões .action-buttons
-document.querySelectorAll('.action-buttons button').forEach(btn => {
-  btn.style.color = cor;
-  btn.style.borderColor = cor;
-  btn.style.background = 'transparent';
-});
-
-// Altera cor do hover dos botões .action-buttons
-const styleBtnHover = document.getElementById('action-btn-hover-color') || document.createElement('style');
-styleBtnHover.id = 'action-btn-hover-color';
-styleBtnHover.textContent = `
-  .action-buttons button:hover {
-    background-color: ${cor} !important;
-    color: #fff !important;
-    border-color: ${cor} !important;
-  }
-`;
-if (!document.head.contains(styleBtnHover)) document.head.appendChild(styleBtnHover);
-
-  // Adiciona CSS dinâmico para hover das fotos de perfil
-  const styleHoverPic = document.getElementById('pic-hover-color') || document.createElement('style');
-  styleHoverPic.id = 'pic-hover-color';
-  styleHoverPic.textContent = `
-    .autor-pic:hover,
-    .user-pic:hover {
-      border-color: ${cor} !important;
-    }
-  `;
-  if (!document.head.contains(styleHoverPic)) document.head.appendChild(styleHoverPic);
-
-  // Altera todos elementos com cor principal
-  document.querySelectorAll(`
-    .info-icon,
-    .profile-stats strong,
-    .action-buttons button,
-    .action-buttons button:hover,
-    .menu-item:hover,
-    .status-box,
-    .btn-enviar-depoimento,
-    .btn-enviar-depoimento:hover,
-    .btn-follow,
-    .btn-follow.following,
-    .like-btn:hover,
-    .like-btn.liked,
-    .load-more-btn,
-    .load-more-btn:hover,
-    .msg-visto-externo
-  `).forEach(el => {
-    el.style.color = cor;
-    el.style.borderColor = cor;
-    if (el.classList.contains('btn-enviar-depoimento') || el.classList.contains('load-more-btn')) {
-      el.style.background = cor;
-    }
-  });
-}
-await aplicarCorPersonalizada(userid);
+  // Função de cor personalizada removida
 }
 
 
@@ -1310,11 +1218,22 @@ async function atualizarImagensPerfil(userData, userid) {
   });
 
 
-  const bgUrl = mediaData.background;
-  if (bgUrl) {
-    document.body.style.backgroundImage = `url('${bgUrl}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
+  const fullProfileContainer = document.querySelector('.full-profile-container');
+  const color1 = mediaData.profileColor || '#222';
+  const color2 = mediaData.profileColor2 || '#444';
+  if (fullProfileContainer) {
+    if (color1 && color2) {
+      fullProfileContainer.classList.add('has-bg-gradient');
+  fullProfileContainer.style.setProperty('--profile-bg-gradient', `linear-gradient(180deg, ${color1}, ${color2})`);
+    } else {
+      fullProfileContainer.classList.remove('has-bg-gradient');
+      fullProfileContainer.style.removeProperty('--profile-bg-gradient');
+    }
+    // Remove any image background from body
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundSize = '';
+    document.body.style.backgroundPosition = '';
+    fullProfileContainer.classList.remove('has-bg');
   }
 
   const headerPhoto = mediaData.headerphoto;

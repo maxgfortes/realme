@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RealMe - Sofia Martins</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#000000"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
     * {
       margin: 0;
@@ -14,7 +17,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(180deg, #003daf 0%, #161696 50%, #797979 100%);
+      background: linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%);
       min-height: 100vh;
       overflow-y: auto;
       overflow-x: hidden;
@@ -28,7 +31,7 @@
       left: 0;
       right: 0;
       height: 60px;
-      background: rgba(20, 20, 20, 0.95);
+      background: rgba(0, 0, 0, 0.692);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
@@ -57,8 +60,8 @@
 
     .tabnav h2 {
       color: white;
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 24px;
+      font-weight: 700;
     }
 
     /* Container Principal */
@@ -68,11 +71,26 @@
       padding: 0;
     }
 
+    .full-profile-container::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      background: #000000;
+      background: linear-gradient(180deg, #000000 50%, rgb(0, 0, 0) 100%);
+      z-index: -3;
+    }
+
+    .full-profile-container.has-bg-gradient::after {
+  background: var(--profile-bg-gradient, #222 60%, #444 100%);
+  opacity: 1;
+  /* other styles as needed */
+}
+
     /* Profile Header */
     .profile-header {
-      padding: 20px 16px;
+      padding: 12px 12px 12px 12px;
       position: relative;
-      background-image: url("https://i.pinimg.com/736x/ee/df/b4/eedfb4b50097b13802dc9cb9f5536013.jpg");
         background-size: cover;
         background-position: center;
         z-index: -2;
@@ -81,16 +99,16 @@
     .profile-header::after {
       content: '';
       position: absolute;
-      top: 10%; left: 0; right: 0; bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       width: 100%; height: 100%;
-      background: #141414;
-background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 100%);
+      background: #000000;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.281) 0%, rgb(0, 0, 0) 100%);
       z-index: -1;
     }
 
     .full-header {
       display: flex;
-      gap: 16px;
+      gap: 10px;
       margin-bottom: 16px;
     }
 
@@ -112,7 +130,6 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 4px;
     }
 
     .profile-name {
@@ -128,10 +145,11 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     }
 
     .handle {
-      font-size: 14px;
+      font-size: 17px;
       color: #aaa;
       margin-bottom: 12px;
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      margin-top: 0px;
     }
 
     .profile-stats {
@@ -140,6 +158,7 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       font-size: 14px;
       color: #ddd;
       text-align: center;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     }
 
     .stats span {
@@ -151,7 +170,40 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       color: #4A90E2;
       font-weight: 700;
       font-size: 16px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     }
+
+    .profile-stats a {
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .iframe-btn {
+  margin-top: 1px;
+  border: none;
+  border-radius: 50px;
+  padding: 6px 10px;
+  width: fit-content;
+  background-color: #33333377;
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 10px;
+  border: 1px solid #333;
+}
+
+.music {
+  display: flex;
+  padding: 4px;
+  padding-left: 10px;
+}
+
+.music span {
+  margin-left: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  color: #ccc;
+  text-shadow: 2px 2px 4px black;
+}
 
     /* Action Buttons */
     .action-buttons {
@@ -163,15 +215,17 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     .action-buttons button {
       background: #4A90E2;
       color: #fff;
-      padding: 10px 20px;
+      padding: 10px 20px !important;
       border-radius: 8px;
       border: none;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       flex: 1;
     }
+
+
 
     .action-buttons button:hover {
       background: #3a7bc8;
@@ -180,11 +234,21 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
 
     .btn-nudge {
       min-width: 44px;
-      padding: 10px 24px !important;
+      padding: 8px 24px !important;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       justify-content: center;
+    }
+
+    .btn-edit-profile {
+      min-width: 44px;
+      padding: 8px 24px !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+      font-size: 16px !important;
     }
 
     .btn-nudge i {
@@ -193,15 +257,15 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
 
     /* Profile Menu */
     .profile-menu-area {
-      background-color: #141414;
-      padding: 20px 0 10px;
+      background-color: #000000;
+      padding: 0px 0 0px;
     }
 
     .profile-menu {
       display: flex;
       overflow-x: auto;
       padding: 0 8px;
-      gap: 20px;
+      gap: 9px;
       scrollbar-width: none;
     }
 
@@ -215,7 +279,7 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       border: none;
       color: #aaa;
       padding: 10px 20px;
-      font-size: 26px;
+      font-size: 32px;
       cursor: pointer;
       transition: all 0.3s ease;
       border-bottom: 3px solid transparent;
@@ -223,7 +287,8 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
 
     .menu-item.active {
       color: #fff;
-      border-bottom-color: #fff;
+      border-bottom-color: #4A90E2;
+      border-radius: 3px;
     }
 
     .menu-item p {
@@ -239,7 +304,6 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     .status-box {
       background: rgba(20, 20, 20, 0.8);
       backdrop-filter: blur(12px);
-      border-radius: 12px;
       padding: 12px 16px;
       margin-bottom: 16px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -342,8 +406,8 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       bottom: 0;
       left: 0;
       right: 0;
-      height: 70px;
-      background: rgba(20, 20, 20, 0.95);
+      height: 80px;
+      background: rgba(0, 0, 0, 0.712);
       backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 9999;
@@ -355,7 +419,7 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       justify-content: space-around;
       align-items: center;
       height: 100%;
-      padding: 0 16px;
+      padding-bottom: 20px;
     }
 
     .navbar-bottom a {
@@ -363,7 +427,7 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
       flex-direction: column;
       align-items: center;
       color: #aaa;
-      font-size: 20px;
+      font-size: 26px;
       padding: 8px;
       border-radius: 12px;
       transition: all 0.3s ease;
@@ -375,8 +439,8 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     }
 
     .profile-mini {
-      width: 28px;
-      height: 28px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
     }
@@ -409,6 +473,177 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     .tab.active {
       display: block;
     }
+    .post-card {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+  break-inside: avoid; /* evita quebra entre colunas */
+}
+
+
+.post-card {
+  border-radius: 10px;
+  min-height: 130px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  padding: 20px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.profile-post-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+.username {
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px black;
+}
+
+.dots {
+  font-size: 20px;
+  color: #cacaca;
+  cursor: pointer;
+}
+
+.post-content p {
+  margin: 12px 0;
+  color: #cacaca;
+  font-size: 15px;
+}
+
+.post-image {
+  width: 100%;
+  height: 300px; /* você pode ajustar */
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-actions button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.post-actions button:hover {
+  color: #e91e40;
+}
+
+.post-date {
+  font-size: 12px;
+  color: #999;
+}
+
+
+/* Tabs */
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+.info-item {
+  margin-bottom: 12px;
+}
+
+
+
+.about-box {
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  font-size: 18px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  color: #ccc;
+}
+
+
+.info-label {
+  font-weight: 600;
+  margin-right: 6px;
+  color: #ffffff;
+}
+
+.info-icon {
+  margin-right: 6px;
+  color: #4A90E2;
+}
+
+.about-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #4A90E2;
+}
+
+
+.link-box {
+  background-color: #4A90E2;
+  padding: 20px 10px;
+  margin-bottom: 10px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  
+}
+
+.link-box a {
+  color: #aaa;
+  text-decoration: none;
+  padding: 20px;
+  display: block;  
+}
+.link-box a:hover {
+  color: #aaa;
+  text-decoration: underline;
+  transition: 0.3s;
+}
+
+.profile-body {
+  padding: 0px;
+}
+
+.info-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-top {
+  display: flex;  
+}
+
   </style>
 </head>
 <body>
@@ -437,10 +672,10 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
         <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Foto de perfil" class="profile-pic" />
         <div class="profile-info-block">
           <div class="name-line">
-            <h2 class="profile-name">maxgfortes</h2>
+            <h2 class="profile-name" id="displayname">usuario do RealMe</h2>
             <span class="verificado"><i class="fas fa-check-circle"></i></span>
           </div>
-          <div class="handle">@maxgfortes</div>
+          <div class="handle" id="username">@username</div>
           <div class="profile-stats">
             <div class="stats"><span><strong>127</strong> posts</span></div>
             <div class="stats"><span><strong>2.4k</strong> seguidores</span></div>
@@ -449,9 +684,13 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
           </div>
         </div>
       </div>
+      <div class="music">
+        <button id="btnPauseMusic" class="iframe-btn"><i class="fa-solid fa-pause"></i> </button>
+        <span id="musicTitle" style="margin-left:8px;font-weight:500;"></span>
+      </div>
       <div class="action-buttons">
-        <button class="btn-follow">seguir</button>
-        <button class="btn-message">mensagem</button>
+        <button class="btn-follow"><p>seguir</p></button>
+        <button class="btn-message"><p>mensagem</p></button>
         <button class="btn-nudge"><p>nudge</p></button>
       </div>
     </div>
@@ -459,148 +698,176 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
     <!-- Profile Menu -->
     <div class="profile-menu-area">
       <div class="profile-menu">
-        <button class="menu-item active"><i class="fas fa-chalkboard"></i></button>
-        <button class="menu-item"><i class="fas fa-comment-dots"></i></button>
+        <button class="menu-item active"><i class="fa-solid fa-calendar-days"></i></button>
+        <button class="menu-item"><i class="fa-solid fa-address-card"></i></button>
         <button class="menu-item"><i class="fas fa-heart"></i></button>
-        <button class="menu-item"><i class="fas fa-comments"></i></button>
+        <button class="menu-item"><i class="fa-solid fa-comment"></i></button>
         <button class="menu-item"><i class="fas fa-link"></i></button>
       </div>
     </div>
 
     <!-- Profile Body -->
     <div class="profile-body">
-      <!-- Status Box -->
-      <div class="status-box">
-        <p><strong>@maxgfortes</strong></p>
-        <p class="status-text">Está Online</p>
+      <div class="tab mural-tab active">
+        <div class="status-box">
+          <p><strong id="statususername"></strong></p>
+          <p class="status-text">Online</p>
+        </div>
+        <div id="muralPosts" class="mural-masonry"></div>
       </div>
-
-      <!-- Masonry Posts -->
-      <div class="mural-masonry">
-        <!-- Post 1 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">2h atrás</div>
+      <div class="tab visao-tab">
+        <div class="about-box sobre-box" id="sobreBox">
+          <div class="sobre-header">
+            <h4>Sobre <span id="nomeUsuario">esse usuario</span></h4>
+          </div>
+          <div class="sobre-content">
+          <div class="sobre-left">
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+                <span class="info-label">Nome:</span>
+                <span class="info-value" id="nomeRealUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fas fa-user"></i></span>
+                <span class="info-label">Gênero:</span>
+                <span class="info-value" id="generoUsuario">Não informado</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fas fa-heart"></i></span>
+                <span class="info-label">Estado Civil:</span>
+                <span class="info-value" id="estadoCivilUsuario">Não informado</span>
+              </div>
             </div>
           </div>
-          <img src="https://picsum.photos/400/500?random=1" alt="Post" class="post-image" />
-          <p class="post-text">Finalmente consegui terminar meu projeto de arte digital! 🎨✨</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 234</span>
-            <span><i class="fas fa-comment"></i> 18</span>
+          <div class="sobre-right">
+            <div class="info-item">
+              <div class="info-details">
+                <div class="info-info">
+                  <div class="info-top">
+                    <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <span class="info-label">Localização:</span>
+                  </div>
+                  <div class="info-bottom">
+                    <span class="info-value" id="localizacaoUsuario">Não informada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                <span class="info-label">Area:</span>
+                <span class="info-value" id="areaUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-cake-candles"></i></span>
+                <span class="info-label">Idade:</span>
+                <span class="info-value" id="idadeUsuario">Não informada</span>
+              </div>
+            </div>
           </div>
         </div>
-
-        <!-- Post 2 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">5h atrás</div>
-            </div>
-          </div>
-          <img src="https://picsum.photos/400/600?random=2" alt="Post" class="post-image" />
-          <p class="post-text">Café da tarde perfeito ☕️</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 189</span>
-            <span><i class="fas fa-comment"></i> 12</span>
-          </div>
         </div>
-
-        <!-- Post 3 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">8h atrás</div>
-            </div>
-          </div>
-          <img src="https://picsum.photos/400/400?random=3" alt="Post" class="post-image" />
-          <p class="post-text">Novas inspirações para os próximos trabalhos 💭</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 312</span>
-            <span><i class="fas fa-comment"></i> 24</span>
-          </div>
+        <div class="about-container">
+          <div class="about-box"><p class="about-title">Visão geral:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Tags:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meu Estilo:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Minha personalidade:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meus Sonhos e desejos:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meus Medos:</p><p>esta opção nao esta disponível no momento...</p></div>
         </div>
-
-        <!-- Post 4 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">1d atrás</div>
-            </div>
-          </div>
-          <img src="https://picsum.photos/400/550?random=4" alt="Post" class="post-image" />
-          <p class="post-text">Explorando novos lugares pela cidade 🌆</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 421</span>
-            <span><i class="fas fa-comment"></i> 31</span>
-          </div>
+      </div>
+      <div class="tab gostos-tab">
+        <div class="about-container">
+          <div class="about-box"><p class="about-title">Músicas:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Filmes e Séries:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Livros:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Personagens:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Comidas e Bebidas:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Hobbies:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Jogos favoritos:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Outros gostos:</p><p>esta opção nao esta disponível no momento...</p></div>
         </div>
-
-        <!-- Post 5 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">1d atrás</div>
-            </div>
-          </div>
-          <img src="https://picsum.photos/400/450?random=5" alt="Post" class="post-image" />
-          <p class="post-text">Sessão de fotos com a equipe hoje! 📸</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 267</span>
-            <span><i class="fas fa-comment"></i> 19</span>
-          </div>
-        </div>
-
-        <!-- Post 6 -->
-        <div class="post-card">
-          <div class="post-header">
-            <img src="https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg" alt="Avatar" class="post-avatar" />
-            <div class="post-info">
-              <div class="post-author">maxgfortes</div>
-              <div class="post-time">2d atrás</div>
-            </div>
-          </div>
-          <img src="https://picsum.photos/400/520?random=6" alt="Post" class="post-image" />
-          <p class="post-text">Momento relax no fim de semana 🌿</p>
-          <div class="post-actions">
-            <span><i class="fas fa-heart"></i> 356</span>
-            <span><i class="fas fa-comment"></i> 27</span>
-          </div>
+      </div>
+      <div class="tab deps-tab">
+        <div class="about-container"></div>
+      </div>
+      <div class="tab links-tab">
+        <div class="about-container">
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Navbar Bottom -->
-  <nav class="navbar-bottom">
-    <div class="navbar-bottom-content">
-      <a href="#">
-        <i class="fas fa-home"></i>
-      </a>
-      <a href="#">
-        <i class="fa-solid fa-user-plus"></i>
-      </a>
-      <a href="#">
-        <i class="fa-regular fa-paper-plane"></i>
-      </a>
-      <a href="#">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </a>
-      <a href="#">
-        <img src="https://i.pravatar.cc/56?img=47" alt="Perfil" class="profile-mini">
-      </a>
-    </div>
+
   </nav>
+
+<!-- Iframe invisível -->
+<iframe 
+  id="bgMusic"
+  width="0" 
+  height="0" 
+  src="" 
+  allow="autoplay; encrypted-media" 
+  frameborder="0"
+  style="position: fixed; bottom: 0; right: 0; opacity: 0; pointer-events: none;">
+</iframe>
 </body>
+
+<script>
+// Atualiza o nomeTopo com o displayname do usuário visitado
+function atualizarNomeTopo(displayname) {
+  var nomeTopo = document.getElementById('nomeTopo');
+  if (nomeTopo) nomeTopo.textContent = displayname || '';
+}
+
+// Hook para atualizar ao carregar perfil
+document.addEventListener('DOMContentLoaded', function() {
+  // Tenta pegar o nome do usuário já carregado
+  var nome = '';
+  var nomeEl = document.getElementById('displayname');
+  if (nomeEl) nome = nomeEl.textContent;
+  atualizarNomeTopo(nome);
+
+  // Se o nome mudar depois (por JS), observe e atualize
+  var observer = new MutationObserver(function() {
+    var nome = nomeEl ? nomeEl.textContent : '';
+    atualizarNomeTopo(nome);
+  });
+  if (nomeEl) observer.observe(nomeEl, { childList: true, subtree: true });
+});
+  
+let musicStarted = false;
+
+function startMusic() {
+  if (!musicStarted) {
+    const iframe = document.getElementById('bgMusic');
+    iframe.src = musicUrl || "";
+    musicStarted = true;
+    
+    // Remove os event listeners depois de tocar
+    document.removeEventListener('click', startMusic);
+    document.removeEventListener('keydown', startMusic);
+    document.removeEventListener('scroll', startMusic);
+    document.removeEventListener('mousemove', startMusic);
+  }
+}
+
+// Toca na PRIMEIRA interação
+document.addEventListener('click', startMusic);
+document.addEventListener('keydown', startMusic);
+document.addEventListener('scroll', startMusic);
+document.addEventListener('mousemove', startMusic);
+</script>
+
+  <script type="module" src="codigo-mobile.js"></script>
+  <script src="./src/js/pfp-navbar.js"></script>
+  <script type="module" src="./src/js/global-messages.js"></script>
 </html>
