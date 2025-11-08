@@ -1,3 +1,4 @@
+
     .config-box-layout {
       margin-left: 230px;
       padding: 20px;
@@ -401,3 +402,11 @@ input:-moz-autofill {
         }
 
         
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }

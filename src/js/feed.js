@@ -882,6 +882,7 @@ async function loadPosts() {
           </button>
           <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
             <i class="fas fa-comment"></i> Comentar
+            <span>${postData.comentarios || 0}</span>
           </button>
           <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
             <i class="fas fa-flag"></i> <p>Denunciar</p>
@@ -915,9 +916,10 @@ async function loadPosts() {
         }
       });
 
-const btnLike = postEl.querySelector('.btn-like');
-const usuarioLogado = auth.currentUser;
-if (btnLike && usuarioLogado) {
+      const btnLike = postEl.querySelector('.btn-like');
+      const btnComment = postEl.querySelector('.btn-comment');
+      const usuarioLogado = auth.currentUser;
+      if (btnLike && usuarioLogado) {
   const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
   getDoc(likerRef).then(likerSnap => {
     if (likerSnap.exists() && likerSnap.data().like === true) {
@@ -928,9 +930,20 @@ if (btnLike && usuarioLogado) {
   });
 }
 
-  contarLikes(postData.postid).then(totalLikes => {
-    btnLike.querySelector('span').textContent = totalLikes;
-  });
+      // Atualiza contadores apenas se os botões existirem (evita erro se estrutura mudar)
+      contarLikes(postData.postid).then(totalLikes => {
+        if (btnLike) {
+          const span = btnLike.querySelector('span');
+          if (span) span.textContent = totalLikes;
+        }
+      }).catch(() => {});
+
+      contarComentarios(postData.postid).then(totalComentarios => {
+        if (btnComment) {
+          const span = btnComment.querySelector('span');
+          if (span) span.textContent = totalComentarios;
+        }
+      }).catch(() => {});
     }
 
     
@@ -956,6 +969,7 @@ if (btnLike && usuarioLogado) {
   }
   loading = false;
 }
+
 
 
 // ...existing code...
@@ -1047,6 +1061,16 @@ async function sendPost() {
     criarPopup('Erro', 'Erro ao enviar post, tente novamente.', 'error');
   }
 }
+
+
+
+async function contarComentarios(postId) {
+  // Os comentários são salvos na sub-coleção 'coments' (sem 'r') em outras partes do código
+  const comentariosRef = collection(db, 'posts', postId, 'coments');
+  const snapshot = await getDocs(comentariosRef);
+  return snapshot.size;
+}
+
 
 // ===================
 // CURTIR POST (posts/{postid})
@@ -1195,7 +1219,9 @@ async function atualizarGreeting() {
 function configurarLinks() {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) return;
-  const urlPerfil = `PF.html?userid=${encodeURIComponent(usuarioLogado.uid)}`;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const page = isMobile ? 'pfmobile.html' : 'PF.html';
+  const urlPerfil = `${page}?userid=${encodeURIComponent(usuarioLogado.uid)}`;
   const linkSidebar = document.getElementById('linkPerfilSidebar');
   const linkMobile = document.getElementById('linkPerfilMobile');
   if (linkSidebar) linkSidebar.href = urlPerfil;
@@ -1371,7 +1397,9 @@ if (avisoEl) {
       }
       if (userNameLink) {
         const uid = userNameLink.dataset.username;
-        window.location.href = `PF.html?userid=${encodeURIComponent(uid)}`;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const page = isMobile ? 'pfmobile.html' : 'PF.html';
+        window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
       }
       if (commentSubmit) {
         const uid = commentSubmit.dataset.username;
@@ -1731,7 +1759,9 @@ document.addEventListener('click', (e) => {
   if (e.target.classList.contains('comentario-nome')) {
     const uid = e.target.dataset.username;
     if (uid) {
-      window.location.href = `PF.html?userid=${encodeURIComponent(uid)}`;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const page = isMobile ? 'pfmobile.html' : 'PF.html';
+      window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
     }
   }
 });

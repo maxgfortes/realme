@@ -75,8 +75,8 @@ nav {
 }
 
 .user-welcome img {
-    width: 120px;         /* largura fixa */
-    height: 120px;        /* altura igual = quadrado */
+    width: 120px !important;         /* largura fixa */
+    height: 120px !important;        /* altura igual = quadrado */
     object-fit: cover;    /* cobre toda a área, mesmo que corte */
     border-end-end-radius: 12px;   /* opcional: cantos arredondados */
     border-top-left-radius: 12px;   /* opcional: cantos arredondados */
@@ -943,6 +943,17 @@ html, body{
   height: 36px !important;
 }
 
-
+.user-welcome img {
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 120px !important;   /* ADICIONE */
+    min-height: 120px !important;  /* ADICIONE */
+    max-width: 120px !important;   /* ADICIONE */
+    max-height: 120px !important;  /* ADICIONE */
+    object-fit: cover;
+    flex-shrink: 0;  /* ADICIONE - evita que o flex comprima */
+    border-bottom-right-radius: 12px;
+    border-top-left-radius: 12px;
+}
 
 }

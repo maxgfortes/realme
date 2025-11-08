@@ -244,18 +244,20 @@ function inicializarFuncionalidades() {
 }
 
 function setupTabs() {
-    document.querySelectorAll('.tab-button').forEach(button => {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
             button.classList.add('active');
-            const tabContent = document.getElementById(button.dataset.tab);
-            if (tabContent) {
-                tabContent.classList.add('active');
-            }
+            const tabId = button.getAttribute('data-tab');
+            const tabContent = document.getElementById(tabId);
+            if (tabContent) tabContent.classList.add('active');
         });
     });
 }
+
 
 function setupCharCounters() {
     document.querySelectorAll('textarea[maxlength], input[maxlength]').forEach(element => {

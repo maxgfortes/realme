@@ -523,7 +523,6 @@ display: none;
     justify-content: space-around;
     align-items: center;
     height: 100%;
-    padding: 0 16px;
   }
 
   .navbar-bottom a {
@@ -544,7 +543,56 @@ display: none;
   }
 }
 
+    /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.712);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 9999;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
+    }
 
+.navbar-bottom-content svg {
+  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 26px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
+
+    .navbar-bottom-content {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding-bottom: 20px;
+    }
+
+    .navbar-bottom a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
+
+    .profile-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
 
 
 
@@ -670,3 +718,55 @@ display: none;
             opacity: 1;
             visibility: visible;
         }
+
+
+            /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed !important;
+      bottom: 0!important;
+      left: 0 !important;
+      right: 0 !important;
+      height: 80px !important;
+      background: rgba(0, 0, 0, 0.712) !important;
+      backdrop-filter: blur(20px) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      z-index: 9999 !important;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4) !important;
+    }
+
+.navbar-bottom-content svg {
+  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 26px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
+
+    .navbar-bottom-content {
+      display: flex !important;
+      justify-content: space-around !important;
+      align-items: center !important;
+      height: 100% !important;
+      padding-bottom: 20px !important;
+    }
+
+    .navbar-bottom a {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      color: #f8f9f9 !important;
+      font-size: 26px !important;
+      padding: 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
+
+    .profile-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Para o notch/barra de status -->
+  <meta name="theme-color" content="#020202">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Social preview -->
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <style>
+    :root {
+      --profile-color: #4A90E2;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #020202 0%, #020202 50%, #020202 100%);
+      background-color: #020202;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #f8f9f9;
+    }
+    
+
+    /* Navbar Top */
+    .navbar-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #000000b0;
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: left;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 9999;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .navbar-top svg {
+      margin-top: 8px;
+  width: 20px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 20px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
+
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-left {
+      display: flex;
+      gap: 12px;
+    }
+
+    .top-left button, .top-right a {
+      background: none;
+      border: none;
+      color: #f8f9f9;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .tabnav h2 {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* Container Principal */
+    .full-profile-container {
+      margin-top: 56px;
+      margin-bottom: 70px;
+      padding: 0;
+    }
+
+    .full-profile-container::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      background: #020202;
+      background: linear-gradient(180deg, #020202 50%, #020202 100%);
+      z-index: -3;
+    }
+
+    .full-profile-container.has-bg-gradient::after {
+  background: var(--profile-bg-gradient, #020202 60%, #020202 100%);
+  opacity: 1;
+  /* other styles as needed */
+}
+
+    /* Profile Header */
+    .profile-header {
+      padding: 12px 12px 12px 12px;
+      position: relative;
+        background-size: cover;
+        background-position: center;
+        z-index: -2;
+    }
+
+    .profile-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+background: 	#020202;
+background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
+      z-index: -1;
+    }
+
+    .full-header {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .profile-pic {
+      width: 118px;
+      height: 118px;
+      border-radius: 15px;
+      object-fit: cover;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+    }
+
+    .profile-info-block {
+      flex: 1;
+      padding-left: 4px;
+    }
+
+    .name-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f8f9f9;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .verificado {
+  color: var(--profile-color, #4A90E2);
+      font-size: 18px;
+    }
+
+    .handle {
+      font-size: 15px;
+      color: #aaa;
+      margin-bottom: 12px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      margin-top: 0px;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 18px;
+      font-size: 12px;
+      color: #ddd;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      padding: 10px 0px 0px 12px;
+    }
+
+    .stats span {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .stats {
+      text-align: left;
+    }
+
+    .stats strong {
+  color: var(--profile-color, #4A90E2);
+      font-weight: 600;
+      font-size: 16px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      flex: 1;
+      margin-left: 2px;
+    }
+
+    .profile-stats a {
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .iframe-btn {
+  margin-top: 1px;
+  border: none;
+  border-radius: 50px;
+  width: fit-content;
+  background-color: transparent;
+  backdrop-filter: blur(8px);
+  color: #f8f9f9;
+  font-size: 10px;
+}
+
+.music {
+  display: flex;
+  padding: 4px;
+  padding-left: 10px;
+}
+
+.music svg {
+  width: 18px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 18px;
+  fill: currentColor; /* pega a cor do texto do link */
+  margin-top: 4px;
+}
+
+.music span {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #ccc;
+  text-shadow: 2px 2px 4px black;
+  font-weight: bold;
+}
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 0px 4px;
+    }
+
+    .action-buttons button {
+  background: var(--profile-color, #4A90E2);
+      color: #f8f9f9;
+      padding: 6px 22px !important;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+
+
+    .action-buttons button:hover {
+      background: #3a7bc8;
+      transform: translateY(-1px);
+    }
+
+    .btn-nudge {
+      min-width: 44px;
+      padding: 8px 24px !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .btn-edit-profile {
+      min-width: 44px;
+      padding: 6px 24px !important;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+      font-size: 16px !important;
+    }
+
+    .btn-nudge i {
+      display: none;
+    }
+
+    /* Profile Menu */
+    .profile-menu-area {
+      background-color: #020202;
+      padding: 0px 0 0px;
+    }
+
+    .profile-menu {
+      display: flex;
+      overflow-x: auto;
+      padding: 0 10px;
+      gap: 18px;
+      scrollbar-width: none;
+      overflow-x: hidden;
+    }
+
+    .profile-menu::-webkit-scrollbar {
+      display: none;
+    }
+
+    .menu-item {
+      min-width: auto;
+      background: transparent;
+      border: none;
+      color: #aaa;
+      padding: 10px 20px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .menu-item.active {
+      color: #f8f9f9;
+  border-bottom-color: var(--profile-color, #4A90E2);
+      border-radius: 3px;
+    }
+
+    .menu-item p {
+      display: none;
+    }
+
+    /* Content Area */
+    .profile-body {
+      padding: 16px;
+    }
+
+    /* Status Box */
+    .status-box {
+      background: rgba(20, 20, 20, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-box p {
+      margin: 0;
+    }
+
+    .status-text {
+  color: var(--profile-color, #4A90E2);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* Grid 3xN para preview dos posts */
+    .mural-masonry {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 2px;
+      margin-top: 0px;
+      padding: 0px;
+    }
+
+
+    .post-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: blur(0px);
+      transition: filter 0.2s;
+      border-radius: 2px;
+    }
+
+    
+    .repost {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: blur(0px);
+      transition: filter 0.2s;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .repost-icon {
+      position: fixed;
+      top: 0;
+      font-size: 1.4em;
+      background: rgba(0, 0, 0, 0.281);
+      backdrop-filter: blur(20px);
+      padding: 8px;
+      border-bottom-right-radius: 12px;
+      border-bottom: 1px solid #333;
+      border-right: 1px solid #333;
+      color: #f8f9f9;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+
+    .post-preview-text {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #f8f9f9;
+      text-align: center;
+      padding: 12px;
+      background: rgba(30,30,30,0.7);
+      backdrop-filter: blur(8px);
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 2;
+      border-radius: 14px;
+    }
+    .post-preview-blur {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: blur(12px) brightness(0.7);
+      z-index: 1;
+      border-radius: 14px;
+    }
+
+    .post-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .post-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-info {
+      flex: 1;
+    }
+
+    .post-author {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f8f9f9;
+    }
+
+    .post-time {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      object-fit: cover;
+    }
+
+    .post-text {
+      font-size: 14px;
+      color: #ddd;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      color: #888;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .post-actions i {
+      margin-right: 4px;
+    }
+
+    /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.712);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 9999;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
+    }
+
+.navbar-bottom-content svg {
+  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 26px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
+
+    .navbar-bottom-content {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding-bottom: 20px;
+    }
+
+    .navbar-bottom a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
+
+    .profile-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+      }
+
+      .profile-name {
+        font-size: 20px;
+      }
+
+      .mural-masonry {
+        column-count: 1;
+      }
+
+      .action-buttons button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+    .post-card {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+  break-inside: avoid; /* evita quebra entre colunas */
+}
+
+
+.post-card {
+  border-radius: 10px;
+  min-height: 130px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  padding: 20px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.profile-post-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+.username {
+  font-weight: bold;
+  color: #f8f9f9;
+  text-shadow: 2px 2px 4px black;
+}
+
+.dots {
+  font-size: 20px;
+  color: #cacaca;
+  cursor: pointer;
+}
+
+.post-content p {
+  margin: 12px 0;
+  color: #cacaca;
+  font-size: 15px;
+}
+
+.post-image {
+  width: 100%;
+  height: 300px; /* você pode ajustar */
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-actions button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #f8f9f9;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.post-actions button:hover {
+  color: #e91e40;
+}
+
+.post-date {
+  font-size: 12px;
+  color: #999;
+}
+
+
+/* Tabs */
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+.info-item {
+  margin-bottom: 12px;
+}
+
+.sobre-header {
+  font-size: 22px;
+  font-weight: normal !important;
+  margin-bottom: 12px;
+  color: var(--profile-color, #4A90E2);
+  text-align: center;
+}
+
+.sobre-header span {
+  font-weight: normal;
+  color: #cacaca;
+}
+
+.about-box {
+  padding: 14px 14px;
+  margin-bottom: 0px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  font-size: 18px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  color: #ccc;
+  border-bottom: 1px solid #333;
+}
+
+
+.info-label {
+  font-weight: 600;
+  margin-right: 6px;
+  color: var(--profile-color, #f8f9f9);
+}
+
+.info-icon {
+  margin-right: 6px;
+  color: var(--profile-color, #4A90E2);
+}
+
+.about-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--profile-color, #4A90E2);
+}
+
+
+.link-box {
+  background-color: #4A90E2;
+  padding: 20px 10px;
+  margin-bottom: 10px;
+  background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  
+}
+
+.link-box a {
+  color: #aaa;
+  text-decoration: none;
+  padding: 20px;
+  display: block;  
+}
+.link-box a:hover {
+  color: #aaa;
+  text-decoration: underline;
+  transition: 0.3s;
+}
+
+.profile-body {
+  padding: 0px;
+}
+
+.info-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-top {
+  display: flex;  
+}
+
+  </style>
+</head>
+<body>
+  <!-- Navbar Top -->
+  <nav class="navbar-top">
+    <div class="top-left">
+      <button onclick="window.history.back()">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+  <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+</svg>
+      </button>
+      <h2 id="headername">username</h2>
+    </div>
+    <div class="top-right">
+      <a href="#">
+        <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 95.95" style="enable-background:new 0 0 122.88 95.95" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Profile Container -->
+  <div class="full-profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="full-header">
+        <img src="./src/icon/default.jpg" alt="Foto de perfil" class="profile-pic" />
+        <div class="profile-info-block">
+          <div class="name-line">
+            <h2 class="profile-name" id="displayname">usuario do realme</h2>
+            <span class="verificado"><i class="fas fa-check-circle"></i></span>
+          </div>
+          <div class="handle" id="username">@username</div>
+          <div class="profile-stats">
+            <div class="stats"><span><strong>0</strong> posts</span></div>
+            <div class="stats"><span><strong>0</strong> seguidores</span></div>
+            <div class="stats"><span><strong>0</strong> amigos</span></div>
+            <div class="stats"><span><strong>0</strong> seguindo</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="music">
+        <button id="btnPauseMusic" class="iframe-btn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg> </button>
+        <span id="musicTitle" style="margin-left:8px;font-weight:500;"></span>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-follow"><p>seguir</p></button>
+        <button class="btn-message"><p>mensagem</p></button>
+        <button class="btn-nudge"><p>nudge</p></button>
+      </div>
+    </div>
+
+    <!-- Profile Menu -->
+    <div class="profile-menu-area">
+      <div class="profile-menu">
+        <button class="menu-item active"><i class="fa-solid fa-calendar-days"></i></button>
+        <button class="menu-item"><i class="fa-solid fa-address-card"></i></button>
+        <button class="menu-item"><i class="fas fa-heart"></i></button>
+        <button class="menu-item"><i class="fa-solid fa-comment"></i></button>
+        <button class="menu-item"><i class="fas fa-link"></i></button>
+      </div>
+    </div>
+
+    <!-- Profile Body -->
+    <div class="profile-body">
+      <div class="tab mural-tab active">
+        <div id="muralPostss" class="mural-masonry">
+          <div class="postpreview">
+            <div class="repost" style="position:relative;">
+              <img src="https://i.pinimg.com/736x/08/d0/36/08d036286655d13f05938f1f570cc88e.jpg" alt="Post Preview" class="post-preview-img" />
+              <i class="fa-solid fa-retweet repost-icon"></i>
+            </div>
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/1200x/48/91/91/489191c4a67ca1526eea0bbb9d2c0e37.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/b5/98/28/b59828ead869060e3eda496eef8fcc47.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/47/69/38/4769387dd36924dc9c1cb0b19c0bb779.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/60/fd/a8/60fda83ceae14b7b90fffa36c8b64c5a.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/3c/c8/34/3cc834ae1eabc72aee71006e2260da01.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/df/61/d2/df61d2c7f12a37150f4355190856bc99.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/1200x/9f/50/11/9f5011c85a617184ab23774f3656df82.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+          <div class="postpreview">
+            <img src="https://i.pinimg.com/736x/53/e3/3a/53e33acc4cccb1e4e6d567245bea21b2.jpg" alt="Post Preview" class="post-preview-img" />
+          </div>
+        </div>
+      </div>
+      <div class="tab visao-tab">
+        <div class="about-box sobre-box" id="sobreBox">
+          <div class="sobre-header">
+            <h4>Sobre <span id="nomeUsuario">esse usuario</span></h4>
+          </div>
+          <div class="sobre-content">
+          <div class="sobre-left">
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+                <span class="info-label">Nome:</span>
+                <span class="info-value" id="nomeRealUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fas fa-user"></i></span>
+                <span class="info-label">Gênero:</span>
+                <span class="info-value" id="generoUsuario">Não informado</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fas fa-heart"></i></span>
+                <span class="info-label">Estado Civil:</span>
+                <span class="info-value" id="estadoCivilUsuario">Não informado</span>
+              </div>
+            </div>
+          </div>
+          <div class="sobre-right">
+            <div class="info-item">
+              <div class="info-details">
+                <div class="info-info">
+                  <div class="info-top">
+                    <span class="info-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <span class="info-label">Localização:</span>
+                  </div>
+                  <div class="info-bottom">
+                    <span class="info-value" id="localizacaoUsuario">Não informada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                <span class="info-label">Area:</span>
+                <span class="info-value" id="areaUsuario">Não informada</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-details">
+                <span class="info-icon"><i class="fa-solid fa-cake-candles"></i></span>
+                <span class="info-label">Idade:</span>
+                <span class="info-value" id="idadeUsuario">Não informada</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="about-container">
+          <div class="about-box"><p class="about-title">Visão geral:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Tags:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meu Estilo:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Minha personalidade:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meus Sonhos e desejos:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Meus Medos:</p><p>esta opção nao esta disponível no momento...</p></div>
+        </div>
+      </div>
+      <div class="tab gostos-tab">
+        <div class="about-container">
+          <div class="about-box"><p class="about-title">Músicas:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Filmes e Séries:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Livros:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Personagens:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Comidas e Bebidas:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Hobbies:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Jogos favoritos:</p><p>esta opção nao esta disponível no momento...</p></div>
+          <div class="about-box"><p class="about-title">Outros gostos:</p><p>esta opção nao esta disponível no momento...</p></div>
+        </div>
+      </div>
+      <div class="tab deps-tab">
+        <div class="about-container"></div>
+      </div>
+      <div class="tab links-tab">
+        <div class="about-container">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar Bottom -->
+  <nav class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="feed.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832"><path fill-rule="nonzero" d="M43.084 468.748h116.942V364.721c0-25.882 10.609-49.45 27.679-66.528l.082-.081c17.077-17.07 40.645-27.679 66.527-27.679 25.844 0 49.412 10.617 66.519 27.687l.082.081c17.092 17.151 27.686 40.697 27.686 66.52v104.027h119.315V253.009L255.846 51.151 43.084 253.768v214.98zm138.484 43.084H29.337c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542z"/></svg>
+      </a>
+      <a href="acharamigos.html">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<g>
+	<path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3
+		c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3
+		S384,459.8,384,448z"/>
+	<path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64
+		V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7
+		V64z"/>
+	<path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9
+		V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/>
+	<path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26
+		c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3
+		c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/>
+</g>
+</svg>
+      </a>
+      <a href="direct-mobile.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 506 511.682"><path fill-rule="nonzero" d="M76.022 432.762c-14.224-17.624-28.477-36.009-40.468-55.504-13.738-22.329-24.838-46.442-30.326-73.172-14.057-68.387.935-136.064 36.561-190.148C77.414 59.833 133.687 19.322 202.118 5.235c68.394-14.071 136.056.928 190.14 36.547 54.105 35.632 94.638 91.912 108.71 160.35 7.003 34.067 6.445 67.452-.116 99.01-7.018 33.734-20.937 65.408-39.78 93.639-25.671 38.445-58.723 65.581-98.51 82.009-39.837 16.45-86.054 21.88-138.014 16.979l-9.714-.928c-19.966-1.928-27.528-2.653-33.487-1.094-4.343 1.181-9.932 3.69-18.842 7.677l-8.381 3.734c-20.756 9.229-36.009 10.44-47.878 6.14-15.499-5.618-22.503-17.566-25.765-33.023-1.624-7.706-2.139-15.739-2.675-24.221-.399-6.445-.841-13.231-1.784-19.292zm47.972-127.857l61.768-98.785c10.976-16.573 33.719-20.177 49.357-7.924l52.024 40.917c4.785 3.734 11.469 3.886 16.363.319l66.038-46.413c9.678-7.032 21.873 4.698 15.297 14.681l-62.355 97.785c-10.977 16.566-33.719 20.176-49.357 7.917l-52.024-40.918c-4.785-3.734-11.462-3.893-16.363-.319l-65.509 47.37c-9.671 7.032-21.872-4.64-15.239-14.63zM74.761 353.16c11.976 19.473 26.273 37.597 40.323 54.902a22.782 22.782 0 014.785 9.693c2.501 10.962 3.175 21.532 3.799 31.428.384 6.104.754 11.919 1.493 16.232 2.226-.775 5.633-2.16 10.462-4.299l8.177-3.596c11.23-5.031 18.284-8.192 25.679-10.164h.094c13.688-3.646 23.49-2.711 49.581-.188l9.716.928c44.484 4.197 83.43-.196 116.25-13.746 31.246-12.905 57.36-34.444 77.833-65.103 15.616-23.395 27.144-49.596 32.936-77.457 5.336-25.686 5.8-52.822.116-80.48-11.52-56.026-44.673-102.084-88.919-131.221-44.274-29.158-99.72-41.432-155.79-29.891-56.012 11.528-102.07 44.674-131.199 88.912-29.166 44.282-41.433 99.728-29.906 155.798 4.205 20.495 13.246 39.852 24.57 58.252z"/></svg>
+      </a>
+      <a href="explorar.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg>
+      </a>
+      <a href="teste.html">
+        <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini">
+      </a>
+    </div>
+  </nav>
+
+<!-- Iframe invisível -->
+<iframe 
+  id="bgMusic"
+  width="0" 
+  height="0" 
+  src="" 
+  allow="autoplay; encrypted-media" 
+  frameborder="0"
+  style="position: fixed; bottom: 0; right: 0; opacity: 0; pointer-events: none;">
+</iframe>
+</body>
+
+<script>
+// Atualiza o nomeTopo com o displayname do usuário visitado
+function atualizarNomeTopo(displayname) {
+  var nomeTopo = document.getElementById('nomeTopo');
+  if (nomeTopo) nomeTopo.textContent = displayname || '';
+}
+
+// Hook para atualizar ao carregar perfil
+document.addEventListener('DOMContentLoaded', function() {
+  // Tenta pegar o nome do usuário já carregado
+  var nome = '';
+  var nomeEl = document.getElementById('displayname');
+  if (nomeEl) nome = nomeEl.textContent;
+  atualizarNomeTopo(nome);
+
+  // Se o nome mudar depois (por JS), observe e atualize
+  var observer = new MutationObserver(function() {
+    var nome = nomeEl ? nomeEl.textContent : '';
+    atualizarNomeTopo(nome);
+  });
+  if (nomeEl) observer.observe(nomeEl, { childList: true, subtree: true });
+});
+
+let musicStarted = false;
+function startMusic() {
+  if (!musicStarted) {
+    const iframe = document.getElementById('bgMusic');
+    iframe.src = musicUrl || "";
+    musicStarted = true;
+    document.removeEventListener('click', startMusic);
+    document.removeEventListener('keydown', startMusic);
+    document.removeEventListener('scroll', startMusic);
+    document.removeEventListener('mousemove', startMusic);
+    document.addEventListener('touchstart', startMusic);
+  }
+}
+document.addEventListener('click', startMusic);
+document.addEventListener('keydown', startMusic);
+document.addEventListener('scroll', startMusic);
+document.addEventListener('mousemove', startMusic);
+document.addEventListener('touchstart', startMusic);
+
+// --- FEED GRID 3xN PREVIEW ---
+// Substitui renderização dos posts para grid de previews
+function renderFeedGrid(posts) {
+  const mural = document.getElementById('muralPosts');
+  mural.innerHTML = '';
+  posts.forEach(post => {
+    const preview = document.createElement('div');
+    preview.className = 'post-preview';
+    if (post.img) {
+      // Imagem: mostra imagem com cover
+      const img = document.createElement('img');
+      img.src = post.img;
+      img.className = 'post-preview-img';
+      preview.appendChild(img);
+    } else {
+      // Só texto: fundo blur + texto
+      const blurBg = document.createElement('div');
+      blurBg.className = 'post-preview-blur';
+      blurBg.style.background = 'linear-gradient(135deg, #222, #444)';
+      preview.appendChild(blurBg);
+      const text = document.createElement('div');
+      text.className = 'post-preview-text';
+      text.textContent = post.content ? post.content.slice(0, 60) + (post.content.length > 60 ? '...' : '') : 'Post sem conteúdo';
+      preview.appendChild(text);
+    }
+    preview.onclick = function() {
+      abrirModalPost(post);
+    };
+    mural.appendChild(preview);
+  });
+}
+
+// Modal do post
+function abrirModalPost(post) {
+  const modal = document.createElement('div');
+  modal.className = 'image-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay" onclick="this.parentNode.remove()">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="this.closest('.image-modal').remove()">
+          <i class="fas fa-times"></i>
+        </button>
+        ${post.img ? `<img src="${post.img}" alt="Imagem do post" class="modal-image">` : ''}
+        <div style="padding:16px;color:#f8f9f9;font-size:1.2rem;">${post.content || ''}</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+}
+
+// Exemplo de uso: substitua por sua lógica de carregar posts
+// window.renderFeedGrid = renderFeedGrid;
+// renderFeedGrid([
+//   {img:'https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg', content:'Post com imagem'},
+//   {content:'Post só texto, preview com blur'},
+//   {img:'https://i.pinimg.com/736x/e0/9d/e3/e09de3e9b5b86626129080c9e728a206.jpg', content:'Outro post com imagem'},
+//   {content:'Mais texto para testar o grid'},
+// ]);
+</script>
+<script>
+// Função global para mudar a cor do perfil dinamicamente
+window.setProfileColor = function(color) {
+  document.documentElement.style.setProperty('--profile-color', color);
+}
+</script>
+
+  <script type="module" src="codigo-mobile.js"></script>
+  <script src="./src/js/pfp-navbar.js"></script>
+  <script type="module" src="./src/js/global-messages.js"></script>
+</html>

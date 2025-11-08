@@ -813,6 +813,17 @@
   z-index: 0;
 }
 
+
+.profile-header.shrink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 18px;
+  background: #141414;
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 100%);
+  z-index: 0;
+}
+
 .profile-header > * {
   position: relative;
   z-index: 1;
@@ -1930,8 +1941,15 @@
 }
 
 
-
-
+.profile-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 38px;
+  background: #141414;
+background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 100%);
+  z-index: 0;
+}
 
 
 .profile-header.shrink {
