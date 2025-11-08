@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -220,7 +221,12 @@ async function configurarBotaoSeguir(targetUserId) {
     editBtn.className = 'btn-edit-profile';
     editBtn.onclick = () => window.location.href = 'config.html';
     followBtn.parentNode.appendChild(editBtn);
-    return;
+    const shareBtn = document.createElement('button');
+    shareBtn.textContent = 'Compartilhar perfil';
+    shareBtn.className = 'btn-share-profile';
+    shareBtn.onclick = () => compartilharPerfil(targetUserId);
+    followBtn.parentNode.appendChild(shareBtn);
+    return;     
   }
   let isFollowing = await verificarSeEstaSeguindo(currentUserId, targetUserId);
   followBtn.textContent = isFollowing ? 'seguindo' : 'seguir';
@@ -681,7 +687,6 @@ async function carregarMaisPosts() {
   }
   isLoadingPosts = false;
 }
-
 // ===================
 // SISTEMA DE NAVEGAÇÃO ENTRE TABS
 // ===================
@@ -1126,6 +1131,9 @@ function atualizarInformacoesBasicas(userData, userid) {
   const statususername = document.getElementById('statususername');
   if (statususername) statususername.textContent = `${nomeCompleto} esta:`;
 
+  const headername = document.getElementById('headername');
+  if (headername) headername.textContent = userData.username ? `${userData.username}` : `@${userid}`;
+
   const nomeUsuario = document.getElementById('nomeUsuario');
   if (nomeUsuario) nomeUsuario.textContent = `${nomeCompleto}`;
 
@@ -1218,23 +1226,14 @@ async function atualizarImagensPerfil(userData, userid) {
   });
 
 
-  const fullProfileContainer = document.querySelector('.full-profile-container');
-  const color1 = mediaData.profileColor || '#222';
-  const color2 = mediaData.profileColor2 || '#444';
-  if (fullProfileContainer) {
-    if (color1 && color2) {
-      fullProfileContainer.classList.add('has-bg-gradient');
-  fullProfileContainer.style.setProperty('--profile-bg-gradient', `linear-gradient(180deg, ${color1}, ${color2})`);
-    } else {
-      fullProfileContainer.classList.remove('has-bg-gradient');
-      fullProfileContainer.style.removeProperty('--profile-bg-gradient');
-    }
-    // Remove any image background from body
-    document.body.style.backgroundImage = '';
-    document.body.style.backgroundSize = '';
-    document.body.style.backgroundPosition = '';
-    fullProfileContainer.classList.remove('has-bg');
-  }
+  // Aplica cor personalizada apenas nos botões de ação
+  const btnFollow = document.querySelector('.btn-follow');
+  const btnMsg = document.querySelector('.btn-message');
+  const btnNudge = document.querySelector('.btn-nudge');
+  const colorBtn = mediaData.profileColor || '#4A90E2';
+  if (btnFollow) btnFollow.style.background = colorBtn;
+  if (btnMsg) btnMsg.style.background = colorBtn;
+  if (btnNudge) btnNudge.style.background = colorBtn;
 
   const headerPhoto = mediaData.headerphoto;
   const headerEl = document.querySelector('.profile-header');
@@ -1244,6 +1243,8 @@ async function atualizarImagensPerfil(userData, userid) {
     headerEl.style.backgroundPosition = 'center';
   }
 }
+
+renderFeedGrid(postsArray);
 
 // ===================
 // LINKS E LOGOUT
