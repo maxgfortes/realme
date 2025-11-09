@@ -495,51 +495,21 @@
   </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-    authDomain: "ifriendmatch.firebaseapp.com",
-    projectId: "ifriendmatch",
-    storageBucket: "ifriendmatch.appspot.com",
-    messagingSenderId: "306331636603",
-    appId: "1:306331636603:web:c0ae0bd22501895e3de",
-    measurementId: "G-D96BEW6RC3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Verificação instantânea - executa ANTES da página carregar
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Usuário já está logado, redireciona imediatamente
-      window.location.replace("feed.html"); // use replace para não adicionar ao histórico
-    } else {
-      // Usuário não está logado, mostra a página
-      document.body.style.display = 'block';
-    }
-  });
-</script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged,
-    setPersistence,
-    browserLocalPersistence
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { 
-    getFirestore, 
-    doc, 
-    getDoc 
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  window.onload = () => {
-    console.log('DOM carregado, inicializando Firebase');
-    
+    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
       authDomain: "ifriendmatch.firebaseapp.com",
@@ -554,65 +524,58 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Configurar persistência de autenticação
+    // Configurar persistência
     setPersistence(auth, browserLocalPersistence);
 
     // Elementos DOM
-    const form = document.querySelector('form');
+    const form = document.getElementById('loginForm');
     const emailInput = document.getElementById('emaillog');
     const senhaInput = document.getElementById('passwordlog');
-    const loginBtn = document.querySelector('.login-btn') || document.querySelector('button[type="submit"]');
-    
-    // Funções utilitárias para mostrar mensagens
+    const loginBtn = document.querySelector('.entrarBtn');
+    const errorDiv = document.querySelector('.error-message');
+    const successDiv = document.querySelector('.success-message');
+
+    // Funções utilitárias
     function showError(message) {
-      const errorDiv = document.querySelector('.error-message');
-      if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-      } else {
-        alert(message);
-      }
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      successDiv.style.display = 'none';
     }
 
     function showSuccess(message) {
-      const successDiv = document.querySelector('.success-message');
-      if (successDiv) {
-        successDiv.textContent = message;
-        successDiv.style.display = 'block';
-      }
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
     }
 
     function hideMessages() {
-      const errorDiv = document.querySelector('.error-message');
-      const successDiv = document.querySelector('.success-message');
-      if (errorDiv) errorDiv.style.display = 'none';
-      if (successDiv) successDiv.style.display = 'none';
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
     }
 
     function showLoading(show) {
-      const loadingDiv = document.querySelector('.loading');
-      if (loadingDiv) {
-        loadingDiv.style.display = show ? 'block' : 'none';
-      }
-      if (loginBtn) {
-        loginBtn.disabled = show;
-        loginBtn.textContent = show ? 'Entrando...' : 'Entrar';
-      }
+      loginBtn.disabled = show;
+      loginBtn.textContent = show ? 'Entrando...' : 'Entrar';
     }
 
     // Verificar se usuário já está logado
+    let authChecked = false;
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('Usuário já está logado:', user.email);
-        // Redirecionar para o feed se já estiver logado
-        window.location.href = "#";
+      if (!authChecked) {
+        authChecked = true;
+        if (user) {
+          console.log('Usuário já logado, redirecionando...');
+          window.location.replace("feed.html");
+        } else {
+          // Usuário não está logado, mostra a página
+          document.body.style.display = 'block';
+        }
       }
     });
 
-    // Função para buscar dados adicionais do usuário no Firestore
+    // Função para buscar dados do usuário
     async function getUserData(uid, email) {
       try {
-        // Primeiro tenta buscar pelo UID
         let userRef = doc(db, "users", uid);
         let userSnap = await getDoc(userRef);
         
@@ -620,8 +583,6 @@
           return userSnap.data();
         }
 
-        // Se não encontrar pelo UID, tenta buscar pelo email
-        // (caso você tenha documentos usando email como ID)
         userRef = doc(db, "users", email);
         userSnap = await getDoc(userRef);
         
@@ -629,7 +590,6 @@
           return userSnap.data();
         }
 
-        // Se não encontrar, retorna dados básicos
         return {
           nome: "",
           sobrenome: "",
@@ -637,7 +597,7 @@
           foto: ""
         };
       } catch (error) {
-        console.error("Erro ao buscar dados do usuário:", error);
+        console.error("Erro ao buscar dados:", error);
         return {
           nome: "",
           sobrenome: "",
@@ -647,135 +607,124 @@
       }
     }
 
-    // Manipulador do formulário de login
-    if (form) {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideMessages();
+    // Manipulador do formulário
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideMessages();
+      
+      const email = emailInput.value.trim();
+      const senha = senhaInput.value.trim();
+
+      if (!email || !senha) {
+        showError("Preencha todos os campos");
+        return;
+      }
+
+      if (!email.includes('@')) {
+        showError("Digite um email válido");
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        console.log('Fazendo login...');
         
-        const email = emailInput?.value.trim();
-        const senha = senhaInput?.value.trim();
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+        
+        console.log('Login bem-sucedido:', user.email);
 
-        if (!email || !senha) {
-          showError("Preencha todos os campos");
-          return;
+        const userData = await getUserData(user.uid, user.email);
+
+        const userSessionData = {
+          uid: user.uid,
+          email: user.email,
+          nome: userData.nome || "",
+          sobrenome: userData.sobrenome || "",
+          userphoto: userData.foto || "",
+          emailVerified: user.emailVerified,
+          lastLogin: new Date().toISOString()
+        };
+
+        localStorage.setItem("userSessionData", JSON.stringify(userSessionData));
+
+        showSuccess("Login realizado com sucesso!");
+        
+        setTimeout(() => {
+          window.location.replace("feed.html");
+        }, 500);
+
+      } catch (error) {
+        console.error("Erro no login:", error);
+        showLoading(false);
+        
+        switch (error.code) {
+          case 'auth/user-not-found':
+            showError("Usuário não encontrado. Verifique seu email.");
+            break;
+          case 'auth/wrong-password':
+            showError("Senha incorreta. Tente novamente.");
+            break;
+          case 'auth/invalid-email':
+            showError("Email inválido. Verifique o formato.");
+            break;
+          case 'auth/user-disabled':
+            showError("Esta conta foi desabilitada.");
+            break;
+          case 'auth/too-many-requests':
+            showError("Muitas tentativas. Tente novamente mais tarde.");
+            break;
+          case 'auth/network-request-failed':
+            showError("Erro de conexão. Verifique sua internet.");
+            break;
+          case 'auth/invalid-credential':
+            showError("Email ou senha incorretos.");
+            break;
+          default:
+            showError("Erro ao fazer login. Tente novamente.");
         }
+      }
+    });
 
-        // Validação básica de email
-        if (!email.includes('@')) {
-          showError("Digite um email válido");
-          return;
-        }
-
-        showLoading(true);
-
-        try {
-          console.log('Tentando fazer login com:', email);
-          
-          // Fazer login com Firebase Auth
-          const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-          const user = userCredential.user;
-          
-          console.log('Login bem-sucedido:', user.email);
-
-          // Buscar dados adicionais do usuário no Firestore
-          const userData = await getUserData(user.uid, user.email);
-
-          // Criar objeto com dados essenciais do usuário
-          const userSessionData = {
-            uid: user.uid,
-            email: user.email,
-            nome: userData.nome || "",
-            sobrenome: userData.sobrenome || "",
-            userphoto: userData.foto || "",
-            // Adicione outros campos que você precisa
-            emailVerified: user.emailVerified,
-            lastLogin: new Date().toISOString()
-          };
-
-          // IMPORTANTE: Não salve dados sensíveis no localStorage
-          // O Firebase Auth já gerencia a sessão de forma segura
-          // Salve apenas dados não sensíveis que você precisa acessar rapidamente
-          localStorage.setItem("userSessionData", JSON.stringify(userSessionData));
-
-          showSuccess("Login realizado com sucesso!");
-          
-          // Aguardar um pouco antes de redirecionar para mostrar a mensagem
-          setTimeout(() => {
-            window.location.href = "feed.html";
-          }, 1000);
-
-        } catch (error) {
-          console.error("Erro no login:", error);
-          showLoading(false);
-          
-          // Tratamento de erros específicos
-          switch (error.code) {
-            case 'auth/user-not-found':
-              showError("Usuário não encontrado. Verifique seu email.");
-              break;
-            case 'auth/wrong-password':
-              showError("Senha incorreta. Tente novamente.");
-              break;
-            case 'auth/invalid-email':
-              showError("Email inválido. Verifique o formato.");
-              break;
-            case 'auth/user-disabled':
-              showError("Esta conta foi desabilitada.");
-              break;
-            case 'auth/too-many-requests':
-              showError("Muitas tentativas. Tente novamente mais tarde.");
-              break;
-            case 'auth/network-request-failed':
-              showError("Erro de conexão. Verifique sua internet.");
-              break;
-            default:
-              showError("Erro ao fazer login. Tente novamente.");
-          }
-        }
-      });
-    }
-
-    // Função global para logout (use nas outras páginas)
+    // Funções globais para outras páginas
     window.logoutUser = async () => {
       try {
         await auth.signOut();
         localStorage.removeItem("userSessionData");
-        window.location.href = "login.html"; // ou sua página de login
+        window.location.replace("login.html");
       } catch (error) {
         console.error("Erro no logout:", error);
       }
     };
 
-    // Função global para verificar autenticação (use nas outras páginas)
     window.checkAuth = () => {
       return new Promise((resolve) => {
-        onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          unsubscribe();
           if (user) {
             resolve(user);
           } else {
-            // Usuário não está logado, redirecionar para login
             localStorage.removeItem("userSessionData");
-            window.location.href = "login.html";
+            window.location.replace("login.html");
             resolve(null);
           }
         });
       });
     };
 
-    // Função global para obter usuário atual
     window.getCurrentUser = () => {
       return auth.currentUser;
     };
 
-    // Função global para obter dados da sessão
     window.getUserSessionData = () => {
       const sessionData = localStorage.getItem("userSessionData");
       return sessionData ? JSON.parse(sessionData) : null;
     };
-  };
-</script>
+  </script>
+
 
 </body>
 </html>
+
 
