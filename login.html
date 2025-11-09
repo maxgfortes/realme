@@ -494,7 +494,34 @@
     </div>
   </div>
 
-  <div class="glass-overlay"></div>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501895e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Verificação instantânea - executa ANTES da página carregar
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Usuário já está logado, redireciona imediatamente
+      window.location.replace("feed.html"); // use replace para não adicionar ao histórico
+    } else {
+      // Usuário não está logado, mostra a página
+      document.body.style.display = 'block';
+    }
+  });
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -675,7 +702,7 @@
           
           // Aguardar um pouco antes de redirecionar para mostrar a mensagem
           setTimeout(() => {
-            window.location.href = "PF.html";
+            window.location.href = "feed.html";
           }, 1000);
 
         } catch (error) {
