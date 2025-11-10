@@ -489,24 +489,54 @@ function tocarSomEnvio() {
 //  });
 //});
 
-// ===================
-// VERIFICAR LOGIN COM AUTH
-// ===================
+// ⚡️ Código Otimizado para o seu script no feed.html
 function verificarLogin() {
   return new Promise((resolve) => {
-    onAuthStateChanged(auth, (user) => {
+    
+    // onAuthStateChanged retorna uma função que cancela o listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      
+      // 1. Desinscreve o listener imediatamente. 
+      // Isso garante que ele só execute a lógica UMA VEZ.
+      unsubscribe(); 
+
       if (!user) {
-        criarPopup('Acesso Negado', 'VocÃª precisa estar logado para acessar esta pÃ¡gina.', 'warning');
+        console.log('Sessão não detectada após a verificação de persistência. Redirecionando...');
+        
+        // Exibir a mensagem de erro
+        // Certifique-se de que 'criarPopup' esteja definido neste arquivo.
+        criarPopup('Acesso Negado', 'Você precisa estar logado para acessar esta página.', 'warning');
+        
+        // Redireciona
         setTimeout(() => {
           window.location.href = 'login.html';
-        }, 2000);
+        }, 2000); 
+        
         resolve(null);
       } else {
+        console.log('Sessão ativa detectada:', user.email);
+        
+        // 2. Se logado, resolve a Promessa e a página continua a carregar o conteúdo.
         resolve(user);
       }
     });
   });
 }
+
+// 🔑 IMPORTANTE: Como chamar no carregamento da página do feed.html:
+window.onload = async () => {
+    // É CRUCIAL inicializar o Firebase/Auth aqui antes de chamar verificarLogin
+    // ... Código de inicialização do Firebase ...
+
+    const user = await verificarLogin(); 
+    
+    if (user) {
+        // Carregue todo o conteúdo da sua página (o feed) aqui.
+        // Se a Promise resolveu, você sabe que o usuário está, de fato, logado.
+        console.log("Página feed.html carregada para o usuário:", user.uid);
+    } 
+    // Se não houver usuário, a função verificarLogin já lidou com o redirecionamento.
+};
 
 // ===================
 // GERAR ID UNICO
