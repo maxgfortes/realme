@@ -2,7 +2,7 @@
   "name": "RealMe",
   "short_name": "RealMe",
   "description": "Conecte-se com amigos e encontre novas pessoas no RealMe!",
-  "start_url": "/login.html?source=pwa",
+  "start_url": "/feed.html?source=pwa",
   "scope": "/",
   "id": "/manifest.json",
   "display": "standalone",
