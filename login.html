@@ -493,39 +493,42 @@
       </div>
     </div>
   </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc 
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      onAuthStateChanged,
-      setPersistence,
-      browserLocalPersistence
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      getDoc 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  // Configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501895e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
 
-    // Configuração do Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-      authDomain: "ifriendmatch.firebaseapp.com",
-      projectId: "ifriendmatch",
-      storageBucket: "ifriendmatch.appspot.com",
-      messagingSenderId: "306331636603",
-      appId: "1:306331636603:web:c0ae0bd22501895e3de",
-      measurementId: "G-D96BEW6RC3"
-    };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  // Configurar persistência
+  setPersistence(auth, browserLocalPersistence);
 
-    // Configurar persistência
-    setPersistence(auth, browserLocalPersistence);
+  // Esperar o DOM carregar completamente
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM carregado');
 
     // Elementos DOM
     const form = document.getElementById('loginForm');
@@ -535,27 +538,41 @@
     const errorDiv = document.querySelector('.error-message');
     const successDiv = document.querySelector('.success-message');
 
+    console.log('Elementos:', { form: !!form, email: !!emailInput, senha: !!senhaInput, btn: !!loginBtn });
+
     // Funções utilitárias
     function showError(message) {
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
-      successDiv.style.display = 'none';
+      if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+      }
+      if (successDiv) {
+        successDiv.style.display = 'none';
+      }
+      console.error('ERRO:', message);
     }
 
     function showSuccess(message) {
-      successDiv.textContent = message;
-      successDiv.style.display = 'block';
-      errorDiv.style.display = 'none';
+      if (successDiv) {
+        successDiv.textContent = message;
+        successDiv.style.display = 'block';
+      }
+      if (errorDiv) {
+        errorDiv.style.display = 'none';
+      }
+      console.log('SUCESSO:', message);
     }
 
     function hideMessages() {
-      errorDiv.style.display = 'none';
-      successDiv.style.display = 'none';
+      if (errorDiv) errorDiv.style.display = 'none';
+      if (successDiv) successDiv.style.display = 'none';
     }
 
     function showLoading(show) {
-      loginBtn.disabled = show;
-      loginBtn.textContent = show ? 'Entrando...' : 'Entrar';
+      if (loginBtn) {
+        loginBtn.disabled = show;
+        loginBtn.textContent = show ? 'Entrando...' : 'Entrar';
+      }
     }
 
     // Verificar se usuário já está logado
@@ -607,33 +624,40 @@
       }
     }
 
-    // Manipulador do formulário
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Função de login
+    async function handleLogin(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      console.log('handleLogin chamado');
       hideMessages();
       
-      const email = emailInput.value.trim();
-      const senha = senhaInput.value.trim();
+      const email = emailInput?.value?.trim();
+      const senha = senhaInput?.value?.trim();
+
+      console.log('Valores:', { email: email ? 'OK' : 'VAZIO', senha: senha ? 'OK' : 'VAZIO' });
 
       if (!email || !senha) {
         showError("Preencha todos os campos");
-        return;
+        return false;
       }
 
       if (!email.includes('@')) {
         showError("Digite um email válido");
-        return;
+        return false;
       }
 
       showLoading(true);
 
       try {
-        console.log('Fazendo login...');
+        console.log('Tentando login...');
         
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
         
-        console.log('Login bem-sucedido:', user.email);
+        console.log('Login OK:', user.email);
 
         const userData = await getUserData(user.uid, user.email);
 
@@ -656,38 +680,48 @@
         }, 500);
 
       } catch (error) {
-        console.error("Erro no login:", error);
+        console.error("Erro:", error.code, error.message);
         showLoading(false);
         
         switch (error.code) {
           case 'auth/user-not-found':
-            showError("Usuário não encontrado. Verifique seu email.");
+            showError("Usuário não encontrado.");
             break;
           case 'auth/wrong-password':
-            showError("Senha incorreta. Tente novamente.");
+            showError("Senha incorreta.");
             break;
           case 'auth/invalid-email':
-            showError("Email inválido. Verifique o formato.");
+            showError("Email inválido.");
             break;
           case 'auth/user-disabled':
-            showError("Esta conta foi desabilitada.");
+            showError("Conta desabilitada.");
             break;
           case 'auth/too-many-requests':
-            showError("Muitas tentativas. Tente novamente mais tarde.");
+            showError("Muitas tentativas. Aguarde.");
             break;
           case 'auth/network-request-failed':
-            showError("Erro de conexão. Verifique sua internet.");
+            showError("Sem conexão com internet.");
             break;
           case 'auth/invalid-credential':
             showError("Email ou senha incorretos.");
             break;
           default:
-            showError("Erro ao fazer login. Tente novamente.");
+            showError("Erro ao fazer login.");
         }
       }
-    });
+      
+      return false;
+    }
 
-    // Funções globais para outras páginas
+    // Adicionar evento ao formulário
+    if (form) {
+      form.onsubmit = handleLogin;
+      console.log('Evento onsubmit configurado');
+    } else {
+      console.error('Formulário não encontrado!');
+    }
+
+    // Funções globais
     window.logoutUser = async () => {
       try {
         await auth.signOut();
@@ -713,15 +747,13 @@
       });
     };
 
-    window.getCurrentUser = () => {
-      return auth.currentUser;
-    };
-
+    window.getCurrentUser = () => auth.currentUser;
     window.getUserSessionData = () => {
       const sessionData = localStorage.getItem("userSessionData");
       return sessionData ? JSON.parse(sessionData) : null;
     };
-  </script>
+  });
+</script>
 
 
 </body>
