@@ -970,6 +970,10 @@ html, body{
   padding-right: 12px;
 }
 
+.post-actions button p {
+  display: none;
+}
+
 
 .post-actions button i{
   flex: none !important;
@@ -1022,4 +1026,5 @@ html, body{
     display: none;
   }
 }
+
 
