@@ -848,3 +848,7 @@ textarea#postText:focus {
     transform: translateX(0);
   }
 }
+
+  .post-date-mobile {
+    display: none;
+  }
