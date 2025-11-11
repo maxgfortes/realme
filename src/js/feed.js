@@ -890,49 +890,50 @@ async function loadPosts() {
 
       
 
-      // Renderiza o post normalmente
-      const postEl = document.createElement('div');
-      postEl.className = 'post-card';
-      postEl.innerHTML = `
-        <div class="post-header">
-          <div class="user-info">
-            <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
-                 onerror="this.src='./src/icon/default.jpg'" />
-            <div class="user-meta">
-              <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
-              <small class="post-username"></small>
-            </div>
-          </div>
-        </div>
-        <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
-       ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" onclick="abrirModalImagem('${postData.img}')"/></div>` : ''}
-        <div class="post-actions">
-          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
-          </button>
-          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-comment"></i> Comentar
-            <span>${postData.comentarios || 0}</span>
-          </button>
-          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> <p>Denunciar</p>
-          </button>
-        </div>
-        <div class="post-date">${formatarDataRelativa(postData.create)}</div>
-        <div class="comments-section" style="display: none;">
-          <div class="comment-form">
-            <input type="text" class="comment-input" placeholder="Escreva um comentário..."
-                   data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-            <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
-          <div class="comments-area">
-            <div class="comments-list"></div>
-          </div>
-        </div>
-      `;
-      feed.appendChild(postEl);
+ // Renderiza o post normalmente
+const postEl = document.createElement('div');
+postEl.className = 'post-card';
+postEl.innerHTML = `
+  <div class="post-header">
+    <div class="user-info">
+      <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
+           onerror="this.src='./src/icon/default.jpg'" />
+      <div class="user-meta">
+        <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
+        <small class="post-username"></small>
+        <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
+      </div>
+    </div>
+  </div>
+  <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
+ ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" onclick="abrirModalImagem('${postData.img}')"/></div>` : ''}
+  <div class="post-actions">
+    <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
+      <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
+    </button>
+    <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
+      <i class="fas fa-comment"></i> <p>Comentar</p>
+      <span>${postData.comentarios || 0}</span>
+    </button>
+    <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
+      <i class="fas fa-flag"></i> <p>Denunciar</p>
+    </button>
+  </div>
+  <div class="post-date">${formatarDataRelativa(postData.create)}</div>
+  <div class="comments-section" style="display: none;">
+    <div class="comment-form">
+      <input type="text" class="comment-input" placeholder="Escreva um comentário..."
+             data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+      <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+    <div class="comments-area">
+      <div class="comments-list"></div>
+    </div>
+  </div>
+`;
+feed.appendChild(postEl);
 
       // Atualiza nome e foto do usuário assim que possível (não trava o loading)
       buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
@@ -1874,4 +1875,5 @@ window.fecharModal = function() {
     modal.remove();
     document.body.style.overflow = 'auto';
   }
+
 };
