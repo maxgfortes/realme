@@ -1230,10 +1230,12 @@ async function atualizarImagensPerfil(userData, userid) {
   const btnFollow = document.querySelector('.btn-follow');
   const btnMsg = document.querySelector('.btn-message');
   const btnNudge = document.querySelector('.btn-nudge');
+  const btnEdit = document.querySelector ('.btn-edit-profile')
   const colorBtn = mediaData.profileColor || '#4A90E2';
   if (btnFollow) btnFollow.style.background = colorBtn;
   if (btnMsg) btnMsg.style.background = colorBtn;
   if (btnNudge) btnNudge.style.background = colorBtn;
+  if (btnEdit btnNudge.style.background = colorBtn;
 
   const headerPhoto = mediaData.headerphoto;
   const headerEl = document.querySelector('.profile-header');
