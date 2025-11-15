@@ -254,12 +254,18 @@ async function criarContaSegura(event) {
     }
     console.log("✅ Username disponível!");
 
+
     // ETAPA 2: CRIAR CONTA NO AUTH
     console.log("3️⃣ Criando conta no Firebase Auth...");
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
     console.log("✅ Conta criada no Auth! UID:", user.uid);
     console.log("✅ Usuário está autenticado:", auth.currentUser ? "SIM" : "NÃO");
+
+    // AGUARDAR PROPAGAÇÃO DO AUTH (crítico!)
+    console.log("⏳ Aguardando propagação do Auth...");
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    console.log("✅ Auth propagado!");
 
     // ETAPA 3: AGORA SIM, SALVAR DADOS NO DATABASE (usuário está autenticado!)
     console.log("4️⃣ Atualizando perfil do Auth...");
@@ -337,22 +343,17 @@ async function criarContaSegura(event) {
       });
       convites.push(codigo);
     }
-    console.log("✅ Convites gerados:", convites);
 
     console.log("1️⃣2️⃣ Salvando convites no perfil...");
     await updateDoc(doc(db, "users", user.uid), {
       convites: convites,
       convitesRestantes: 3
     });
-    console.log("✅ Convites salvos no perfil");
-
-    // ETAPA 4: SUCESSO!
-    console.log("🎉 CONTA CRIADA COM SUCESSO!");
     
     downloadAccountInfoSimple({ usuario: username, email, senha });
     
     // Redireciona imediatamente
-    window.location.href = 'PF.html';
+    window.location.href = 'feed.html';
 
   } catch (error) {
     console.error("❌ ERRO:", error);
@@ -432,7 +433,7 @@ async function loginUser(event) {
     localStorage.setItem("userSessionData", JSON.stringify(userSessionData));
 
     setTimeout(() => {
-      window.location.href = "PF.html";
+      window.location.href = "feed.html";
     }, 1000);
     
 

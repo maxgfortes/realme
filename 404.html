@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="./src/styles/styles-mobile/signup.css" />
+
+    <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-image: url("src/bg/bg.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      color: #dbdbdb;
+      min-height: 100vh;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      margin: 0px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .img i {
+      font-size: 150px;
+      color: #ffffff;
+      margin-right: 30px;
+    }
+
+    .container-404 {
+      text-align: center;
+      background: rgba(20, 20, 20, 0.247);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 40px;
+      display: flex;
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin: 0;
+      color: #4A90E2;
+    }
+
+    p {
+      font-size: 1.5rem;
+    }
+
+    .btn a {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 1.2rem;
+      border-top: 1px solid #63a9f8;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      background-color: #4A90E2;
+    }
+
+    .btn a:hover {
+      background-color: #3878c0;
+      color: #cecece;
+    }
+
+    .msg {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    footer {
+      border-top: 1px solid;
+      border-image: linear-gradient(90deg,rgba(0, 0, 0, 0) 0%, rgba(51, 51, 51, 1) 20%, rgba(51, 51, 51, 1) 82%,rgba(0, 0, 0, 0) 100%) 1;
+      text-align: center;
+      padding: 20px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    footer a {
+      color: #fff;
+      margin: 0 10px;
+      text-decoration: none;
+      font-size: 14px;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    footer p {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .logo a{
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+      z-index: 1000;
+      font-weight: bold;
+      font-size: 30px;
+      color: #707070;
+      padding: 6px;
+      padding-right: 10px;
+    }
+
+    .msg-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .logo a {
+      text-decoration: none;
+    }
+    .rule {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #888888;
+      margin-top: 10px;
+    }
+</style>
+<body>
+<div class="logo">
+    <a href="#" onclick="history.back(); return false;">RealMe</a>
+</div>
+  <div class="container-404">
+    <div class="img">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="msg-area">
+        <div class="msg">
+        <h1>Erro 404</h1>
+        <p>Página não encontrada</p>
+        <p class="rule">a primeira regra do RealMe é: "Não se perca no caminho"</p>
+        </div>
+        <div class="btn">
+        <a href="#" onclick="history.back(); return false;">Voltar para a página anterior</a>
+        </div>
+    </div>
+  </div>
+  <footer>
+      <div>
+        <a href="sobre.html">Sobre</a>
+        <a href="contato.html">Contato</a>
+        <a href="privacidade.html">Privacidade</a>
+      </div>
+      <p>&copy; 2025 RealMe - Criado por maxgfortes</p>
+    </footer>
+</body>
+</html>
+

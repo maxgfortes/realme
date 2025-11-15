@@ -1,22 +1,26 @@
 body {
   margin: 0;
-  background: #181818;
+  background: #000000 !important;
   font-family: 'Inter', Arial, sans-serif;
   background-image: url("../bg/bg.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
+  background-image: none;
   color: #dbdbdb;
   overflow-x: hidden;
+  overflow: hidden;
+  position: fixed;
 }
 
 .dm-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1C1C1C;
-  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+  background: rgba(0, 0, 0, 0.404) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 16px;
   color: #fff;
   position: sticky;
@@ -35,8 +39,10 @@ body {
   transition: background 0.2s;
 }
 
-.dm-back-btn i {
-  display: none;
+.dm-back-btn svg {
+    width: 18px !important;
+  height: 18px !important;
+  fill: currentColor !important;
 }
 
 .dm-back-btn:active, .dm-new-chat-btn:active, .dm-chat-options:active {
@@ -63,11 +69,15 @@ body {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 94vh;
   transition: transform 0.35s cubic-bezier(.7,.2,.3,1);
   will-change: transform;
   background: #18181800;
   overflow-x: hidden;
+}
+
+.dm-container {
+  height: 100vh;
 }
 
 .dm-users-list {
@@ -76,6 +86,7 @@ body {
   overflow-y: auto;
   border-bottom: none;
   max-height: 100vh;
+  margin-bottom: 200px;
 }
 
 .dm-chat-area {
@@ -125,8 +136,10 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #1C1C1C;
-  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%) !important;
+  background: rgba(0, 0, 0, 0.404) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
 }
 
 .dm-chat-header img {
@@ -149,21 +162,26 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #18181800;
+  transform: translate(0px, 30px);
+  margin-top: -3.8vh;
+  z-index: 200;
+  padding-bottom: 40px;
 }
 
 .dm-message {
-  max-width: 80%;
-  padding: 0px 16px;
+  max-width: 70%;
+  padding: 8px 12px !important;
   border-radius: 18px;
-  font-size: 15px;
+  font-size: 16px !important;
   line-height: 1.5;
   word-break: break-word;
   position: relative;
   margin-bottom: 6px;
-  margin: 0px;
   animation: fadeInMsg 0.3s;
+}
+
+.dm-message p {
+    margin: 0px;
 }
 
 .dm-message.sent {
@@ -173,8 +191,9 @@ body {
   border-bottom-right-radius: 6px;
 }
 
+
 .dm-message.received {
-  background: #23272f;
+  background: #1a1a1a;
   color: #cacaca;
   align-self: flex-start;
   border-bottom-left-radius: 6px;
@@ -198,37 +217,40 @@ body {
 .dm-send-area {
   display: flex;
   align-items: center;
-  padding: 10px 12px;
-  background: #23272f00;
+  padding: 0px 8px 30px;
+  background: transparent;
+}
+
+.input-area {
+  flex: 1;
+  padding: 4px 4px;
+  background-color: #333;
+  display: flex;
+  border-radius: 50px;
+  z-index: 300;
 }
 
 #dmMsgInput {
   flex: 1;
-  padding: 10px 14px;
-  border-radius: 14px;
-  border: 1px solid #333;
+  padding: 14px 16px;
+  border-radius: 28px;
+  border:none;
   background: #22262e;
   color: #fff;
   font-size: 1em;
   outline: none;
   margin-right: 8px;
-  border-bottom-right-radius: 0px;
-  border-top-right-radius: 0px;
   margin-right: 0px;
-  border: 1px solid #2a2a2a;
-  background: #474747; /* Quase preto, mas não absoluto */
+  background: transparent;
   display: flex;
   align-items: center;
-  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
-  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644);
 }
 
 #dmSendBtn {
-    background-color: #4A90E2;
+  background-color: #4A90E2;
   border: 1px solid #4A90E2;
-  padding: 11px 20px;
-  border-bottom-right-radius: 16px;
-  border-top-right-radius: 16px;
+  padding: 13px 20px;
+  border-radius: 80px;
   color: #fff;
   transition: background-color 0.3s;
 }
@@ -239,6 +261,11 @@ body {
   outline: none;
 }
 
+#dmSendBtn svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: currentColor !important;
+}
 
 
 
@@ -249,12 +276,11 @@ body {
   border-top-left-radius: 16px;
   max-width: 600px; /* ajuste conforme precisar */
   gap: 10px;
-  border: 1px solid #2a2a2a;
-  background: #474747; /* Quase preto, mas não absoluto */
+  background: transparent; /* Quase preto, mas não absoluto */
   display: flex;
   align-items: center;
-  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
-  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+  border: none; /* Cinza quase preto pra separar do fundo */
+  box-shadow: none !important; /* Sombra interna clara no modo dark */
   padding: 15px 0px;
   padding-right: 200px;
   padding-left: 10px;
@@ -377,62 +403,6 @@ body {
 
 
 
-  .navbar-bottom i {
-    font-size: 24px;
-    margin-bottom: 4px;
-  }
-
-
-  
-.navbar-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-  background: rgba(0, 0, 0, 0.637) !important;
-  border-top: 1px solid #181818;
-  backdrop-filter: blur(20px) !important;
-  z-index: 1001;
-  height:40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0px 20px;
-}
-
-    .navbar-bottom-content {
-      display: flex;
-      justify-content: space-around !important;
-      align-items: center;
-      padding: 0px 16px 0px 0px;
-        max-width: 100% !important;  /* ← adicione isso */
-  width: 100%;                  /* ← e isso */
-    }
-    .navbar-bottom a:hover {
-      color: #4A90E2;
-    }
-
-.navbar-bottom a {
-  color: #aaa;
-  text-decoration: none;
-  font-size: 24px;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-bottom a img.profile-mini {
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.profile-mini {
-  width: 36px !important;
-  height: 36px !important;
-}
-
-
 .dm-chat-header a {
   text-decoration: none;
 }
@@ -444,13 +414,13 @@ body {
 .dm-message-footer {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0px;
   font-size: 12px;
   color: #bbb;
-  margin-top: 2px;
-  margin-bottom: 8px;
+  padding-top: 4px;
   padding-right: 8px;
   justify-content: flex-end; /* para mensagens enviadas */
+  display: none;
 }
 
 .dm-message.sent + .dm-message-footer {
@@ -460,6 +430,7 @@ body {
 .dm-message.received + .dm-message-footer {
   justify-content: flex-start;
   color: #bbb;
+  margin-left: 6px;
 }
 
 .dm-visto {
@@ -468,3 +439,53 @@ body {
   margin-left: 4px;
 }
 
+    /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.712);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 9999;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
+    }
+
+.navbar-bottom-content svg {
+  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 26px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
+
+    .navbar-bottom-content {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding-bottom: 20px;
+    }
+
+    .navbar-bottom a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 8px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-bottom: 30px;
+    }
+
+    .navbar-bottom a:hover {
+      color: #4A90E2;
+    }
+
+    .profile-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }

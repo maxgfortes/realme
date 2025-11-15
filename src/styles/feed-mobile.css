@@ -2,7 +2,7 @@
 .welcome-container {
   margin-left: 0px !important;
   margin-top: 60px;
-  padding: 20px;
+  padding: 10px !important;
   width: 100%;
 }
 
@@ -10,7 +10,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #000000;
+  background-color: #000000 !important;
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden; /* Evita scroll horizontal */
@@ -81,6 +81,332 @@ nav {
     border-end-end-radius: 12px;   /* opcional: cantos arredondados */
     border-top-left-radius: 12px;   /* opcional: cantos arredondados */
 }
+
+
+/* Previne scroll quando modal está aberto */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+}
+
+/* Previne scroll quando modal está aberto */
+.section-friends-posts.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+}
+
+/* Estilos para o Modal de Comentários Mobile (Bottom Sheet) */
+    .mobile-comments-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.336);
+      z-index: 10000;
+      display: none; /* Começa oculto */
+      overflow: hidden;
+    }
+    .mobile-comments-modal.active {
+      display: block;
+    }
+    .mobile-comments-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60vh; /* Sobe até a metade da tela */
+      max-height: 80vh;
+      background: #1c1c1c; /* Fundo do modal, ajuste para seu tema */
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 0px;
+      box-sizing: border-box;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-out;
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-comments-modal.active .mobile-comments-content {
+      transform: translateY(0);
+    }
+    .modal-comments-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #333;
+    }
+    .modal-comments-header h3 {
+      margin: 0;
+      font-size: 1.1em;
+    }
+    .modal-comments-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    .modal-comments-list-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    /* Estilos para o form dentro do modal */
+    .mobile-comment-form-container {
+      padding: 10px;
+      padding-bottom: 30px;
+      border-top: 1px solid #333;
+    }
+    /* Ocultar a seção de comentários padrão em mobile */
+    @media (max-width: 768px) {
+      .post-card .comments-section {
+        display: none !important;
+      }
+    }
+    /* Estilos para o Modal de Comentários Mobile (Bottom Sheet) */
+    .mobile-comments-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0); /* Começa transparente */
+      z-index: 10000;
+      display: none; 
+      overflow: hidden;
+      
+      /* 1. ANIMAÇÃO DE FADE PARA O BACKGROUND */
+      transition: background 0.3s ease-out;
+    }
+    .mobile-comments-modal.active {
+      display: block; /* O display:block é instantâneo, a animação vem depois */
+      background: rgba(0, 0, 0, 0.7); /* Background escurece */
+    }
+    
+    .mobile-comments-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 76vh; 
+      background: #1c1c1c; 
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 0px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+
+      /* 2. ESTADO INICIAL: Fora da tela */
+      transform: translateY(100%);
+      
+      /* 3. ANIMAÇÃO DE SLIDE PARA O CONTEÚDO */
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Curva de animação mais dinâmica */
+    }
+    
+    .mobile-comments-modal.active .mobile-comments-content {
+      /* 4. ESTADO FINAL: Sobe para a tela */
+      transform: translateY(0);
+    }
+    
+    /* ... (outros estilos) ... */
+    
+    /* Ocultar a seção de comentários padrão em mobile */
+    @media (max-width: 768px) {
+      .post-card .comments-section {
+        display: none !important;
+      }
+    }
+
+/* Estilos para seção de comentários */
+    .comments-area {
+  max-height: 600px; /* Altura máxima da área de comentários */
+  overflow-y: auto; /* Adiciona barra de rolagem vertical */
+  padding: 0px !important;
+  border-radius: 8px;
+}
+
+.modal-info {
+  padding: 10px;
+  align-items: center;
+  display: flex;
+  flex: 1;
+  text-align: center;
+}
+
+.modal-grab {
+  background-color: #333;
+  border-radius: 50px;
+  width: 60px;
+  height: 6px;
+  margin: 8px 20px;
+}
+
+.modal-comments-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-info {
+  padding: 2px;
+  font-size: 18px;
+}
+
+
+
+
+
+
+    .comment-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background-color: #333;
+      border-radius: 20px;
+      font-size: 14px;
+      border:none;
+      background-color: transparent;
+    }
+
+
+    
+    .comment-form:focus-within {
+      border-color: #4A90E2;
+      box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+  outline: none;
+    }
+
+
+
+
+    .comment-submit {
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left:5px;
+      padding-right: 5px;
+    }
+
+    
+
+    .comment-submit:hover {
+      background: #0056b3;
+    }
+
+    /* Estilos para comentários */
+    .comentario-item {
+      margin-bottom: 12px;
+      padding: 10px;
+      font-size: 14px;
+      border-bottom: 1px solid #333;
+    }
+
+    .comentario-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .comentario-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .comentario-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .comentario-nome {
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .comentario-nome:hover {
+      color: #4A90E2;
+    }
+
+    .comentario-usuario,
+    .comentario-data {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .comentario-conteudo {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .no-comments,
+    .error-comments {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 15px;
+    }
+
+    /* Estilos para nomes clicáveis */
+    .user-name-link {
+      cursor: pointer;
+    }
+
+    .user-name-link:hover {
+      color: #4A90E2;
+    }
+
+
+    .comment-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding: 4px;
+      padding-left: 16px;
+      border: 1px solid #ddd;
+      border-radius: 200px;
+      background: #474747; /* Quase preto, mas não absoluto */
+    border: none; /* Cinza quase preto pra separar do fundo */
+    }
+
+    .comment-form input {
+      background-color: transparent;
+      font-size: 16px;
+      border: none;
+      flex: 1;
+    }
+
+
+    .comment-submit-mobile {
+      padding: 16px 20px;
+      border-radius: 60px;
+      background-color: #4A90E2;
+      border: none;
+      color: #fff;
+    }
+
+    .comment-input-mobile:focus {
+      outline: none;
+    }
+
+    .comment-submit-mobile svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
 
 .user-welcome h1 {
   font-size: 32px;
@@ -153,11 +479,12 @@ nav {
 
 .post-card {
   background: rgba(20, 20, 20, 0.582) !important;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(none);
   border-radius: 16px;
   margin-bottom: 20px;
   border: 1px solid #2a2a2a;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  padding: 14px 14px 0px 14px;
 }
 
 .search-box-mobile {
@@ -181,7 +508,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 0px !important;
 }
 
 .user-info {
@@ -235,14 +562,15 @@ nav {
 .post-text {
   font-size: 15.5px;
   line-height: 1.5;
-  margin: 10px 0 16px;
+  margin: 0px 0 16px;
 }
 
 /* Ações: curtir, comentar, salvar, banir */
 .post-actions {
   display: flex;
-  gap: 20px;
+  gap: 0px;
   flex-direction: row !important; /* padrão, pode omitir */
+  flex: none !important;
 }
 
 .post-actions button {
@@ -251,9 +579,13 @@ nav {
   color: #dbdbdb;
   font-size: 16px;
   display: flex;
-  gap: 6px;
   cursor: pointer;
   transition: color 0.3s;
+  flex: none !important;
+}
+
+.btn-comment p {
+    display: none;
 }
 
 .post-actions button:hover {
@@ -265,7 +597,9 @@ nav {
   color: #bbb;
 }
 
-
+.post-actions button i {
+  font-size: 22px;
+}
 
     footer {
       border-top: 1px solid ;
@@ -834,7 +1168,7 @@ html, body{
  .welcome-container {
   box-sizing: border-box;
   margin: 0;
-  padding: 10px;
+  padding: 8px;
   width: 100vw;
   max-width: 100vw;
   overflow-x: hidden;
@@ -938,10 +1272,6 @@ html, body{
   display: none;
 }
 
-.profile-mini {
-  width: 36px !important;
-  height: 36px !important;
-}
 
 .user-welcome img {
     width: 120px !important;
@@ -968,16 +1298,66 @@ html, body{
   flex: none !important;
   padding-top: 0px !important;
   padding-right: 12px;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding: 10px 0px 0px 0px !important;
+  flex: 1;
+  justify-content: space-between !important;
 }
 
-.post-actions button p {
+.post-actions-left {
+  display: flex;
+  gap: 0px;
+}
+
+.btn-like svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: currentColor !important;
+}
+
+.post-actions button {
+  padding: 10px;
+}
+
+
+.btn-comment svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: currentColor !important;
+}
+
+.btn-save svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: currentColor !important;
+}
+
+.btn-share svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: currentColor !important;
+  margin-top: 2px;
+}
+
+.btn-share p {
+  display: none;
+}
+.btn-save p {
   display: none;
 }
 
+.btn-report {
+  display: none !important;
+}
+
+
+.post-actions button p {
+  font-size: 28px !important;
+}
 
 .post-actions button i{
   flex: none !important;
-  padding: 8px;
   font-size: 26px !important;
 }
 
@@ -1025,6 +1405,38 @@ html, body{
   .post-date {
     display: none;
   }
+
+  .loading-bar {
+    display: none;
+  }
+
+  .nav-mobile button svg {
+  width: 24px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 24px;
+  margin-top: 4px;
+  fill: currentColor; /* pega a cor do texto do link */
+  }
+
+  .post-header {
+    display: flex;
+    margin-bottom: 0px !important;
+  }
+
+  .more-options-button {
+    font-size: 20px !important;
+    color: #888 !important;
+    cursor: pointer;
+    padding: 0px;
+    margin-bottom: 4vh;
+    margin-right: 1vh;
+    background-color: transparent!important;
+    border: none !important;
+  }
+
+
+  
 }
+
+
 
 

@@ -489,54 +489,24 @@ function tocarSomEnvio() {
 //  });
 //});
 
-// ⚡️ Código Otimizado para o seu script no feed.html
+// ===================
+// VERIFICAR LOGIN COM AUTH
+// ===================
 function verificarLogin() {
   return new Promise((resolve) => {
-    
-    // onAuthStateChanged retorna uma função que cancela o listener
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      
-      // 1. Desinscreve o listener imediatamente. 
-      // Isso garante que ele só execute a lógica UMA VEZ.
-      unsubscribe(); 
-
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
-        console.log('Sessão não detectada após a verificação de persistência. Redirecionando...');
-        
-        // Exibir a mensagem de erro
-        // Certifique-se de que 'criarPopup' esteja definido neste arquivo.
-        criarPopup('Acesso Negado', 'Você precisa estar logado para acessar esta página.', 'warning');
-        
-        // Redireciona
+        criarPopup('Acesso Negado', 'VocÃª precisa estar logado para acessar esta pÃ¡gina.', 'warning');
         setTimeout(() => {
           window.location.href = 'login.html';
-        }, 2000); 
-        
+        }, 2000);
         resolve(null);
       } else {
-        console.log('Sessão ativa detectada:', user.email);
-        
-        // 2. Se logado, resolve a Promessa e a página continua a carregar o conteúdo.
         resolve(user);
       }
     });
   });
 }
-
-// 🔑 IMPORTANTE: Como chamar no carregamento da página do feed.html:
-window.onload = async () => {
-    // É CRUCIAL inicializar o Firebase/Auth aqui antes de chamar verificarLogin
-    // ... Código de inicialização do Firebase ...
-
-    const user = await verificarLogin(); 
-    
-    if (user) {
-        // Carregue todo o conteúdo da sua página (o feed) aqui.
-        // Se a Promise resolveu, você sabe que o usuário está, de fato, logado.
-        console.log("Página feed.html carregada para o usuário:", user.uid);
-    } 
-    // Se não houver usuário, a função verificarLogin já lidou com o redirecionamento.
-};
 
 // ===================
 // GERAR ID UNICO
@@ -904,20 +874,40 @@ postEl.innerHTML = `
         <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
       </div>
     </div>
+    <div class="more-options">
+      <button class="more-options-button">
+        <i class="fas fa-ellipsis-h"></i>
+      </button>
+    </div>
   </div>
+  <div class="post-content">
   <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
  ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" onclick="abrirModalImagem('${postData.img}')"/></div>` : ''}
   <div class="post-actions">
+   <div class=post-actions-left>
     <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-      <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
+  <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
+</svg> <span>${postData.likes || 0}</span>
     </button>
     <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-      <i class="fas fa-comment"></i> <p>Comentar</p>
+      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
       <span>${postData.comentarios || 0}</span>
+    </button>
+    <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 108.3"><title>instagram-share</title><path d="M96.14,12.47l-76.71-1.1,28.3,27.85L96.14,12.47ZM53.27,49l9.88,39.17L102.1,22,53.27,49ZM117,1.6a5.59,5.59,0,0,1,4.9,8.75L66.06,105.21a5.6,5.6,0,0,1-10.44-1.15L41.74,49,1.67,9.57A5.59,5.59,0,0,1,5.65,0L117,1.6Z"/></svg>
+    <p>Compartilhar</p>
     </button>
     <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
       <i class="fas fa-flag"></i> <p>Denunciar</p>
     </button>
+   </div>
+   <div class="post-actions-rigth">
+    <button class="btn-save">
+    <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
+    <p>Salvar</p>
+    </button>
+    </div>
   </div>
   <div class="post-date">${formatarDataRelativa(postData.create)}</div>
   <div class="comments-section" style="display: none;">
@@ -932,6 +922,7 @@ postEl.innerHTML = `
       <div class="comments-list"></div>
     </div>
   </div>
+</div>
 `;
 feed.appendChild(postEl);
 
@@ -1300,6 +1291,186 @@ fileBtn.addEventListener('click', () => {
 });
 }
 
+// ===================
+// DETECÇÃO MOBILE
+// ===================
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// ===================
+// MODAL DE COMENTÁRIOS MOBILE COM DRAG E CLICK FORA
+// ===================
+async function abrirModalComentariosMobile(postId, creatorId) {
+  const modalExistente = document.querySelector('.mobile-comments-modal');
+  if (modalExistente) modalExistente.remove();
+
+  const modal = document.createElement('div');
+  modal.className = 'mobile-comments-modal';
+  modal.innerHTML = `
+    <div class="mobile-comments-content">
+      <div class="modal-comments-header">
+        <div class="modal-grab"></div>
+        <div class="modal-info">
+          <h3>Comentários</h3>
+        </div>
+      </div>
+      <div class="modal-comments-list-container">
+        <div class="comments-list-mobile" data-post-id="${postId}"></div>
+      </div>
+      <div class="mobile-comment-form-container">
+        <div class="comment-form">
+          <input type="text" class="comment-input-mobile" placeholder="Escreva um comentário..."
+                 data-username="${creatorId}" data-post-id="${postId}">
+          <button class="comment-submit-mobile" data-username="${creatorId}" data-post-id="${postId}">
+            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // BLOQUEIA O SCROLL DA PÁGINA
+  const scrollY = window.scrollY;
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.top = `-${scrollY}px`;
+  
+  // Força o reflow antes de adicionar a classe active
+  modal.offsetHeight;
+  
+  // Exibe o modal com animação
+  requestAnimationFrame(() => {
+    modal.classList.add('active');
+  });
+
+  // FECHAR AO CLICAR FORA DO CONTEÚDO
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      fecharModalComentariosMobile();
+    }
+  });
+
+  // DRAG TO CLOSE
+  const modalContent = modal.querySelector('.mobile-comments-content');
+  const modalGrab = modal.querySelector('.modal-grab');
+  const header = modal.querySelector('.modal-comments-header');
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+
+  const handleTouchStart = (e) => {
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    modalContent.style.transition = 'none';
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    
+    currentY = e.touches[0].clientY;
+    const deltaY = currentY - startY;
+    
+    // Só permite arrastar para baixo
+    if (deltaY > 0) {
+      modalContent.style.transform = `translateY(${deltaY}px)`;
+      
+      // Adiciona opacidade conforme arrasta
+      const opacity = Math.max(0, 1 - (deltaY / 300));
+      modal.style.backgroundColor = `rgba(0, 0, 0, ${opacity * 0.5})`;
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    
+    const deltaY = currentY - startY;
+    modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    // Se arrastou mais de 150px, fecha o modal
+    if (deltaY > 150) {
+      fecharModalComentariosMobile();
+    } else {
+      // Volta para a posição original
+      modalContent.style.transform = 'translateY(0)';
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    }
+  };
+
+  // Adiciona listeners
+  modalGrab.addEventListener('touchstart', handleTouchStart);
+  modalGrab.addEventListener('touchmove', handleTouchMove);
+  modalGrab.addEventListener('touchend', handleTouchEnd);
+  
+  header.addEventListener('touchstart', handleTouchStart);
+  header.addEventListener('touchmove', handleTouchMove);
+  header.addEventListener('touchend', handleTouchEnd);
+
+  // Carrega os comentários
+  const commentsList = modal.querySelector('.comments-list-mobile');
+  await renderizarComentarios(creatorId, postId, commentsList);
+  
+  // Listener para o botão de envio
+  modal.querySelector('.comment-submit-mobile').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const input = modal.querySelector('.comment-input-mobile');
+    const conteudo = input.value.trim();
+    if (conteudo) {
+      const sucesso = await adicionarComentario(creatorId, postId, conteudo);
+      if (sucesso) {
+        input.value = '';
+        await renderizarComentarios(creatorId, postId, commentsList);
+      }
+    } else {
+      criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
+    }
+  });
+
+  // Listener para Enter
+  modal.querySelector('.comment-input-mobile').addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const input = e.target;
+      const conteudo = input.value.trim();
+      if (conteudo) {
+        const sucesso = await adicionarComentario(creatorId, postId, conteudo);
+        if (sucesso) {
+          input.value = '';
+          await renderizarComentarios(creatorId, postId, commentsList);
+        }
+      }
+    }
+  });
+}
+
+function fecharModalComentariosMobile() {
+  const modal = document.querySelector('.mobile-comments-modal');
+  if (modal) {
+    const modalContent = modal.querySelector('.mobile-comments-content');
+    modalContent.style.transition = 'transform 0.3s ease';
+    modalContent.style.transform = 'translateY(100%)';
+    modal.style.opacity = '0';
+    
+    setTimeout(() => {
+      modal.remove();
+      
+      // RESTAURA O SCROLL DA PÁGINA
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }, 300);
+  }
+}
+
+// Torna a função de fechar globalmente acessível
+window.fecharModalComentariosMobile = fecharModalComentariosMobile;
+
 
 // ===================
 // EVENT LISTENERS
@@ -1347,7 +1518,71 @@ function configurarEventListeners() {
     targetOwnerUsername
   });
 }
+if (feed) {
+    feed.addEventListener('click', async (e) => {
+      // ... (código existente para btnLike, btnReport, btnVer, userNameLink) ...
 
+      const btnComment = e.target.closest('.btn-comment');
+      // O commentSubmit e a lógica de Enter dentro do feed SÓ serão usados para desktop
+      const commentSubmit = e.target.closest('.comment-submit'); 
+      
+      const isMobile = isMobileDevice(); // Use a nova função de detecção
+
+      if (btnComment) {
+        const postId = btnComment.dataset.id;
+        const uid = btnComment.dataset.username;
+
+        if (isMobile) {
+          // ABRIR MODAL MOBILE
+          abrirModalComentariosMobile(postId, uid);
+        } else {
+          // LÓGICA EXISTENTE PARA DESKTOP
+          const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
+          if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+            commentsSection.style.display = 'block';
+            const commentsList = commentsSection.querySelector('.comments-list');
+            await renderizarComentarios(uid, postId, commentsList);
+          } else {
+            commentsSection.style.display = 'none';
+          }
+        }
+      }
+
+      // Lógica de envio de comentário no FEED (apenas para desktop, pois o mobile usará o modal)
+      if (commentSubmit && !isMobile) { 
+        const uid = commentSubmit.dataset.username;
+        const postId = commentSubmit.dataset.postId;
+        const commentInput = document.querySelector(`input[data-username="${uid}"][data-post-id="${postId}"]`);
+        if (commentInput && commentInput.value.trim()) {
+          const sucesso = await adicionarComentario(uid, postId, commentInput.value.trim());
+          if (sucesso) {
+            commentInput.value = '';
+            const commentsList = commentSubmit.closest('.comments-section').querySelector('.comments-list');
+            await renderizarComentarios(uid, postId, commentsList);
+          }
+        } else {
+          criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
+        }
+      }
+    });
+
+    // Lógica de Enter no FEED (apenas para desktop)
+    feed.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter' && e.target.classList.contains('comment-input') && !isMobileDevice()) {
+        e.preventDefault();
+        const uid = e.target.dataset.username;
+        const postId = e.target.dataset.postId;
+        if (e.target.value.trim()) {
+          const sucesso = await adicionarComentario(uid, postId, e.target.value.trim());
+          if (sucesso) {
+            e.target.value = '';
+            const commentsList = e.target.closest('.comments-section').querySelector('.comments-list');
+            await renderizarComentarios(uid, postId, commentsList);
+          }
+        }
+      }
+    });
+  }
 const btnVer = e.target.closest('.btn-ver-post');
   if (btnVer) {
     const postId = btnVer.dataset.id;
@@ -1367,6 +1602,11 @@ if (avisoEl) {
           <small class="post-username"></small>
         </div>
       </div>
+      <div class="more-options">
+        <button class="more-options-button">
+          <i class="fas fa-ellipsis-h"></i>
+        </button>
+      </div>
     </div>
     <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
     ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>` : ''}
@@ -1375,7 +1615,8 @@ if (avisoEl) {
         <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
       </button>
       <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <i class="fas fa-comment"></i> Comentar
+        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
+         Comentar
       </button>
       <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
         <i class="fas fa-flag"></i> Denunciar
@@ -1416,14 +1657,12 @@ if (avisoEl) {
         const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
         if (commentsSection.style.display === 'none') {
           commentsSection.style.display = 'block';
-          btnComment.innerHTML = '<i class="fas fa-comment"></i> Ocultar';
           const uid = btnComment.dataset.username;
           const postId = btnComment.dataset.id;
           const commentsList = commentsSection.querySelector('.comments-list');
           await renderizarComentarios(uid, postId, commentsList);
         } else {
           commentsSection.style.display = 'none';
-          btnComment.innerHTML = '<i class="fas fa-comment"></i> Comentar';
         }
       }
       if (userNameLink) {
@@ -1540,7 +1779,41 @@ function adicionarEstilosCSS() {
   style.id = 'enhanced-feed-styles';
   style.textContent = `/* Estilos para hashtags */
 
+
     /* Estilos para imagens nos posts */
+    .post-image {
+      margin: 12px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      max-height: 400px;
+    }
+
+    .post-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .comments-section {
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+
+  
+
+    /* Responsivo para comentários */
+    @media (max-width: 768px) {
+      .comentario-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .comentario-meta {
+        flex-direction: row;
+        gap: 8px;
+      }
+    }
+          /* Estilos para imagens nos posts */
     .post-image {
       margin: 12px 0;
       border-radius: 8px;
@@ -1764,8 +2037,13 @@ function adicionarEstilosCSS() {
         gap: 8px;
       }
     }
+
   `;
   document.head.appendChild(style);
+  style.textContent += `
+
+  `;
+// ... o restante da sua função adicionarEstilosCSS() ...
 }
 
 // ===================
@@ -1875,5 +2153,4 @@ window.fecharModal = function() {
     modal.remove();
     document.body.style.overflow = 'auto';
   }
-
 };

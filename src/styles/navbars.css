@@ -765,7 +765,7 @@ display: none;
     }
 
     .profile-mini {
-      width: 28px;
+      width: 28px !important;
       height: 28px;
       border-radius: 50%;
       object-fit: cover;

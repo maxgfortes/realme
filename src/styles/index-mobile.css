@@ -1,0 +1,208 @@
+/* ===== TABLET RESPONSIVE ===== */
+@media (max-width: 1024px) {
+
+    body {
+        background-color: #141414;
+        background-image: none;
+    }
+  .main {
+    flex-direction: column;
+    margin: 0px;
+  }
+
+  .nav {
+    display: none !important;
+  }
+  
+  .greating {
+    width: 100%;
+    max-height: 10vh;
+    text-align: center;
+    background-color: #141414;
+  }
+  
+  .form-section {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 50vh;
+    padding: 20px;
+    background: #141414;
+  }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav {
+    padding: 0 15px;
+    height: 55px;
+    display: none;
+  }
+  
+  .logo_area {
+    padding: 10px 5px;
+  }
+  
+  .loginarea {
+    display: none !important;
+  }
+  
+  .main {
+    padding-top: 0px;
+    flex-direction: column;
+    margin: 0px;
+  }
+  
+  .greating {
+    width: 100%;
+    min-height: 0vh;
+    text-align: center;
+    box-shadow: 0 20px 20px #141414 !important ;
+    z-index: 2000;
+  }
+  
+  .greating h2 {
+    font-size: 2rem;
+    margin-bottom: 0px;
+  }
+  
+  .greating p {
+    font-size: 1rem;
+  }
+  
+  .form-section {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 85vh;
+    max-height: 85vh;
+    padding: 15px;
+    background: #141414;
+    backdrop-filter: blur(15px);
+    border: none;
+  }
+  
+  .container {
+    padding: 20px 15px;
+    margin: 0;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  
+  form {
+    gap: 15px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    padding: 14px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  button {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+}
+
+/* ===== SMALL MOBILE ===== */
+@media (max-width: 480px) {
+  nav {
+    height: 50px;
+    display: none;
+  }
+  
+  .main {
+    padding-top: 0px;
+    margin: 0px;
+  }
+  
+  .greating {
+    padding: 40px 15px !important;
+  }
+  
+  .greating h2 {
+    font-size: 1.75rem;
+  }
+  
+  .container {
+    padding: 20px 15px;
+    border-radius: 8px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    gap: 12px;
+  }
+  
+  label {
+    font-size: 13px;
+  }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .greating {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .nav {
+    height: 50px;
+    display: none !important;
+  }
+  
+  .greating h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .greating p {
+    font-size: 0.9rem;
+  }
+  
+  .form-section {
+    padding: 15px;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch targets for better mobile UX */
+@media (pointer: coarse) {
+  button,
+  input,
+  select,
+  a {
+    min-height: 44px;
+  }
+}

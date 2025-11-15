@@ -1554,6 +1554,7 @@
   display: none;
   max-height: 350px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 .chat-search-results::-webkit-scrollbar {
   width: 12px;
@@ -1577,6 +1578,7 @@
 
 .chat-search-results.visible {
   display: block;
+  overflow-x: hidden;
 }
 .chat-search-results .chat-result {
   padding: 12px 16px;

@@ -440,7 +440,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 1) 100%)
     left: 0;
     right: 0;
     height: 70px;
-    background: rgba(20, 20, 20, 0.95);
+    background: #141414f2;
     backdrop-filter: blur(20px);
       bottom: 0 !important;
   top: auto !important;  /* garante que não vai colar no topo */

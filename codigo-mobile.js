@@ -889,21 +889,19 @@ async function carregarPerfilCompleto() {
   await carregarPostsDoMural(userid);
   await removerBlurSeTemFundo(userid);
   await tocarMusicaDoUsuario(userid);
-  
 
-  // Atualiza src do iframe bgMusic com a música do perfil
+  // Atualiza src do iframe bgMusic com a música do perfil e exibe o bloco só se houver música
   try {
+    const musicBlock = document.querySelector('.music');
     const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
     const mediaSnap = await getDoc(mediaRef);
     const iframe = document.getElementById('bgMusic');
     let musicUrl = "";
     let musicName = "";
-    let profileColor = "";
     if (mediaSnap.exists()) {
       const mediaData = mediaSnap.data();
       if (mediaData.musicTheme) musicUrl = mediaData.musicTheme;
       if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
-      if (mediaData.profileColor) profileColor = mediaData.profileColor;
     }
     if (iframe) {
       iframe.src = musicUrl || "";
@@ -911,14 +909,34 @@ async function carregarPerfilCompleto() {
     // Atualiza o nome da música ao lado do botão
     const musicTitleEl = document.getElementById('musicTitle');
     if (musicTitleEl) musicTitleEl.textContent = musicName || "";
-    // Oculta o bloco .music se não houver música
-    const musicBlock = document.querySelector('.music');
+    // Exibe o bloco .music como flex só se houver música
     if (musicBlock) {
-      if (!musicUrl) {
-        musicBlock.style.display = 'none';
-      } else {
-        musicBlock.style.display = '';
+      if (musicUrl) {
+        musicBlock.style.display = 'flex';
       }
+    }
+
+    // --- AUTOPLAY EM IPHONE E OUTROS: listeners globais para tocar música ao primeiro clique/touch ---
+    if (musicUrl && iframe) {
+      let musicStarted = false;
+      function startMusicOnce() {
+        if (musicStarted) return;
+        try {
+          // Para iOS: força reload do src e play
+          iframe.src = musicUrl;
+          // Para browsers que aceitam play() em audio/iframe
+          if (iframe.contentWindow && typeof iframe.contentWindow.postMessage === 'function') {
+            iframe.contentWindow.postMessage('play', '*');
+          }
+        } catch (e) {}
+        musicStarted = true;
+        document.removeEventListener('click', startMusicOnce, true);
+        document.removeEventListener('touchstart', startMusicOnce, true);
+        document.removeEventListener('keydown', startMusicOnce, true);
+      }
+      document.addEventListener('click', startMusicOnce, true);
+      document.addEventListener('touchstart', startMusicOnce, true);
+      document.addEventListener('keydown', startMusicOnce, true);
     }
   } catch (e) {}
 
@@ -963,6 +981,7 @@ async function buscarDadosUsuario(userid) {
   } catch (err) {}
   return { displayname, userphoto, username };
 }
+
 
 // Função para remover popup com animação
 function removerComAnimacao(popup) {
@@ -1225,17 +1244,7 @@ async function atualizarImagensPerfil(userData, userid) {
     pic.onerror = () => { pic.src = './src/icon/default.jpg'; };
   });
 
-
-  // Aplica cor personalizada apenas nos botões de ação
-  const btnFollow = document.querySelector('.btn-follow');
-  const btnMsg = document.querySelector('.btn-message');
-  const btnNudge = document.querySelector('.btn-nudge');
-  const btnEdit = document.querySelector ('.btn-edit-profile')
-  const colorBtn = mediaData.profileColor || '#4A90E2';
-  if (btnFollow) btnFollow.style.background = colorBtn;
-  if (btnMsg) btnMsg.style.background = colorBtn;
-  if (btnNudge) btnNudge.style.background = colorBtn;
-  if (btnEdit btnNudge.style.background = colorBtn;
+  // Removido: aplicação de cor personalizada
 
   const headerPhoto = mediaData.headerphoto;
   const headerEl = document.querySelector('.profile-header');
