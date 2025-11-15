@@ -365,6 +365,15 @@
       .main {
         flex-direction: column;
         height: auto;
+        margin-top: 0px;
+      }
+
+      body {
+        background-color: #141414;
+        background-image: none;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
       }
 
 
@@ -390,8 +399,10 @@
       .form-section {
         width: 100%;
         height: auto;
-        max-height: 70vh;
-        margin: 0px;
+        min-height: 100vh !important;
+        margin-top: 0px !important;
+        position: relative;
+
       }
       
       .container {
@@ -402,14 +413,21 @@
         backdrop-filter: blur(none);
         -webkit-backdrop-filter: blur(none);
         background-color: #00000000;
+        margin-top: 0px !important;
       }
 
       .mobilelogo h1 {
         display: block;
-        border-left: 6px solid #4A90E2;
-        text-align: left;
-        padding-left: 10px;
+        border-bottom: 2px solid #4A90E2;
+        padding-bottom: 40px;
+        text-align: center;
+        padding-left: 0px;
+        font-size: 34px;
+        border-image: linear-gradient(90deg,rgba(0, 0, 0, 0) 0%, #4A90E2 20%, #4A90E2 82%,rgba(0, 0, 0, 0) 100%) 1;
         color: #cacaca;
+        border-left: none;
+        border: none !important;
+
       }
 
       input {
@@ -417,6 +435,7 @@
         padding: 10px;
         -webkit-autofill: none;
       }
+
 
       .greating-desktop {
         display: none;
@@ -439,6 +458,14 @@
       .link {
         font-size: 0.9rem;
         margin-top: 50px;
+      }
+
+      a:active {
+        text-decoration: none !important;
+      }
+
+      a:hover {
+        text-decoration: none !important;
       }
 
     }
@@ -474,7 +501,7 @@
       <div class="container">
         <h1 class="greating-desktop">Fazer Login</h1>
         <div class="mobilelogo">
-          <h1 class="login-mobile">RealMe</h1>
+          <h1 class="login-mobile">Bem vindo de volta ao <span>RealMe</span>!</h1>
         </div>
         <form>
           <div>
@@ -493,6 +520,35 @@
       </div>
     </div>
   </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501895e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Verificação instantânea - executa ANTES da página carregar
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Usuário já está logado, redireciona imediatamente
+      window.location.replace("feed.html"); // use replace para não adicionar ao histórico
+    } else {
+      // Usuário não está logado, mostra a página
+      document.body.style.display = 'block';
+    }
+  });
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -749,5 +805,4 @@
 
 </body>
 </html>
-
 

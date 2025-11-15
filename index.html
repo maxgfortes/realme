@@ -11,6 +11,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="./src/styles/styles-mobile/signup.css" />
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
 
     <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
@@ -35,6 +37,10 @@
       padding: 0;
       box-sizing: border-box;
       font-family: Arial, sans-serif;
+    }
+
+    .login-mobile {
+      display: none;
     }
 
     body {
@@ -90,6 +96,8 @@
       color: #f7f7f7;
       font-weight: 700;
       letter-spacing: 1.2px;
+      font-family: 'spacefont', sans-serif;
+      font-weight: 700;
     }
 
     .greating h2 span {
@@ -163,6 +171,7 @@
 
     input[type="text"],
     input[type="email"],
+    input[type="date"],  
     input[type="password"],
     input[type="number"],
     select {
@@ -181,6 +190,7 @@
     input[type="email"]:focus,
     input[type="password"]:focus,
     input[type="number"]:focus,
+    input[type="date"]:focus,
     select:focus {
       border-color: #0084ff;
       box-shadow: 0 0 5px #0084ff;
@@ -190,6 +200,7 @@
 
     input[type="emaillog"],
     input[type="passwordlog"],
+
     select {
       padding: 10px 12px;
       border-radius: 6px;
@@ -318,18 +329,7 @@
       text-decoration: none;
     }
 
-    .input[type=date] {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-      color: #ddd;
-      background-color: #1a1a1a;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-    }
+
 
     input:is(:-webkit-autofill, :autofill) {
       display: flex !important;
@@ -364,48 +364,6 @@
       box-shadow: 0 0 0 1000px #474747 inset !important;
       -moz-text-fill-color: #dbdbdb !important;
     }
-
-    @media (max-width: 768px) {
-      .main {
-        flex-direction: column;
-        height: auto;
-      }
-      
-      .greating {
-        width: 100%;
-        padding: 20px;
-        text-align: center;
-      }
-      
-      .greating h2 {
-        font-size: 2rem;
-      }
-      
-      .greating p {
-        font-size: 1.1rem;
-      }
-      
-      .form-section {
-        width: 100%;
-        height: auto;
-        max-height: 70vh;
-      }
-      
-      .container {
-        margin: 10px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 20px;
-        margin: 10px;
-      }
-      
-      .form-section {
-        max-height: 60vh;
-      }
-    }
 .form-group {
     margin-bottom: 1.5rem;
   }
@@ -417,31 +375,7 @@
     font-size: 0.95rem;
   }
 
-  .form-group input[type="date"] {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    transition: all 0.3s ease;
-    font-family: inherit;
-    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-      border-radius: 8px !important;
-      border: 1px solid #242424 !important;
-      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0) !important;
-      color: #dbdbdb !important;
-  }
 
-  .form-group input[type="date"]:hover {
-    border-color: #999;
-  }
-
-  .form-group input[type="date"]:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-  }
 
   /* Estiliza o ícone do calendário (funciona em navegadores baseados em Webkit) */
   .form-group input[type="date"]::-webkit-calendar-picker-indicator {
@@ -454,6 +388,232 @@
   .form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
     background-color: #333;
   }
+
+  /* ===== TABLET RESPONSIVE ===== */
+@media (max-width: 1024px) {
+
+    body {
+        background-color: #141414;
+        background-image: none;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+  .main {
+    flex-direction: column;
+    margin: 0px;
+  }
+
+  .nav {
+    display: none !important;
+  }
+  
+  .greating {
+    width: 100%;
+    max-height: 10vh;
+    text-align: center;
+    background-color: #141414;
+  }
+  
+  .form-section {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 50vh;
+    padding: 20px;
+    background: #141414;
+  }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav {
+    padding: 0 15px;
+    height: 55px;
+    display: none;
+  }
+  
+  .logo_area {
+    padding: 10px 5px;
+  }
+  
+  .loginarea {
+    display: none !important;
+  }
+  
+  .main {
+    padding-top: 0px;
+    flex-direction: column;
+    margin: 0px;
+  }
+  
+  .greating {
+    width: 100%;
+    min-height: 0vh;
+    text-align: center;
+    box-shadow: 0 20px 20px #141414 !important ;
+    z-index: 2000;
+  }
+  
+  .greating h2 {
+    font-size: 2rem;
+    margin-bottom: 0px;
+  }
+  
+  .greating p {
+    font-size: 1rem;
+  }
+  
+  .form-section {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 85vh;
+    max-height: 85vh;
+    padding: 15px;
+    background: #141414;
+    backdrop-filter: blur(15px);
+    border: none;
+  }
+  
+  .container {
+    padding: 20px 15px;
+    margin: 0;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  
+  form {
+    gap: 15px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    padding: 14px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  button {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+
+  .input[type=date] {
+    padding: 14px 12px;
+    width: 90% !important;
+    background-color: red !important;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .login-pc {
+    display: none;
+  }
+  .login-mobile {
+    display: block;
+  }
+}
+/* ===== SMALL MOBILE ===== */
+@media (max-width: 480px) {
+  nav {
+    height: 50px;
+    display: none;
+  }
+  
+  .main {
+    padding-top: 0px;
+    margin: 0px;
+  }
+  
+  .greating {
+    padding: 40px 15px !important;
+  }
+  
+  .greating h2 {
+    font-size: 1.75rem;
+  }
+  
+  .container {
+    padding: 20px 15px;
+    border-radius: 8px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    gap: 12px;
+  }
+  
+  label {
+    font-size: 13px;
+  }
+}
+
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .greating {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .nav {
+    height: 50px;
+    display: none !important;
+  }
+  
+  .greating h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .greating p {
+    font-size: 0.9rem;
+  }
+  
+  .form-section {
+    padding: 15px;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch targets for better mobile UX */
+@media (pointer: coarse) {
+  button,
+  input,
+  select,
+  a {
+    min-height: 44px;
+  }
+}
   </style>
 </head>
 <body>
@@ -533,7 +693,8 @@
       <button type="submit">Criar Conta</button>
     </form>
         <div class="link">
-          <p>já tem uma conta? <a id="entrarBtn">Entrar</a></p>
+          <p class="login-pc">já tem uma conta? <a id="entrarBtn">Entrar</a></p>
+          <p class="login-mobile">já tem uma conta? <a href="login.html">Entrar</a></p>
         </div>
         <div class="user-contract">
           <p>Ao se inscrever, você concorda com nossos <a href="termos.html">Termos</a>, <a href="politica_dados.html">Política de Dados</a> e <a href="cookies.html">Política de Cookies</a>.</p>
@@ -542,7 +703,34 @@
     </div>
   </div>
 
-  <div class="glass-overlay"></div>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501895e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Verificação instantânea - executa ANTES da página carregar
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Usuário já está logado, redireciona imediatamente
+      window.location.replace("feed.html"); // use replace para não adicionar ao histórico
+    } else {
+      // Usuário não está logado, mostra a página
+      document.body.style.display = 'block';
+    }
+  });
+</script>
 
   <script type="module" src="./src/js/signup.js"></script>
 
