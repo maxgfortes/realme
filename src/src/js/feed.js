@@ -1115,30 +1115,23 @@ async function toggleLikePost(uid, postId, element) {
     let curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
 
     if (likerSnap.exists() && likerSnap.data().like === true) {
-      // Descurtir
       await updateDoc(likerRef, { like: false, likein: new Date() });
       element.style.color = '';
-      element.classList.remove('liked'); // ADICIONE ESTA LINHA
       spanCurtidas.textContent = Math.max(0, curtidasAtuais - 1);
     } else {
-      // Curtir
       if (likerSnap.exists()) {
         await updateDoc(likerRef, { like: true, likein: new Date() });
       } else {
         await setDoc(likerRef, { uid: uid, like: true, likein: new Date() });
       }
       element.style.color = '#dc3545';
-      element.classList.add('liked'); // ADICIONE ESTA LINHA
       spanCurtidas.textContent = curtidasAtuais + 1;
-      
-      // Anima o botão
-      animarBotaoCurtir(element, true);
     }
   } catch (error) {
     console.error("Erro ao curtir/descurtir post:", error);
+    criarPopup('Erro', 'Não foi possível curtir/descurtir o post. Tente novamente.', 'error');
   }
 }
-
 
 // Listener para capturar cliques nos botões de like
 feed.addEventListener('click', async (e) => {
@@ -1667,136 +1660,9 @@ function configurarEventListeners() {
       }
     });
   }
-
-
-
-  function configurarAnimacaoCurtir(postElement) {
-  const postImage = postElement.querySelector('.post-image');
-  const btnLike = postElement.querySelector('.btn-like');
-  let lastTap = 0;
-  
-  if (postImage) {
-    // Desktop: Duplo clique
-    postImage.addEventListener('dblclick', async (e) => {
-      e.preventDefault();
-      
-      // Criar animação visual
-      criarAnimacaoCurtir(postImage);
-      
-      // Executar a função de curtir (se não estiver curtido)
-      if (btnLike && !btnLike.classList.contains('liked')) {
-        btnLike.click();
-      }
-    });
-    
-    // Mobile: Tap duplo
-    postImage.addEventListener('touchend', (e) => {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      
-      if (tapLength < 300 && tapLength > 0) {
-        e.preventDefault();
-        
-        // Criar animação visual
-        criarAnimacaoCurtir(postImage);
-        
-        // Executar a função de curtir (se não estiver curtido)
-        if (btnLike && !btnLike.classList.contains('liked')) {
-          btnLike.click();
-        }
-      }
-      
-      lastTap = currentTime;
-    });
-  }
-  
-  // Anima o botão quando clicado
-  if (btnLike) {
-    const originalClick = btnLike.onclick;
-    btnLike.addEventListener('click', function(e) {
-      // Verifica se vai curtir ou descurtir
-      const vaiCurtir = !this.classList.contains('liked');
-      
-      // Anima o botão
-      animarBotaoCurtir(this, vaiCurtir);
-      
-      // Se vai curtir, cria a animação também
-      if (vaiCurtir && postImage) {
-        criarAnimacaoCurtir(postImage);
-      }
-    });
-  }
-}
 }
 
-// =================== 
-// FUNÇÃO PARA CRIAR ANIMAÇÃO DE CURTIR ESTILO INSTAGRAM
-// ===================
 
-/**
- * Cria a animação de coração quando o usuário dá duplo clique na imagem
- */
-function criarAnimacaoCurtir(elemento) {
-  // Cria o coração animado
-  const heart = document.createElement('i');
-  heart.className = 'fas fa-heart like-animation';
-  elemento.style.position = 'relative'; // Garante que o elemento seja relativo
-  elemento.appendChild(heart);
-  
-  // Opcional: Criar partículas
-  criarParticulas(elemento);
-  
-  // Remove o coração após a animação
-  setTimeout(() => {
-    heart.remove();
-  }, 800);
-}
-
-/**
- * Cria partículas que explodem ao redor do coração (opcional)
- */
-function criarParticulas(elemento) {
-  const particlesContainer = document.createElement('div');
-  particlesContainer.className = 'like-particles';
-  elemento.appendChild(particlesContainer);
-  
-  // Cria 8 partículas em diferentes direções
-  for (let i = 0; i < 8; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    
-    // Calcula posição aleatória para cada partícula
-    const angle = (i * 45) * (Math.PI / 180);
-    const distance = 50 + Math.random() * 30;
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-    
-    particle.style.setProperty('--x', `${x}px`);
-    particle.style.setProperty('--y', `${y}px`);
-    
-    particlesContainer.appendChild(particle);
-  }
-  
-  // Remove as partículas após a animação
-  setTimeout(() => {
-    particlesContainer.remove();
-  }, 800);
-}
-
-/**
- * Anima o botão de curtir
- */
-function animarBotaoCurtir(botao, curtido) {
-  if (curtido) {
-    botao.classList.add('liked');
-    // Remove a classe após a animação para poder repetir
-    setTimeout(() => {
-      // Mantém a classe liked para a cor, mas remove efeitos de animação excessivos
-    }, 1000);
-  } else {
-    botao.classList.remove('liked');
-  }
-}
 
 
 // ===================
