@@ -1473,12 +1473,15 @@ window.fecharModalComentariosMobile = fecharModalComentariosMobile;
 
 
 // ===================
-// EVENT LISTENERS
+// EVENT LISTENERS (VERSÃO CORRIGIDA - SEM DUPLICAÇÕES)
 // ===================
 function configurarEventListeners() {
+  // Botão de enviar post
   if (postButton) {
     postButton.addEventListener('click', sendPost);
   }
+  
+  // Enter no input de post
   if (postInput) {
     postInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -1487,56 +1490,117 @@ function configurarEventListeners() {
       }
     });
   }
+  
+  // Botão de carregar mais
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', loadPosts);
   }
+  
+  // ===== LISTENER ÚNICO PARA O FEED =====
   if (feed) {
+    // Cliques no feed (UMA VEZ SÓ)
     feed.addEventListener('click', async (e) => {
       const btnLike = e.target.closest('.btn-like');
       const btnReport = e.target.closest('.btn-report');
       const btnComment = e.target.closest('.btn-comment');
+      const btnVer = e.target.closest('.btn-ver-post');
       const userNameLink = e.target.closest('.user-name-link');
       const commentSubmit = e.target.closest('.comment-submit');
+      const isMobile = isMobileDevice();
+
+      // Botão de Like
       if (btnLike) {
-        const uid = btnLike.dataset.username;
+        const uid = auth.currentUser?.uid;
         const postId = btnLike.dataset.id;
-        curtirPost(uid, postId, btnLike);
+        if (uid && postId) {
+          await toggleLikePost(uid, postId, btnLike);
+        } else {
+          criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
+        }
+        return; // Importante: evita processar outros botões
       }
+
+      // Botão de Denunciar
       if (btnReport) {
-  const postId = btnReport.dataset.id;
-  const uid = btnReport.dataset.username;
-  let targetOwnerUsername = "cache";
-  try {
-    const userData = await buscarDadosUsuarioPorUid(uid);
-    targetOwnerUsername = userData?.username || userData?.displayname || "cache";
-  } catch {}
-  criarModalDenuncia({
-    targetType: "post",
-    targetId: postId,
-    targetPath: `posts/${postId}`,
-    targetOwnerId: uid,
-    targetOwnerUsername
-  });
-}
-if (feed) {
-    feed.addEventListener('click', async (e) => {
-      // ... (código existente para btnLike, btnReport, btnVer, userNameLink) ...
+        const postId = btnReport.dataset.id;
+        const uid = btnReport.dataset.username;
+        let targetOwnerUsername = "cache";
+        try {
+          const userData = await buscarDadosUsuarioPorUid(uid);
+          targetOwnerUsername = userData?.username || userData?.displayname || "cache";
+        } catch {}
+        criarModalDenuncia({
+          targetType: "post",
+          targetId: postId,
+          targetPath: `posts/${postId}`,
+          targetOwnerId: uid,
+          targetOwnerUsername
+        });
+        return;
+      }
 
-      const btnComment = e.target.closest('.btn-comment');
-      // O commentSubmit e a lógica de Enter dentro do feed SÓ serão usados para desktop
-      const commentSubmit = e.target.closest('.comment-submit'); 
-      
-      const isMobile = isMobileDevice(); // Use a nova função de detecção
+      // Botão de Ver Post Oculto
+      if (btnVer) {
+        const postId = btnVer.dataset.id;
+        const postRef = doc(db, 'posts', postId);
+        const postSnap = await getDoc(postRef);
+        if (postSnap.exists()) {
+          const postData = postSnap.data();
+          const avisoEl = btnVer.closest('.post-card');
+          if (avisoEl) {
+            avisoEl.innerHTML = `
+              <div class="post-header">
+                <div class="user-info">
+                  <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
+                       onerror="this.src='./src/icon/default.jpg'" />
+                  <div class="user-meta">
+                    <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
+                    <small class="post-username"></small>
+                  </div>
+                </div>
+              </div>
+              <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
+              ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>` : ''}
+              <div class="post-actions">
+                <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
+                </button>
+                <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <i class="fas fa-comment"></i> Comentar
+                </button>
+                <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <i class="fas fa-flag"></i> Denunciar
+                </button>
+              </div>
+            `;
+            avisoEl.classList.remove('post-oculto-aviso');
+            
+            // Atualiza dados do usuário
+            buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
+              if (userData) {
+                const avatar = avisoEl.querySelector('.avatar');
+                const nome = avisoEl.querySelector('.user-name-link');
+                const username = avisoEl.querySelector('.post-username');
+                if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
+                if (nome) nome.textContent = userData.displayname || userData.username || postData.creatorid;
+                if (username) username.textContent = userData.username ? `@${userData.username}` : '';
+              }
+            });
+          }
+        }
+        return;
+      }
 
+      // Botão de Comentário
       if (btnComment) {
         const postId = btnComment.dataset.id;
         const uid = btnComment.dataset.username;
 
         if (isMobile) {
-          // ABRIR MODAL MOBILE
+          // Mobile: abre modal
           abrirModalComentariosMobile(postId, uid);
         } else {
-          // LÓGICA EXISTENTE PARA DESKTOP
+          // Desktop: toggle da seção de comentários
           const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
           if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
             commentsSection.style.display = 'block';
@@ -1546,135 +1610,24 @@ if (feed) {
             commentsSection.style.display = 'none';
           }
         }
+        return;
       }
 
-      // Lógica de envio de comentário no FEED (apenas para desktop, pois o mobile usará o modal)
-      if (commentSubmit && !isMobile) { 
-        const uid = commentSubmit.dataset.username;
-        const postId = commentSubmit.dataset.postId;
-        const commentInput = document.querySelector(`input[data-username="${uid}"][data-post-id="${postId}"]`);
-        if (commentInput && commentInput.value.trim()) {
-          const sucesso = await adicionarComentario(uid, postId, commentInput.value.trim());
-          if (sucesso) {
-            commentInput.value = '';
-            const commentsList = commentSubmit.closest('.comments-section').querySelector('.comments-list');
-            await renderizarComentarios(uid, postId, commentsList);
-          }
-        } else {
-          criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
-        }
-      }
-    });
-
-    // Lógica de Enter no FEED (apenas para desktop)
-    feed.addEventListener('keypress', async (e) => {
-      if (e.key === 'Enter' && e.target.classList.contains('comment-input') && !isMobileDevice()) {
-        e.preventDefault();
-        const uid = e.target.dataset.username;
-        const postId = e.target.dataset.postId;
-        if (e.target.value.trim()) {
-          const sucesso = await adicionarComentario(uid, postId, e.target.value.trim());
-          if (sucesso) {
-            e.target.value = '';
-            const commentsList = e.target.closest('.comments-section').querySelector('.comments-list');
-            await renderizarComentarios(uid, postId, commentsList);
-          }
-        }
-      }
-    });
-  }
-const btnVer = e.target.closest('.btn-ver-post');
-  if (btnVer) {
-    const postId = btnVer.dataset.id;
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    if (postSnap.exists()) {
-      const postData = postSnap.data();
-      const avisoEl = btnVer.closest('.post-card');
-if (avisoEl) {
-  avisoEl.innerHTML = `
-    <div class="post-header">
-      <div class="user-info">
-        <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/icon/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
-          <small class="post-username"></small>
-        </div>
-      </div>
-      <div class="more-options">
-        <button class="more-options-button">
-          <i class="fas fa-ellipsis-h"></i>
-        </button>
-      </div>
-    </div>
-    <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
-    ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>` : ''}
-    <div class="post-actions">
-      <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
-      </button>
-      <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
-         Comentar
-      </button>
-      <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <i class="fas fa-flag"></i> Denunciar
-      </button>
-    </div>
-    <div class="post-date">${formatarDataRelativa(postData.create)}</div>
-    <div class="comments-section" style="display: none;">
-      <div class="comment-form">
-        <input type="text" class="comment-input" placeholder="Escreva um comentário..."
-               data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-        <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-          <i class="fas fa-paper-plane"></i>
-        </button>
-      </div>
-      <div class="comments-area">
-        <div class="comments-list"></div>
-      </div>
-    </div>
-  `;
-  avisoEl.classList.remove('post-oculto-aviso'); // <-- Adicione esta linha
-  // Atualiza nome e foto do usuário...
-
-        // Atualiza nome e foto do usuário
-        buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
-          if (userData) {
-            const avatar = avisoEl.querySelector('.avatar');
-            const nome = avisoEl.querySelector('.user-name-link');
-            const username = avisoEl.querySelector('.post-username');
-            if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
-            if (nome) nome.textContent = userData.displayname || userData.username || postData.creatorid;
-            if (username) username.textContent = userData.username ? `@${userData.username}` : '';
-          }
-        });
-      }
-    }
-  }
-      if (btnComment) {
-        const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
-        if (commentsSection.style.display === 'none') {
-          commentsSection.style.display = 'block';
-          const uid = btnComment.dataset.username;
-          const postId = btnComment.dataset.id;
-          const commentsList = commentsSection.querySelector('.comments-list');
-          await renderizarComentarios(uid, postId, commentsList);
-        } else {
-          commentsSection.style.display = 'none';
-        }
-      }
+      // Link do nome do usuário
       if (userNameLink) {
         const uid = userNameLink.dataset.username;
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const page = isMobile ? 'pfmobile.html' : 'PF.html';
         window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
+        return;
       }
-      if (commentSubmit) {
+
+      // Botão de enviar comentário (APENAS DESKTOP)
+      if (commentSubmit && !isMobile) {
         const uid = commentSubmit.dataset.username;
         const postId = commentSubmit.dataset.postId;
         const commentInput = document.querySelector(`input[data-username="${uid}"][data-post-id="${postId}"]`);
+        
         if (commentInput && commentInput.value.trim()) {
           const sucesso = await adicionarComentario(uid, postId, commentInput.value.trim());
           if (sucesso) {
@@ -1685,13 +1638,17 @@ if (avisoEl) {
         } else {
           criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
         }
+        return;
       }
     });
+
+    // Enter no input de comentário (UMA VEZ SÓ - APENAS DESKTOP)
     feed.addEventListener('keypress', async (e) => {
-      if (e.key === 'Enter' && e.target.classList.contains('comment-input')) {
+      if (e.key === 'Enter' && e.target.classList.contains('comment-input') && !isMobileDevice()) {
         e.preventDefault();
         const uid = e.target.dataset.username;
         const postId = e.target.dataset.postId;
+        
         if (e.target.value.trim()) {
           const sucesso = await adicionarComentario(uid, postId, e.target.value.trim());
           if (sucesso) {
@@ -1703,20 +1660,7 @@ if (avisoEl) {
       }
     });
   }
-  feed.addEventListener('click', async (e) => {
-  const btnLike = e.target.closest('.btn-like');
-  if (btnLike) {
-    const uid = auth.currentUser?.uid; // ID do usuário logado
-    const postId = btnLike.dataset.id; // ID do post
-    if (uid && postId) {
-      await toggleLikePost(uid, postId, btnLike);
-    } else {
-      criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
-    }
-  }
-});
 }
-
 
 
 
@@ -2153,4 +2097,5 @@ window.fecharModal = function() {
     modal.remove();
     document.body.style.overflow = 'auto';
   }
+
 };
