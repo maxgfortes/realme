@@ -1664,6 +1664,7 @@ function configurarEventListeners() {
 
 
 
+
 // ===================
 // ATUALIZAR MARQUEE
 // ===================
@@ -2097,5 +2098,4 @@ window.fecharModal = function() {
     modal.remove();
     document.body.style.overflow = 'auto';
   }
-
 };
