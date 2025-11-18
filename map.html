@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/loading.css" />
+
+    <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+
+    
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+
+</head>
+
+  <style>  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff ;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    } 
+
+
+    .main-content {
+        margin: 0px;
+        height: 100vh;
+        margin-left: 220px !important;
+        width: 100vw;
+        background: #1f1f1f;
+        background: linear-gradient(180deg, rgb(8, 8, 8) 0%, rgba(41, 41, 41, 1) 100%);
+        padding-top: 50px;
+    }
+
+    .mapa {
+        height: 100%;
+        width: 100%;
+        position: relative;
+    }
+
+    #map {
+        width: 900%;
+        height: 100%;
+        filter: brightness(1.6) contrast(1.0) hue-rotate(200deg) saturate(1.5);
+    }
+
+    .leaflet-touch .leaflet-bar {
+      display: none !important;
+    }
+
+    .map-controls {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 500;
+        max-width: 300px;
+        background: rgba(20, 20, 20, 0.774);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+    }
+
+    .map-controls h3 {
+        color: #c5c5c5;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .map-controls p {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .stats-box {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 500;
+        display: flex;
+        gap: 30px;
+background: rgba(20, 20, 20, 0.774);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item .number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #707070;
+        display: none;
+    }
+
+    .stat-item .label {
+        font-size: 14px;
+        color: #999;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal-content h2 {
+        color: #707070;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #707070;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .modal-content button {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(0deg, rgb(192, 192, 192) 0%, rgba(248, 248, 248, 1) 100%);
+        color: #707070;
+        border: 1px solid #919191;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+        .map-controls {
+            max-width: calc(100% - 40px);
+        }
+
+        .stats-box {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-itens {
+            display: none;
+        }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+  </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Desktop -->
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="#"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+  </aside>
+
+  <!-- Navbar Bottom (Mobile) -->
+  <div class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="iFeed.html"><i class="fas fa-home"></i></a>
+      <a href="#"><i class="fas fa-user-friends"></i></a>
+      <a href="#"><i class="fas fa-comments"></i></a>
+      <a href="#"><i class="fas fa-plus-square"></i></a>
+      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
+      <a href="config.html"><i class="fas fa-cog"></i></a>
+      <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <ul id="searchResults"></ul>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+  <div class="mapa">
+    <div class="map-controls">
+        <h3><i class="fa-solid fa-map-location-dot"></i> Mapa De Usuarios</h3>
+        <p>veja todos os usuarios do RealMe da sua região!</p>
+    </div>
+
+    <div class="stats-box">
+        <div class="stat-item">
+            <div class="number" id="totalPoints"></div>
+            <div class="label">Aviso!</div>
+        </div>
+        <div class="stat-item">
+            <div class="number" id="myPoints"></div>
+            <div class="label">Essa Função ainda esta em desenvolvimento</div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+  </div>
+</div>
+
+<div class="modal" id="markerModal">
+    <div class="modal-content">
+        <h2>Adicionar Spot</h2>
+        <form id="markerForm">
+            <div class="form-group">
+                <label for="markerName">Nome do Local *</label>
+                <input type="text" id="markerName" required placeholder="Ex: Praia Mole, Lagoa da Conceição...">
+            </div>
+            <div class="form-group">
+                <label for="markerDesc">Descrição</label>
+                <textarea id="markerDesc" placeholder="Conte mais sobre este spot..."></textarea>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Adicionar</button>
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+    let map;
+    let tempMarker = null;
+    let tempLatLng = null;
+    let markers = [];
+    let userId = localStorage.getItem('mapUserId') || generateUserId();
+    
+    function generateUserId() {
+        const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('mapUserId', id);
+        return id;
+    }
+    
+    async function initMap() {
+        map = L.map('map').setView([-27.593309, -47.766324], 13);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap, © CARTO',
+            maxZoom: 19
+        }).addTo(map);
+        
+        map.on('click', onMapClick);
+        
+        await loadMarkers();
+    }
+    
+    function onMapClick(e) {
+        tempLatLng = e.latlng;
+        
+        if (tempMarker) {
+            map.removeLayer(tempMarker);
+        }
+        
+        tempMarker = L.marker(e.latlng, {
+            opacity: 0.5
+        }).addTo(map);
+        
+        document.getElementById('markerModal').classList.add('active');
+        document.getElementById('markerName').focus();
+    }
+    
+    async function loadMarkers() {
+        try {
+            const result = await window.storage.list('marker:', true);
+            
+            if (result && result.keys) {
+                let total = 0;
+                let myCount = 0;
+                
+                for (const key of result.keys) {
+                    const data = await window.storage.get(key, true);
+                    if (data && data.value) {
+                        const markerData = JSON.parse(data.value);
+                        addMarkerToMap(markerData);
+                        total++;
+                        if (markerData.userId === userId) {
+                            myCount++;
+                        }
+                    }
+                }
+                
+                updateStats(total, myCount);
+            }
+        } catch (error) {
+            console.log('Iniciando com mapa vazio');
+            updateStats(0, 0);
+        }
+    }
+    
+    function addMarkerToMap(data) {
+        const marker = L.marker([data.lat, data.lng]).addTo(map);
+        
+        const isOwn = data.userId === userId;
+        const ownerBadge = isOwn ? '<span style="background: #707070; color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.8em;">Seu spot</span>' : '';
+        
+        marker.bindPopup(`
+            <div style="min-width: 200px;">
+                <h3 style="margin: 0 0 10px 0; color: #707070;">${data.name}</h3>
+                ${data.description ? `<p style="margin: 0 0 10px 0; color: #333;">${data.description}</p>` : ''}
+                ${ownerBadge}
+                <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #6c757d;">
+                    Adicionado em ${new Date(data.timestamp).toLocaleString('pt-BR')}
+                </p>
+            </div>
+        `);
+        
+        markers.push({ marker, data });
+    }
+    
+    async function saveMarker(markerData) {
+        const key = `marker:${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        await window.storage.set(key, JSON.stringify(markerData), true);
+    }
+    
+    function updateStats(total, myCount) {
+        document.getElementById('totalPoints').textContent = total;
+        document.getElementById('myPoints').textContent = myCount;
+    }
+    
+    document.getElementById('markerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('markerName').value;
+        const description = document.getElementById('markerDesc').value;
+        
+        const markerData = {
+            lat: tempLatLng.lat,
+            lng: tempLatLng.lng,
+            name: name,
+            description: description,
+            timestamp: Date.now(),
+            userId: userId
+        };
+        
+        try {
+            await saveMarker(markerData);
+            
+            if (tempMarker) {
+                map.removeLayer(tempMarker);
+            }
+            
+            addMarkerToMap(markerData);
+            
+            const currentTotal = parseInt(document.getElementById('totalPoints').textContent);
+            const currentMy = parseInt(document.getElementById('myPoints').textContent);
+            updateStats(currentTotal + 1, currentMy + 1);
+            
+            closeModal();
+        } catch (error) {
+            alert('Erro ao salvar marcador. Tente novamente.');
+            console.error(error);
+        }
+    });
+    
+    function closeModal() {
+        document.getElementById('markerModal').classList.remove('active');
+        document.getElementById('markerForm').reset();
+        
+        if (tempMarker) {
+            map.removeLayer(tempMarker);
+            tempMarker = null;
+        }
+    }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('markerModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+    
+    initMap();
+</script>
+  <script src="./src/js/loading.js"></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/new-popup.js" defer></script>
+  <script src="./src/js/more.js"></script>
+  <script type="module" src="codigo.js"></script>
+  <script src="./src/js/novidades.js"></script>
+  <script src="./src/js/pfp-navbar.js"></script>
+</body>
+</html>
