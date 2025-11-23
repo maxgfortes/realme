@@ -20,7 +20,7 @@ body {
   justify-content: space-between;
   background: rgba(0, 0, 0, 0.404) !important;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #111111 !important;
   padding: 12px 16px;
   color: #fff;
   position: sticky;
@@ -74,6 +74,10 @@ body {
   will-change: transform;
   background: #18181800;
   overflow-x: hidden;
+}
+
+.dm-users-list {
+  height: 83vh;
 }
 
 .dm-container {
@@ -138,7 +142,7 @@ body {
   padding: 12px 16px;
   background: rgba(0, 0, 0, 0.404) !important;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #111111 !important;
   position: sticky;
 }
 
@@ -309,7 +313,7 @@ body {
   gap: 12px;
   padding: 12px 16px;
   background: #23272f;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #111111 !important;
 }
 .dm-chat-header[style*="display:none"] {
   display: none !important;
@@ -331,12 +335,13 @@ body {
 #dmSearchInput {
   flex: 1;
   padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #333;
-  background: #22262e;
+  border-radius: 10px; 
+  background: #333;
+  border: nonebvb ;
   color: #fff;
   font-size: 1em;
   outline: none;
+  display: none;
 }
 
 #dmSearchBtn {
@@ -448,7 +453,7 @@ body {
       height: 80px;
       background: rgba(0, 0, 0, 0.712);
       backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid #111111 !important;
       z-index: 9999;
       box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
     }

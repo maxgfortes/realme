@@ -1,25 +1,29 @@
 @media (max-width: 768px)  {
 .welcome-container {
   margin-left: 0px !important;
-  margin-top: 60px;
   padding: 10px !important;
   width: 100%;
+  overflow-y: auto;
+  height: 100vh;
+  overflow-x: hidden;
 }
 
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #000000 !important;
+  background-color: #020202 !important;
+  background-image: none;
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden; /* Evita scroll horizontal */
+  overflow-y: hidden;
+  touch-action: none;
+  padding-top: env(safe-area-inset-top, 60px);
 }
 
 
-.navbar-top {
-  display: flex;
-}
+
 
 
 .search-box {
@@ -55,14 +59,13 @@ nav {
   font-size: 28px;
   font-weight: bold;
   line-height: 50px;
-  margin-top: 4px;
 }
 
 
 .welcome-box {
   background: rgba(20, 20, 20, 0.582);
   backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
+  border: 1px solid #111111 !important;
   border-radius: 12px;
   width: 100%;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
@@ -137,7 +140,7 @@ body.modal-open {
       align-items: center;
       margin-bottom: 0px !important;
       padding-bottom: 5px;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #2e2e2e;
     }
     .modal-comments-header h3 {
       margin: 0;
@@ -159,7 +162,7 @@ body.modal-open {
     .mobile-comment-form-container {
       padding: 10px;
       padding-bottom: 30px;
-      border-top: 1px solid #333;
+      border-top: 1px solid #2e2e2e;
     }
     /* Ocultar a seção de comentários padrão em mobile */
     @media (max-width: 768px) {
@@ -263,14 +266,16 @@ body.modal-open {
 
     .comment-input {
       flex: 1;
-      padding: 8px 12px;
+      padding: 4px 12px;
       border: 1px solid #ddd;
       background-color: #333;
       border-radius: 20px;
       font-size: 14px;
       border:none;
       background-color: transparent;
+      color: white;
     }
+    
 
 
     
@@ -278,6 +283,7 @@ body.modal-open {
       border-color: #4A90E2;
       box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
   outline: none;
+  color: white;
     }
 
 
@@ -312,15 +318,12 @@ body.modal-open {
       font-size: 14px;
       background-color: transparent !important;
       border: none !important;
-      border-bottom: 1px solid #333 !important;
+      border-bottom: 1px solid #2e2e2e !important;
       border-radius: 0px !important;
       margin: 0px;
        backdrop-filter: blur(0px) !important;
     }
 
-    .comentario-item:last-child {
-      border-bottom: none !important;
-    }
 
     .comentario-header {
       display: flex;
@@ -385,9 +388,10 @@ body.modal-open {
       padding-left: 16px;
       border: 1px solid #ddd;
       border-radius: 200px !important;
-      background: #474747 !important; /* Quase preto, mas não absoluto */
-    border: none !important; /* Cinza quase preto pra separar do fundo */
+      background: transparent !important; /* Quase preto, mas não absoluto */
+      border: 1px solid #2e2e2e !important;
     box-shadow: none !important;
+    color: #fff;
     }
 
     .comment-form input {
@@ -395,11 +399,12 @@ body.modal-open {
       font-size: 16px;
       border: none;
       flex: 1;
+      color: #fff;
     }
 
 
     .comment-submit-mobile {
-      padding: 16px 20px;
+      padding: 10px 20px;
       border-radius: 60px;
       background-color: #4A90E2;
       border: none;
@@ -408,6 +413,7 @@ body.modal-open {
 
     .comment-input-mobile:focus {
       outline: none;
+      color: #fff;
     }
 
     .comment-submit-mobile svg {
@@ -491,7 +497,7 @@ body.modal-open {
   backdrop-filter: blur(none);
   border-radius: 16px;
   margin-bottom: 20px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid #111111 !important;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
   padding: 14px 14px 0px 14px;
 }
@@ -1165,15 +1171,6 @@ textarea#postText:focus {
 
 
 
-html, body{
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
  .welcome-container {
   box-sizing: border-box;
   margin: 0;
@@ -1181,7 +1178,8 @@ html, body{
   width: 100vw;
   max-width: 100vw;
   overflow-x: hidden;
-  margin-top: 60px;
+  margin-top: 0 !important;
+  padding-top: 60px !important;
 }
 
 .post-card:hover {
@@ -1194,26 +1192,6 @@ html, body{
 }  
 
 
-.nav-mobile {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  z-index: 1001; /* maior que o do #mobile-search-container */
-}
-
-.nav-mobile {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 60px;
-  z-index: 2000;
-  background: #232323;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 #mobile-search-container {
   position: fixed;
   top: 60px;
@@ -1443,8 +1421,41 @@ html, body{
     border: none !important;
   }
 
+    /* Navbar Top */
+    .navbar-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: left;
+      justify-content: space-between;
+      z-index: 9999;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+      background: #020202;
+      background: linear-gradient(180deg, rgba(2, 2, 2, 1) 0%, #000000a2 100%);
+      backdrop-filter: blur(20px) !important;
+      border-bottom: 1px solid #111111 !important;
+    }
+      .navbar-top svg {
+      margin-top: 8px;
+  width: 24px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 24px;
+  fill: currentColor; /* pega a cor do texto do link */
+}
 
-  
+.welcome-container {
+  margin-left: 0px !important;
+  margin-top: 0px !important;
+  padding: 10px !important;
+  padding-top: 70px !important;
+  padding-bottom: 70px !important;
+  width: 100%;
+  overflow-x: hidden !important;
+  height: 100vh;
+}
 }
 
 

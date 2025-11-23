@@ -152,6 +152,8 @@
 
     }
 
+
+
     .sidebar a {
       color: #fafafa;
       text-decoration: none;
@@ -729,7 +731,7 @@ display: none;
       height: 80px !important;
       background: rgba(0, 0, 0, 0.712) !important;
       backdrop-filter: blur(20px) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-top: 1px solid #111111 !important;
       z-index: 9999 !important;
       box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4) !important;
     }
@@ -760,9 +762,6 @@ display: none;
       text-decoration: none;
     }
 
-    .navbar-bottom a:hover {
-      color: #4A90E2;
-    }
 
     .profile-mini {
       width: 28px !important;
@@ -770,3 +769,18 @@ display: none;
       border-radius: 50%;
       object-fit: cover;
     }
+
+
+/* Adicione esta seção ao seu bloco <style> */
+.navbar-bottom.navbar-hidden {
+  /* Altera a opacidade para deixá-la semi-transparente */
+  opacity: 0.2; 
+  /* Adiciona uma transição suave para que a mudança seja agradável */
+  transition: opacity 0.3s ease-out; 
+}
+
+/* Garante que o estado normal tenha a opacidade total */
+.navbar-bottom {
+  opacity: 1; 
+  transition: opacity 0.3s ease-out;
+}

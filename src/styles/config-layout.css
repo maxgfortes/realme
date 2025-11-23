@@ -410,3 +410,7 @@ input:-moz-autofill {
     .tab-content.active {
       display: block;
     }
+
+    .header button {
+      display: none !important;
+    }

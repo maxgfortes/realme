@@ -39,11 +39,34 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(74, 144, 226, 0.9);
     background-clip: content-box;
-
 }
+
 
 ::selection {
   color: #4A90E2;
   border-radius: 8px;
   text-shadow: 0 2px 8px #4A90E2;
+}
+
+@media (max-width: 768px)  {
+  
+  body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #020202 0%, #020202 50%, #020202 100%);
+      background-color: #020202;
+      min-height: 120vh;
+      min-width: 100vw;
+      height: 200px;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      position: fixed !important;
+      color: #f8f9f9;
+      user-select: none !important;
+        -webkit-touch-callout: none; /* Disables the callout menu on long press in iOS Safari */
+  -webkit-user-select: none; /* Safari, Chrome, Opera */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard syntax */
+  }
 }

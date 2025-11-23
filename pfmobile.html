@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RealMe</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/mobile-profile.css">
   <!-- Para o notch/barra de status -->
   <meta name="theme-color" content="#020202">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,743 +20,42 @@
   <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
-  <style>
-    :root {
-      --profile-color: #4A90E2;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(180deg, #020202 0%, #020202 50%, #020202 100%);
-      background-color: #020202;
-      min-height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      color: #f8f9f9;
-    }
-    
-
-    /* Navbar Top */
-    .navbar-top {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #000000b0;
-      backdrop-filter: blur(20px);
-      display: flex;
-      align-items: left;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 9999;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    .navbar-top svg {
-      margin-top: 8px;
-  width: 20px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 20px;
-  fill: currentColor; /* pega a cor do texto do link */
-}
-
-    .top-left, .top-right {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .top-left {
-      display: flex;
-      gap: 12px;
-    }
-
-    .top-left button, .top-right a {
-      background: none;
-      border: none;
-      color: #f8f9f9;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .tabnav h2 {
-      color: white;
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    /* Container Principal */
-    .full-profile-container {
-      margin-top: 56px;
-      margin-bottom: 70px;
-      padding: 0;
-    }
-
-    .full-profile-container::after {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100%; height: 100%;
-      background: #020202;
-      background: linear-gradient(180deg, #020202 50%, #020202 100%);
-      z-index: -3;
-    }
-
-    .full-profile-container.has-bg-gradient::after {
-  background: var(--profile-bg-gradient, #020202 60%, #020202 100%);
-  opacity: 1;
-  /* other styles as needed */
-}
-
-    /* Profile Header */
-    .profile-header {
-      padding: 12px 12px 12px 12px;
-      position: relative;
-        background-size: cover;
-        background-position: center;
-        z-index: -2;
-    }
-
-    .profile-header::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100%; height: 100%;
-background: 	#020202;
-background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
-      z-index: -1;
-    }
-
-    .full-header {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .profile-pic {
-      width: 118px;
-      height: 118px;
-      border-radius: 15px;
-      object-fit: cover;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      flex-shrink: 0;
-    }
-
-    .profile-info-block {
-      flex: 1;
-      padding-left: 4px;
-    }
-
-    .name-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .profile-name {
-      font-size: 20px;
-      font-weight: 600;
-      color: #f8f9f9;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-    }
-
-    .verificado {
-  color: var(--profile-color, #4A90E2);
-      font-size: 18px;
-    }
-
-    .handle {
-      font-size: 15px;
-      color: #aaa;
-      margin-bottom: 12px;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-      margin-top: 0px;
-    }
-
-    .profile-stats {
-      display: flex;
-      gap: 18px;
-      font-size: 12px;
-      color: #ddd;
-      text-align: center;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-      padding: 10px 0px 0px 12px;
-    }
-
-    .stats span {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .stats {
-      text-align: left;
-    }
-
-    .stats strong {
-  color: var(--profile-color, #4A90E2);
-      font-weight: 600;
-      font-size: 16px;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-      flex: 1;
-      margin-left: 2px;
-    }
-
-    .profile-stats a {
-      color: #ddd;
-      text-decoration: none;
-    }
-
-    .iframe-btn {
-  margin-top: 1px;
-  border: none;
-  border-radius: 50px;
-  width: fit-content;
-  background-color: transparent;
-  backdrop-filter: blur(8px);
-  color: #f8f9f9;
-  font-size: 10px;
-}
-
-.music {
-  display: flex;
-  padding: 4px;
-  padding-left: 10px;
-}
-
-.music svg {
-  width: 18px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 18px;
-  fill: currentColor; /* pega a cor do texto do link */
-  margin-top: 4px;
-}
-
-.music span {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #ccc;
-  text-shadow: 2px 2px 4px black;
-  font-weight: bold;
-}
-
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 6px;
-      margin-top: 12px;
-      padding: 0px 4px;
-    }
-
-    .action-buttons button {
-  background: var(--profile-color, #4A90E2);
-      color: #f8f9f9;
-      padding: 6px 22px !important;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      flex: 1;
-    }
-
-
-
-    .action-buttons button:hover {
-      background: #3a7bc8;
-      transform: translateY(-1px);
-    }
-
-    .btn-nudge {
-      min-width: 44px;
-      padding: 8px 24px !important;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      justify-content: center;
-    }
-
-    .btn-edit-profile {
-      min-width: 44px;
-      padding: 6px 24px !important;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      justify-content: center;
-      font-size: 16px !important;
-    }
-
-    .btn-nudge i {
-      display: none;
-    }
-
-    /* Profile Menu */
-    .profile-menu-area {
-      background-color: #020202;
-      padding: 0px 0 0px;
-    }
-
-    .profile-menu {
-      display: flex;
-      overflow-x: auto;
-      padding: 0 10px;
-      gap: 18px;
-      scrollbar-width: none;
-      overflow-x: hidden;
-    }
-
-    .profile-menu::-webkit-scrollbar {
-      display: none;
-    }
-
-    .menu-item {
-      min-width: auto;
-      background: transparent;
-      border: none;
-      color: #aaa;
-      padding: 10px 20px;
-      font-size: 24px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-bottom: 3px solid transparent;
-    }
-
-    .menu-item.active {
-      color: #f8f9f9;
-  border-bottom-color: var(--profile-color, #4A90E2);
-      border-radius: 3px;
-    }
-
-    .menu-item p {
-      display: none;
-    }
-
-    /* Content Area */
-    .profile-body {
-      padding: 16px;
-    }
-
-    /* Status Box */
-    .status-box {
-      background: rgba(20, 20, 20, 0.8);
-      backdrop-filter: blur(12px);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .status-box p {
-      margin: 0;
-    }
-
-    .status-text {
-  color: var(--profile-color, #4A90E2);
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    /* Grid 3xN para preview dos posts */
-    .mural-masonry {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      padding: 2px;
-      margin-top: 0px;
-      padding: 0px;
-    }
-
-
-    .post-preview-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: blur(0px);
-      transition: filter 0.2s;
-      border-radius: 2px;
-    }
-
-    
-    .repost {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: blur(0px);
-      transition: filter 0.2s;
-      border-radius: 2px;
-      position: relative;
-    }
-
-    .repost-icon {
-      position: fixed;
-      top: 0;
-      font-size: 1.4em;
-      background: rgba(0, 0, 0, 0.281);
-      backdrop-filter: blur(20px);
-      padding: 8px;
-      border-bottom-right-radius: 12px;
-      border-bottom: 1px solid #333;
-      border-right: 1px solid #333;
-      color: #f8f9f9;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-
-    .post-preview-text {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      color: #f8f9f9;
-      text-align: center;
-      padding: 12px;
-      background: rgba(30,30,30,0.7);
-      backdrop-filter: blur(8px);
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 2;
-      border-radius: 14px;
-    }
-    .post-preview-blur {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      filter: blur(12px) brightness(0.7);
-      z-index: 1;
-      border-radius: 14px;
-    }
-
-    .post-header {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: center;
-    }
-
-    .post-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .post-info {
-      flex: 1;
-    }
-
-    .post-author {
-      font-size: 14px;
-      font-weight: 600;
-      color: #f8f9f9;
-    }
-
-    .post-time {
-      font-size: 12px;
-      color: #888;
-    }
-
-    .post-image {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      object-fit: cover;
-    }
-
-    .post-text {
-      font-size: 14px;
-      color: #ddd;
-      line-height: 1.4;
-      margin-bottom: 8px;
-    }
-
-    .post-actions {
-      display: flex;
-      gap: 16px;
-      color: #888;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-
-    .post-actions i {
-      margin-right: 4px;
-    }
-
-    /* Navbar Bottom */
-    .navbar-bottom {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 80px;
-      background: rgba(0, 0, 0, 0.712);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 9999;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
-    }
-
-.navbar-bottom-content svg {
-  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 26px;
-  fill: currentColor; /* pega a cor do texto do link */
-}
-
-    .navbar-bottom-content {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      height: 100%;
-      padding-bottom: 32px;
-    }
-
-    .navbar-bottom a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #f8f9f9;
-      font-size: 26px;
-      padding: 8px;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-
-    .navbar-bottom a:hover {
-      color: #4A90E2;
-    }
-
-    .profile-mini {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #4A90E2;
-    }
-
-    /* Responsive */
-    @media (max-width: 400px) {
-      .profile-pic {
-        width: 100px;
-        height: 100px;
-      }
-
-      .profile-name {
-        font-size: 20px;
-      }
-
-      .mural-masonry {
-        column-count: 1;
-      }
-
-      .action-buttons button {
-        padding: 8px 16px;
-        font-size: 14px;
-      }
-    }
-
-    .tab {
-      display: none;
-    }
-
-    .tab.active {
-      display: block;
-    }
-    .post-card {
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 20px;
-  break-inside: avoid; /* evita quebra entre colunas */
-}
-
-
-.post-card {
-  border-radius: 10px;
-  min-height: 130px;
-  background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  padding: 20px;
-}
-
-.post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.profile-post-info {
-  display: flex;
-  align-items: center;
-}
-
-.user-pic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 8px;
-}
-
-.username {
-  font-weight: bold;
-  color: #f8f9f9;
-  text-shadow: 2px 2px 4px black;
-}
-
-.dots {
-  font-size: 20px;
-  color: #cacaca;
-  cursor: pointer;
-}
-
-.post-content p {
-  margin: 12px 0;
-  color: #cacaca;
-  font-size: 15px;
-}
-
-.post-image {
-  width: 100%;
-  height: 300px; /* você pode ajustar */
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.post-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.post-actions button {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #f8f9f9;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.post-actions button:hover {
-  color: #e91e40;
-}
-
-.post-date {
-  font-size: 12px;
-  color: #999;
-}
-
-
-/* Tabs */
-.tab {
-  display: none;
-}
-
-.tab.active {
-  display: block;
-}
-
-.info-item {
-  margin-bottom: 12px;
-}
-
-.sobre-header {
-  font-size: 22px;
-  font-weight: normal !important;
-  margin-bottom: 12px;
-  color: var(--profile-color, #4A90E2);
-  text-align: center;
-}
-
-.sobre-header span {
-  font-weight: normal;
-  color: #cacaca;
-}
-
-.about-box {
-  padding: 14px 14px;
-  margin-bottom: 0px;
-  background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  font-size: 18px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  color: #ccc;
-  border-bottom: 1px solid #333;
-}
-
-
-.info-label {
-  font-weight: 600;
-  margin-right: 6px;
-  color: var(--profile-color, #f8f9f9);
-}
-
-.info-icon {
-  margin-right: 6px;
-  color: var(--profile-color, #4A90E2);
-}
-
-.about-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--profile-color, #4A90E2);
-}
-
-
-.link-box {
-  background-color: #4A90E2;
-  padding: 20px 10px;
-  margin-bottom: 10px;
-  background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  
-}
-
-.link-box a {
-  color: #aaa;
-  text-decoration: none;
-  padding: 20px;
-  display: block;  
-}
-.link-box a:hover {
-  color: #aaa;
-  text-decoration: underline;
-  transition: 0.3s;
-}
-
-.profile-body {
-  padding: 0px;
-}
-
-.info-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.info-top {
-  display: flex;  
-}
-
-  </style>
 </head>
 <body>
+
+  <div id="settings-sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <button id="close-sidebar-btn" class="close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+  <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+</svg>
+        </button>
+        <h2>Configurações</h2>
+    </div>
+    <div class="settings-list">
+        <div class="section-config">
+          <a href="#" class="setting-item"><i class="fas fa-user-circle"></i> Conta</a>
+          <a href="#" class="setting-item"><i class="fas fa-lock"></i> Privacidade</a>
+          <a href="#" class="setting-item"><i class="fas fa-bell"></i> Notificações</a>
+        </div>
+        <div class="section-config">
+          <p>Perfil</p>
+          <a href="#" class="setting-item"><i class="fa-solid fa-pen"></i> Edição Rapida</a>
+          <a href="#" class="setting-item"><i class="fas fa-sliders-h"></i>Edição Completa</a>
+        </div>
+        <div class="section-config">
+          <p>Outros</p>
+          <a href="#" class="setting-item"><i class="fas fa-envelope"></i> Contato</a>
+          <a href="#" class="setting-item"><i class="fas fa-book"></i>Termos e uso</a>
+        </div>
+        <li><a href="#" class="setting-item"><i class="fas fa-question-circle"></i> Ajuda</a></li>
+    </div>
+    <div class="sidebar-footer">
+        <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+</div>
+
   <!-- Navbar Top -->
   <nav class="navbar-top">
     <div class="top-left">
@@ -767,7 +67,7 @@ background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
       <h2 id="headername">username</h2>
     </div>
     <div class="top-right">
-      <a href="#">
+      <a id="open-settings-btn">
         <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 95.95" style="enable-background:new 0 0 122.88 95.95" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
       </a>
     </div>
@@ -775,7 +75,6 @@ background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
 
   <!-- Profile Container -->
   <div class="full-profile-container">
-    <!-- Profile Header -->
     <div class="profile-header">
       <div class="full-header">
         <img src="./src/icon/default.jpg" alt="Foto de perfil" class="profile-pic" />
@@ -818,37 +117,8 @@ background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
     <!-- Profile Body -->
     <div class="profile-body">
       <div class="tab mural-tab active">
-        <div id="muralPostss" class="mural-masonry">
-          <div class="postpreview">
-            <div class="repost" style="position:relative;">
-              <img src="https://i.pinimg.com/736x/08/d0/36/08d036286655d13f05938f1f570cc88e.jpg" alt="Post Preview" class="post-preview-img" />
-              <i class="fa-solid fa-retweet repost-icon"></i>
-            </div>
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/1200x/48/91/91/489191c4a67ca1526eea0bbb9d2c0e37.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/b5/98/28/b59828ead869060e3eda496eef8fcc47.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/47/69/38/4769387dd36924dc9c1cb0b19c0bb779.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/60/fd/a8/60fda83ceae14b7b90fffa36c8b64c5a.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/3c/c8/34/3cc834ae1eabc72aee71006e2260da01.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/df/61/d2/df61d2c7f12a37150f4355190856bc99.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/1200x/9f/50/11/9f5011c85a617184ab23774f3656df82.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
-          <div class="postpreview">
-            <img src="https://i.pinimg.com/736x/53/e3/3a/53e33acc4cccb1e4e6d567245bea21b2.jpg" alt="Post Preview" class="post-preview-img" />
-          </div>
+        <div id="muralPosts" class="mural-masonry">
+          
         </div>
       </div>
       <div class="tab visao-tab">
@@ -973,7 +243,7 @@ background: linear-gradient(180deg, rgba(2, 2, 2, 0) 0%, rgba(2, 2, 2, 1) 100%);
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg>
       </a>
       <a href="teste.html">
-        <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini">
+        <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </nav>
@@ -1098,7 +368,6 @@ window.setProfileColor = function(color) {
   document.documentElement.style.setProperty('--profile-color', color);
 }
 </script>
-
   <script type="module" src="codigo-mobile.js"></script>
   <script src="./src/js/pfp-navbar.js"></script>
   <script type="module" src="./src/js/global-messages.js"></script>

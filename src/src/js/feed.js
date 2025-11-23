@@ -1279,7 +1279,7 @@ fileBtn.addEventListener('click', () => {
     imageInputContainer = document.createElement('div');
     imageInputContainer.className = 'image-input-container';
     imageInputContainer.innerHTML = `
-      <input type="url" class="image-url-input" placeholder="Cole a URL da imagem aqui (opcional)">
+      <input type="url" class="image-url-input" placeholder="Cole a URL da imagem aqui (opcional)" name="txtPass" spellcheck="false" autocomplete="off">
     `;
     postArea.parentNode.insertBefore(imageInputContainer, postArea.nextSibling);
     // Adiciona a classe para animar ao abrir

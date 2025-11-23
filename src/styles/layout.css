@@ -27,6 +27,7 @@
     object-fit: cover;    /* cobre toda a área, mesmo que corte */
     border-end-end-radius: 12px;   /* opcional: cantos arredondados */
     border-top-left-radius: 12px;   /* opcional: cantos arredondados */
+    -webkit-user-drag: none;
 }
 
 .user-welcome h1 {

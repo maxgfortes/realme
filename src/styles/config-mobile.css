@@ -3,20 +3,68 @@
         margin: 0 !important;
         padding: 0px !important;
         width: 100vw !important;
-        height: calc(100vh - 60px) !important; /* Altura total da viewport menos a navbar */
         overflow-y: auto !important; /* Permite rolagem vertical se necessário */
+        backdrop-filter: blur(0px);
+        box-shadow: none;
+        overflow: hidden !important;
+    }
+
+    body {
+        background-color: #141414;
+        background-image: none;
+        margin-top: env(safe-area-inset-top, 0px);
+        overflow: auto;
     }
 
     .form-container {
         margin: 0px !important;
-        margin-top: 60px !important;
         border-radius: 0 !important;
         background-color: transparent !important;
         border: none !important;
-        
+        box-shadow: none;
     }
 
-    .navbar {
+    nav {
         display: none;
+    }
+
+    .header {
+        display: flex;
+        padding: 0px 0px 18px 0px;
+
+    }
+    
+    .header h2 {
+        padding-top: 14px;
+        padding-left: 10px;
+    }
+
+    .header svg {
+        height: 24px;
+        width: 24px;
+        fill: white;
+    }
+
+    .header button {
+        border: none;
+        background-color: transparent;
+        padding: 8px;
+    }
+
+    .tab-button {
+        padding-left: 8px;
+    }
+
+    input {
+        background-color: #333 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    textarea {
+        background-color: #333 !important;
+        border: none !important;
+        box-shadow: none !important;
+        height: 16vh;
     }
 }

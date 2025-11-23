@@ -65,35 +65,86 @@ const searchButton = document.querySelector('.search-box button');
 
 if (searchInput && resultsList && searchButton) {
   async function performSearch() {
-    const term = searchInput.value.trim().toLowerCase();
-    resultsList.innerHTML = '';
-    resultsList.classList.remove('visible');
-    if (!term) return;
+  const term = searchInput.value.trim().toLowerCase();
+  resultsList.innerHTML = '';
+  resultsList.classList.remove('visible');
+  if (!term) return;
 
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
-    try {
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        resultsList.innerHTML = '<li>Nenhum usuário encontrado</li>';
-        resultsList.classList.add('visible');
-        return;
-      }
-      snapshot.forEach(docSnap => {
-        const user = docSnap.data();
-        const li = document.createElement('li');
-        li.textContent = user.displayname ? `${user.displayname} (@${user.username})` : user.username;
-        li.addEventListener('click', () => {
-          window.location.href = `PF.html?userid=${docSnap.id}`;
-        });
-        resultsList.appendChild(li);
-      });
-      resultsList.classList.add('visible');
-    } catch (err) {
-      resultsList.innerHTML = '<li>Erro na busca</li>';
-      resultsList.classList.add('visible');
+  // Mostra loading
+  resultsList.innerHTML = '<li class="search-loading"><div class="spinner"></div><span>Buscando...</span></li>';
+  resultsList.classList.add('visible');
+
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, orderBy('username'), startAt(term), endAt(term + '\uf8ff'));
+  
+  try {
+    const snapshot = await getDocs(q);
+    
+    resultsList.innerHTML = '';
+    
+    if (snapshot.empty) {
+      resultsList.innerHTML = '<li class="no-results">Nenhum usuário encontrado</li>';
+      return;
     }
+
+    for (const docSnap of snapshot.docs) {
+      const user = docSnap.data();
+      const userId = docSnap.id;
+      
+      // Detecta mobile
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const profileUrl = isMobile ? `pfmobile.html?userid=${userId}` : `PF.html?userid=${userId}`;
+      
+      const li = document.createElement('li');
+      li.className = 'search-result-item';
+      li.innerHTML = `
+        <img data-src="placeholder" alt="${user.displayname || user.username}" class="search-user-photo lazy-load" src="./src/icon/default.jpg">
+        <div class="search-user-info">
+          <span class="search-user-name">${user.displayname || user.username}</span>
+          <span class="search-user-username">@${user.username}</span>
+        </div>
+      `;
+      
+      li.addEventListener('click', () => {
+        window.location.href = profileUrl;
+      });
+      
+      resultsList.appendChild(li);
+      
+      // Carrega foto em background (lazy)
+      loadUserPhotoLazy(userId, li.querySelector('.search-user-photo'));
+    }
+    
+  } catch (err) {
+    console.error('Erro na busca:', err);
+    resultsList.innerHTML = '<li class="no-results">Erro na busca</li>';
   }
+}
+
+// Função para carregar foto com lazy loading
+async function loadUserPhotoLazy(userId, imgElement) {
+  try {
+    const mediaRef = doc(db, 'users', userId, 'user-infos', 'user-media');
+    const mediaSnap = await getDoc(mediaRef);
+    
+    if (mediaSnap.exists() && mediaSnap.data().userphoto) {
+      const photo = mediaSnap.data().userphoto;
+      
+      // Carrega imagem antes de mostrar
+      const img = new Image();
+      img.onload = () => {
+        imgElement.src = photo;
+        imgElement.classList.add('loaded');
+      };
+      img.onerror = () => {
+        imgElement.src = './src/icon/default.jpg';
+      };
+      img.src = photo;
+    }
+  } catch (err) {
+    console.log('Erro ao carregar foto:', err);
+  }
+}
   searchButton.addEventListener('click', (e) => {
     e.preventDefault();
     performSearch();
@@ -587,25 +638,27 @@ function criarElementoPost(postData, userPhoto, displayName, username, postId, u
 }
 
 // ATUALIZADO: buscar foto do local correto
+// ATUALIZADO: Carregar posts como grid de previews
 async function carregarPostsDoMural(userid) {
   const muralContainer = document.getElementById('muralPosts');
   if (!muralContainer || isLoadingPosts) return;
+  
   isLoadingPosts = true;
   currentProfileId = userid;
+  
   muralContainer.innerHTML = `
     <div class="loading-container">
       <div class="loading-spinner"></div>
       <p>Carregando posts...</p>
     </div>
   `;
-  const userData = await getUserData(userid);
-  const userPhoto = await getUserPhoto(userid); // <-- busca correta
-  const displayName = userData.displayname || userData.username || userid;
-  const username = userData.username || userid;
+
   const postsRef = collection(db, 'users', userid, 'posts');
-  const postsQuery = query(postsRef, orderBy('create', 'desc'), limit(10));
+  const postsQuery = query(postsRef, orderBy('create', 'desc'));
   const snapshot = await getDocs(postsQuery);
+  
   muralContainer.innerHTML = '';
+  
   if (snapshot.empty) {
     muralContainer.innerHTML = `
       <div class="empty-posts">
@@ -618,25 +671,129 @@ async function carregarPostsDoMural(userid) {
     isLoadingPosts = false;
     return;
   }
+
+  // Renderiza posts como grid de previews
   snapshot.forEach(postDoc => {
     const postData = postDoc.data();
-    const postElement = criarElementoPost(postData, userPhoto, displayName, username, postDoc.id, userid);
-    muralContainer.appendChild(postElement);
+    const previewElement = criarPreviewPost(postData, postDoc.id, userid);
+    muralContainer.appendChild(previewElement);
   });
-  if (snapshot.docs.length > 0) lastPostDoc = snapshot.docs[snapshot.docs.length - 1];
-  if (snapshot.docs.length === 10) {
-    const loadMoreBtn = document.createElement('div');
-    loadMoreBtn.className = 'load-more-container';
-    loadMoreBtn.innerHTML = `
-      <button class="load-more-btn" onclick="carregarMaisPosts()">
-        <i class="fas fa-chevron-down"></i>
-        Carregar mais posts
-      </button>
-    `;
-    muralContainer.appendChild(loadMoreBtn);
-  }
+
   isLoadingPosts = false;
 }
+
+// Nova função para criar preview do post
+function criarPreviewPost(postData, postId, userid) {
+  const preview = document.createElement('div');
+  preview.className = 'postpreview';
+  
+  // Verifica se tem imagem
+  if (postData.img && postData.img.trim()) {
+    // POST COM IMAGEM
+    preview.innerHTML = `
+      <img src="${postData.img}" 
+           alt="Post" 
+           class="post-preview-img"
+           onerror="this.parentElement.innerHTML='<div class=post-preview-error>Erro ao carregar imagem</div>'">
+    `;
+  } else {
+    // POST SÓ COM TEXTO
+    const conteudo = postData.content || 'Post sem conteúdo';
+    const textoPreview = conteudo.length > 80 ? conteudo.slice(0, 80) + '...' : conteudo;
+    
+    preview.innerHTML = `
+      <div class="post-preview-text-container">
+        <p class="post-preview-text">${textoPreview}</p>
+      </div>
+    `;
+  }
+  
+  // Adiciona evento de clique para abrir modal
+  preview.onclick = () => abrirModalPostCompleto(postData, postId, userid);
+  
+  return preview;
+}
+
+// Modal para exibir post completo
+async function abrirModalPostCompleto(postData, postId, userid) {
+  const userData = await getUserData(userid);
+  const userPhoto = await getUserPhoto(userid);
+  const displayName = userData.displayname || userData.username || userid;
+  const username = userData.username || userid;
+  const dataPost = formatarDataPost(postData.create);
+  const conteudoFormatado = formatarConteudoPost(postData.content);
+  const curtidas = postData.likes || 0;
+
+  const modal = document.createElement('div');
+  modal.className = 'post-modal';
+  modal.innerHTML = `
+    <div class="post-modal-overlay" onclick="fecharModalPost()">
+      <div class="post-modal-content" onclick="event.stopPropagation()">
+        <button class="post-modal-close" onclick="fecharModalPost()">
+          <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="post-modal-header">
+          <img src="${userPhoto}" alt="Foto" class="post-modal-avatar">
+          <div class="post-modal-user-info">
+            <span class="post-modal-name">${displayName}</span>
+            <span class="post-modal-username">@${username}</span>
+            <span class="post-modal-time">${dataPost}</span>
+          </div>
+        </div>
+
+        <div class="post-modal-body">
+          ${postData.img ? `<img src="${postData.img}" alt="Post" class="post-modal-image">` : ''}
+          <div class="post-modal-text">${conteudoFormatado}</div>
+        </div>
+
+        <div class="post-modal-actions">
+          <button class="post-modal-btn like-btn ${curtidas > 0 ? 'has-likes' : ''}"
+            onclick="curtirPostModal('${postId}', '${userid}', this)">
+            <i class="fas fa-heart"></i>
+            <span class="action-count">${curtidas > 0 ? curtidas : ''}</span>
+          </button>
+          <button class="post-modal-btn comment-btn">
+            <i class="fas fa-comment"></i>
+          </button>
+          <button class="post-modal-btn share-btn">
+            <i class="fas fa-share"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharModalPost() {
+  const modal = document.querySelector('.post-modal');
+  if (modal) {
+    modal.remove();
+    document.body.style.overflow = 'auto';
+  }
+}
+
+async function curtirPostModal(postId, userid, btnElement) {
+  btnElement.classList.add('loading');
+  const postRef = doc(db, 'users', userid, 'posts', postId);
+  await updateDoc(postRef, { likes: increment(1) });
+  
+  const countElement = btnElement.querySelector('.action-count');
+  let currentCount = parseInt(countElement.textContent) || 0;
+  currentCount++;
+  countElement.textContent = currentCount;
+  btnElement.classList.add('liked', 'has-likes');
+  
+  btnElement.classList.remove('loading');
+}
+
+// Adicionar ao window
+window.fecharModalPost = fecharModalPost;
+window.curtirPostModal = curtirPostModal;
+
 
 async function carregarMaisPosts() {
   if (!currentProfileId || !lastPostDoc || isLoadingPosts) return;
@@ -751,6 +908,8 @@ window.enviarDepoimento = enviarDepoimento;
 window.excluirDepoimento = excluirDepoimento;
 window.carregarDepoimentos = carregarDepoimentos;
 window.carregarLinks = carregarLinks;
+
+
 
 // ===================
 // SISTEMA DE LINKS
@@ -869,12 +1028,31 @@ async function atualizarMarqueeUltimoUsuario() {
 
 document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
 
+
+function configurarInterfacePerfil(userid) {
+  const navbarBottom = document.querySelector('.navbar-bottom');
+  const settingsBtn = document.getElementById('open-settings-btn');
+  const isOwnProfile = userid === currentUserId;
+  
+  if (isOwnProfile) {
+    // É SEU PERFIL - mostra navbar e configs
+    if (navbarBottom) navbarBottom.style.display = 'flex';
+    if (settingsBtn) settingsBtn.style.display = 'block';
+  } else {
+    // É PERFIL DE OUTRA PESSOA - esconde navbar e configs
+    if (navbarBottom) navbarBottom.style.display = 'none';
+    if (settingsBtn) settingsBtn.style.display = 'none';
+  }
+}
+
 async function carregarPerfilCompleto() {
   const userid = determinarUsuarioParaCarregar();
   if (!userid) {
     window.location.href = 'index.html';
     return;
   }
+
+  /*configurarInterfacePerfil(userid);*/
   const userData = await getUserData(userid);
   const aboutRef = doc(db, "users", userid, "user-infos", "about");
   const aboutSnap = await getDoc(aboutRef);
@@ -951,8 +1129,391 @@ async function carregarPerfilCompleto() {
   }
 
   // Função de cor personalizada removida
+  async function aplicarCorPersonalizada(userid) {
+  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+  const mediaSnap = await getDoc(mediaRef);
+
+  // Limpa estilos personalizados se não houver cor
+  if (!mediaSnap.exists() || !mediaSnap.data().profileColor) {
+    removerEstilosPersonalizados();
+    return;
+  }
+
+  const cor = mediaSnap.data().profileColor;
+
+  // Bloqueia cor com transparência
+  if (corTemTransparencia(cor)) return;
+
+  // Aplica cores em diferentes aspectos
+  aplicarCoresMenu(cor);
+  aplicarCoresBotoes(cor);
+  aplicarCoresImagens(cor);
+  aplicarCoresTextos(cor);
+  aplicarCoresLinks(cor);
+  aplicarCoresInteracoes(cor);
+  aplicarCoresFormularios(cor);
+  aplicarCoresCards(cor);
 }
 
+// ============================================
+// VERIFICAÇÃO DE TRANSPARÊNCIA
+// ============================================
+function corTemTransparencia(cor) {
+  return (
+    (typeof cor === "string" && cor.trim().toLowerCase().startsWith("rgba")) ||
+    (typeof cor === "string" && cor.trim().length === 9 && cor.trim().startsWith("#"))
+  );
+}
+
+// ============================================
+// REMOÇÃO DE ESTILOS
+// ============================================
+function removerEstilosPersonalizados() {
+  const idsEstilos = [
+    'menu-item-hover-color',
+    'pic-hover-color',
+    'action-btn-hover-color',
+    'link-hover-color',
+    'form-focus-color',
+    'card-hover-color',
+    'interaction-color',
+    'text-accent-color'
+  ];
+  
+  idsEstilos.forEach(id => {
+    const style = document.getElementById(id);
+    if (style) style.remove();
+  });
+}
+
+// ============================================
+// MENU E NAVEGAÇÃO
+// ============================================
+function aplicarCoresMenu(cor) {
+  const style = criarOuAtualizarEstilo('menu-item-hover-color');
+  style.textContent = `
+    /* Itens do menu */
+    
+    .menu-item.active {
+      border-bottom-color: ${cor} !important;
+    }
+    
+  `;
+}
+
+// ============================================
+// BOTÕES
+// ============================================
+function aplicarCoresBotoes(cor) {
+  const style = criarOuAtualizarEstilo('action-btn-hover-color');
+  style.textContent = `
+    /* Botões de ação primários */
+    .action-buttons button {
+      background: ${cor} !important;
+    }
+    
+    .action-buttons button:hover {
+      background: ${cor} !important;
+    }
+    
+    
+    /* Botão de enviar depoimento */
+    .btn-enviar-depoimento {
+      background-color: ${cor} !important;
+      border-color: ${cor} !important;
+      color: #fff !important;
+    }
+    
+    .btn-enviar-depoimento:hover {
+      opacity: 0.9;
+    }
+    
+    /* Botão carregar mais */
+    .load-more-btn {
+      color: ${cor} !important;
+      border-color: ${cor} !important;
+    }
+    
+    .load-more-btn:hover {
+      background-color: ${cor} !important;
+      color: #fff !important;
+    }
+  `;
+}
+
+// ============================================
+// IMAGENS E FOTOS DE PERFIL
+// ============================================
+function aplicarCoresImagens(cor) {
+  const style = criarOuAtualizarEstilo('pic-hover-color');
+  style.textContent = `
+    /* Fotos de perfil */
+    .autor-pic:hover,
+    .user-pic:hover,
+    .profile-picture:hover {
+      border-color: ${cor} !important;
+      box-shadow: 0 0 0 3px ${cor}33 !important;
+    }
+    
+    /* Avatar com borda ativa */
+    .user-pic.active,
+    .autor-pic.active {
+      border-color: ${cor} !important;
+    }
+  `;
+}
+
+// ============================================
+// TEXTOS E ÍCONES
+// ============================================
+function aplicarCoresTextos(cor) {
+  const style = criarOuAtualizarEstilo('text-accent-color');
+  style.textContent = `
+    /* Ícones de informação */
+    .info-icon {
+      color: ${cor} !important;
+      border: ${cor} !important;
+    }
+    
+    /* Estatísticas do perfil */
+    .profile-stats strong {
+      color: ${cor} !important;
+    }
+    
+    /* Status box */
+    .status-box {
+      border-left-color: ${cor} !important;
+    }
+    
+    /* Badges */
+    .badge-premium,
+    .badge-verified {
+      background-color: ${cor} !important;
+      color: #fff !important;
+    }
+    
+    /* Mensagem visto */
+    .msg-visto-externo {
+      color: ${cor} !important;
+    }
+
+    .about-title {
+    color: ${cor} !important;
+    }
+
+    .sobre-header {
+    color: ${cor} !important;
+    }
+  `;
+}
+
+// ============================================
+// LINKS
+// ============================================
+function aplicarCoresLinks(cor) {
+  const style = criarOuAtualizarEstilo('link-hover-color');
+  style.textContent = `
+    /* Links gerais */
+    a.user-link:hover {
+      color: ${cor} !important;
+    }
+    
+    /* Boxes de links */
+    .link-box:hover {
+      border-color: ${cor} !important;
+      background-color: ${cor}0a !important;
+    }
+    
+    .link-box:hover .link-arrow {
+      color: ${cor} !important;
+    }
+    
+    /* Links de navegação */
+    .nav-link:hover,
+    .nav-link.active {
+      color: ${cor} !important;
+      border-bottom-color: ${cor} !important;
+    }
+  `;
+}
+
+// ============================================
+// INTERAÇÕES (LIKES, COMENTÁRIOS, ETC)
+// ============================================
+function aplicarCoresInteracoes(cor) {
+  const style = criarOuAtualizarEstilo('interaction-color');
+  style.textContent = `
+    /* Botão de like */
+    .like-btn:hover {
+      color: ${cor} !important;
+    }
+    
+    .like-btn.liked {
+      color: ${cor} !important;
+    }
+    
+    /* Botão de comentário */
+    .comment-btn:hover {
+      color: ${cor} !important;
+    }
+    
+    /* Botão de compartilhar */
+    .share-btn:hover {
+      color: ${cor} !important;
+    }
+    
+    /* Contador de interações */
+    .interaction-count.active {
+      color: ${cor} !important;
+    }
+  `;
+}
+
+// ============================================
+// FORMULÁRIOS
+// ============================================
+function aplicarCoresFormularios(cor) {
+  const style = criarOuAtualizarEstilo('form-focus-color');
+  style.textContent = `
+    /* Inputs em foco */
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: ${cor} !important;
+      box-shadow: 0 0 0 3px ${cor}1a !important;
+    }
+    
+    /* Checkbox e radio customizados */
+    input[type="checkbox"]:checked,
+    input[type="radio"]:checked {
+      background-color: ${cor} !important;
+      border-color: ${cor} !important;
+    }
+    
+    /* Labels ativas */
+    label.active {
+      color: ${cor} !important;
+    }
+    
+    /* Placeholders */
+    input::placeholder,
+    textarea::placeholder {
+      color: ${cor}66 !important;
+    }
+  `;
+}
+
+// ============================================
+// CARDS E CONTAINERS
+// ============================================
+function aplicarCoresCards(cor) {
+  const style = criarOuAtualizarEstilo('card-hover-color');
+  style.textContent = `
+    /* Cards com hover */
+    .post-card:hover,
+    .depoimento-card:hover,
+    .user-card:hover {
+      border-color: ${cor} !important;
+    }
+    
+    /* Divisores */
+    .divider {
+      background-color: ${cor}33 !important;
+    }
+    
+    /* Progress bars */
+    .progress-bar-fill {
+      background-color: ${cor} !important;
+    }
+    
+    /* Tooltips */
+    .tooltip {
+      background-color: ${cor} !important;
+      color: #fff !important;
+    }
+    
+    .tooltip::after {
+      border-top-color: ${cor} !important;
+    }
+  `;
+}
+
+// ============================================
+// FUNÇÃO AUXILIAR
+// ============================================
+function criarOuAtualizarEstilo(id) {
+  let style = document.getElementById(id);
+  if (!style) {
+    style = document.createElement('style');
+    style.id = id;
+    document.head.appendChild(style);
+  }
+  return style;
+}
+
+// ============================================
+// APLICAÇÃO
+// ============================================
+await aplicarCorPersonalizada(userid);
+
+// ============================================
+// MOSTRAR/OCULTAR VERIFICADO
+// ============================================
+
+async function aplicarVerificado(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.verificado');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isVerified = userSnap.exists() && userSnap.data().verified === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isVerified) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+
+// Chamar ao carregar o perfil
+await aplicarVerificado(userid);
+}
+
+function carregarFotoPerfil() {
+  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userId = user.uid; // Obtém o ID do usuário logado
+      try {
+        // Busca a URL da foto de perfil no Firestore
+        const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
+        const userMediaSnap = await getDoc(userMediaRef);
+
+        if (userMediaSnap.exists()) {
+          const userPhoto = userMediaSnap.data().userphoto || './src/icon/default.jpg';
+          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+        } else {
+          console.warn('Foto de perfil não encontrada. Usando a padrão.');
+          navPic.src = './src/icon/default.jpg';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar a foto de perfil:', error);
+        navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
+      }
+    } else {
+      console.warn('Usuário não autenticado.');
+      navPic.src = './src/icon/default.jpg'; // Usa a foto padrão se não estiver logado
+    }
+  });
+}
+
+// Chama a função ao carregar a página
+document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 
 // ===================
 // SISTEMA DE NUDGE ENTRE USUÁRIOS
@@ -1223,6 +1784,59 @@ function atualizarSobre(userData) {
   if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
   if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
 }
+
+
+// CÓDIGO PARA ADICIONAR EM codigo-mobile.js
+
+function setupSettingsSidebar() {
+    // A. Elementos
+    // 1. O botão que o usuário clica para abrir (EXEMPLO: ajuste o ID se for diferente)
+    const openBtn = document.getElementById('open-settings-btn'); 
+    
+    // 2. A barra lateral que será aberta
+    const sidebar = document.getElementById('settings-sidebar');
+    
+    // 3. O botão de 'x' que fecha a barra
+    const closeBtn = document.getElementById('close-sidebar-btn');
+
+    // B. Funções
+    function toggleSidebar() {
+        if (sidebar) {
+            // Adiciona ou remove a classe 'open', ativando o efeito CSS
+            sidebar.classList.toggle('open');
+            
+            // Opcional: Impedir o scroll da página enquanto a barra está aberta
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+        }
+    }
+
+    // C. Listeners de Evento
+    // Abre ao clicar no botão de configurações
+    if (openBtn) {
+        openBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // Evita que o clique seja propagado para o body
+            toggleSidebar();
+        });
+    }
+    
+    // Fecha ao clicar no botão 'x'
+    if (closeBtn) {
+        closeBtn.addEventListener('click', toggleSidebar);
+    }
+
+    // Opcional: Fechar ao clicar em qualquer lugar da tela, fora da sidebar
+    document.addEventListener('click', (event) => {
+        // Verifica se o clique foi fora da sidebar E se a sidebar está aberta
+        if (sidebar && sidebar.classList.contains('open') && 
+            !sidebar.contains(event.target)) {
+            toggleSidebar(); // Chama para fechar
+        }
+    });
+}
+
+// Chame a função de inicialização
+// Se o seu código já usa um evento de 'DOMContentLoaded', adicione a função lá.
+setupSettingsSidebar();
 
 // ===================
 // ATUALIZAÇÃO DE IMAGENS DO PERFIL
