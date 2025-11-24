@@ -554,18 +554,43 @@ async function buscarDadosUsuarioPorUid(uid) {
 // ===================
 function configurarScrollInfinito() {
   let isScrolling = false;
-  window.addEventListener('scroll', async () => {
+  
+  const handleScroll = async () => {
     if (isScrolling || loading || !hasMorePosts) return;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-    if (scrollTop + windowHeight >= documentHeight - 200) {
+    
+    // Tenta pegar o container primeiro
+    const container = document.querySelector('.welcome-container');
+    
+    let scrollTop, scrollHeight, clientHeight;
+    
+    // Verifica qual elemento tem scroll ativo
+    if (container && container.scrollHeight > container.clientHeight) {
+      // O container tem scroll
+      scrollTop = container.scrollTop;
+      scrollHeight = container.scrollHeight;
+      clientHeight = container.clientHeight;
+    } else {
+      // O window tem scroll
+      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      scrollHeight = document.documentElement.scrollHeight;
+      clientHeight = window.innerHeight;
+    }
+    
+    if (scrollTop + clientHeight >= scrollHeight - 200) {
       isScrolling = true;
       await loadPosts();
       isScrolling = false;
     }
-  });
+  };
+  
+  // Adiciona listener nos dois para garantir
+  window.addEventListener('scroll', handleScroll);
+  const container = document.querySelector('.welcome-container');
+  if (container) {
+    container.addEventListener('scroll', handleScroll);
+  }
 }
+
 
 // ===================
 // CARREGAR POSTS DO FEED (posts/{postid}) - VERSÃO CORRIGIDA
