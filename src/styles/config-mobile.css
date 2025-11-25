@@ -7,6 +7,8 @@
         backdrop-filter: blur(0px);
         box-shadow: none;
         overflow: hidden !important;
+        overflow-y: auto !important;
+        padding-bottom: 22vh !important;
     }
 
     body {
@@ -49,6 +51,7 @@
         border: none;
         background-color: transparent;
         padding: 8px;
+        display: block !important;
     }
 
     .tab-button {

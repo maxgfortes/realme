@@ -652,6 +652,49 @@ textarea#postText:focus {
   box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
 }
 
+
+.post-video video {
+  max-width: 100%;
+  max-height: 400px;   /* 👈 ALTERE O TAMANHO AQUI */
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.post-video video:focus {
+  max-width: 100%;
+  max-height: 400px;   /* 👈 ALTERE O TAMANHO AQUI */
+  border-radius: 12px;
+  object-fit: cover;
+  outline: none;
+}
+
+
+    .video-url-input {
+      display: flex;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 8px;
+  width: 91%; /* ajuste conforme precisar */
+  gap: 10px;
+  border: 1px solid #2a2a2a;
+  background: #474747; /* Quase preto, mas não absoluto */
+  display: flex;
+  align-items: center;
+  border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
+  box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
+  flex: 1;
+  padding: 16px 15px;
+  margin-top: 10px;
+  background: rgba(20, 20, 20, 0.247);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+}
+.video-box:focus-within {
+  border-color: #4A90E2;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+}
+
 .post-box input[type="text"] {
   flex: 1; /* ocupa todo o espaço possível */
   padding: 10px 15px;
@@ -909,8 +952,15 @@ textarea#postText:focus {
     display: none;
   }
 
-  .more-options {
-    display: none;
+  .more-options button{
+    font-size: 20px !important;
+    color: #888 !important;
+    cursor: pointer;
+    padding: 0px;
+    margin-bottom: 4vh;
+    margin-right: 1vh;
+    background-color: transparent!important;
+    border: none !important;
   }
 
 
@@ -1161,4 +1211,39 @@ textarea#postText:focus {
 .particle {
   /* Garante que a animação seja aplicada */
   animation: particleAnimation 0.8s ease-out;
+}
+
+.post-layer {
+  display: none;
+}
+
+/* Remove overlay de controles no Chrome */
+video::-webkit-media-controls {
+    display: none !important;
+}
+
+video::-webkit-media-controls-enclosure {
+    display: none !important;
+}
+
+video::-webkit-media-controls-panel {
+    display: none !important;
+}
+
+/* Remove no Firefox */
+video::-moz-media-controls {
+    display: none !important;
+}
+
+/* Remove o botão de play gigante do iOS */
+video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
+/* Remove aquele overlay cinza do Android */
+.post-video video {
+    pointer-events: auto; /* permite clique sem chamar controles */
+    background-color: black;
+    outline: none;
 }

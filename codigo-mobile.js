@@ -428,7 +428,7 @@ async function enviarDepoimento(targetUserId) {
     successMsg.className = 'success-message';
     successMsg.textContent = 'Depoimento enviado com sucesso!';
     successMsg.style.cssText = `
-      position: fixed; top: 20px; right: 20px; background: #28a745; color: white;
+      position: fixed; display:none; top: 20px; right: 20px; background: #28a745; color: white;
       padding: 12px 20px; border-radius: 8px; z-index: 999999999; animation: slideIn 0.3s ease-out;
     `;
     document.body.appendChild(successMsg);
@@ -449,7 +449,7 @@ async function excluirDepoimento(depoId, targetUserId) {
   successMsg.className = 'success-message';
   successMsg.textContent = 'Depoimento excluído com sucesso!';
   successMsg.style.cssText = `
-    position: fixed; top: 20px; right: 20px; background: #dc3545; color: white;
+    position: fixed; display:none; top: 20px; right: 20px; background: #dc3545; color: white;
     padding: 12px 20px; border-radius: 8px; z-index: 9999; animation: slideIn 0.3s ease-out;
   `;
   document.body.appendChild(successMsg);
@@ -910,6 +910,205 @@ window.carregarDepoimentos = carregarDepoimentos;
 window.carregarLinks = carregarLinks;
 
 
+// ===================
+// SISTEMA DE MÚSICA DO PERFIL - VERSÃO CORRIGIDA
+// ===================
+// ===================
+// SISTEMA DE MÚSICA DO PERFIL - VERSÃO IFRAME YOUTUBE API
+// ===================
+
+let player = null;
+let musicUrl = "";
+let musicName = "";
+let musicReady = false;
+
+// Carrega API do YouTube
+function loadYouTubeAPI() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  
+  return new Promise((resolve) => {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+    window.onYouTubeIframeAPIReady = () => {
+      resolve();
+    };
+  });
+}
+
+// Extrai ID do vídeo do YouTube
+function extractYouTubeID(url) {
+  if (!url) return null;
+  
+  // https://www.youtube.com/watch?v=VIDEO_ID
+  let match = url.match(/[?&]v=([^&]+)/);
+  if (match) return match[1];
+  
+  // https://youtu.be/VIDEO_ID
+  match = url.match(/youtu\.be\/([^?]+)/);
+  if (match) return match[1];
+  
+  // https://www.youtube.com/embed/VIDEO_ID
+  match = url.match(/embed\/([^?]+)/);
+  if (match) return match[1];
+  
+  return null;
+}
+
+// Inicializa o sistema de música
+async function inicializarSistemaDeMusicaProfile(userid) {
+  try {
+    const musicBlock = document.querySelector('.music');
+    const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+    const mediaSnap = await getDoc(mediaRef);
+    const musicTitleEl = document.getElementById('musicTitle');
+    const btnPause = document.getElementById('btnPauseMusic');
+
+    // Reseta
+    musicUrl = "";
+    musicName = "";
+    musicReady = false;
+
+    if (mediaSnap.exists()) {
+      const mediaData = mediaSnap.data();
+      if (mediaData.musicTheme) musicUrl = mediaData.musicTheme;
+      if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
+    }
+
+    // Atualiza UI
+    if (musicTitleEl) musicTitleEl.textContent = musicName || "Música do perfil";
+    
+    // Mostra/esconde bloco
+    if (musicBlock) {
+      musicBlock.style.display = musicUrl ? 'flex' : 'none';
+    }
+
+    if (!musicUrl) return;
+
+    // Carrega API do YouTube
+    await loadYouTubeAPI();
+
+    const videoId = extractYouTubeID(musicUrl);
+    if (!videoId) {
+      console.error('URL inválida:', musicUrl);
+      return;
+    }
+
+    // Destroi player antigo se existir
+    if (player) {
+      player.destroy();
+      player = null;
+    }
+
+    // Cria container para o player se não existir
+    let playerContainer = document.getElementById('bgMusic');
+    if (!playerContainer) {
+      playerContainer = document.createElement('div');
+      playerContainer.id = 'bgMusic';
+      playerContainer.style.cssText = 'position:fixed;bottom:0;right:0;width:0;height:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(playerContainer);
+    }
+
+    // Cria novo player
+    player = new YT.Player('bgMusic', {
+      height: '0',
+      width: '0',
+      videoId: videoId,
+      playerVars: {
+        autoplay: 0,
+        loop: 1,
+        playlist: videoId, // Necessário para loop funcionar
+        controls: 0,
+        showinfo: 0,
+        modestbranding: 1,
+        enablejsapi: 1
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange,
+        onError: onPlayerError
+      }
+    });
+
+    // Configura botão
+    if (btnPause) {
+      btnPause.onclick = toggleMusic;
+      btnPause.classList.remove('playing');
+    }
+
+  } catch (e) {
+    console.error('Erro ao inicializar música:', e);
+  }
+}
+
+// Quando player está pronto
+function onPlayerReady(event) {
+  musicReady = true;
+  console.log('Player YouTube pronto!');
+  
+  // Tenta iniciar automaticamente
+  document.addEventListener('click', startMusicOnce, { once: true });
+  document.addEventListener('touchstart', startMusicOnce, { once: true });
+  document.addEventListener('keydown', startMusicOnce, { once: true });
+}
+
+// Monitora estado do player
+function onPlayerStateChange(event) {
+  const btnPause = document.getElementById('btnPauseMusic');
+  if (!btnPause) return;
+
+  // YT.PlayerState.PLAYING = 1
+  if (event.data === 1) {
+    btnPause.classList.add('playing');
+  } else {
+    btnPause.classList.remove('playing');
+  }
+}
+
+// Erros do player
+function onPlayerError(event) {
+  console.error('Erro no player YouTube:', event.data);
+}
+
+// Inicia música no primeiro toque
+function startMusicOnce() {
+  if (!player || !musicReady) return;
+  
+  try {
+    player.setVolume(50); // Volume 50%
+    player.playVideo();
+    console.log('Música iniciada!');
+  } catch (e) {
+    console.error('Erro ao iniciar música:', e);
+  }
+}
+
+// Toggle play/pause
+function toggleMusic() {
+  if (!player || !musicReady) {
+    console.warn('Player não está pronto');
+    return;
+  }
+
+  try {
+    const state = player.getPlayerState();
+    
+    // 1 = playing, 2 = paused
+    if (state === 1) {
+      player.pauseVideo();
+    } else {
+      player.playVideo();
+    }
+  } catch (e) {
+    console.error('Erro ao toggle música:', e);
+  }
+}
+
+// Exporta funções
+window.inicializarSistemaDeMusicaProfile = inicializarSistemaDeMusicaProfile;
+window.toggleMusic = toggleMusic;
 
 // ===================
 // SISTEMA DE LINKS
@@ -958,33 +1157,6 @@ async function carregarLinks(userid) {
       linksContainer.appendChild(linkElement);
     }
   });
-}
-
-// ===================
-// SISTEMA DE MÚSICA DO PERFIL
-// ===================
-async function tocarMusicaDoUsuario(userid) {
-  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
-  const mediaSnap = await getDoc(mediaRef);
-  if (mediaSnap.exists()) {
-    const musicUrl = mediaSnap.data().music;
-    if (musicUrl) {
-      let audio = document.getElementById('profileMusicAudio');
-      if (!audio) {
-        audio = document.createElement('audio');
-        audio.id = 'profileMusicAudio';
-        audio.src = musicUrl;
-        audio.autoplay = true;
-        audio.loop = true;
-        audio.volume = 0.5;
-        audio.style.display = 'none';
-        document.body.appendChild(audio);
-      } else {
-        audio.src = musicUrl;
-        audio.play();
-      }
-    }
-  }
 }
 
 // ===================
@@ -1065,8 +1237,8 @@ async function carregarPerfilCompleto() {
   await atualizarEstatisticasPerfil(userid);
   await configurarBotaoSeguir(userid);
   await carregarPostsDoMural(userid);
-  await removerBlurSeTemFundo(userid);
-  await tocarMusicaDoUsuario(userid);
+await removerBlurSeTemFundo(userid);
+await inicializarSistemaDeMusicaProfile(userid); // ← Nova função
 
   // Atualiza src do iframe bgMusic com a música do perfil e exibe o bloco só se houver música
   try {
@@ -1216,17 +1388,7 @@ function aplicarCoresBotoes(cor) {
       background: ${cor} !important;
     }
     
-    
-    /* Botão de enviar depoimento */
-    .btn-enviar-depoimento {
-      background-color: ${cor} !important;
-      border-color: ${cor} !important;
-      color: #fff !important;
-    }
-    
-    .btn-enviar-depoimento:hover {
-      opacity: 0.9;
-    }
+
     
     /* Botão carregar mais */
     .load-more-btn {
@@ -1375,31 +1537,6 @@ function aplicarCoresInteracoes(cor) {
 function aplicarCoresFormularios(cor) {
   const style = criarOuAtualizarEstilo('form-focus-color');
   style.textContent = `
-    /* Inputs em foco */
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: ${cor} !important;
-      box-shadow: 0 0 0 3px ${cor}1a !important;
-    }
-    
-    /* Checkbox e radio customizados */
-    input[type="checkbox"]:checked,
-    input[type="radio"]:checked {
-      background-color: ${cor} !important;
-      border-color: ${cor} !important;
-    }
-    
-    /* Labels ativas */
-    label.active {
-      color: ${cor} !important;
-    }
-    
-    /* Placeholders */
-    input::placeholder,
-    textarea::placeholder {
-      color: ${cor}66 !important;
-    }
   `;
 }
 

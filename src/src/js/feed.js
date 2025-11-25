@@ -2020,7 +2020,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+/*document.addEventListener('DOMContentLoaded', function() {
   const searchBtn = document.querySelector('.search-mobile-btn');
   const searchContainer = document.getElementById('mobile-search-container');
   let searchInput = null;
@@ -2073,7 +2073,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-});
+});*/
 
 
 window.abrirModalImagem = function(imagemUrl) {

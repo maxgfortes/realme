@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
   <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/config-mobile.css" />
 
   <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
@@ -33,6 +34,7 @@
 <body>
 
   <div class="glass-overlay"></div>
+  
 
   <!-- Navbar -->
   <nav>
@@ -78,24 +80,18 @@
     </div>
   </aside>
 
-  <!-- Navbar Bottom (Mobile) -->
-  <div class="navbar-bottom">
-    <div class="navbar-bottom-content">
-      <a href="iFeed.html"><i class="fas fa-home"></i></a>
-      <a href="#"><i class="fas fa-user-friends"></i></a>
-      <a href="#"><i class="fas fa-comments"></i></a>
-      <a href="#"><i class="fas fa-plus-square"></i></a>
-      <a href="PF.html" id="linkPerfilMobile"><i class="fas fa-user"></i></a>
-      <a href="config.html"><i class="fas fa-cog"></i></a>
-      <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i></a>
-    </div>
-  </div>
-
   <ul id="searchResults"></ul>
 
   <section class="config-box-layout">
     <div class="form-container">
-      <h2>Configurações do Perfil</h2>
+      <div class="header">
+        <button onclick="window.history.back()">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+  <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+</svg>
+      </button>
+        <h2>Configurações do Perfil</h2>
+      </div>
 
       <!-- Tabs -->
       <div class="config-tabs">
@@ -378,7 +374,5 @@
       });
     });
   </script>
-  <script src="./block.js"></script>
 </body>
-
 </html>

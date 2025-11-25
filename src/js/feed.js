@@ -25,6 +25,11 @@ import {
   startAfter
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+import { 
+  toggleSalvarPost, 
+  verificarSeEstaSalvo 
+} from './save-posts.js';
+
 let lastPostSnapshot = null; 
 
 // ConfiguraÃ§Ã£o do Firebase
@@ -504,6 +509,7 @@ function verificarLogin() {
       } else {
         resolve(user);
       }
+      loadPosts();
     });
   });
 }
@@ -554,43 +560,18 @@ async function buscarDadosUsuarioPorUid(uid) {
 // ===================
 function configurarScrollInfinito() {
   let isScrolling = false;
-  
-  const handleScroll = async () => {
+  window.addEventListener('scroll', async () => {
     if (isScrolling || loading || !hasMorePosts) return;
-    
-    // Tenta pegar o container primeiro
-    const container = document.querySelector('.welcome-container');
-    
-    let scrollTop, scrollHeight, clientHeight;
-    
-    // Verifica qual elemento tem scroll ativo
-    if (container && container.scrollHeight > container.clientHeight) {
-      // O container tem scroll
-      scrollTop = container.scrollTop;
-      scrollHeight = container.scrollHeight;
-      clientHeight = container.clientHeight;
-    } else {
-      // O window tem scroll
-      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      scrollHeight = document.documentElement.scrollHeight;
-      clientHeight = window.innerHeight;
-    }
-    
-    if (scrollTop + clientHeight >= scrollHeight - 200) {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    if (scrollTop + windowHeight >= documentHeight - 200) {
       isScrolling = true;
       await loadPosts();
       isScrolling = false;
     }
-  };
-  
-  // Adiciona listener nos dois para garantir
-  window.addEventListener('scroll', handleScroll);
-  const container = document.querySelector('.welcome-container');
-  if (container) {
-    container.addEventListener('scroll', handleScroll);
-  }
+  });
 }
-
 
 // ===================
 // CARREGAR POSTS DO FEED (posts/{postid}) - VERSÃO CORRIGIDA
@@ -907,7 +888,27 @@ postEl.innerHTML = `
   </div>
   <div class="post-content">
   <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
- ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" onclick="abrirModalImagem('${postData.img}')"/></div>` : ''}
+ ${ 
+  (postData.img && postData.img.trim() !== "") 
+    ? `
+      <div class="post-image">
+        <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
+      </div>
+    `
+    : (postData.urlVideo && postData.urlVideo.trim() !== "")
+    ? `
+      <div class="post-video">
+        <video src="${postData.urlVideo}" 
+               autoplay 
+               muted 
+               playsinline 
+               controls
+               loop></video>
+      </div>
+    `
+    : ''
+}
+
   <div class="post-actions">
    <div class=post-actions-left>
     <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -928,7 +929,7 @@ postEl.innerHTML = `
     </button>
    </div>
    <div class="post-actions-rigth">
-    <button class="btn-save">
+    <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
     <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
     <p>Salvar</p>
     </button>
@@ -950,6 +951,26 @@ postEl.innerHTML = `
 </div>
 `;
 feed.appendChild(postEl);
+
+// Configura botão de salvar
+const btnSave = postEl.querySelector('.btn-save');
+if (btnSave) {
+  // Verifica se já está salvo
+  verificarSeEstaSalvo(postData.postid).then(estaSalvo => {
+    if (estaSalvo) {
+      btnSave.classList.add('saved');
+      btnSave.querySelector('i').className = 'fas fa-bookmark';
+    }
+  });
+
+  // Adiciona evento de clique
+  btnSave.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    await toggleSalvarPost(postData.postid, postData.creatorid, btnSave);
+  });
+  configurarAutoPauseVideos();
+  configurarLimiteRepeticoes();
+}
 
       // Atualiza nome e foto do usuário assim que possível (não trava o loading)
       buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
@@ -1049,6 +1070,14 @@ async function sendPost() {
     }
   }
 
+const videoInput = document.querySelector('.video-url-input');
+let urlVideo = '';
+
+if (videoInput) {
+  urlVideo = videoInput.value.trim();
+}
+
+
   tocarSomEnvio();
   criarAnimacaoAviaoPapel();
   
@@ -1067,6 +1096,7 @@ async function sendPost() {
     const postData = {
       content: texto,
       img: urlImagem || '',
+      urlVideo: urlVideo || '',
       likes: 0,
       saves: 0,
       postid: postId,
@@ -1315,6 +1345,30 @@ fileBtn.addEventListener('click', () => {
   }
 });
 }
+
+function criarInputVideo() {
+  const postArea = document.querySelector('.post-area');
+  const fileBtn = document.querySelector('.file-button');
+
+  if (!postArea || !fileBtn) return;
+
+  fileBtn.addEventListener('click', () => {
+    let videoInputContainer = document.querySelector('.video-input-container');
+
+    if (!videoInputContainer) {
+      videoInputContainer = document.createElement('div');
+      videoInputContainer.className = 'video-input-container';
+      videoInputContainer.innerHTML = `
+        <input type="url" class="video-url-input" placeholder="Cole a URL do vídeo (opcional)">
+      `;
+      postArea.parentNode.insertBefore(videoInputContainer, postArea.nextSibling.nextSibling);
+    } else {
+      videoInputContainer.classList.toggle('aberta');
+    }
+  });
+}
+
+
 
 // ===================
 // DETECÇÃO MOBILE
@@ -1665,7 +1719,22 @@ if (avisoEl) {
       </div>
     </div>
     <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
-    ${postData.img ? `<div class="post-image"><img src="${postData.img}" alt="Imagem do post" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>` : ''}
+    ${
+  postData.img
+    ? `
+      <div class="post-image">
+        <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
+      </div>
+    `
+    : postData.urlVideo
+    ? `
+      <div class="post-video">
+        <video src="${postData.urlVideo}" autoplay muted playsinline loop></video>
+      </div>
+    `
+    : ''
+}
+
     <div class="post-actions">
       <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
         <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
@@ -2105,11 +2174,13 @@ function adicionarEstilosCSS() {
 // ===================
 // INICIALIZAÇÃO
 // ===================
+
 window.addEventListener("DOMContentLoaded", async () => {
   const user = await verificarLogin();
   if (!user) return;
   adicionarEstilosCSS();
   criarInputImagem();
+  criarInputVideo();
   await atualizarGreeting();
   configurarLinks();
   configurarEventListeners();
@@ -2131,7 +2202,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+/*document.addEventListener('DOMContentLoaded', function() {
   const searchBtn = document.querySelector('.search-mobile-btn');
   const searchContainer = document.getElementById('mobile-search-container');
   let searchInput = null;
@@ -2184,7 +2255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-});
+});*/
 
 
 window.abrirModalImagem = function(imagemUrl) {
@@ -2210,3 +2281,55 @@ window.fecharModal = function() {
     document.body.style.overflow = 'auto';
   }
 };
+
+document.addEventListener("click", (e) => {
+  const video = e.target.closest("video");
+  if (video) {
+    if (video.paused) video.play();
+    else video.pause();
+  }
+});
+
+
+function configurarAutoPauseVideos() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target;
+
+      if (entry.isIntersecting) {
+        // Entrou na tela → toca
+        if (video.paused) video.play();
+      } else {
+        // Saiu da tela → pausa
+        if (!video.paused) video.pause();
+      }
+    });
+  }, { threshold: 0.4 }); 
+  // threshold 0.4 = precisa 40% do vídeo aparecer para tocar
+
+  // Pegar todos os vídeos do feed
+  const videos = document.querySelectorAll('.post-video video');
+  videos.forEach(video => observer.observe(video));
+}
+
+
+function configurarLimiteRepeticoes() {
+  const videos = document.querySelectorAll('.post-video video');
+
+  videos.forEach(video => {
+    let contagem = 0;
+
+    // remover loop automático
+    video.loop = false;
+
+    video.addEventListener("ended", () => {
+      contagem++;
+
+      if (contagem < 2) {
+        video.play(); // toca de novo
+      } else {
+        video.pause(); // pausa após 2 loops
+      }
+    });
+  });
+}
