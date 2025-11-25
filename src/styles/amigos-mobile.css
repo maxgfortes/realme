@@ -265,4 +265,9 @@ nav {
         max-height: 54vh !important;
         overflow-x: auto;
     }
+
+    .close-preferences-btn {
+  display: flex !important;
+}
+
 }

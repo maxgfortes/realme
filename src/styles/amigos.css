@@ -3,7 +3,6 @@
 }
 
 .friends-container {
-  width: 1050px;
   height: 520px; /* Altura da tela */
   margin: 0 auto;
   background: rgba(20, 20, 20, 0.247);
@@ -417,8 +416,8 @@ select {
 
  /* Container principal */
         .friends-container {
-  width: 1050px;
-  height: 520px; /* Altura da tela */
+            width: 58%!important;
+  height: 87%!important; /* Altura da tela */
   margin: 0 auto;
   background: rgba(20, 20, 20, 0.247);
   backdrop-filter: blur(8px);
@@ -428,7 +427,7 @@ select {
   flex-direction: column;
   overflow: hidden;
   margin-left: 235px;
-  margin-right: 335px;
+  margin-right: 0px !important;
   margin-top: 70px;
   overflow-y: auto;     /* scroll vertical automático */
 }
