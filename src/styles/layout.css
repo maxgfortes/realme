@@ -657,12 +657,16 @@ textarea#postText:focus {
   max-width: 100%;
   max-height: 400px;   /* 👈 ALTERE O TAMANHO AQUI */
   border-radius: 12px;
+  min-height: 400px;   
   object-fit: cover;
+  align-items: center;
+  align-self: center;
 }
 
 .post-video video:focus {
   max-width: 100%;
-  max-height: 400px;   /* 👈 ALTERE O TAMANHO AQUI */
+  max-height: 400px;
+  min-height: 400px;   /* 👈 ALTERE O TAMANHO AQUI */
   border-radius: 12px;
   object-fit: cover;
   outline: none;
@@ -676,6 +680,7 @@ textarea#postText:focus {
   border-radius: 8px;
   width: 91%; /* ajuste conforme precisar */
   gap: 10px;
+  font-size: 16px;
   border: 1px solid #2a2a2a;
   background: #474747; /* Quase preto, mas não absoluto */
   display: flex;
@@ -691,8 +696,8 @@ textarea#postText:focus {
   border-radius: 12px;
 }
 .video-box:focus-within {
-  border-color: #4A90E2;
-  box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+  border-color: none;
+  outline: none;
 }
 
 .post-box input[type="text"] {
@@ -1215,35 +1220,4 @@ textarea#postText:focus {
 
 .post-layer {
   display: none;
-}
-
-/* Remove overlay de controles no Chrome */
-video::-webkit-media-controls {
-    display: none !important;
-}
-
-video::-webkit-media-controls-enclosure {
-    display: none !important;
-}
-
-video::-webkit-media-controls-panel {
-    display: none !important;
-}
-
-/* Remove no Firefox */
-video::-moz-media-controls {
-    display: none !important;
-}
-
-/* Remove o botão de play gigante do iOS */
-video::-webkit-media-controls-start-playback-button {
-    display: none !important;
-    -webkit-appearance: none;
-}
-
-/* Remove aquele overlay cinza do Android */
-.post-video video {
-    pointer-events: auto; /* permite clique sem chamar controles */
-    background-color: black;
-    outline: none;
 }

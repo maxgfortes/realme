@@ -834,7 +834,7 @@
 
 /* Full Profile Container with Glassmorphism */
 .full-profile-container {
-  width: 90vw;
+  width: 79vw;
   height: calc(100vh - 100px);
   margin: 0 auto;
   background: rgba(20, 20, 20, 0.247);
