@@ -35,11 +35,11 @@ const audioReceive = new Audio('./src/audio/msg recive.mp3');
 let popupQueue = [];
 let showingPopup = false;
 
-// Mensagens já mostradas (persistente entre páginas)
+// Mensagens já mostradas (persistente entre páginas) - REINTRODUZIDO
 let shownMsgIds = new Set();
 const SHOWN_MSGS_KEY = "shownMsgIds";
 
-// Carrega do localStorage ao iniciar
+// Carrega do localStorage ao iniciar - REINTRODUZIDO
 function loadShownMsgIds() {
   try {
     const arr = JSON.parse(localStorage.getItem(SHOWN_MSGS_KEY));
@@ -51,6 +51,37 @@ function saveShownMsgIds() {
 }
 loadShownMsgIds();
 
+// Função para iniciar a transição de fechamento do popup
+function hidePopup(popup, isMobile, timeoutId) {
+    if (!showingPopup) return; // Evita fechar algo que já está sendo fechado
+
+    // Limpa o timeout original de 5 segundos
+    clearTimeout(timeoutId);
+
+    if (isMobile) {
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(-100%)';
+    } else {
+      popup.style.opacity = '0';
+    }
+    
+    showingPopup = false;
+    
+    // Espera a transição terminar antes de processar a próxima mensagem
+    setTimeout(() => {
+      // Remove os listeners de toque para evitar vazamentos de memória ou bugs
+      popup.ontouchstart = null;
+      popup.ontouchmove = null;
+      popup.ontouchend = null;
+      
+      if (popupQueue.length > 0) {
+        const next = popupQueue.shift();
+        showMessagePopup(next.senderName, next.senderPhoto, next.content, next.chatId, next.msgId);
+      }
+    }, 350);
+}
+
+
 function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
   let popup = document.getElementById('global-msg-popup');
   const isMobile = window.innerWidth <= 768;
@@ -59,7 +90,7 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
     popup.id = 'global-msg-popup';
     popup.style.position = 'fixed';
     popup.style.zIndex = '9999';
-    popup.style.background = 'rgba(40,44,52,0.98)';
+    popup.style.background = '#282c34fa';
     popup.style.color = '#fff';
     popup.style.fontFamily = 'Inter, Arial, sans-serif';
     popup.style.cursor = 'pointer';
@@ -75,13 +106,16 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
       popup.style.top = '0';
       popup.style.left = '0';
       popup.style.right = '0';
-      popup.style.margin = '6px';
+      popup.style.margin = '8px 14px';
       popup.style.borderRadius = '14px';
       popup.style.padding = '18px 24px';
-      popup.style.maxWidth = '97vw';
-      popup.style.width = '100vw';
+      popup.style.maxWidth = '93vw';
+      popup.style.width = '93vh';
       popup.style.transform = 'translateY(-100%)';
       popup.style.opacity = '0';
+      popup.style.backdropFilter = 'blur(8px)';
+      popup.style.background = '#020202a2';
+      popup.style.border = '1px solid #1a1a1a';
     } else {
       popup.style.bottom = '32px';
       popup.style.right = '32px';
@@ -98,7 +132,6 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
     <img src="${senderPhoto}" alt="Foto" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
     <div>
       <strong>${senderName}</strong><br>
-      <span style="color:#4e8cff;">Nova mensagem:</span>
       <div style="margin-top:6px;font-size:1.05em;">${content.length > 80 ? content.slice(0,80)+'...' : content}</div>
     </div>
   `;
@@ -112,33 +145,54 @@ function showMessagePopup(senderName, senderPhoto, content, chatId, msgId) {
   }
 
   popup.onclick = () => {
-  if (isMobile) {
-    window.location.href = `direct-mobile.html?chat=${chatId}`;
-  } else {
-    window.location.href = `direct.html?chat=${chatId}`;
-  }
-};
+    // Abre a conversa
+    if (isMobile) {
+      window.location.href = `direct-mobile.html?chat=${chatId}`;
+    } else {
+      window.location.href = `direct.html?chat=${chatId}`;
+    }
+  };
 
   showingPopup = true;
   audioReceive.play();
+  
+  // REINTRODUZIDO: Marca a mensagem como 'mostrada' para não aparecer em popup novamente
   shownMsgIds.add(msgId);
   saveShownMsgIds();
-
-  setTimeout(() => {
-    if (isMobile) {
-      popup.style.opacity = '0';
-      popup.style.transform = 'translateY(-100%)';
-    } else {
-      popup.style.opacity = '0';
-    }
-    showingPopup = false;
-    setTimeout(() => {
-      if (popupQueue.length > 0) {
-        const next = popupQueue.shift();
-        showMessagePopup(next.senderName, next.senderPhoto, next.content, next.chatId, next.msgId);
-      }
-    }, 350);
+  
+  // Timeout de fechamento automático
+  const autoCloseTimeout = setTimeout(() => {
+    hidePopup(popup, isMobile, autoCloseTimeout);
   }, 5000);
+
+  // Lógica de Swipe Up (Mini arrasto) - Apenas para Mobile
+  if (isMobile) {
+    let touchstartY = 0;
+    let touchendY = 0;
+    const SWIPE_THRESHOLD = -25; // Precisa arrastar 25px para cima para fechar
+
+    popup.ontouchstart = e => {
+      // e.touches[0].clientY é a coordenada Y do primeiro dedo
+      touchstartY = e.touches[0].clientY;
+    };
+
+    popup.ontouchmove = e => {
+      // Opcional: Aqui você pode adicionar lógica para o popup seguir o dedo,
+      // mas vamos focar apenas no touchend para manter simples.
+    };
+
+    popup.ontouchend = e => {
+      // e.changedTouches[0].clientY é a coordenada Y ao levantar o dedo
+      touchendY = e.changedTouches[0].clientY;
+      
+      const deltaY = touchendY - touchstartY; // Movimento vertical (negativo = para cima)
+
+      if (deltaY < SWIPE_THRESHOLD) {
+        // Gesto de swipe up detectado!
+        hidePopup(popup, isMobile, autoCloseTimeout);
+      }
+    };
+  }
 }
 
 // Listener global
@@ -159,10 +213,11 @@ onAuthStateChanged(auth, async (user) => {
           if (change.type === "added") {
             const msg = change.doc.data();
             const msgId = change.doc.id;
-            // Só mostra se for para o usuário logado, não foi enviado por ele, nunca foi mostrado e não está como lida
+            
+            // CONDIÇÃO ATUAL: Não enviada por mim E nunca mostrada E não lida
             if (
               msg.sender !== loggedUser &&
-              !shownMsgIds.has(msgId) &&
+              !shownMsgIds.has(msgId) && // REINTRODUZIDO: Verifica o LocalStorage
               (msg.read === undefined || msg.read === false)
             ) {
               newMsgs.push({msg, msgId});
@@ -202,6 +257,3 @@ onAuthStateChanged(auth, async (user) => {
     });
   });
 });
-
-// Agora, se a mensagem já foi mostrada (id salva no localStorage), ela não aparece mais em popup.
-// Para implementar "visto", basta salvar msg.read = true no Firestore e o popup nunca será mostrado para mensagens lidas.

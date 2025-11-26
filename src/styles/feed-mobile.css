@@ -1580,7 +1580,9 @@ textarea#postText:focus {
     transform: translateX(0); 
 }
 
-
+.global-msg-popup {
+  background-color: #020202 !important;
+}
 }
 
 

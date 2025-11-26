@@ -646,7 +646,6 @@ textarea#postText:focus {
   backdrop-filter: blur(8px);
   border: 1px solid #2a2a2a;
   border-radius: 12px;
-  display: none;
 }
 .post-box:focus-within {
   border-color: #4A90E2;
@@ -695,6 +694,7 @@ textarea#postText:focus {
   backdrop-filter: blur(8px);
   border: 1px solid #2a2a2a;
   border-radius: 12px;
+  display: none;
 }
 .video-box:focus-within {
   border-color: none;
@@ -718,7 +718,6 @@ textarea#postText:focus {
   border-radius: 8px;
   width: 88%; /* ajuste conforme precisar */
   gap: 10px;
-  font-size: 16px;
   border: 1px solid #2a2a2a;
   background: #474747; /* Quase preto, mas não absoluto */
   display: flex;
@@ -731,6 +730,7 @@ textarea#postText:focus {
   backdrop-filter: blur(8px);
   border-radius: 12px;
   outline: none;
+  font-size: 16px;
     }
 
     .image-help {

@@ -69,6 +69,8 @@ const DOMINIOS_MALICIOSOS = [
 
 
 
+
+
 // ===================
 // SISTEMA DE POP-UPS
 // ===================
@@ -1227,68 +1229,155 @@ function obterFotoPerfil(userData, usuarioLogado) {
   return './src/icon/default.jpg';
 }
 
-// ===================
-// GREETING DINÂMICO COM FOTO DE PERFIL
-// ===================
+
+// ==============================
+// SISTEMA DE CACHE GLOBAL
+// ==============================
+
+const CACHE_USER_TIME = 1000 * 60 * 10; // 10 minutos
+
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+
+    const data = JSON.parse(raw);
+
+    // expirou
+    if (Date.now() - data.time > CACHE_USER_TIME) {
+      localStorage.removeItem(key);
+      return null;
+    }
+
+    return data.value;
+  } catch {
+    return null;
+  }
+}
+
+function setCache(key, value) {
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        time: Date.now(),
+        value
+      })
+    );
+  } catch {}
+}
+
+
+
+// ==============================
+// CACHE DE USUÁRIOS
+// ==============================
+async function buscarUsuarioCached(uid) {
+  const key = `user_cache_${uid}`;
+
+  // 1. Tenta pegar do cache
+  const cache = getCache(key);
+  if (cache) return cache;
+
+  // 2. Busca remoto
+  const dados = await buscarDadosUsuarioPorUid(uid);
+
+  // 3. Salva no cache
+  if (dados) setCache(key, dados);
+
+  return dados;
+}
+
+
+// ==============================
+// GREETING COM CACHE
+// ==============================
 async function atualizarGreeting() {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) return;
+
   const loadingInfo = mostrarLoading('Carregando dados do usuário...');
+
   try {
-    const userData = await buscarDadosUsuarioPorUid(usuarioLogado.uid);
+    // 🔥 Agora usando CACHE!
+    const userData = await buscarUsuarioCached(usuarioLogado.uid);
+
+    // Determinar saudação
     const agora = new Date();
     const hora = agora.getHours();
     let saudacao;
-    if (hora >= 5 && hora < 12) {
-      saudacao = "Bom dia";
-    } else if (hora >= 12 && hora < 18) {
-      saudacao = "Boa tarde";
-    } else {
-      saudacao = "Boa noite";
-    }
-    const nome = userData?.displayname ||
+
+    if (hora >= 5 && hora < 12) saudacao = "Bom dia";
+    else if (hora >= 12 && hora < 18) saudacao = "Boa tarde";
+    else saudacao = "Boa noite";
+
+    // Determinar nome
+    const nome =
+      userData?.displayname ||
       userData?.nome ||
       usuarioLogado.displayName ||
       usuarioLogado.displayname ||
       usuarioLogado.nome ||
       usuarioLogado.email;
-    const greetingText = `${saudacao}`;
+
+    // Aplicar saudação
     const greetingElement = document.getElementById('greeting');
     if (greetingElement) {
-      greetingElement.textContent = greetingText;
+      greetingElement.textContent = saudacao;
     }
+
+    // Aplicar nome
     const usernameElement = document.getElementById('username');
     if (usernameElement) {
       usernameElement.textContent = nome;
     }
+
+    // Foto de perfil
     const urlFotoPerfil = obterFotoPerfil(userData, usuarioLogado);
-    const fotoPerfilWelcome = document.querySelector('.user-welcome img') ||
+
+    const fotoPerfilWelcome =
+      document.querySelector('.user-welcome img') ||
       document.querySelector('.welcome-box img') ||
       document.querySelector('section.welcome-box .user-welcome img');
+
     if (fotoPerfilWelcome) {
       fotoPerfilWelcome.src = urlFotoPerfil;
       fotoPerfilWelcome.onerror = function () {
         this.src = './src/icon/default.jpg';
       };
     }
+
     clearInterval(loadingInfo.interval);
     esconderLoading();
+
   } catch (error) {
+
     console.error("Erro ao atualizar greeting:", error);
+
     clearInterval(loadingInfo.interval);
     esconderLoading();
-    const nome = usuarioLogado.displayName || usuarioLogado.displayname || usuarioLogado.nome || usuarioLogado.email;
+
+    const fallbackNome =
+      usuarioLogado.displayName ||
+      usuarioLogado.displayname ||
+      usuarioLogado.nome ||
+      usuarioLogado.email;
+
     const greetingElement = document.getElementById('greeting');
     const usernameElement = document.getElementById('username');
+
     if (greetingElement) greetingElement.textContent = "Olá";
-    if (usernameElement) usernameElement.textContent = nome;
+    if (usernameElement) usernameElement.textContent = fallbackNome;
+
     const urlFotoFallback = obterFotoPerfil(null, usuarioLogado);
     const fotoPerfilGreeting = document.querySelector('.greeting-profile-pic');
+
     if (fotoPerfilGreeting && urlFotoFallback !== './src/icon/default.jpg') {
       fotoPerfilGreeting.src = urlFotoFallback;
     }
   }
 }
+
 
 // ===================
 // CONFIGURAR LINKS
