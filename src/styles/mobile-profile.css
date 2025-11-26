@@ -73,6 +73,7 @@
       z-index: 22;
       height: 100vh;
       background: transparent;
+      overflow-x: hidden;
     }
 
     .full-profile-container::after {
