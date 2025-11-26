@@ -323,11 +323,10 @@ async function carregarDepoimentos(userid) {
     depoimentoForm.className = 'depoimento-form';
     depoimentoForm.innerHTML = `
       <h4>Deixar um depoimento</h4>
-      <textarea id="depoimentoTexto" placeholder="Escreva seu depoimento aqui..." maxlength="500"></textarea>
       <div class="form-actions">
-        <span class="char-count">0/500</span>
+        <textarea id="depoimentoTexto" placeholder="Escreva seu depoimento aqui..." maxlength="500"></textarea>
         <button class="btn-enviar-depoimento" onclick="enviarDepoimento('${userid}')">
-          <i class="fas fa-paper-plane"></i> Enviar Depoimento
+          <i class="fas fa-paper-plane"></i> Enviar
         </button>
       </div>
     `;
@@ -437,7 +436,7 @@ async function enviarDepoimento(targetUserId) {
     alert('Erro ao enviar depoimento. Tente novamente.');
   } finally {
     btnEnviar.disabled = false;
-    btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Depoimento';
+    btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar';
   }
 }
 
@@ -850,32 +849,100 @@ async function carregarMaisPosts() {
 function configurarNavegacaoTabs() {
   const menuItems = document.querySelectorAll('.menu-item');
   const tabs = document.querySelectorAll('.tab');
-  if (!menuItems.length || !tabs.length) return;
+  const slider = document.querySelector('.slider');
+  const profileBody = document.querySelector('.profile-body');
+  
+  if (!menuItems.length || !tabs.length || !slider) return;
+  
+  let isTransitioning = false;
+  
+  // Função para mover o slider
+  function moverSlider(index) {
+    slider.style.transform = `translateX(${index * 100}%)`;
+  }
+  
+  // Função para trocar tabs com fade
+  async function trocarTab(index, userid) {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    
+    // Adiciona classe de transição no body
+    if (profileBody) profileBody.classList.add('transitioning');
+    
+    // Encontra tab ativa atual
+    const tabAtual = document.querySelector('.tab.active');
+    
+    if (tabAtual) {
+      // Fade out da tab atual
+      tabAtual.classList.add('fade-out');
+      
+      // Aguarda animação de fade out
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Remove active e fade-out
+      tabAtual.classList.remove('active', 'fade-out');
+    }
+    
+    // Ativa nova tab
+    if (tabs[index]) {
+      tabs[index].classList.add('active', 'fade-in');
+      
+      // Aguarda animação de fade in
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Remove classe fade-in
+      tabs[index].classList.remove('fade-in');
+    }
+    
+    // Remove classe de transição
+    if (profileBody) profileBody.classList.remove('transitioning');
+    
+    // Carrega conteúdo da tab
+    if (index === 0) {
+      if (!document.querySelector('#muralPosts .postpreview, #muralPosts .post-card')) {
+        await carregarPostsDoMural(userid);
+      }
+    } else if (index === 3) {
+      await carregarDepoimentos(userid);
+    } else if (index === 4) {
+      await carregarLinks(userid);
+    }
+    
+    isTransitioning = false;
+  }
+  
   menuItems.forEach((item, index) => {
     item.addEventListener('click', async () => {
+      // Previne cliques durante transição
+      if (isTransitioning) return;
+      
+      // Verifica se já está na tab clicada
+      if (item.classList.contains('active')) return;
+      
+      // Remove classe active de todos os menu items
       menuItems.forEach(mi => mi.classList.remove('active'));
-      tabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Adiciona active no clicado
       item.classList.add('active');
-      if (tabs[index]) tabs[index].classList.add('active');
+      
+      // Move o slider
+      moverSlider(index);
+      
+      // Troca tab com animação
       const userid = determinarUsuarioParaCarregar();
-      if (!userid) return;
-      if (index === 0) {
-        if (!document.querySelector('#muralPosts .post-card:not(.loading-container):not(.empty-posts):not(.error-container)')) {
-          await carregarPostsDoMural(userid);
-        }
-      } else if (index === 3) {
-        await carregarDepoimentos(userid);
-      } else if (index === 4) {
-        await carregarLinks(userid);
+      if (userid) {
+        await trocarTab(index, userid);
       }
     });
   });
+  
+  // Inicializa na primeira tab
   if (menuItems[0] && tabs[0]) {
     menuItems[0].classList.add('active');
     tabs[0].classList.add('active');
+    moverSlider(0);
   }
 }
-
 // ===================
 // FUNÇÕES DE INTERAÇÃO COM POSTS
 // ===================
@@ -1366,8 +1433,8 @@ function aplicarCoresMenu(cor) {
   style.textContent = `
     /* Itens do menu */
     
-    .menu-item.active {
-      border-bottom-color: ${cor} !important;
+    .slide {
+    background-color: ${cor}; 
     }
     
   `;
@@ -1488,6 +1555,10 @@ function aplicarCoresLinks(cor) {
     
     .link-box:hover .link-arrow {
       color: ${cor} !important;
+    }
+
+        .empty-icon{
+    color: ${cor};
     }
     
     /* Links de navegação */
@@ -1997,8 +2068,20 @@ async function atualizarImagensPerfil(userData, userid) {
 
   // Removido: aplicação de cor personalizada
 
+/* === APLICAR FUNDO GERAL NA CONTAINER-FULL ===
+const bgUrl = mediaData.background;
+const containerFull = document.querySelector(".full-profile-container");
+
+if (containerFull && bgUrl) {
+    containerFull.style.setProperty("background-image", `url('${bgUrl}')`, "important");
+    containerFull.style.setProperty("background-size", "cover", "important");
+    containerFull.style.setProperty("background-position", "center", "important");
+    containerFull.style.setProperty("background-repeat", "no-repeat", "important");
+}
+*/
+
   const headerPhoto = mediaData.headerphoto;
-  const headerEl = document.querySelector('.profile-header');
+  const headerEl = document.querySelector('.profile-header-bg');
   if (headerEl && headerPhoto) {
     headerEl.style.backgroundImage = `url('${headerPhoto}')`;
     headerEl.style.backgroundSize = 'cover';
