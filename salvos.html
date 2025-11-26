@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/media-queries.css" />
+  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/search.css" />
+  <link rel="stylesheet" href="./src/styles/loading.css" />
+  <link rel="stylesheet" href="./src/styles/feed-mobile.css">
+
+    <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+
+    
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+
+</head>
+
+  <style>  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff ;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    } 
+
+
+    .main-content {
+        margin: 0px;
+        height: 100vh;
+        margin-left: 160px !important;
+        width: 100vw;
+        padding-top: 50px;
+    }
+
+    .mapa {
+        height: 100%;
+        width: 100%;
+        position: relative;
+    }
+
+    #map {
+        width: 900%;
+        height: 100%;
+        filter: brightness(1.6) contrast(1.0) hue-rotate(200deg) saturate(1.5);
+    }
+
+    .leaflet-touch .leaflet-bar {
+      display: none !important;
+    }
+
+    .map-controls {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 500;
+        max-width: 300px;
+        background: rgba(20, 20, 20, 0.774);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+    }
+
+    .map-controls h3 {
+        color: #c5c5c5;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .map-controls p {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .stats-box {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 500;
+        display: flex;
+        gap: 30px;
+background: rgba(20, 20, 20, 0.774);
+  backdrop-filter: blur(8px);
+  border: 1px solid #2a2a2a;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item .number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #707070;
+        display: none;
+    }
+
+    .stat-item .label {
+        font-size: 14px;
+        color: #999;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal-content h2 {
+        color: #707070;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #707070;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .modal-content button {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(0deg, rgb(192, 192, 192) 0%, rgba(248, 248, 248, 1) 100%);
+        color: #707070;
+        border: 1px solid #919191;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+        .map-controls {
+            max-width: calc(100% - 40px);
+        }
+
+        .stats-box {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-itens {
+            display: none;
+        }
+        .main-content {
+          margin: 0px !important;
+        }
+
+         .stats-box{
+          margin-bottom: 7rem;
+         }
+    }
+
+    .leaflet-container {
+    background: #0e0e0e;
+    }
+
+  </style>
+  <style>
+    /* Estilos específicos da página de salvos */
+    .saved-page-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-top: 80px;
+    }
+
+    .saved-header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .saved-header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .saved-header p {
+      color: #999;
+      font-size: 14px;
+    }
+
+    #savedPostsFeed {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Reutiliza estilos de post do feed */
+    .post-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #333;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .user-meta {
+      flex: 1;
+    }
+
+    .user-name-link {
+      font-weight: 600;
+      cursor: pointer;
+      display: block;
+    }
+
+    .user-name-link:hover {
+      color: #4A90E2;
+    }
+
+    .post-username {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .post-text {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .post-image {
+      margin: 15px 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .post-image img {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      border-top: 1px solid #333;
+    }
+
+    .post-actions-left, .post-actions-right {
+      display: flex;
+      gap: 15px;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .action-btn p {
+      margin: 0;
+    }
+
+    .post-date {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .saved-page-container {
+        padding: 10px;
+        padding-top: 70px;
+        padding-bottom: 80px;
+      }
+
+      .action-btn p {
+        display: none;
+      }
+    }
+  </style>
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+  </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+  <div class="nav-mobile">
+      <button class="post-mobile-btn" aria-label="Menu">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <div class="logo-mobile">RealMe</div>
+      <button class="search-mobile-btn" aria-label="Buscar">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
+      </button>
+  </div>
+
+  <div id="mobile-search-container"></div>
+  <!-- Sidebar Desktop -->
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
+    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
+    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
+    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
+    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
+    <!-- Menu Mais com submenu flutuante -->
+        <div class="more-menu" id="moreMenu">
+            <a href="#" class="more-toggle" id="moreToggle">
+                <i class="fa-solid fa-bars"></i>
+                Mais
+            </a>
+            <div class="floating-menu" id="floatingMenu">
+                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="#"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
+                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
+                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </div>
+  </aside>
+
+    <!-- Navbar Bottom -->
+  <nav class="navbar-bottom">
+    <div class="navbar-bottom-content">
+      <a href="feed.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832">
+  <path fill-rule="nonzero" d="M29.337 511.832c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542H29.337z"/>
+</svg>
+      </a>
+      <a href="acharamigos.html">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<g>
+	<path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3
+		c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3
+		S384,459.8,384,448z"/>
+	<path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64
+		V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7
+		V64z"/>
+	<path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9
+		V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/>
+	<path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26
+		c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3
+		c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/>
+</g>
+</svg>
+      </a>
+      <a href="direct-mobile.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 506 511.682"><path fill-rule="nonzero" d="M76.022 432.762c-14.224-17.624-28.477-36.009-40.468-55.504-13.738-22.329-24.838-46.442-30.326-73.172-14.057-68.387.935-136.064 36.561-190.148C77.414 59.833 133.687 19.322 202.118 5.235c68.394-14.071 136.056.928 190.14 36.547 54.105 35.632 94.638 91.912 108.71 160.35 7.003 34.067 6.445 67.452-.116 99.01-7.018 33.734-20.937 65.408-39.78 93.639-25.671 38.445-58.723 65.581-98.51 82.009-39.837 16.45-86.054 21.88-138.014 16.979l-9.714-.928c-19.966-1.928-27.528-2.653-33.487-1.094-4.343 1.181-9.932 3.69-18.842 7.677l-8.381 3.734c-20.756 9.229-36.009 10.44-47.878 6.14-15.499-5.618-22.503-17.566-25.765-33.023-1.624-7.706-2.139-15.739-2.675-24.221-.399-6.445-.841-13.231-1.784-19.292zm47.972-127.857l61.768-98.785c10.976-16.573 33.719-20.177 49.357-7.924l52.024 40.917c4.785 3.734 11.469 3.886 16.363.319l66.038-46.413c9.678-7.032 21.873 4.698 15.297 14.681l-62.355 97.785c-10.977 16.566-33.719 20.176-49.357 7.917l-52.024-40.918c-4.785-3.734-11.462-3.893-16.363-.319l-65.509 47.37c-9.671 7.032-21.872-4.64-15.239-14.63zM74.761 353.16c11.976 19.473 26.273 37.597 40.323 54.902a22.782 22.782 0 014.785 9.693c2.501 10.962 3.175 21.532 3.799 31.428.384 6.104.754 11.919 1.493 16.232 2.226-.775 5.633-2.16 10.462-4.299l8.177-3.596c11.23-5.031 18.284-8.192 25.679-10.164h.094c13.688-3.646 23.49-2.711 49.581-.188l9.716.928c44.484 4.197 83.43-.196 116.25-13.746 31.246-12.905 57.36-34.444 77.833-65.103 15.616-23.395 27.144-49.596 32.936-77.457 5.336-25.686 5.8-52.822.116-80.48-11.52-56.026-44.673-102.084-88.919-131.221-44.274-29.158-99.72-41.432-155.79-29.891-56.012 11.528-102.07 44.674-131.199 88.912-29.166 44.282-41.433 99.728-29.906 155.798 4.205 20.495 13.246 39.852 24.57 58.252z"/></svg>
+      </a>
+      <a href="explorar.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg>
+      </a>
+<a href="pfmobile.html">
+      <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+    </a>
+    </div>
+  </nav>
+
+  <ul id="searchResults"></ul>
+
+<!-- Conteúdo principal -->
+<div class="main-content">
+      <!-- Container Principal -->
+  <div class="saved-page-container">
+    <div class="saved-header">
+      <h1><i class="fas fa-bookmark"></i> Posts Salvos</h1>
+      <p>Todos os posts que você salvou aparecem aqui</p>
+    </div>
+
+    <!-- Feed de Posts Salvos -->
+    <div id="savedPostsFeed">
+      <!-- Posts serão carregados aqui dinamicamente -->
+    </div>
+  </div>
+</div>
+  <script src="./src/js/loading.js"></script>
+  <script src="./src/js/search.js" defer></script>
+  <script src="./src/js/new-popup.js" defer></script>
+  <script src="./src/js/more.js"></script>
+  <script type="module" src="codigo-mobile.js"></script>
+  <script src="./src/js/novidades.js"></script>
+  <script src="./src/js/pfp-navbar.js"></script>
+  <script type="module" src="./src/js/salvos.js"></script>
+</body>
+</html>
