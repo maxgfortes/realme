@@ -15,7 +15,8 @@ import {
   startAfter,
   deleteDoc,
   updateDoc,
-  increment
+  increment,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth,
@@ -40,21 +41,96 @@ const auth = getAuth(app);
 let currentUser = null;
 let currentUserId = null;
 let currentUserData = null;
+let profileUserId;
 
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
+if (!user) {
     window.location.href = 'index.html';
     return;
   }
-  currentUser = user;
+  
   currentUserId = user.uid;
-  currentUserData = await getUserData(currentUserId);
-  await carregarPerfilCompleto();
+
+  profileUserId = determinarUsuarioParaCarregar(); // Obtém da URL ou usa o ID logado
+  
+  // 2. CARREGA OS DADOS INICIAIS USANDO O ID DO PERFIL
+  await carregarPerfilCompleto(profileUserId); 
+  
+  // 3. INICIA O MONITORAMENTO EM TEMPO REAL COM O ID DO PERFIL
+  if (profileUserId) {
+      // Chamamos a função de monitoramento com o ID CORRETO
+      monitorarDadosPerfilEmTempoReal(profileUserId); 
+  }
   configurarLinks();
   configurarNavegacaoTabs();
   await atualizarMarqueeUltimoUsuario();
+    if(currentUserId) {
+      monitorarEstatisticasPerfil(currentUserId);
+  }
 });
+
+
+// ===================
+// MONITORAMENTO EM TEMPO REAL DO PERFIL (FIXADO)
+// ===================
+function monitorarDadosPerfilEmTempoReal(targetUserId) {
+  if (!targetUserId) {
+    console.error("ID do alvo inválido para monitoramento.");
+    return;
+  }
+  
+  // 1. MONITORAR DADOS BÁSICOS (Nome, Bio, Status, etc.)
+  const userRef = doc(db, 'users', targetUserId);
+  const unsubscribeDados = onSnapshot(userRef, (docSnap) => {
+      if(docSnap.exists()){
+          const userData = docSnap.data();
+          
+          // Exemplo de atualização:
+          const displaynameEl = document.getElementById('displaynamePerfil');
+          if (displaynameEl) {
+              displaynameEl.textContent = userData.displayname || userData.username;
+          }
+          
+          // Chame suas funções que atualizam o DOM do perfil aqui:
+          // atualizarNomeDoPerfil(userData);
+          // atualizarBio(userData);
+          // atualizarStatus(userData.status);
+          
+          console.log(`Dados básicos do perfil ${targetUserId} atualizados.`);
+      }
+  }, (error) => {
+      console.error("Erro ao monitorar dados básicos:", error);
+  });
+  
+  // 2. MONITORAR ESTATÍSTICAS (Posts, Seguidores, Seguindo)
+  // Se suas estatísticas de posts estão em um subdocumento (ex: 'users/ID/stats')
+  const statsRef = doc(db, 'users', targetUserId, 'stats', 'counts'); 
+  const unsubscribeStats = onSnapshot(statsRef, (docSnap) => {
+      if (docSnap.exists()) {
+          const statsData = docSnap.data();
+          
+          // Exemplo de atualização:
+          const countFollowersEl = document.getElementById('countFollowers');
+          if (countFollowersEl) {
+              countFollowersEl.textContent = statsData.followersCount || 0;
+          }
+          
+          // Chame suas funções que atualizam as estatísticas aqui:
+          // atualizarContagemPosts(statsData.postsCount);
+          
+          console.log(`Estatísticas do perfil ${targetUserId} atualizadas.`);
+      }
+  }, (error) => {
+      console.error("Erro ao monitorar estatísticas:", error);
+  });
+  
+  // Você pode retornar uma função para desativar todos os listeners se a página mudar
+  return () => {
+    unsubscribeDados();
+    unsubscribeStats();
+  };
+}
 
 // ===================
 // BUSCA DE USUÁRIOS
@@ -459,6 +535,7 @@ async function excluirDepoimento(depoId, targetUserId) {
 // SISTEMA DE POSTS DO MURAL
 // ===================
 let isLoadingPosts = false;
+let postsDoUsuario = [];
 let lastPostDoc = null;
 let currentProfileId = null;
 
@@ -671,12 +748,26 @@ async function carregarPostsDoMural(userid) {
     return;
   }
 
-  // Renderiza posts como grid de previews
-  snapshot.forEach(postDoc => {
+// Resetar lista global de posts
+postsDoUsuario = [];
+
+snapshot.forEach(postDoc => {
     const postData = postDoc.data();
+
+    // Salvar post completo no array
+    postsDoUsuario.push({
+        id: postDoc.id,
+        userid: userid,
+        data: postData
+    });
+
+    // Criar preview do post
     const previewElement = criarPreviewPost(postData, postDoc.id, userid);
     muralContainer.appendChild(previewElement);
-  });
+});
+
+
+  
 
   isLoadingPosts = false;
 }
@@ -708,10 +799,129 @@ function criarPreviewPost(postData, postId, userid) {
   }
   
   // Adiciona evento de clique para abrir modal
-  preview.onclick = () => abrirModalPostCompleto(postData, postId, userid);
+  preview.onclick = () => {
+    const index = postsDoUsuario.findIndex(p => p.id === postId);
+    abrirModalFeed(index);
+};
+
   
   return preview;
 }
+
+// ================================
+// MODAL FEED — Vertical (1 post por tela) com overflow scroll
+// ================================
+function abrirModalFeed(indexInicial) {
+    // cria o modal principal
+    const modal = document.createElement('div');
+    modal.className = 'post-feed-modal';
+modal.innerHTML = `
+    <div class="feed-overlay"></div>
+
+<div class="feed-header-global">
+
+
+        <button class="close-feed">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"> <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/> </svg>
+    </button>
+    <span id="feedHeaderUsername" class="feed-header-username">username
+    </span>
+</div>
+
+    <div class="feed-scroll"></div>
+`;
+
+
+
+    document.body.appendChild(modal);
+    // ANIMAÇÃO DE ABRIR
+setTimeout(() => {
+    modal.classList.add("aberto");
+}, 10);
+
+    document.body.style.overflow = "hidden";
+
+    function fecharFeed() {
+    const modal = document.querySelector('.post-feed-modal');
+    if (!modal) return;
+
+    // animação de fechar
+    modal.classList.remove("aberto");
+    modal.classList.add("fechando");
+
+    // remove só depois da animação
+    setTimeout(() => {
+        modal.remove();
+        document.body.style.overflow = "auto";
+    }, 350); // mesmo tempo do CSS
+}
+
+
+    // Preencher o username no header
+preencherHeader(postsDoUsuario[indexInicial].userid);
+
+
+    const scrollArea = modal.querySelector('.feed-scroll');
+
+    // Renderiza TODOS os posts do usuário, 1 por tela
+    postsDoUsuario.forEach(post => {
+        const postEl = document.createElement('div');
+        postEl.className = 'feed-page';
+
+        postEl.innerHTML = `
+            <div class="feed-header">
+                <img src="./src/icon/default.jpg" class="feed-avatar" id="feedPic-${post.id}">
+                <div class="feed-info">
+                    <span class="feed-name" id="feedName-${post.id}"></span>
+                    <span class="feed-username" id="feedUser-${post.id}"></span>
+                </div>
+            </div>
+
+            <div class="feed-body">
+                ${post.data.img ? `<img src="${post.data.img}" class="feed-img">` : ''}
+                <div class="feed-text">${formatarConteudoPost(post.data.content)}</div>
+            </div>
+        `;
+
+        scrollArea.appendChild(postEl);
+        preencherInfos(post.userid, post.id);
+    });
+
+    // scroll automático para o post clicado
+    setTimeout(() => {
+        scrollArea.scrollTo({
+            top: indexInicial * window.innerHeight,
+            behavior: "instant"
+        });
+    }, 50);
+
+    // Fechar
+    modal.querySelector('.close-feed').onclick = () => {
+        modal.remove();
+        document.body.style.overflow = "auto";
+    };
+
+    // Função para preencher dados do autor
+    async function preencherInfos(userid, pid) {
+        const u = await getUserData(userid);
+        const f = await getUserPhoto(userid);
+
+        document.getElementById(`feedPic-${pid}`).src = f;
+        document.getElementById(`feedName-${pid}`).textContent = u.displayname || u.username;
+        document.getElementById(`feedUser-${pid}`).textContent = "@" + (u.username || "");
+    }
+
+    async function preencherHeader(userid) {
+    const u = await getUserData(userid);
+    document.getElementById("feedHeaderUsername").textContent = (u.username || "usuario");
+}
+modal.querySelector('.close-feed').onclick = fecharFeed;
+
+
+
+}
+
+
 
 // Modal para exibir post completo
 async function abrirModalPostCompleto(postData, postId, userid) {
@@ -1944,6 +2154,11 @@ function atualizarInformacoesBasicas(userData, userid) {
   if (amigosTitle) amigosTitle.textContent = `Amigos de ${nomeCompleto}`;
 }
 
+
+
+
+
+
 // ATUALIZAÇÃO DE VISÃO GERAL
 function atualizarVisaoGeral(dados) {
   const visaoTab = document.querySelector('.visao-tab .about-container');
@@ -2107,9 +2322,11 @@ function configurarLinks() {
     btnSair.addEventListener('click', (e) => {
       e.preventDefault();
       signOut(auth);
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
     });
   }
 }
+
+
 
 

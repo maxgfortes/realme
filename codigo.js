@@ -839,6 +839,9 @@ async function removerBlurSeTemFundo(userid) {
   }
 }
 
+
+
+
 // ===================
 // OUTRAS FUNÇÕES
 // ===================
@@ -1026,6 +1029,95 @@ if (!document.head.contains(styleBtnHover)) document.head.appendChild(styleBtnHo
   });
 }
 await aplicarCorPersonalizada(userid);
+
+
+async function aplicarFontePersonalizada(userid) {
+  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+  const mediaSnap = await getDoc(mediaRef);
+
+  // remove estilo antigo se existir
+  const old = document.getElementById("custom-font-style");
+  if (old) old.remove();
+
+  if (!mediaSnap.exists()) return;
+  const mediaData = mediaSnap.data();
+  if (!mediaData.customFont) return;
+
+  const fonte = mediaData.customFont;
+
+  // cria <style> dinâmico
+  const style = document.createElement("style");
+  style.id = "custom-font-style";
+
+  // Se for URL → cria @font-face
+  if (fonte.includes(".ttf") || fonte.includes(".otf") || fonte.includes(".woff")) {
+    style.textContent = `
+      @font-face {
+        font-family: 'UserCustomFont';
+        src: url('${fonte}');
+      }
+      .profile-header *,
+      .profile-info *,
+      .profile-container,
+      .about-container *,
+      #displayname,
+      #username,
+      .about-title,
+      .profile-stats *,
+      .status-box,
+      .note-bubble {
+        font-family: 'UserCustomFont' !important;
+      }
+    `;
+  } else {
+    // Se for nome de fonte normal (Poppins, Inter, etc.)
+    style.textContent = `
+      .profile-header *,
+      .profile-info *,
+      .profile-container,
+      .about-container *,
+      #displayname,
+      #username,
+      .about-title,
+      .profile-stats *,
+      .status-box,
+      .note-bubble {
+        font-family: '${fonte}', sans-serif !important;
+      }
+    `;
+  }
+
+  document.head.appendChild(style);
+}
+
+
+// ============================================
+// MOSTRAR/OCULTAR VERIFICADO
+// ============================================
+
+async function aplicarVerificado(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.verificado');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isVerified = userSnap.exists() && userSnap.data().verified === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isVerified) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+
+// Chamar ao carregar o perfil
+await aplicarVerificado(userid);
+await aplicarFontePersonalizada(userid);
+
 }
 
 

@@ -6,6 +6,8 @@
   <title>RealMe</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/mobile-profile.css">
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
   <!-- Para o notch/barra de status -->
   <meta name="theme-color" content="#020202">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,6 +40,7 @@
           <a href="#" class="setting-item"><i class="fas fa-user-circle"></i> Conta</a>
           <a href="#" class="setting-item"><i class="fas fa-lock"></i> Privacidade</a>
           <a href="#" class="setting-item"><i class="fas fa-bell"></i> Notificações</a>
+          <a href="invites.html" class="setting-item"><i class="fa-solid fa-user-plus"></i>Convidar</a>
         </div>
         <div class="section-config">
           <p>Perfil</p>
@@ -52,7 +55,7 @@
         <li><a href="#" class="setting-item"><i class="fas fa-question-circle"></i> Ajuda</a></li>
     </div>
     <div class="sidebar-footer">
-        <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        <button id="btnSair"><i class="fas fa-sign-out-alt"></i> Fazer Logout</button>
     </div>
 </div>
 
@@ -277,6 +280,9 @@
       </a>
     </div>
   </nav>
+
+
+
 
 <!-- Iframe invisível -->
 <!-- Player YouTube invisível -->
