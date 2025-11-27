@@ -1591,8 +1591,44 @@ textarea#postText:focus {
 #global-msg-popup {
   background-color: #020202 !important;
 }
+
+.btn-delete-post {
+  border: none;
+  left: -14vh;
+  top: -7vh;
+  padding: 1vh 1.2vh;
+  color: #fff;
+  background-color: #4A90E2;
+  border-top: 1px solid #63a9fa;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  width: 12vh;
+  margin: 0px;
+  align-self: center;
+  display: flex;
+  z-index: 9999999;
 }
 
 
+.btn-delete-post:hover {
+  border: none;
+  left: -14vh;
+  top: -7vh;
+  padding: 1vh 1.2vh;
+  color: #fff;
+  background-color: #4A90E2;
+  border-top: 1px solid #63a9fa;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  width: 12vh;
+  margin: 0px;
+  align-self: center;
+  display: flex;
+  z-index: 9999999;
+}
+
+}
 
 

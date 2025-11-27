@@ -116,7 +116,7 @@ async function carregarConversas(filtrarTermo = "") {
     const btn = document.createElement("button");
     btn.className = "dm-user-btn";
     btn.innerHTML = `
-      <img src="${friendPhotoUrl}" alt="Foto">
+      <img src="${friendPhotoUrl}" alt="Foto" onerror="this.src='./src/icon/default.jpg'" >
       <div class="dm-user-info">
         <span class="dm-user-name">${friendDisplayName}</span>
         <span class="dm-user-time">${tempoRelativo(chatObj.lastMessageTime)}</span>

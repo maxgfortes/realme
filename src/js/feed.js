@@ -883,17 +883,18 @@ postEl.innerHTML = `
         <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
       </div>
     </div>
-    <div class="more-options">
+    <div class="left-space-options">
+        <div class="more-options">
       <button class="more-options-button">
         <i class="fas fa-ellipsis-h"></i>
       </button>
     </div>
     <div class="more-menu" style="display:none">
-  <button class="btn-delete-post" data-id="${postData.postid}" data-owner="${postData.creatorid}">
-    Apagar post
-  </button>
-</div>
-
+      <button class="btn-delete-post" data-id="${postData.postid}" data-owner="${postData.creatorid}">
+       Apagar post
+      </button>
+    </div>
+    </div>
   </div>
   <div class="post-content">
   <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
@@ -2487,3 +2488,17 @@ function configurarLimiteRepeticoes() {
     });
   });
 }
+
+
+const scrollContainer = document.scrollingElement || document.documentElement;
+
+scrollContainer.addEventListener("scroll", () => {
+  const scrollTop = scrollContainer.scrollTop;
+  const visibleHeight = scrollContainer.clientHeight;
+  const pageHeight = scrollContainer.scrollHeight;
+
+  if (scrollTop + visibleHeight >= pageHeight - 400 && !loading) {
+    loading = true;
+    loadMorePosts();
+  }
+});

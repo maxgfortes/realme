@@ -1223,3 +1223,37 @@ textarea#postText:focus {
 .post-layer {
   display: none;
 }
+
+.btn-delete-post {
+  border: none;
+  top: -8vh;
+  left: -20vh;
+  padding: 1vh 1.2vh;
+  color: #fff;
+  background-color: #4A90E2;
+  border-top: 1px solid #63a9fa;
+  border-radius: 8px;
+  text-align: center;
+  width: 15vh;
+  margin: 0px;
+  align-self: center;
+  display: flex;
+  position: absolute;
+  z-index: 9999999;
+}
+
+.btn-delete-post:hover {
+  border: none;
+  padding: 1vh 1.2vh;
+  color: #fff;
+  background-color: #3578c9;
+  border-top: 1px solid #63a9fa;
+  border-radius: 8px;
+  text-align: center;
+  width: 15vh;
+  margin: 0px;
+  align-self: center;
+  display: flex;
+  position: absolute;
+  z-index: 9999999;
+}
