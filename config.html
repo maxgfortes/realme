@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#1F1F1F" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -101,7 +102,7 @@
         <button class="tab-button" data-tab="preferencias">
           <i class="fas fa-heart"></i> Preferências
         </button>
-        <button class="tab-button" data-tab="conta">
+        <button class="tab-button conta" data-tab="conta">
           <i class="fas fa-shield-alt"></i> Conta
         </button>
       </div>
@@ -169,6 +170,10 @@
         <label>Background:</label>
         <input type="text" name="background" maxlength="500" placeholder="URL da foto do cabeçalho">
       </div>
+      <div class="form-group">
+        <label>Fonte do Perfil</label>
+          <input type="text" name="customFont" placeholder="Ex: Poppins, Inter, URL, etc">
+      </div>
     </div>
   </div>
 
@@ -188,6 +193,7 @@
       </div>
     </div>
   </div>
+  
 
   <div class="form-section">
     <div class="section-header">
