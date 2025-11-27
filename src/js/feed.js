@@ -9,7 +9,8 @@ import {
   setDoc,
   increment,
   serverTimestamp,
-  where
+  where,
+  deleteDoc
   
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
@@ -887,6 +888,12 @@ postEl.innerHTML = `
         <i class="fas fa-ellipsis-h"></i>
       </button>
     </div>
+    <div class="more-menu" style="display:none">
+  <button class="btn-delete-post" data-id="${postData.postid}" data-owner="${postData.creatorid}">
+    Apagar post
+  </button>
+</div>
+
   </div>
   <div class="post-content">
   <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
@@ -953,6 +960,8 @@ postEl.innerHTML = `
 </div>
 `;
 feed.appendChild(postEl);
+
+
 
 // Configura botão de salvar
 const btnSave = postEl.querySelector('.btn-save');
@@ -1929,6 +1938,62 @@ if (avisoEl) {
     }
   }
 });
+
+feed.addEventListener("click", async (e) => {
+
+  // 🟦 ABRIR MENU DOS 3 PONTINHOS
+  const btnMore = e.target.closest(".more-options-button");
+  if (btnMore) {
+    const menu = btnMore.closest(".post-header").querySelector(".more-menu");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+    return;
+  }
+
+  // 🟥 DELETAR POST
+  const btnDelete = e.target.closest(".btn-delete-post");
+  if (btnDelete) {
+    const postId = btnDelete.dataset.id;
+    const ownerId = btnDelete.dataset.owner;
+    const usuarioLogado = auth.currentUser;
+
+    if (!usuarioLogado) {
+      criarPopup("Erro", "Você precisa estar logado.", "error");
+      return;
+    }
+
+    // Só dono pode ver/opções
+    if (usuarioLogado.uid !== ownerId) {
+      criarPopup("Erro", "Você não pode excluir este post.", "warning");
+      return;
+    }
+
+    // CONFIRMAÇÃO
+    mostrarPopupConfirmacao(
+      "Apagar Post",
+      "Tem certeza que deseja deletar este post?",
+      async () => {
+        try {
+          // Apagar no caminho global
+          await deleteDoc(doc(db, "posts", postId));
+
+          // Apagar no caminho do usuário
+          await deleteDoc(doc(db, "users", ownerId, "posts", postId));
+
+          // Remover da tela
+          const postElement = btnDelete.closest(".post-card");
+          postElement.remove();
+
+          criarPopup("Sucesso", "Post apagado.", "success");
+
+        } catch (err) {
+          console.error(err);
+          criarPopup("Erro", "Não foi possível apagar o post.", "error");
+        }
+      }
+    );
+  }
+});
+
 }
 
 
