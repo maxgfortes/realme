@@ -168,28 +168,3 @@ export {
 };
 
 const CACHE_USER_TIME = 1000 * 60 * 10; // 10 minutos
-
-function getCache(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-
-    const data = JSON.parse(raw);
-    if (Date.now() - data.time > CACHE_USER_TIME) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return data.value;
-  } catch {
-    return null;
-  }
-}
-
-function setCache(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify({
-      time: Date.now(),
-      value
-    }));
-  } catch {}
-}

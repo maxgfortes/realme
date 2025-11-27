@@ -55,7 +55,8 @@
     }
 
     .tab-button {
-        padding-left: 8px;
+        width: 100%;
+        margin: 0px;
     }
 
     input {
@@ -70,4 +71,14 @@
         box-shadow: none !important;
         height: 16vh;
     }
+
+    .tab-button.conta {
+        display: none;
+    }
+
+    .config-tabs {
+        display: flex;
+        justify-content: space-between;
+    }
+
 }

@@ -18,11 +18,3 @@ text-transform: uppercase;
 font-weight: bold;
 background-color: #161616;
 }
-
-.verificado i{
-    color: #4A90E2;
-    font-size: 18px;
-    margin-top: 4px;
-    background-color: white;
-    border-radius: 80px;
-}

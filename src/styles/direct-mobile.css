@@ -12,6 +12,13 @@ body {
   overflow-x: hidden;
   overflow: hidden;
   position: fixed;
+        user-select: none !important;
+        -webkit-touch-callout: none; /* Disables the callout menu on long press in iOS Safari */
+  -webkit-user-select: none; /* Safari, Chrome, Opera */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard syntax */
 }
 
 .dm-navbar {
@@ -221,13 +228,13 @@ body {
 .dm-send-area {
   display: flex;
   align-items: center;
-  padding: 0px 8px 30px;
+  padding: 0px 8px 0px;
   background: transparent;
 }
 
 .input-area {
   flex: 1;
-  padding: 4px 4px;
+  padding: 0px 4px;
   background-color: #333;
   display: flex;
   border-radius: 50px;
@@ -236,7 +243,7 @@ body {
 
 #dmMsgInput {
   flex: 1;
-  padding: 14px 16px;
+  padding: 14px 14px;
   border-radius: 28px;
   border:none;
   background: #22262e;
@@ -253,8 +260,12 @@ body {
 #dmSendBtn {
   background-color: #4A90E2;
   border: 1px solid #4A90E2;
-  padding: 13px 20px;
-  border-radius: 80px;
+  padding: 0px 20px !important;
+  height: 4.8vh;
+  margin: 0px;
+  align-items: center;
+  align-self: center;
+  border-radius: 8000px;
   color: #fff;
   transition: background-color 0.3s;
 }
@@ -266,8 +277,8 @@ body {
 }
 
 #dmSendBtn svg {
-  width: 18px !important;
-  height: 18px !important;
+  width: 16px !important;
+  height: 16px !important;
   fill: currentColor !important;
 }
 
@@ -425,7 +436,6 @@ body {
   padding-top: 4px;
   padding-right: 8px;
   justify-content: flex-end; /* para mensagens enviadas */
-  display: none;
 }
 
 .dm-message.sent + .dm-message-footer {
@@ -484,9 +494,6 @@ body {
       margin-bottom: 30px;
     }
 
-    .navbar-bottom a:hover {
-      color: #4A90E2;
-    }
 
     .profile-mini {
       width: 28px;
@@ -494,3 +501,167 @@ body {
       border-radius: 50%;
       object-fit: cover;
     }
+
+
+.img-btn  {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  padding: 0 0 0 1.4vh;
+  display: none;
+}
+
+
+@supports (backdrop-filter: blur(10px)) {
+    .input-area {
+        backdrop-filter: blur(12px);
+        background-color: #252525a6;
+    }
+}
+
+
+.dm-msg-bloco {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+}
+
+.meu-bloco {
+    margin-left: auto;
+    align-items: flex-end;
+}
+
+.deles-bloco {
+    margin-right: auto;
+    align-items: flex-start;
+    position: relative;
+}
+
+/* Bolhas */
+.dm-msg-bubble {
+    padding: 0px 14px;
+    border-radius: 2.8vh;
+    margin: 2px 0;
+    max-width: 100%;
+    word-break: break-word;
+    padding-top: 0px !important;
+    font-size: 17px;
+}
+
+
+.dm-msg-bubble p{
+  padding: 0px !important;
+  margin: 10px 0px;
+}
+
+.meu {
+    background: #4A90E2;
+    color: white;
+    align-self: flex-end;
+}
+
+
+.meu:only-child {
+  border-radius: 2.8vh 2.8vh 2.8vh 2.8vh !important;
+}
+
+.meu:first-child {
+  border-radius: 2.8vh 2.8vh 0.8vh 2.8vh;
+}
+
+.meu:last-child {
+  border-radius: 2.8vh 0.8vh 2.8vh 2.8vh;
+}
+
+.meu:not(:first-child):not(:last-child) {
+    border-radius: 2.8vh 0.8vh 0.8vh 2.8vh;
+}
+
+
+.deles {
+    background: #1a1a1a;
+    color: #f1f1f1;
+}
+
+
+.deles:last-child {
+  border-top-left-radius: 0.8vh !important;
+}
+
+/* Foto da última mensagem do bloco */
+.dm-msg-foto {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    margin-top: 4px;
+    margin-left: 4px;
+}
+
+/* Footer da última mensagem */
+.dm-msg-footer {
+    font-size: 11px;
+    color: #777;
+    margin-top: 4px;
+}
+
+.meu-bloco .dm-msg-footer {
+    text-align: right;
+}
+
+.dm-visto {
+    margin-left: 5px;
+    color: #4A90E2;
+}
+
+
+/* BLOCO DE MENSAGENS DELES */
+.deles-bloco {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 38px;   /* espaço da parede esquerda */
+    margin-bottom: 12px;
+    position: relative;
+}
+
+/* FOTO NA ÚLTIMA MENSAGEM DO BLOCO */
+.dm-msg-foto {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    left: -40px;     /* puxa a foto para fora, colada na lateral */
+    bottom: 0px;     /* alinha com a última bolha */
+}
+
+/* BOLHAS DAS MENSAGENS RECEBIDAS */
+.deles {
+    border-radius: 2vh;
+    max-width: 75%;
+    margin: 2px 0;
+}
+
+.deles:only-child {
+  border-radius: 2.8vh !important;
+}
+
+.deles:first-child:not(:last-child) {
+  border-radius: 2.8vh 2.8vh 2.8vh 0.8vh;
+}
+
+.deles:last-child:not(:first-child) {
+  border-radius: 2.8vh 2.8vh 2.8vh 2.8vh ;
+}
+
+.deles:last-child {
+  border-radius: 2.8vh 2.8vh 2.8vh 2.8vh ;
+}
+
+.deles:not(:first-child):not(:last-child) {
+  border-radius: 0.8vh 2.8vh 2.8vh 0.8vh;
+}
+
+
+

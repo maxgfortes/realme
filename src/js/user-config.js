@@ -120,6 +120,8 @@ if (selectMarital && maritalStatus) {
     fillField('input[name="musicTheme"]', 'musicTheme');
     fillField('input[name="musicThemeName"]', 'musicThemeName');
     fillField('input[name="profileColor"]', 'profileColor');
+    fillField('input[name="customFont"]', 'customFont');
+
 
     // Likes
     fillField('textarea[name="dreams"]', 'dreams');
@@ -167,6 +169,7 @@ async function salvarConfigPerfil(userId, formData) {
         musicThemeName: formData.get('musicThemeName') || "",
         profileColor: String(formData.get('profileColor') || ""),
         profileColor2: String(formData.get('profileColor2') || ""),
+        customFont: formData.get('customFont') || "",
     };
 
     // Likes (agora: livros, personagens, comidas, jogos, hobbies, filmes, músicas, outros)

@@ -76,6 +76,10 @@
     font-size: 24px;
 }
 
+.form-header button {
+  display: none;
+}
+
 .form-header span {
     color: #4A90E2;
 }
@@ -120,4 +124,78 @@
 .invite-copy-btn.copied i {
   color: #e4e4e4 !important;
   transition: color 0.2s;
+}
+
+
+@media (max-width: 768px) {
+
+
+.config-box-layout {
+  width: 100vh !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  background: transparent;
+  backdrop-filter: blur(0px);
+  border: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  overflow: hidden;
+}
+
+nav {
+  display: none !important;
+}
+
+.navbar-bottom {
+  display: none !important;
+}
+
+.form-container {
+  width: 100vh;
+  height: 100vh;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.form-header {
+  border-bottom: none;
+  display: flex;
+}
+
+.info-container {
+  width: 45vh;
+    background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #111111 !important;
+}
+
+.invite-tab {
+  width: 45vh;
+    background: rgba(20, 20, 20, 0.582);
+  backdrop-filter: blur(8px);
+  border: 1px solid #111111 !important;
+}
+
+.form-header button {
+  display: flex;
+}
+
+.form-header button {
+  background-color: transparent;
+  border: none;
+  display: flex;
+}
+
+.form-container svg {
+  height: 28px;
+  align-self: center;
+  fill: #fff;
+  margin-right: 18px;
+}
+
 }

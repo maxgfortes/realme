@@ -1311,6 +1311,14 @@ textarea#postText:focus {
   padding: 8px !important;
 }
 
+.post-actions button:hover {
+  color: #cacaca !important;
+}
+
+.btn-comment svg:hover {
+  color: #cacaca;
+}
+
 
 .btn-comment svg {
   width: 24px !important;
@@ -1580,7 +1588,7 @@ textarea#postText:focus {
     transform: translateX(0); 
 }
 
-.global-msg-popup {
+#global-msg-popup {
   background-color: #020202 !important;
 }
 }

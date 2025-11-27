@@ -70,10 +70,10 @@
       padding: 0;
       width: 100vw !important;
       overflow-y: auto !important;
+      overflow-x: hidden !important;
       z-index: 22;
       height: 100vh;
       background: transparent;
-      overflow-x: hidden;
     }
 
     .full-profile-container::after {
@@ -207,7 +207,7 @@
   border: none;
   border-radius: 50px;
   width: fit-content;
-  background-color: transparent;
+  background-color: transparent !important;
   backdrop-filter: blur(8px);
   color: #f8f9f9;
   font-size: 10px;
@@ -257,9 +257,8 @@
 
 
 
-    .action-buttons button:hover {
+    .action-buttons button:active {
       background: #3a7bc8;
-      transform: translateY(-1px);
     }
 
     .btn-nudge {
@@ -897,13 +896,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
 }
 
 .post-modal-content {
   background: #1a1a1a;
-  border-radius: 16px;
-  max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -1260,9 +1256,9 @@
     box-sizing: border-box;
 }
 
-#logout-btn {
+#btnSair {
     width: 100%;
-    padding: 12px;
+    padding: 28px 18px;
     color: rgb(233, 52, 52);
     background-color: transparent;
     border: none;
@@ -1644,4 +1640,320 @@ textarea::placeholder {
 .tab {
   position: relative;
   z-index: 2;
+}
+
+.verificado {
+  background-color: #fff !important;
+  height: 0.8vh;
+  width: 1.6vh;
+  border-radius: 50%;
+}
+
+.empty-posts a {
+  color: #cacaca;
+  text-decoration: none;
+}
+
+
+.post-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+}
+
+.post-overlay-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: #111;
+  padding: 20px;
+}
+
+.overlay-close {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  font-size: 32px;
+  background: none;
+  color: #fff;
+  border: none;
+  z-index: 9999999;
+}
+
+
+.post-fullscreen {
+  background: #222;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+}
+
+
+
+
+
+.post-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999999;
+}
+
+
+.post-overlay-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: #111;
+  padding: 20px;
+}
+
+.overlay-close {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  font-size: 32px;
+  background: none;
+  color: #fff;
+  border: none;
+  z-index: 9999999;
+}
+
+
+
+
+
+
+.post-feed-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.8);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feed-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.feed-info {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1.6vh;
+}
+
+
+.feed-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #fff;
+}
+
+.feed-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.feed-img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: cover;
+}
+
+.feed-text {
+    color: white;
+    padding: 20px;
+}
+
+.feed-nav {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    padding: 20px;
+}
+
+.feed-nav button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+}
+
+.post-feed-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #020202;
+    z-index: 999999;
+        display: flex;
+}
+
+.feed-scroll {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.feed-page {
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+    scroll-snap-align: start;
+    background: transparent;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    background: #020202;
+    padding-top: 60px;
+}
+
+.feed-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.feed-username {
+  font-size: 14px;
+  color: #a7a7a7;
+}
+
+
+
+
+.feed-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.feed-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.feed-body {
+    flex: 1;
+    padding: 0px 15px;
+    overflow-y: auto;
+}
+
+.feed-body a {
+  color: #4A90E2;
+}
+
+.feed-img {
+    width: 100%;
+    max-height: 55vh;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1vh;
+}
+
+.feed-text {
+    font-size: 18px;
+    padding: 0px;
+}
+
+
+
+
+/* HEADER FIXO NO TOPO DO MODAL */
+.feed-header-global {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background: #020202;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    z-index: 50;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+/* Botão X */
+.close-feed {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    margin-right: 15px;
+}
+
+.close-feed svg {
+  fill: currentColor;
+  height: 20px;
+  width: 20px;
+}
+
+
+.feed-header-username {
+  font-weight: bold;
+  color: #fff;
+  font-size: 24px;
+}
+
+
+/* Estado inicial (fora da tela, à direita) */
+.post-feed-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.85);
+    z-index: 999999;
+    transform: translateX(100%);
+    transition: transform .35s ease-out;
+}
+
+/* Estado final (modal aberto) */
+.post-feed-modal.aberto {
+    transform: translateX(0);
+}
+
+/* Estado de fechar (indo para a direita de novo) */
+.post-feed-modal.fechando {
+    transform: translateX(100%);
+    transition: transform .35s ease-in;
+}
+
+
+.post-feed-modal {
+    transform: translateX(100%);
+    transition: transform .35s ease-out;
+}
+
+.post-feed-modal.aberto {
+    transform: translateX(0);
+}
+
+.post-feed-modal.fechando {
+    transform: translateX(100%);
+    transition: transform .35s ease-in;
 }

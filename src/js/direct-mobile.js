@@ -202,7 +202,7 @@ dmListBackBtn.addEventListener('click', () => {
 // Clique no nome do usuário no header leva ao perfil
 dmChatUserName.addEventListener("click", () => {
   const userid = dmChatUserName.getAttribute("data-userid");
-  if (userid) window.location.href = `PF.html?userid=${userid}`;
+  if (userid) window.location.href = `pfmobile.html?userid=${userid}`;
 });
 
 // Carrega mensagens em tempo real
@@ -235,36 +235,62 @@ function carregarMensagensTempoReal() {
     ultimaQtdMensagens = mensagens.length;
 
     dmMessages.innerHTML = "";
-    mensagens.forEach((m, idx) => {
-      const div = document.createElement("div");
-      div.className = "dm-message " + (m.sender === loggedUser ? "sent" : "received");
-      let tempo = "";
-      if (m.timestamp) {
-        const date = m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000);
-        tempo = formatarTempoRelativo(date);
-      }
-      div.innerHTML = `<p>${m.content}</p>`;
-      dmMessages.appendChild(div);
 
-      // Footer (data + visto)
-      const footer = document.createElement("div");
-      footer.className = "dm-message-footer";
-      let visto = "";
-      // Só mostra "visto" na última mensagem enviada pelo usuário e se estiver lida
-      if (
-        m.sender === loggedUser &&
-        m.read &&
-        idx === mensagens.length - 1
-      ) {
-        visto = `<span class="dm-visto">• visto</span>`;
-      }
-      footer.innerHTML = `<span>${tempo}</span> ${visto}`;
-      div.after(footer);
-    });
+let lastSender = null;
+let bloco = null;
 
-    dmMessages.scrollTop = dmMessages.scrollHeight;
+mensagens.forEach((m, idx) => {
+    const isSender = m.sender === loggedUser;
+    const isLastMsg = idx === mensagens.length - 1;
+
+    // Quebra o bloco quando trocar o remetente
+    if (m.sender !== lastSender) {
+        bloco = document.createElement("div");
+        bloco.className = "dm-msg-bloco " + (isSender ? "meu-bloco" : "deles-bloco");
+        dmMessages.appendChild(bloco);
+    }
+
+    // Cria a bubble
+    const bubble = document.createElement("div");
+    bubble.className = "dm-msg-bubble " + (isSender ? "meu" : "deles");
+    bubble.innerHTML = `<p>${m.content}</p>`;
+    bloco.appendChild(bubble);
+
+    // Foto da outra pessoa: somente na ÚLTIMA mensagem do bloco dela
+    if (!isSender) {
+        const next = mensagens[idx + 1];
+        if (!next || next.sender === loggedUser) {
+            const img = document.createElement("img");
+            img.className = "dm-msg-foto";
+            img.src = dmChatUserImg.src;
+            bloco.appendChild(img);
+        }
+    }
+
+    // Footer apenas na ÚLTIMA mensagem enviada por VOCÊ
+    if (isSender && isLastMsg) {
+        const footer = document.createElement("div");
+        footer.className = "dm-msg-footer";
+
+        const time = formatarTempoRelativo(
+            m.timestamp ? m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000) : new Date()
+        );
+
+        const visto = m.read ? "• visto" : "• enviado";
+
+        footer.innerHTML = `<span>${time}</span> <span class="dm-visto">${visto}</span>`;
+        bloco.appendChild(footer);
+    }
+
+    lastSender = m.sender;
+});
+
+dmMessages.scrollTop = dmMessages.scrollHeight;
+
   });
 }
+
+
 
 function enviarMensagemHandler(e) {
   if (e) e.preventDefault();

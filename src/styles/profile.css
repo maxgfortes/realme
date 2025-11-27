@@ -2179,6 +2179,40 @@ background: linear-gradient(180deg, rgba(20, 20, 20, 0) 0%, rgba(20, 20, 20, 1) 
 }
 
 
+.verificado {
+  display: none; /* Oculto por padrão */
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+/* Só aparece quando tem a classe 'active' */
+.verificado.active {
+  display: inline-flex;
+}
+
+.verificado i {
+  font-size: 18px;
+  color: #1DA1F2;
+}
+
+/* Tipos de verificação */
+.verificado.gold i {
+  color: #FFD700;
+}
+
+.verificado.green i {
+  color: #00D95F;
+}
+
+.verificado {
+  background-color: #fff !important;
+  height: 1.8vh !important;
+  width: 1.8vh !important;
+  border-radius: 50%;
+}
+
+
 @media (max-width: 768px) {
 .sobre-content {
   display: flex;
