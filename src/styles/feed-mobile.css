@@ -1629,6 +1629,15 @@ textarea#postText:focus {
   z-index: 9999999;
 }
 
+.upload-area {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+
+.image-preview {
+  background-color: transparent !important;
+}
 }
 
 

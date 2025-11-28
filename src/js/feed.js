@@ -44,6 +44,8 @@ const firebaseConfig = {
   measurementId: "G-D96BEW6RC3"
 };
 
+const IMGBB_API_KEY = 'fc8497dcdf559dc9cbff97378c82344c';
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -67,6 +69,8 @@ const DOMINIOS_MALICIOSOS = [
   'bit.ly', 'tinyurl.com', 'goo.gl', 'ow.ly', 't.co',
   'phishing-example.com', 'malware-site.net', 'scam-website.org'
 ];
+
+
 
 
 
@@ -1058,7 +1062,10 @@ if (btnSave) {
 // ===================
 async function sendPost() {
   const usuarioLogado = auth.currentUser;
-  if (!usuarioLogado) return;
+  if (!usuarioLogado) {
+    criarPopup('Erro', 'Você precisa estar logado.', 'warning');
+    return;
+  }
   
   const texto = postInput.value.trim();
   if (!texto) {
@@ -1068,86 +1075,103 @@ async function sendPost() {
   
   const linkCheck = detectarLinksMaliciosos(texto);
   if (linkCheck.malicioso) {
-    criarPopup('Link Bloqueado', `O link "${linkCheck.url}" foi identificado como potencialmente malicioso e nÃ£o pode ser postado.`, 'warning');
+    criarPopup('Link Bloqueado', `O link "${linkCheck.url}" foi identificado como potencialmente malicioso.`, 'warning');
     return;
   }
   
-  const imagemInput = document.querySelector('.image-url-input');
-  let urlImagem = '';
-  if (imagemInput) {
-    urlImagem = imagemInput.value.trim();
-    if (urlImagem && !(await validarUrlImagem(urlImagem))) {
-      criarPopup('Imagem Inválida', 'A URL da imagem não é válida ou não aponta para uma imagem.', 'warning');
-      return;
-    }
-  }
-
-const videoInput = document.querySelector('.video-url-input');
-let urlVideo = '';
-
-if (videoInput) {
-  urlVideo = videoInput.value.trim();
-}
-
-
   tocarSomEnvio();
   criarAnimacaoAviaoPapel();
   
-  const loadingInfo = mostrarLoading('Enviando post...');
+  const loadingInfo = mostrarLoading('Preparando post...');
+  
   try {
     const postId = gerarIdUnico('post');
-    const userData = await buscarDadosUsuarioPorUid(usuarioLogado.uid);
+    let urlImagem = '';
+    let deleteUrlImagem = '';
     
-    if (!userData) {
-      clearInterval(loadingInfo.interval);
-      esconderLoading();
-      criarPopup('Erro', 'Erro ao buscar dados do usuário', 'error');
-      return;
+    // Verifica se há arquivo de imagem para upload
+    const fileInput = document.querySelector('#image-file-input');
+    
+    if (fileInput && fileInput.files.length > 0) {
+      atualizarTextoLoading('Fazendo upload da imagem...');
+      
+      const uploadResult = await uploadImagemPost(fileInput.files[0], usuarioLogado.uid);
+      
+      if (!uploadResult.success) {
+        clearInterval(loadingInfo.interval);
+        esconderLoading();
+        criarPopup('Erro no Upload', uploadResult.error, 'error');
+        return;
+      }
+      
+      urlImagem = uploadResult.url;
+      deleteUrlImagem = uploadResult.deleteUrl;
+      
+      console.log('✅ Upload realizado com sucesso!');
+      console.log('URL da imagem:', urlImagem);
     }
+    
+    const videoInput = document.querySelector('.video-url-input');
+    let urlVideo = '';
+    if (videoInput) {
+      urlVideo = videoInput.value.trim();
+    }
+    
+    atualizarTextoLoading('Salvando post...');
     
     const postData = {
       content: texto,
-      img: urlImagem || '',
+      img: urlImagem,
+      imgDeleteUrl: deleteUrlImagem,
       urlVideo: urlVideo || '',
       likes: 0,
       saves: 0,
+      comentarios: 0,
       postid: postId,
       creatorid: usuarioLogado.uid,
       reports: 0,
+      visible: true,
       create: serverTimestamp()
     };
     
-    // Salvar em users/{userid}/posts/{postid}
     const userPostRef = doc(db, 'users', usuarioLogado.uid, 'posts', postId);
     await setDoc(userPostRef, postData);
     
-    // Salvar em posts/{postid}
     const globalPostRef = doc(db, 'posts', postId);
     await setDoc(globalPostRef, postData);
     
-    // Limpa os campos
     postInput.value = '';
-    if (imagemInput) imagemInput.value = '';
     
-    // Reseta as variáveis de controle e recarrega o feed
+    if (fileInput) {
+      fileInput.value = '';
+      const uploadLabel = document.querySelector('.upload-label');
+      const imagePreview = document.querySelector('.image-preview');
+      if (uploadLabel) uploadLabel.style.display = 'flex';
+      if (imagePreview) imagePreview.style.display = 'none';
+    }
+    
+    if (videoInput) {
+      videoInput.value = '';
+    }
+    
     feed.innerHTML = '';
     allPosts = [];
     currentPage = 0;
     hasMorePosts = true;
-    loading = false; // IMPORTANTE: Reset da variável loading
+    loading = false;
+    lastPostSnapshot = null;
     
     await loadPosts();
     
     clearInterval(loadingInfo.interval);
     esconderLoading();
     criarPopup('Sucesso!', 'Post enviado com sucesso!', 'success');
-    window.location.reload();
     
   } catch (error) {
     console.error("Erro ao enviar post:", error);
     clearInterval(loadingInfo.interval);
     esconderLoading();
-    criarPopup('Erro', 'Erro ao enviar post, tente novamente.', 'error');
+    criarPopup('Erro', 'Erro ao enviar post: ' + error.message, 'error');
   }
 }
 
@@ -1422,27 +1446,216 @@ function configurarLinks() {
 // ===================
 // CRIAR INPUT DE URL DE IMAGEM (fora da post-area)
 // ===================
+async function comprimirImagem(file, maxWidth = 1920, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob(
+          (blob) => {
+            resolve(new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            }));
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      
+      img.onerror = reject;
+    };
+    
+    reader.onerror = reject;
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+async function uploadImagemPost(file, userId) {
+  try {
+    if (!file || !file.type.startsWith('image/')) {
+      throw new Error('Arquivo inválido. Apenas imagens são permitidas.');
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    let fileToUpload = file;
+    
+    if (file.size > maxSize) {
+      console.log('Comprimindo imagem...');
+      fileToUpload = await comprimirImagem(file, 1920, 0.7);
+    }
+
+    const base64 = await fileToBase64(fileToUpload);
+    const base64Data = base64.split(',')[1];
+    
+    const formData = new FormData();
+    formData.append('image', base64Data);
+    formData.append('name', `post_${userId}_${Date.now()}`);
+    
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erro na requisição ao ImgBB');
+    }
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      return {
+        success: true,
+        url: data.data.url,
+        deleteUrl: data.data.delete_url,
+        thumb: data.data.thumb.url,
+        display: data.data.display_url
+      };
+    } else {
+      throw new Error(data.error?.message || 'Erro ao fazer upload');
+    }
+    
+  } catch (error) {
+    console.error('Erro ao fazer upload:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+function mostrarPreview(file, uploadLabel, imagePreview, previewImg) {
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    criarPopup(
+      'Imagem muito grande', 
+      'A imagem será comprimida automaticamente ao enviar.', 
+      'info'
+    );
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    uploadLabel.style.display = 'none';
+    imagePreview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function configurarEventosUpload(container) {
+  const fileInput = container.querySelector('#image-file-input');
+  const uploadLabel = container.querySelector('.upload-label');
+  const imagePreview = container.querySelector('.image-preview');
+  const previewImg = imagePreview.querySelector('img');
+  const removeBtn = imagePreview.querySelector('.remove-image-btn');
+  
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      mostrarPreview(file, uploadLabel, imagePreview, previewImg);
+    }
+  });
+  
+  uploadLabel.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadLabel.classList.add('dragover');
+  });
+  
+  uploadLabel.addEventListener('dragleave', () => {
+    uploadLabel.classList.remove('dragover');
+  });
+  
+  uploadLabel.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadLabel.classList.remove('dragover');
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      fileInput.files = e.dataTransfer.files;
+      mostrarPreview(file, uploadLabel, imagePreview, previewImg);
+    } else {
+      criarPopup('Arquivo Inválido', 'Por favor, envie apenas imagens.', 'warning');
+    }
+  });
+  
+  removeBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    uploadLabel.style.display = 'flex';
+    imagePreview.style.display = 'none';
+    previewImg.src = '';
+  });
+}
+
 function criarInputImagem() {
   const postArea = document.querySelector('.post-area');
   const fileBtn = document.querySelector('.file-button');
+  
   if (!postArea || !fileBtn) return;
 
-fileBtn.addEventListener('click', () => {
-  let imageInputContainer = postArea.nextElementSibling;
-  if (!imageInputContainer || !imageInputContainer.classList.contains('image-input-container')) {
-    imageInputContainer = document.createElement('div');
-    imageInputContainer.className = 'image-input-container';
-    imageInputContainer.innerHTML = `
-      <input type="url" class="image-url-input" placeholder="Cole a URL da imagem aqui (opcional)">
-    `;
-    postArea.parentNode.insertBefore(imageInputContainer, postArea.nextSibling);
-    // Adiciona a classe para animar ao abrir
-    setTimeout(() => imageInputContainer.classList.add('aberta'), 10);
-  } else {
-    // Alterna a classe para animar abrir/fechar
-    imageInputContainer.classList.toggle('aberta');
-  }
-});
+  fileBtn.addEventListener('click', () => {
+    let imageInputContainer = postArea.nextElementSibling;
+    
+    if (!imageInputContainer || !imageInputContainer.classList.contains('image-input-container')) {
+      imageInputContainer = document.createElement('div');
+      imageInputContainer.className = 'image-input-container';
+      imageInputContainer.innerHTML = `
+        <div class="upload-area">
+          <input type="file" 
+                 id="image-file-input" 
+                 class="image-file-input" 
+                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                 style="display: none;">
+          <label for="image-file-input" class="upload-label">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Clique para selecionar uma imagem</span>
+            <small>ou arraste e solte aqui (máx. 5MB)</small>
+          </label>
+          <div class="image-preview" style="display: none;">
+            <img src="" alt="Preview">
+            <button class="remove-image-btn" type="button">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `;
+      postArea.parentNode.insertBefore(imageInputContainer, postArea.nextSibling);
+      
+      configurarEventosUpload(imageInputContainer);
+      
+      setTimeout(() => imageInputContainer.classList.add('aberta'), 10);
+    } else {
+      imageInputContainer.classList.toggle('aberta');
+    }
+  });
 }
 
 function criarInputVideo() {
@@ -2318,6 +2531,114 @@ function adicionarEstilosCSS() {
       }
     }
 
+==================================== */
+  
+  .image-input-container {
+    margin-top: 10px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .image-input-container.aberta {
+    opacity: 1;
+    max-height: 400px;
+  }
+  
+  .upload-area {
+    border: 2px dashed #4A90E2;
+    border-radius: 12px;
+    padding: 20px;
+    background: rgba(74, 144, 226, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 30px;
+    transition: all 0.3s ease;
+  }
+  
+  .upload-label:hover {
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 8px;
+  }
+  
+  .upload-label.dragover {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: #0056b3;
+    transform: scale(1.02);
+  }
+  
+  .upload-label i {
+    font-size: 48px;
+    color: #4A90E2;
+  }
+  
+  .upload-label span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .upload-label small {
+    font-size: 12px;
+    color: #999;
+  }
+  
+  .image-preview {
+    position: relative;
+    text-align: center;
+    hei
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  .remove-image-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .remove-image-btn:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    .upload-label {
+      padding: 20px;
+    }
+    
+    .upload-label i {
+      font-size: 36px;
+    }
+    
+    .upload-label span {
+      font-size: 14px;
+    }
+  }
   `;
   document.head.appendChild(style);
   style.textContent += `
