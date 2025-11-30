@@ -1919,14 +1919,14 @@ textarea::placeholder {
 }
 
 
-/* Estado inicial (fora da tela, à direita) */
+
 .post-feed-modal {
     position: fixed;
     top: 0;
     right: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,.85);
+    background: #1C1C1C;
     z-index: 999999;
     transform: translateX(100%);
     transition: transform .35s ease-out;

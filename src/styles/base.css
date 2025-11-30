@@ -43,9 +43,9 @@ body {
 
 
 ::selection {
-  color: #4A90E2;
+  background-color: #3b7fcc;
+  color: white;
   border-radius: 8px;
-  text-shadow: 0 2px 8px #4A90E2;
 }
 
 @media (max-width: 768px)  {

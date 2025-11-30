@@ -1444,7 +1444,7 @@ function configurarLinks() {
 }
 
 // ===================
-// CRIAR INPUT DE URL DE IMAGEM (fora da post-area)
+// CRIAR INPUT DE URL DE IMAGEM (seleção direta)
 // ===================
 async function comprimirImagem(file, maxWidth = 1920, quality = 0.8) {
   return new Promise((resolve, reject) => {
@@ -1552,7 +1552,10 @@ async function uploadImagemPost(file, userId) {
   }
 }
 
-function mostrarPreview(file, uploadLabel, imagePreview, previewImg) {
+function mostrarPreview(file) {
+  const postArea = document.querySelector('.post-area');
+  if (!postArea) return;
+  
   const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
     criarPopup(
@@ -1562,56 +1565,42 @@ function mostrarPreview(file, uploadLabel, imagePreview, previewImg) {
     );
   }
   
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    previewImg.src = e.target.result;
-    uploadLabel.style.display = 'none';
-    imagePreview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-function configurarEventosUpload(container) {
-  const fileInput = container.querySelector('#image-file-input');
-  const uploadLabel = container.querySelector('.upload-label');
-  const imagePreview = container.querySelector('.image-preview');
+  // Remove preview anterior se existir
+  let imagePreview = postArea.nextElementSibling;
+  if (imagePreview && imagePreview.classList.contains('image-preview-container')) {
+    imagePreview.remove();
+  }
+  
+  // Cria novo preview
+  imagePreview = document.createElement('div');
+  imagePreview.className = 'image-preview-container';
+  imagePreview.innerHTML = `
+    <div class="image-preview-content">
+      <img src="" alt="Preview">
+      <button class="remove-image-btn" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+  
+  postArea.parentNode.insertBefore(imagePreview, postArea.nextSibling);
+  
   const previewImg = imagePreview.querySelector('img');
   const removeBtn = imagePreview.querySelector('.remove-image-btn');
   
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      mostrarPreview(file, uploadLabel, imagePreview, previewImg);
-    }
-  });
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    setTimeout(() => imagePreview.classList.add('aberta'), 10);
+  };
+  reader.readAsDataURL(file);
   
-  uploadLabel.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadLabel.classList.add('dragover');
-  });
-  
-  uploadLabel.addEventListener('dragleave', () => {
-    uploadLabel.classList.remove('dragover');
-  });
-  
-  uploadLabel.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadLabel.classList.remove('dragover');
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      fileInput.files = e.dataTransfer.files;
-      mostrarPreview(file, uploadLabel, imagePreview, previewImg);
-    } else {
-      criarPopup('Arquivo Inválido', 'Por favor, envie apenas imagens.', 'warning');
-    }
-  });
-  
+  // Botão de remover
   removeBtn.addEventListener('click', () => {
-    fileInput.value = '';
-    uploadLabel.style.display = 'flex';
-    imagePreview.style.display = 'none';
-    previewImg.src = '';
+    const fileInput = document.getElementById('image-file-input');
+    if (fileInput) fileInput.value = '';
+    imagePreview.classList.remove('aberta');
+    setTimeout(() => imagePreview.remove(), 300);
   });
 }
 
@@ -1621,40 +1610,29 @@ function criarInputImagem() {
   
   if (!postArea || !fileBtn) return;
 
-  fileBtn.addEventListener('click', () => {
-    let imageInputContainer = postArea.nextElementSibling;
+  // Cria input file oculto
+  let fileInput = document.getElementById('image-file-input');
+  if (!fileInput) {
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'image-file-input';
+    fileInput.accept = 'image/jpeg,image/jpg,image/png,image/gif,image/webp';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
     
-    if (!imageInputContainer || !imageInputContainer.classList.contains('image-input-container')) {
-      imageInputContainer = document.createElement('div');
-      imageInputContainer.className = 'image-input-container';
-      imageInputContainer.innerHTML = `
-        <div class="upload-area">
-          <input type="file" 
-                 id="image-file-input" 
-                 class="image-file-input" 
-                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                 style="display: none;">
-          <label for="image-file-input" class="upload-label">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <span>Clique para selecionar uma imagem</span>
-            <small>ou arraste e solte aqui (máx. 5MB)</small>
-          </label>
-          <div class="image-preview" style="display: none;">
-            <img src="" alt="Preview">
-            <button class="remove-image-btn" type="button">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-      `;
-      postArea.parentNode.insertBefore(imageInputContainer, postArea.nextSibling);
-      
-      configurarEventosUpload(imageInputContainer);
-      
-      setTimeout(() => imageInputContainer.classList.add('aberta'), 10);
-    } else {
-      imageInputContainer.classList.toggle('aberta');
-    }
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        mostrarPreview(file);
+      } else if (file) {
+        criarPopup('Arquivo Inválido', 'Por favor, envie apenas imagens.', 'warning');
+      }
+    });
+  }
+  
+  // Ao clicar no botão, abre diretamente o seletor de arquivos
+  fileBtn.addEventListener('click', () => {
+    fileInput.click();
   });
 }
 

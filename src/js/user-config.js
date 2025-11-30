@@ -32,6 +32,166 @@ const db = getFirestore(app);
 
 let currentUser = null;
 
+// API Key do ImgBB (SUBSTITUA pela sua chave)
+const IMGBB_API_KEY = "fc8497dcdf559dc9cbff97378c82344c";
+
+// NOVO: Map para armazenar os arquivos de imagem selecionados pendentes de upload
+const filesToUpload = new Map();
+
+// ===================
+// UPLOAD DE IMAGEM PARA IMGBB
+// ===================
+async function uploadToImgBB(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            return data.data.url;
+        } else {
+            throw new Error('Falha no upload da imagem: ' + (data.error?.message || 'Erro desconhecido'));
+        }
+    } catch (error) {
+        console.error('Erro ao fazer upload:', error);
+        throw error;
+    }
+}
+
+// ===================
+// SETUP DOS INPUTS DE IMAGEM
+// (APENAS ARMAZENA O ARQUIVO LOCALMENTE)
+// ===================
+function setupImageInputs() {
+    const imageInputs = document.querySelectorAll('input[type="file"][data-image-field]');
+    
+    imageInputs.forEach(input => {
+        const fieldName = input.dataset.imageField;
+        const hiddenInput = document.querySelector(`input[name="${fieldName}"]`);
+        const uploadStatus = input.nextElementSibling;
+        
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+
+            if (!file) {
+                filesToUpload.delete(fieldName);
+                if (hiddenInput) hiddenInput.value = '';
+                if (uploadStatus) uploadStatus.textContent = '';
+                return;
+            }
+            
+            // Validar tipo de arquivo
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecione apenas arquivos de imagem.');
+                input.value = '';
+                filesToUpload.delete(fieldName);
+                return;
+            }
+            
+            // Validar tamanho (máx 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('A imagem deve ter no máximo 5MB.');
+                input.value = '';
+                filesToUpload.delete(fieldName);
+                return;
+            }
+            
+            // Armazena o arquivo e limpa o campo oculto.
+            filesToUpload.set(fieldName, file);
+            
+            if (hiddenInput) {
+                hiddenInput.value = ''; 
+            }
+            
+            if (uploadStatus) {
+                uploadStatus.textContent = 'Aguardando salvar...';
+                uploadStatus.style.color = '#f39c12';
+            }
+        });
+    });
+}
+
+// ===================
+// PROCESSAR UPLOADS PENDENTES ANTES DO SUBMIT
+// ===================
+async function processPendingUploads(formData) {
+    if (filesToUpload.size === 0) return; 
+
+    const uploadPromises = [];
+    const fieldsToDelete = []; 
+
+    for (const [fieldName, file] of filesToUpload.entries()) {
+        console.log(`Iniciando upload para o campo: ${fieldName}`);
+        
+        const promise = uploadToImgBB(file)
+            .then(url => {
+                formData.set(fieldName, url); 
+                fieldsToDelete.push(fieldName);
+                
+                const input = document.querySelector(`input[type="file"][data-image-field="${fieldName}"]`);
+                const uploadStatus = input ? input.nextElementSibling : null;
+                if (uploadStatus) {
+                    uploadStatus.textContent = '✓ Enviado com sucesso!';
+                    uploadStatus.style.color = '#27ae60';
+                }
+            })
+            .catch(error => {
+                const input = document.querySelector(`input[type="file"][data-image-field="${fieldName}"]`);
+                const uploadStatus = input ? input.nextElementSibling : null;
+                if (uploadStatus) {
+                    uploadStatus.textContent = '✗ Erro no upload';
+                    uploadStatus.style.color = '#e74c3c';
+                }
+                throw new Error(`Falha ao enviar a imagem para o campo ${fieldName}: ${error.message}`);
+            });
+        
+        uploadPromises.push(promise);
+    }
+
+    await Promise.all(uploadPromises);
+
+    fieldsToDelete.forEach(fieldName => filesToUpload.delete(fieldName));
+}
+
+// ===================
+// FUNÇÕES DE CONVERSÃO DO YOUTUBE (NOVO)
+// ===================
+
+/**
+ * Extrai o ID do vídeo de uma URL do YouTube.
+ * Suporta formatos watch?v=ID, youtu.be/ID e v/ID.
+ */
+function extractVideoId(url) {
+    // Regex comum para extrair o ID do vídeo de vários formatos de URL
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|v\/|watch\?.*v=)|youtu\.be\/)([^&?]*)/;
+    const match = url.match(regex);
+    // O ID do vídeo está no primeiro grupo de captura (índice 1)
+    return match ? match[1] : null;
+}
+
+/**
+ * Converte a URL padrão do YouTube para o formato de embed com autoplay e loop.
+ */
+function convertToEmbedUrl(fullUrl) {
+    const videoId = extractVideoId(fullUrl);
+
+    if (videoId) {
+        // Formato: https://www.youtube.com/embed/VIDEO_ID?autoplay=1&loop=1&playlist=VIDEO_ID
+        // O parâmetro 'playlist=VIDEO_ID' é necessário para que o 'loop=1' funcione.
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+    }
+    
+    // Retorna a URL original se o ID não for encontrado (pode ser um link válido já em embed, ou inválido)
+    return fullUrl; 
+}
+
+
 // ===================
 // AUTENTICAÇÃO E CARREGAMENTO DE DADOS
 // ===================
@@ -39,13 +199,11 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
         try {
-            // Referências aos documentos do usuário
             const userRef = doc(db, "users", currentUser.uid);
             const userMediaRef = doc(db, "users", currentUser.uid, "user-infos", "user-media");
             const aboutRef = doc(db, "users", currentUser.uid, "user-infos", "about");
             const likesRef = doc(db, "users", currentUser.uid, "user-infos", "likes");
 
-            // Busca otimizada de todos os documentos
             const [userDocSnap, userMediaDocSnap, aboutDocSnap, likesDocSnap] = await Promise.all([
                 getDoc(userRef),
                 getDoc(userMediaRef),
@@ -95,16 +253,17 @@ function preencherFormulario(userData) {
         }
     };
 
-    // Dados principais
     fillField('input[name="username"]', 'username');
     fillField('input[name="displayname"]', 'displayname');
     fillField('input[name="email"]', 'email');
     fillField('input[name="location"]', 'location');
+    
     const maritalStatus = userData.maritalStatus;
-const selectMarital = form.querySelector('select[name="maritalStatus"]');
-if (selectMarital && maritalStatus) {
-    selectMarital.value = maritalStatus;
-}
+    const selectMarital = form.querySelector('select[name="maritalStatus"]');
+    if (selectMarital && maritalStatus) {
+        selectMarital.value = maritalStatus;
+    }
+    
     fillField('input[name="name"]', 'name');
     fillField('input[name="pronoun1"]', 'pronoun1');
     fillField('input[name="pronoun2"]', 'pronoun2');
@@ -113,7 +272,7 @@ if (selectMarital && maritalStatus) {
     fillField('input[name="tel"]', 'tel');
     fillField('input[name="telefone"]', 'telefone');
 
-    // Mídia (URL como string)
+    // Mídia (URLs ocultas)
     fillField('input[name="userphoto"]', 'userphoto');
     fillField('input[name="background"]', 'background');
     fillField('input[name="headerphoto"]', 'headerphoto');
@@ -121,7 +280,6 @@ if (selectMarital && maritalStatus) {
     fillField('input[name="musicThemeName"]', 'musicThemeName');
     fillField('input[name="profileColor"]', 'profileColor');
     fillField('input[name="customFont"]', 'customFont');
-
 
     // Likes
     fillField('textarea[name="dreams"]', 'dreams');
@@ -146,7 +304,6 @@ if (selectMarital && maritalStatus) {
 // SALVAR PERFIL NO FIRESTORE
 // ===================
 async function salvarConfigPerfil(userId, formData) {
-    // Dados principais
     const dadosPrincipais = {
         displayname: formData.get('displayname'),
         email: formData.get('email'),
@@ -154,26 +311,33 @@ async function salvarConfigPerfil(userId, formData) {
         maritalStatus: formData.get('maritalStatus'),
         pronoun1: formData.get('pronoun1'),
         pronoun2: formData.get('pronoun2'),
-        tel: Number(formData.get('tel')),
+        tel: formData.get('tel') ? Number(formData.get('tel')) : null, 
         telefone: formData.get('telefone'),
         ultimaAtualizacao: serverTimestamp(),
         username: formData.get('username')
     };
 
-    // Mídia (URL como string)
     const dadosMedia = {
         userphoto: formData.get('userphoto') || "",
         background: formData.get('background') || "",
         headerphoto: formData.get('headerphoto') || "",
-        musicTheme: formData.get('musicTheme') || "",
+        musicTheme: formData.get('musicTheme') || "", // AQUI JÁ ESTARÁ CONVERTIDO
         musicThemeName: formData.get('musicThemeName') || "",
         profileColor: String(formData.get('profileColor') || ""),
         profileColor2: String(formData.get('profileColor2') || ""),
         customFont: formData.get('customFont') || "",
     };
 
-    // Likes (agora: livros, personagens, comidas, jogos, hobbies, filmes, músicas, outros)
     const dadosLikes = {
+        dreams: formData.get('dreams'),
+        fears: formData.get('fears'),
+        overview: formData.get('overview'),
+        personality: formData.get('personality'),
+        styles: formData.get('styles'),
+        tags: formData.get('tags')
+    };
+
+    const dadosAbout = {
         books: formData.get('books'),
         characters: formData.get('characters'),
         foods: formData.get('foods'),
@@ -183,17 +347,7 @@ async function salvarConfigPerfil(userId, formData) {
         music: formData.get('music'),
         others: formData.get('others')
     };
-
-    // About (agora: dreams, fears, overview, personality, styles, tags)
-    const dadosAbout = {
-        dreams: formData.get('dreams'),
-        fears: formData.get('fears'),
-        overview: formData.get('overview'),
-        personality: formData.get('personality'),
-        styles: formData.get('styles'),
-        tags: formData.get('tags')
-    };
-
+    
     await setDoc(doc(db, "users", userId), dadosPrincipais, { merge: true });
     await setDoc(doc(db, "users", userId, "user-infos", "user-media"), dadosMedia, { merge: true });
     await setDoc(doc(db, "users", userId, "user-infos", "likes"), dadosLikes, { merge: true });
@@ -213,23 +367,37 @@ function setupFormSubmit() {
 
         const submitBtn = document.querySelector('.submit-btn');
         const originalText = submitBtn ? submitBtn.textContent : 'Salvar Configurações';
+        
         if (submitBtn) {
             submitBtn.textContent = 'Salvando...';
             submitBtn.disabled = true;
         }
 
         try {
-    const formData = new FormData(form);
-    await salvarConfigPerfil(currentUser.uid, formData);
-    window.location.href = `PF.html?userid=${currentUser.uid}`;
-} catch (error) {
-    alert('Erro ao salvar as configurações: ' + error.message);
-} finally {
-    if (submitBtn) {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
+            const formData = new FormData(form);
+            
+            // 1. Processa o upload de imagens pendentes
+            await processPendingUploads(formData);
+            
+            // 2. CONVERTE A URL DA MÚSICA DO YOUTUBE (NOVO PASSO DE CONVERSÃO)
+            const musicThemeUrl = formData.get('musicTheme');
+            if (musicThemeUrl) {
+                const embedUrl = convertToEmbedUrl(musicThemeUrl);
+                formData.set('musicTheme', embedUrl); // Atualiza o formData com a URL convertida
+            }
+            
+            // 3. Salva as configurações com as URLs atualizadas
+            await salvarConfigPerfil(currentUser.uid, formData);
+            
+            window.location.href = `PF.html?userid=${currentUser.uid}`;
+        } catch (error) {
+            alert('Erro ao salvar as configurações. Tente novamente. Erro: ' + error.message);
+        } finally {
+            if (submitBtn) {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
     });
 }
 
@@ -244,6 +412,7 @@ function inicializarFuncionalidades() {
     setupMenuLinks();
     setupFloatingMenu();
     setupLogout();
+    setupImageInputs();
 }
 
 function setupTabs() {
@@ -260,7 +429,6 @@ function setupTabs() {
         });
     });
 }
-
 
 function setupCharCounters() {
     document.querySelectorAll('textarea[maxlength], input[maxlength]').forEach(element => {
@@ -407,17 +575,16 @@ function setupFloatingMenu() {
     });
 }
 
-
 async function atualizarMarqueeUltimoUsuario() {
-  const lastUpdateRef = doc(db, "lastupdate", "latestUser");
-  const docSnap = await getDoc(lastUpdateRef);
-  const marquee = document.querySelector(".marquee");
-  if (!marquee) return;
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    const nomeUsuario = data.username || "Usuário";
-    marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
-  } else {
-    marquee.textContent = "Bem-vindo ao RealMe!";
-  }
+    const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+    const docSnap = await getDoc(lastUpdateRef);
+    const marquee = document.querySelector(".marquee");
+    if (!marquee) return;
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const nomeUsuario = data.username || "Usuário";
+        marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+    } else {
+        marquee.textContent = "Bem-vindo ao RealMe!";
+    }
 }

@@ -139,6 +139,41 @@ background: linear-gradient(0deg, rgba(74, 144, 226, 0.79) 8%, rgba(74, 144, 226
       background: #3a3a3a;
     }
 
+        .upload-status {
+      font-size: 0.85rem;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    input[type="file"] {
+      padding: 4px !important;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: #cacaca;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+        
+    input[type="file"]:focus {
+      border: none;
+      box-shadow: none;
+    }
+
     .form-group textarea {
       resize: none;
       min-height: 80px;
