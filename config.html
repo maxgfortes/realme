@@ -19,18 +19,13 @@
   <link rel="stylesheet" href="./src/styles/search.css" />
   <link rel="stylesheet" href="./src/styles/config-mobile.css" />
 
-  <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
-  <!-- Descrição -->
   <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <!-- URL principal -->
   <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <!-- Imagem de destaque -->
   <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
-  <!-- Tipo de conteúdo -->
   <meta property="og:type" content="website">
-  <!-- Para Twitter -->
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  
 </head>
 <body>
 
@@ -160,17 +155,23 @@
     <div class="form-grid two-column">
       <div class="form-group">
         <label>Foto de perfil:</label>
-        <input type="text" name="userphoto" maxlength="500" placeholder="URL da foto de perfil">
+        <input type="file" data-image-field="userphoto" accept="image/*">
+        <span class="upload-status"></span>
+        <input type="hidden" name="userphoto">
       </div>
       <div class="form-group">
         <label>Imagem de Banner:</label>
-        <input type="text" name="headerphoto" maxlength="500" placeholder="URL da imagem de fundo">
+        <input type="file" data-image-field="headerphoto" accept="image/*">
+        <span class="upload-status"></span>
+        <input type="hidden" name="headerphoto">
       </div>
       <div class="form-group">
         <label>Background:</label>
-        <input type="text" name="background" maxlength="500" placeholder="URL da foto do cabeçalho">
+        <input type="file" data-image-field="background" accept="image/*">
+        <span class="upload-status"></span>
+        <input type="hidden" name="background">
       </div>
-      <div class="form-group">
+      <div class="form-group" style="display: none;">
         <label>Fonte do Perfil</label>
           <input type="text" name="customFont" placeholder="Ex: Poppins, Inter, URL, etc">
       </div>
