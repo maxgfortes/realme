@@ -72,7 +72,7 @@
             <div class="view-toggle">
                 <button class="toggle-btn active" data-view="carousel">Cards</button>
                 <button class="toggle-btn" data-view="grid">Grid</button>
-                <button class="toggle-btn filter-btn" id="filterBtn">Filtros</button>
+                <button class="toggle-btn filter-btn" id="filterBtn">Buscar</button>
                 <a href="map.html">Mapa</a>
             </div>
         </div>
@@ -826,6 +826,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function buscarUsuariosSemelhantes() {
+
+  // FECHA OS FILTROS
+  const optionBar = document.querySelector('.option-bar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  if (optionBar && overlay) {
+    optionBar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  // TROCA PARA VIEW DE GRID COMO PADRÃO
+  const gridBtn = document.querySelector('[data-view="grid"]');
+  if (gridBtn) gridBtn.click();
+
+
   mostrarLoading();
   const filtros = coletarFiltros();
   const usersRef = collection(db, 'users');
@@ -1161,6 +1175,7 @@ class FriendsCarousel {
                 if (e.key === 'ArrowLeft') this.prev();
             }
         });
+        
     }
 }
 

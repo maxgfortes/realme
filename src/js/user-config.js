@@ -329,15 +329,6 @@ async function salvarConfigPerfil(userId, formData) {
     };
 
     const dadosLikes = {
-        dreams: formData.get('dreams'),
-        fears: formData.get('fears'),
-        overview: formData.get('overview'),
-        personality: formData.get('personality'),
-        styles: formData.get('styles'),
-        tags: formData.get('tags')
-    };
-
-    const dadosAbout = {
         books: formData.get('books'),
         characters: formData.get('characters'),
         foods: formData.get('foods'),
@@ -346,6 +337,15 @@ async function salvarConfigPerfil(userId, formData) {
         movies: formData.get('movies'),
         music: formData.get('music'),
         others: formData.get('others')
+    };
+
+    const dadosAbout = {
+        dreams: formData.get('dreams'),
+        fears: formData.get('fears'),
+        overview: formData.get('overview'),
+        personality: formData.get('personality'),
+        styles: formData.get('styles'),
+        tags: formData.get('tags')
     };
     
     await setDoc(doc(db, "users", userId), dadosPrincipais, { merge: true });
