@@ -52,56 +52,80 @@ function getUrlParam(name) {
 
 // Renderiza uma lista (seguidores, seguindo, amigos)
 async function renderUserList(listType, userId) {
-  let listRef, listContainer;
+  let listContainer;
+
   if (listType === "followers") {
-    listRef = collection(db, "users", userId, "followers");
     listContainer = document.querySelector(".list-seguidores .completelist");
   } else if (listType === "following") {
-    listRef = collection(db, "users", userId, "following");
     listContainer = document.querySelector(".list-seguindo .completelist");
   } else if (listType === "friends") {
-    listRef = collection(db, "users", userId, "friends");
     listContainer = document.querySelector(".list-amigos .completelist");
   }
+
   if (!listContainer) return;
 
   listContainer.innerHTML = `
   <div class="loading-spinner">
     <div class="spinner"></div>
   </div>
-`;
-  const snap = await getDocs(listRef);
-  if (snap.empty) {
+  `;
+
+  let uids = [];
+
+  // --- LISTAR SEGUIDORES ---
+  if (listType === "followers") {
+    const snap = await getDocs(collection(db, "users", userId, "followers"));
+    uids = snap.docs.map(d => d.id);
+  }
+
+  // --- LISTAR SEGUINDO ---
+  else if (listType === "following") {
+    const snap = await getDocs(collection(db, "users", userId, "following"));
+    uids = snap.docs.map(d => d.id);
+  }
+
+  // --- LISTAR AMIGOS (mutuamente seguindo) ---
+  else if (listType === "friends") {
+    const followersSnap = await getDocs(collection(db, "users", userId, "followers"));
+    const followingSnap = await getDocs(collection(db, "users", userId, "following"));
+
+    const followers = followersSnap.docs.map(d => d.id);
+    const following = followingSnap.docs.map(d => d.id);
+
+    // INTERSEÇÃO → quem segue e é seguido
+    uids = followers.filter(uid => following.includes(uid));
+  }
+
+  if (uids.length === 0) {
     listContainer.innerHTML = '<div class="no-comments">Nenhum usuário encontrado.</div>';
     return;
   }
 
   let html = "";
-  for (const docUser of snap.docs) {
-    const uid = docUser.id;
+  const usuarioLogado = auth.currentUser?.uid;
+
+  for (const uid of uids) {
     const userData = await getUserData(uid);
     if (!userData) continue;
-    const usuarioLogado = auth.currentUser?.uid;
 
-html += `
-  <div class="user-list">
-    <div class="user-item">
-      <a href="PF.html?userid=${uid}" class="user-link" style="display: contents;">
-        <img src="${userData.userphoto}" alt="Avatar do Usuário" class="user-avatar" onerror="this.src='./src/icon/default.jpg'">
-        <div class="user-info">
-          <span class="user-name">${userData.displayname}</span>
-          <span class="user-username">@${userData.username}</span>
+    html += `
+      <div class="user-list">
+        <div class="user-item">
+          <a href="PF.html?userid=${uid}" class="user-link" style="display: contents;">
+            <img src="${userData.userphoto}" alt="Avatar do Usuário" class="user-avatar" onerror="this.src='./src/icon/default.jpg'">
+            <div class="user-info">
+              <span class="user-name">${userData.displayname}</span>
+              <span class="user-username">@${userData.username}</span>
+            </div>
+          </a>
         </div>
-      </a>
-      <div class="action">
-        ${uid === usuarioLogado ? `<button class="remove" data-uid="${uid}" data-type="${listType}">Remover</button>` : ""}
       </div>
-    </div>
-  </div>
-`;
+    `;
   }
+
   listContainer.innerHTML = html;
 }
+
 
 // Remove usuário da lista (exemplo para seguidores)
 async function removerUsuario(uid, type, currentUserId) {

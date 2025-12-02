@@ -12,114 +12,176 @@ const firebaseConfig = {
   measurementId: "G-D96BEW6RC3"
 };
 
+// ======================
+// FIREBASE
+// ======================
 let app;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
   app = getApps()[0];
 }
+
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// ======================================================
+// COPIAR LINK -> SEM BOTÃO COMPARTILHAR
+// ======================================================
 function copiarConvite(btn, codigo) {
-  navigator.clipboard.writeText(codigo);
-  btn.classList.add('copied');
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.classList.remove('copied');
-    btn.disabled = false;
-  }, 6000);
+  const url = `${location.origin}/index.html?convite=${codigo}`;
+
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      btn.innerHTML = '<i class="fas fa-check"></i>';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-copy"></i>';
+        btn.disabled = false;
+      }, 2000);
+    })
+    .catch(() => {
+      // Fallback se o navegador bloquear
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+
+      alert("Link copiado:\n" + url);
+    });
 }
 
+window.copiarConvite = copiarConvite;
+
+// ======================================================
+// BUSCAR INFORMAÇÃO DE QUEM USOU O CONVITE
+// ======================================================
 async function getUserInfo(userid) {
   if (!userid) return null;
   try {
-    const userRef = doc(db, "users", userid);
-    const userSnap = await getDoc(userRef);
-    if (!userSnap.exists()) return null;
-    const data = userSnap.data();
+    const ref = doc(db, "users", userid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+
+    const d = snap.data();
     return {
-      displayname: data.displayname || "",
-      username: data.username || "",
-      userphoto: data.userphoto || "./src/icon/default.jpg"
+      displayname: d.displayname || "",
+      username: d.username || "",
+      userphoto: d.userphoto || "./src/icon/default.jpg"
     };
   } catch {
     return null;
   }
 }
 
+// ======================================================
+// MARQUEE ÚLTIMO USUÁRIO
+// ======================================================
 async function atualizarMarqueeUltimoUsuario() {
-  const lastUpdateRef = doc(db, "lastupdate", "latestUser");
-  const docSnap = await getDoc(lastUpdateRef);
+  const ref = doc(db, "lastupdate", "latestUser");
+  const snap = await getDoc(ref);
   const marquee = document.querySelector(".marquee");
+
   if (!marquee) return;
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    const nomeUsuario = data.username || "Usuário";
-    marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+
+  if (snap.exists()) {
+    marquee.textContent = `${snap.data().username} acabou de entrar no RealMe!`;
   } else {
     marquee.textContent = "Bem-vindo ao RealMe!";
   }
 }
 
-document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
+document.addEventListener("DOMContentLoaded", atualizarMarqueeUltimoUsuario);
 
+// ======================================================
+// LISTAR CONVITES
+// ======================================================
 async function mostrarConvites(userid) {
-  const container = document.querySelector('.invites-container');
-  const infoSpan = document.querySelector('.info-container h2 span');
+  const container = document.querySelector(".invites-container");
+  const infoSpan = document.querySelector(".info-container h2 span");
+
   if (!container) return;
+
   container.innerHTML = `<div class="progress-bar" id="progressBar"></div>`;
+
   const q = query(collection(db, "invites"), where("criadoPor", "==", userid));
   const snap = await getDocs(q);
+
   if (snap.empty) {
-    container.innerHTML = 'Você ainda não possui convites.';
+    container.innerHTML = "Você ainda não possui convites.";
     if (infoSpan) infoSpan.textContent = "0";
     return;
   }
-  container.innerHTML = '';
+
+  container.innerHTML = "";
   let convitesRestantes = 0;
-  let idx = 1;
+
   for (const docu of snap.docs) {
     const convite = docu.data();
-    const usado = convite.usado === true;
     const codigo = docu.id;
+    const usado = convite.usado === true;
+
     let usadoPorInfo = null;
+
     if (usado && convite.usadoPor) {
       usadoPorInfo = await getUserInfo(convite.usadoPor);
     } else {
       convitesRestantes++;
     }
-    const bloco = document.createElement('div');
-    bloco.className = 'invite-tab';
+
+    // BLOCO DO CONVITE
+    const bloco = document.createElement("div");
+    bloco.className = "invite-tab";
+
     bloco.innerHTML = `
       <div class="invitebody">
+
         <div class="invite-code">
-        <h3>${codigo}</h3>
-        <div class="invite-code-row">
-          ${!usado ? `<button class="invite-copy-btn" onclick="copiarConvite(this, '${codigo}')"><i class="fas fa-copy"></i></button>` : ''}
+          <h3>${codigo}</h3>
+          <div class="invite-code-row">
+            ${
+              usado
+                ? ""
+                : `
+              <button class="invite-copy-btn"
+                onclick="copiarLinkConvite(this, '${codigo}')">
+                <i class="fas fa-copy"></i>
+              </button>
+            `
+            }
+          </div>
         </div>
-        </div>
+
         <div class="usedby">
           <p>Convite usado por: ${
-            usado && usadoPorInfo ? `
+            usado && usadoPorInfo
+              ? `
               <span>
-                <img src="${usadoPorInfo.userphoto}" alt="Foto" class="invite-user-photo" onerror="this.src='./src/icon/default.jpg'">
+                <img src="${usadoPorInfo.userphoto}" class="invite-user-photo"
+                     onerror="this.src='./src/icon/default.jpg'">
                 <span class="invite-user-name">${usadoPorInfo.displayname}</span>
                 <span class="invite-user-username">@${usadoPorInfo.username}</span>
               </span>
-            ` : `<span>Ninguém ainda</span>`
+            `
+              : "<span>Ninguém ainda</span>"
           }</p>
         </div>
+
       </div>
     `;
+
     container.appendChild(bloco);
-    idx++;
   }
+
   if (infoSpan) infoSpan.textContent = convitesRestantes;
 }
 
-window.copiarConvite = copiarConvite;
-
+// ======================================================
+// AUTH
+// ======================================================
 onAuthStateChanged(auth, user => {
   if (user) mostrarConvites(user.uid);
 });
