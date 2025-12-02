@@ -135,10 +135,14 @@ async function verificarSeEstaSeguindo(currentUserId, targetUserId) {
 
 async function seguirUsuario(currentUserId, targetUserId) {
   const now = new Date();
+
+  // adiciona em seguidores
   await setDoc(doc(db, 'users', targetUserId, 'followers', currentUserId), {
     userid: currentUserId,
     followerin: now
   });
+
+  // adiciona em seguindo
   await setDoc(doc(db, 'users', currentUserId, 'following', targetUserId), {
     userid: targetUserId,
     followin: now
@@ -146,9 +150,14 @@ async function seguirUsuario(currentUserId, targetUserId) {
 }
 
 async function deixarDeSeguir(currentUserId, targetUserId) {
+  // remove seguidores e seguindo
   await deleteDoc(doc(db, 'users', targetUserId, 'followers', currentUserId));
   await deleteDoc(doc(db, 'users', currentUserId, 'following', targetUserId));
 }
+
+// ===================
+// CONTAGENS
+// ===================
 
 async function contarSeguidores(userid) {
   const col = collection(db, 'users', userid, 'followers');
@@ -162,37 +171,58 @@ async function contarSeguindo(userid) {
   return snap.size;
 }
 
+// ===================
+// 🔥 AMIGOS = quem segue + é seguido mutuamente
+// ===================
 async function contarAmigos(userid) {
-  const col = collection(db, 'users', userid, 'friends');
-  const snap = await getDocs(col);
-  return snap.size;
+  // pega seguidores
+  const seguidoresSnap = await getDocs(collection(db, 'users', userid, 'followers'));
+  const seguidores = seguidoresSnap.docs.map(d => d.id);
+
+  // pega seguindo
+  const seguindoSnap = await getDocs(collection(db, 'users', userid, 'following'));
+  const seguindo = seguindoSnap.docs.map(d => d.id);
+
+  // interseção → quem está nas duas listas
+  const amigos = seguidores.filter(uid => seguindo.includes(uid));
+
+  return amigos.length;
 }
 
+// ===================
+// ESTATÍSTICAS DO PERFIL
+// ===================
 async function atualizarEstatisticasPerfil(userid) {
   const postsRef = collection(db, 'users', userid, 'posts');
   const postsSnap = await getDocs(postsRef);
   const numPosts = postsSnap.size;
+
   const numSeguidores = await contarSeguidores(userid);
   const numSeguindo = await contarSeguindo(userid);
   const numAmigos = await contarAmigos(userid);
+
   const statsElement = document.querySelector('.profile-stats');
+
   if (statsElement) {
     statsElement.innerHTML = `
       <div class="stats">
         <span><strong>${numPosts}</strong> posts</span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numSeguidores}</strong>
           <a href="list.html?userid=${userid}&tab=seguidores" class="stats-link">seguidores</a>
         </span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numAmigos}</strong>
           <a href="list.html?userid=${userid}&tab=amigos" class="stats-link">amigos</a>
         </span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numSeguindo}</strong>
@@ -202,7 +232,6 @@ async function atualizarEstatisticasPerfil(userid) {
     `;
   }
 }
-
 
 async function configurarBotaoSeguir(targetUserId) {
   const followBtn = document.querySelector('.btn-follow');

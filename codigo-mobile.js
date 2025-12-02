@@ -263,10 +263,14 @@ async function verificarSeEstaSeguindo(currentUserId, targetUserId) {
 
 async function seguirUsuario(currentUserId, targetUserId) {
   const now = new Date();
+
+  // adiciona em seguidores
   await setDoc(doc(db, 'users', targetUserId, 'followers', currentUserId), {
     userid: currentUserId,
     followerin: now
   });
+
+  // adiciona em seguindo
   await setDoc(doc(db, 'users', currentUserId, 'following', targetUserId), {
     userid: targetUserId,
     followin: now
@@ -274,9 +278,14 @@ async function seguirUsuario(currentUserId, targetUserId) {
 }
 
 async function deixarDeSeguir(currentUserId, targetUserId) {
+  // remove seguidores e seguindo
   await deleteDoc(doc(db, 'users', targetUserId, 'followers', currentUserId));
   await deleteDoc(doc(db, 'users', currentUserId, 'following', targetUserId));
 }
+
+// ===================
+// CONTAGENS
+// ===================
 
 async function contarSeguidores(userid) {
   const col = collection(db, 'users', userid, 'followers');
@@ -290,37 +299,58 @@ async function contarSeguindo(userid) {
   return snap.size;
 }
 
+// ===================
+// 🔥 AMIGOS = quem segue + é seguido mutuamente
+// ===================
 async function contarAmigos(userid) {
-  const col = collection(db, 'users', userid, 'friends');
-  const snap = await getDocs(col);
-  return snap.size;
+  // pega seguidores
+  const seguidoresSnap = await getDocs(collection(db, 'users', userid, 'followers'));
+  const seguidores = seguidoresSnap.docs.map(d => d.id);
+
+  // pega seguindo
+  const seguindoSnap = await getDocs(collection(db, 'users', userid, 'following'));
+  const seguindo = seguindoSnap.docs.map(d => d.id);
+
+  // interseção → quem está nas duas listas
+  const amigos = seguidores.filter(uid => seguindo.includes(uid));
+
+  return amigos.length;
 }
 
+// ===================
+// ESTATÍSTICAS DO PERFIL
+// ===================
 async function atualizarEstatisticasPerfil(userid) {
   const postsRef = collection(db, 'users', userid, 'posts');
   const postsSnap = await getDocs(postsRef);
   const numPosts = postsSnap.size;
+
   const numSeguidores = await contarSeguidores(userid);
   const numSeguindo = await contarSeguindo(userid);
   const numAmigos = await contarAmigos(userid);
+
   const statsElement = document.querySelector('.profile-stats');
+
   if (statsElement) {
     statsElement.innerHTML = `
       <div class="stats">
         <span><strong>${numPosts}</strong> posts</span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numSeguidores}</strong>
           <a href="list.html?userid=${userid}&tab=seguidores" class="stats-link">seguidores</a>
         </span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numAmigos}</strong>
           <a href="list.html?userid=${userid}&tab=amigos" class="stats-link">amigos</a>
         </span>
       </div>
+
       <div class="stats">
         <span>
           <strong>${numSeguindo}</strong>
@@ -330,7 +360,6 @@ async function atualizarEstatisticasPerfil(userid) {
     `;
   }
 }
-
 
 async function configurarBotaoSeguir(targetUserId) {
   const followBtn = document.querySelector('.btn-follow');
@@ -1188,16 +1217,14 @@ window.carregarLinks = carregarLinks;
 
 
 // ===================
-// SISTEMA DE MÚSICA DO PERFIL - VERSÃO CORRIGIDA
-// ===================
-// ===================
-// SISTEMA DE MÚSICA DO PERFIL - VERSÃO IFRAME YOUTUBE API
+// SISTEMA DE MÚSICA DO PERFIL - VERSÃO MOBILE-FRIENDLY
 // ===================
 
 let player = null;
 let musicUrl = "";
 let musicName = "";
 let musicReady = false;
+let playerInitialized = false;
 
 // Carrega API do YouTube
 function loadYouTubeAPI() {
@@ -1210,6 +1237,7 @@ function loadYouTubeAPI() {
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     
     window.onYouTubeIframeAPIReady = () => {
+      console.log('✅ YouTube API carregada');
       resolve();
     };
   });
@@ -1237,6 +1265,8 @@ function extractYouTubeID(url) {
 // Inicializa o sistema de música
 async function inicializarSistemaDeMusicaProfile(userid) {
   try {
+    console.log('🎵 Inicializando sistema de música para:', userid);
+    
     const musicBlock = document.querySelector('.music');
     const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
     const mediaSnap = await getDoc(mediaRef);
@@ -1247,12 +1277,15 @@ async function inicializarSistemaDeMusicaProfile(userid) {
     musicUrl = "";
     musicName = "";
     musicReady = false;
+    playerInitialized = false;
 
     if (mediaSnap.exists()) {
       const mediaData = mediaSnap.data();
       if (mediaData.musicTheme) musicUrl = mediaData.musicTheme;
       if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
     }
+
+    console.log('🎵 Música encontrada:', musicName, musicUrl);
 
     // Atualiza UI
     if (musicTitleEl) musicTitleEl.textContent = musicName || "Música do perfil";
@@ -1262,20 +1295,27 @@ async function inicializarSistemaDeMusicaProfile(userid) {
       musicBlock.style.display = musicUrl ? 'flex' : 'none';
     }
 
-    if (!musicUrl) return;
+    if (!musicUrl) {
+      console.log('❌ Nenhuma música configurada');
+      return;
+    }
 
     // Carrega API do YouTube
     await loadYouTubeAPI();
 
     const videoId = extractYouTubeID(musicUrl);
     if (!videoId) {
-      console.error('URL inválida:', musicUrl);
+      console.error('❌ URL inválida:', musicUrl);
       return;
     }
 
+    console.log('✅ Video ID extraído:', videoId);
+
     // Destroi player antigo se existir
     if (player) {
-      player.destroy();
+      try {
+        player.destroy();
+      } catch (e) {}
       player = null;
     }
 
@@ -1284,23 +1324,31 @@ async function inicializarSistemaDeMusicaProfile(userid) {
     if (!playerContainer) {
       playerContainer = document.createElement('div');
       playerContainer.id = 'bgMusic';
-      playerContainer.style.cssText = 'position:fixed;bottom:0;right:0;width:0;height:0;opacity:0;pointer-events:none;';
+      playerContainer.style.cssText = 'position:fixed;bottom:-100px;right:-100px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;';
       document.body.appendChild(playerContainer);
+    } else {
+      // Limpa container existente
+      playerContainer.innerHTML = '';
     }
+
+    console.log('🎵 Criando player YouTube...');
 
     // Cria novo player
     player = new YT.Player('bgMusic', {
-      height: '0',
-      width: '0',
+      height: '1',
+      width: '1',
       videoId: videoId,
       playerVars: {
         autoplay: 0,
         loop: 1,
-        playlist: videoId, // Necessário para loop funcionar
+        playlist: videoId,
         controls: 0,
         showinfo: 0,
         modestbranding: 1,
-        enablejsapi: 1
+        enablejsapi: 1,
+        playsinline: 1, // CRUCIAL para iOS
+        rel: 0,
+        fs: 0
       },
       events: {
         onReady: onPlayerReady,
@@ -1311,75 +1359,139 @@ async function inicializarSistemaDeMusicaProfile(userid) {
 
     // Configura botão
     if (btnPause) {
-      btnPause.onclick = toggleMusic;
-      btnPause.classList.remove('playing');
+      // Remove listeners antigos
+      const newBtn = btnPause.cloneNode(true);
+      btnPause.parentNode.replaceChild(newBtn, btnPause);
+      
+      // Adiciona novo listener
+      newBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🎵 Botão clicado!');
+        toggleMusic();
+      });
+      
+      newBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🎵 Botão tocado (touch)!');
+        toggleMusic();
+      });
+      
+      newBtn.classList.remove('playing');
+      newBtn.style.opacity = '0.5';
+      newBtn.style.cursor = 'wait';
+      newBtn.disabled = true;
+      
+      console.log('✅ Botão configurado');
     }
 
   } catch (e) {
-    console.error('Erro ao inicializar música:', e);
+    console.error('❌ Erro ao inicializar música:', e);
   }
 }
 
 // Quando player está pronto
 function onPlayerReady(event) {
+  console.log('✅ Player YouTube pronto!');
   musicReady = true;
-  console.log('Player YouTube pronto!');
+  playerInitialized = true;
   
-  // Tenta iniciar automaticamente
-  document.addEventListener('click', startMusicOnce, { once: true });
-  document.addEventListener('touchstart', startMusicOnce, { once: true });
-  document.addEventListener('keydown', startMusicOnce, { once: true });
+  const btnPause = document.getElementById('btnPauseMusic');
+  if (btnPause) {
+    btnPause.style.opacity = '1';
+    btnPause.style.cursor = 'pointer';
+    btnPause.disabled = false;
+    console.log('✅ Botão habilitado');
+  }
+  
+  // Define volume padrão
+  try {
+    player.setVolume(50);
+    console.log('✅ Volume configurado');
+  } catch (e) {
+    console.error('Erro ao configurar volume:', e);
+  }
 }
 
 // Monitora estado do player
 function onPlayerStateChange(event) {
+  console.log('🎵 Estado mudou:', event.data);
   const btnPause = document.getElementById('btnPauseMusic');
   if (!btnPause) return;
 
-  // YT.PlayerState.PLAYING = 1
+  // YT.PlayerState: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (cued)
   if (event.data === 1) {
     btnPause.classList.add('playing');
+    console.log('▶️ Tocando');
   } else {
     btnPause.classList.remove('playing');
+    console.log('⏸️ Pausado/Parado');
+  }
+  
+  // Se terminou, reinicia (loop manual como backup)
+  if (event.data === 0) {
+    setTimeout(() => {
+      try {
+        player.playVideo();
+      } catch (e) {}
+    }, 500);
   }
 }
 
 // Erros do player
 function onPlayerError(event) {
-  console.error('Erro no player YouTube:', event.data);
-}
-
-// Inicia música no primeiro toque
-function startMusicOnce() {
-  if (!player || !musicReady) return;
-  
-  try {
-    player.setVolume(50); // Volume 50%
-    player.playVideo();
-    console.log('Música iniciada!');
-  } catch (e) {
-    console.error('Erro ao iniciar música:', e);
+  console.error('❌ Erro no player YouTube:', event.data);
+  const btnPause = document.getElementById('btnPauseMusic');
+  if (btnPause) {
+    btnPause.style.opacity = '0.5';
+    btnPause.disabled = true;
   }
 }
 
 // Toggle play/pause
 function toggleMusic() {
-  if (!player || !musicReady) {
-    console.warn('Player não está pronto');
+  console.log('🎵 toggleMusic chamado');
+  console.log('- Player:', player);
+  console.log('- Ready:', musicReady);
+  console.log('- Initialized:', playerInitialized);
+  
+  if (!player) {
+    console.error('❌ Player não existe');
+    return;
+  }
+  
+  if (!musicReady || !playerInitialized) {
+    console.warn('⚠️ Player não está pronto, tentando inicializar...');
+    try {
+      player.playVideo();
+      console.log('✅ Tentativa de play enviada');
+    } catch (e) {
+      console.error('❌ Erro ao tentar tocar:', e);
+    }
     return;
   }
 
   try {
     const state = player.getPlayerState();
+    console.log('🎵 Estado atual:', state);
     
-    // 1 = playing, 2 = paused
+    // -1 = unstarted, 0 = ended, 1 = playing, 2 = paused, 3 = buffering, 5 = cued
     if (state === 1) {
       player.pauseVideo();
+      console.log('⏸️ Pausando...');
     } else {
       player.playVideo();
+      console.log('▶️ Tocando...');
     }
   } catch (e) {
-    console.error('Erro ao toggle música:', e);
+    console.error('❌ Erro ao toggle:', e);
+    // Tenta forçar play como último recurso
+    try {
+      player.playVideo();
+    } catch (e2) {
+      console.error('❌ Erro ao forçar play:', e2);
+    }
   }
 }
 
@@ -2047,7 +2159,7 @@ function mostrarPopupNudge(nome, foto, username, remetenteId) {
   popup.innerHTML = `
     <img src="${foto}" alt="Foto" class="nudge-photo">
     <p><strong>${nome}</strong> (@${username}) te enviou um nudge!</p>
-    <button onclick="window.location.href='direct.html?chatid=chat-${remetenteId}'">Enviar mensagem</button>
+    <button onclick="window.location.href='direct-mobile.html?chatid=chat-${remetenteId}'">Enviar mensagem</button>
     <button>Fechar</button>
   `;
   document.body.appendChild(popup);
@@ -2093,7 +2205,7 @@ async function iniciarChatComUsuario(targetUserId) {
     }, { merge: true }); // merge: true evita sobrescrever se já existir
     
     console.log("Chat criado/acessado com sucesso!");
-    window.location.href = `direct.html?chatid=${chatId}`;
+    window.location.href = `direct-mobile.html?chatid=${chatId}`;
     
   } catch (error) {
     console.error("Erro ao criar/acessar chat:", error);
@@ -2102,6 +2214,7 @@ async function iniciarChatComUsuario(targetUserId) {
     alert("Erro ao iniciar conversa. Verifique suas permissões.");
   }
 }
+
 // ===================
 // ATUALIZAÇÃO DE INFORMAÇÕES BÁSICAS
 // ===================
@@ -2326,7 +2439,4 @@ function configurarLinks() {
     });
   }
 }
-
-
-
 
