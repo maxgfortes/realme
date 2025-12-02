@@ -2011,6 +2011,105 @@ async function aplicarVerificado(userid) {
 
 // Chamar ao carregar o perfil
 await aplicarVerificado(userid);
+
+
+// ============================================
+// MOSTRAR TAG BASEADA EM STATUS BOOLEANO
+// ============================================
+
+async function aplicarTag(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag01');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag01 = userSnap.exists() && userSnap.data().tag01 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag01) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTag(userid);
+
+
+// ============================================
+// MOSTRAR TAG ALT STYLE
+// ============================================
+
+async function aplicarTagAltStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag02');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag02 = userSnap.exists() && userSnap.data().tag02 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag02) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTagAltStyle(userid);
+
+
+// ============================================
+// MOSTRAR TAG GOTH STYLE
+// ============================================
+
+async function aplicarTagGothStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag03');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag03 = userSnap.exists() && userSnap.data().tag03 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag03) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTagGothStyle(userid);
+
+// ============================================
+// MOSTRAR TAG 2000s STYLE
+// ============================================
+
+async function aplicarTag2000sStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag04');
+  
+  if (!verificadoElement) return;
+
+  // Pega o status do Firebase
+  const isTag04 = userSnap.exists() && userSnap.data().tag04 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag04) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTag2000sStyle(userid);
 }
 
 function carregarFotoPerfil() {

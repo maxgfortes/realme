@@ -1147,6 +1147,104 @@ async function aplicarVerificado(userid) {
 await aplicarVerificado(userid);
 await aplicarFontePersonalizada(userid);
 
+
+// ============================================
+// MOSTRAR TAG BASEADA EM STATUS BOOLEANO
+// ============================================
+
+async function aplicarTag(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag01');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag01 = userSnap.exists() && userSnap.data().tag01 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag01) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTag(userid);
+
+
+// ============================================
+// MOSTRAR TAG ALT STYLE
+// ============================================
+
+async function aplicarTagAltStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag02');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag02 = userSnap.exists() && userSnap.data().tag02 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag02) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTagAltStyle(userid);
+
+
+// ============================================
+// MOSTRAR TAG GOTH STYLE
+// ============================================
+
+async function aplicarTagGothStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag03');
+  
+  if (!verificadoElement) return;
+  
+  // Pega o status do Firebase
+  const isTag03 = userSnap.exists() && userSnap.data().tag03 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag03) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTagGothStyle(userid);
+
+// ============================================
+// MOSTRAR TAG 2000s STYLE
+// ============================================
+
+async function aplicarTag2000sStyle(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  const verificadoElement = document.querySelector('.tag04');
+  
+  if (!verificadoElement) return;
+
+  // Pega o status do Firebase
+  const isTag04 = userSnap.exists() && userSnap.data().tag04 === true;
+  
+  // Adiciona ou remove a classe 'active'
+  if (isTag04) {
+    verificadoElement.classList.add('active');
+  } else {
+    verificadoElement.classList.remove('active');
+  }
+}
+await aplicarTag2000sStyle(userid);
 }
 
 
@@ -1400,6 +1498,24 @@ function atualizarGostosDoUsuario(userid) {
 }
 
 
+function calcularIdade(timestampNascimento) {
+  if (!timestampNascimento) return null;
+
+  const nascimento = timestampNascimento.toDate(); 
+  const agora = new Date();
+
+  let idade = agora.getFullYear() - nascimento.getFullYear();
+  const mes = agora.getMonth() - nascimento.getMonth();
+
+  // Ainda não fez aniversário esse ano
+  if (mes < 0 || (mes === 0 && agora.getDate() < nascimento.getDate())) {
+    idade--;
+  }
+
+  return idade;
+}
+
+
 // ATUALIZAÇÃO DA TAB SOBRE (gênero, localização, estado civil)
 function atualizarSobre(userData) {
   const generoEl = document.getElementById('generoUsuario');
@@ -1408,13 +1524,18 @@ function atualizarSobre(userData) {
   const idadeEl = document.getElementById('idadeUsuario');
   const areaUsuario = document.getElementById('areaUsuario');
   const nomeRealUsuario = document.getElementById('nomeRealUsuario');
+
   if (generoEl) generoEl.textContent = userData.gender || "Não informado";
   if (localizacaoEl) localizacaoEl.textContent = userData.location || "Não informada";
   if (estadoCivilEl) estadoCivilEl.textContent = userData.maritalStatus || "Não informado";
-  if (idadeEl) idadeEl.textContent = userData.age || "Não informada";
   if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
   if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
+  if (idadeEl) {
+    const idade = calcularIdade(userData.nascimento);
+    idadeEl.textContent = idade ? `${idade} anos` : "Não informada";
+  }
 }
+
 
 // ===================
 // ATUALIZAÇÃO DE IMAGENS DO PERFIL
