@@ -377,11 +377,11 @@ async function configurarBotaoSeguir(targetUserId) {
     editBtn.className = 'btn-edit-profile';
     editBtn.onclick = () => window.location.href = 'config.html';
     followBtn.parentNode.appendChild(editBtn);
-    const shareBtn = document.createElement('button');
-    shareBtn.textContent = 'Compartilhar perfil';
-    shareBtn.className = 'btn-share-profile';
-    shareBtn.onclick = () => compartilharPerfil(targetUserId);
-    followBtn.parentNode.appendChild(shareBtn);
+    const inviteBtn = document.createElement('button');
+    inviteBtn.textContent = 'Convidar amigos';
+    inviteBtn.className = 'btn-invite';
+    inviteBtn.onclick = () => window.location.href = 'invites.html';
+    followBtn.parentNode.appendChild(inviteBtn);
     return;     
   }
   let isFollowing = await verificarSeEstaSeguindo(currentUserId, targetUserId);
@@ -1333,7 +1333,7 @@ async function inicializarSistemaDeMusicaProfile(userid) {
 
     console.log('🎵 Criando player YouTube...');
 
-    // Cria novo player
+    // Cria novo player (NÃO toca automaticamente)
     player = new YT.Player('bgMusic', {
       height: '1',
       width: '1',
@@ -1356,35 +1356,7 @@ async function inicializarSistemaDeMusicaProfile(userid) {
         onError: onPlayerError
       }
     });
-
-    // Configura botão
-    if (btnPause) {
-      // Remove listeners antigos
-      const newBtn = btnPause.cloneNode(true);
-      btnPause.parentNode.replaceChild(newBtn, btnPause);
-      
-      // Adiciona novo listener
-      newBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🎵 Botão clicado!');
-        toggleMusic();
-      });
-      
-      newBtn.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🎵 Botão tocado (touch)!');
-        toggleMusic();
-      });
-      
-      newBtn.classList.remove('playing');
-      newBtn.style.opacity = '0.5';
-      newBtn.style.cursor = 'wait';
-      newBtn.disabled = true;
-      
-      console.log('✅ Botão configurado');
-    }
+    // O botão será habilitado em onPlayerReady
 
   } catch (e) {
     console.error('❌ Erro ao inicializar música:', e);
@@ -1403,8 +1375,18 @@ function onPlayerReady(event) {
     btnPause.style.cursor = 'pointer';
     btnPause.disabled = false;
     console.log('✅ Botão habilitado');
+    // Garante que só toca após clique do usuário
+    btnPause.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMusic();
+    };
+    btnPause.ontouchend = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMusic();
+    };
   }
-  
   // Define volume padrão
   try {
     player.setVolume(50);
@@ -1515,36 +1497,55 @@ async function carregarLinks(userid) {
     `;
     return;
   }
-  const links = userDoc.data().links || {};
-  if (!links || Object.keys(links).length === 0) {
+  const data = userDoc.data();
+  // Monta os links sociais a partir dos campos salvos
+  const socialLinks = [
+    data.instagram ? {
+      label: 'Instagram',
+      url: `https://instagram.com/${data.instagram}`,
+      icon: 'fab fa-instagram'
+    } : null,
+    data.twitter ? {
+      label: 'Twitter/X',
+      url: `https://twitter.com/${data.twitter}`,
+      icon: 'fab fa-twitter'
+    } : null,
+    data.spotify ? {
+      label: 'Spotify',
+      url: `https://open.spotify.com/user/${data.spotify}`,
+      icon: 'fab fa-spotify'
+    } : null,
+    data.github ? {
+      label: 'GitHub',
+      url: `https://github.com/${data.github}`,
+      icon: 'fab fa-github'
+    } : null,
+    data.customLink ? {
+      label: 'Outro',
+      url: data.customLink.startsWith('http') ? data.customLink : `https://${data.customLink}`,
+      icon: 'fas fa-link'
+    } : null
+  ].filter(Boolean);
+
+  if (socialLinks.length === 0) {
     linksContainer.innerHTML = `
       <div class="empty-links"><div class="empty-icon"><i class="fas fa-link"></i></div>
       <h3>Nenhum link ainda</h3><p>Este usuário ainda não adicionou nenhum link.</p></div>
     `;
     return;
   }
-  Object.entries(links).forEach(([key, url]) => {
-    if (url && url.trim()) {
-      const linkElement = document.createElement('div');
-      linkElement.className = 'link-box';
-      let icon = 'fas fa-external-link-alt', label = key;
-      if (url.includes('instagram.com')) { icon = 'fab fa-instagram'; label = 'Instagram'; }
-      else if (url.includes('twitter.com') || url.includes('x.com')) { icon = 'fab fa-twitter'; label = 'Twitter/X'; }
-      else if (url.includes('tiktok.com')) { icon = 'fab fa-tiktok'; label = 'TikTok'; }
-      else if (url.includes('youtube.com')) { icon = 'fab fa-youtube'; label = 'YouTube'; }
-      else if (url.includes('github.com')) { icon = 'fab fa-github'; label = 'GitHub'; }
-      else if (url.includes('linkedin.com')) { icon = 'fab fa-linkedin'; label = 'LinkedIn'; }
-      else if (url.includes('discord')) { icon = 'fab fa-discord'; label = 'Discord'; }
-      else if (url.includes('spotify.com')) { icon = 'fab fa-spotify'; label = 'Spotify'; }
-      linkElement.innerHTML = `
-        <a href="${url}" target="_blank" rel="noopener noreferrer" class="user-link">
-          <i class="${icon}"></i>
-          <span>${label}</span>
-          <i class="fas fa-external-link-alt link-arrow"></i>
-        </a>
-      `;
-      linksContainer.appendChild(linkElement);
-    }
+
+  socialLinks.forEach(link => {
+    const linkElement = document.createElement('div');
+    linkElement.className = 'link-box';
+    linkElement.innerHTML = `
+      <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="user-link">
+        <i class="${link.icon}"></i>
+        <span>${link.label}</span>
+        <i class="fas fa-external-link-alt link-arrow"></i>
+      </a>
+    `;
+    linksContainer.appendChild(linkElement);
   });
 }
 
