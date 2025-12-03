@@ -831,7 +831,7 @@ textarea#postText:focus {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  padding: 20px;
+  padding: 0px;
   box-sizing: border-box;
   backdrop-filter: blur(16px);
 }
@@ -853,17 +853,15 @@ textarea#postText:focus {
   max-height: 100%;
   border-radius: 8px;
   box-shadow: 0 16px 64px rgba(0,0,0,0.5);
-  max-width:600px;
-  overflow-y: auto;
   max-height: 500px !important;
-  min-height: 300px !important;
+  min-height: 100px !important;
 }
 
 .modal-close {
   position: absolute;
   top: -50px;
   right: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(165, 165, 165, 0.9);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 40px;
@@ -1294,6 +1292,13 @@ textarea#postText:focus {
     background: #c0392b;
     transform: scale(1.05);
   }
+  .btn-like.liked svg,
+.btn-like.liked i,
+.btn-like.liked {
+    color: #dc3545 !important;
+    fill: #dc3545 !important;
+}
+
   
   @media (max-width: 768px) {
     .upload-label {
@@ -1431,7 +1436,9 @@ textarea#postText:focus {
   
   
 
-  
+  .storys{
+    display: none;
+  }
   
   @media (max-width: 768px) {
     .upload-label {

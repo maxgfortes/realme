@@ -127,8 +127,8 @@
     }
 
     .profile-pic {
-      width: 118px;
-      height: 118px;
+      width: 110px;
+      height: 110px;
       border-radius: 15px;
       object-fit: cover;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);

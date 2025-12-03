@@ -467,10 +467,10 @@ body.modal-open {
   backdrop-filter: blur(8px);
   border: none;
   border-radius: 12px;
-  margin-top: 30px;
+  margin-top: 0px;
   max-width: 800px;
   box-shadow: none;
-  margin: 14px 0px;
+  margin: 32px 0px;
 }
 
 /* Título da seção */
@@ -1640,6 +1640,84 @@ textarea#postText:focus {
 }
 
 
+.storys {
+  padding: 22px 12px;
+  display: flex;
+  display: none;
+}
+
+.story-area {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.storys::after {
+  content: '';
+  position: relative;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 10%; height: 10%;
+  z-index: 30;
+  background-color: red;
+}
+
+.story-pfp {
+  display: flex;
+}
+.your-story {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.friends-storys {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.story-pfp img{
+  height: 86px;
+  width: 86px;
+  border-radius: 50%;
+  border: 3px solid #4A90E2;
+  padding: 3px;
 }
 
 
+.my-story-pfp img{
+  height: 86px;
+  width: 86px;
+  border-radius: 50%;
+  border: 3px solid #757575;
+  padding: 3px;
+}
+
+
+.story-username {
+  font-size: 14px;
+  width: 100%;
+  color: #ddd;
+  text-align: center;
+  margin-top: 0.8vh;
+}
+
+.add-story-icon {
+  position: absolute;
+  bottom: 22px;
+  right: 6px;
+  background-color: #a3a3a3;
+  border-radius: 50%;
+  padding: 2px 5px;
+  border: 3px solid #020202;
+  cursor: pointer;
+
+
+
+}
+
+
+}

@@ -18,6 +18,11 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  getMessaging,
+  getToken,
+  onMessage
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 import {
   query,
@@ -49,6 +54,57 @@ const IMGBB_API_KEY = 'fc8497dcdf559dc9cbff97378c82344c';
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+// Messaging (push)
+let messaging;
+
+// PUBLIC_VAPID_KEY: prefer reading from `window.PUBLIC_VAPID_KEY` (set by `src/js/config.js`),
+// fallback to the in-file key below if not provided.
+const PUBLIC_VAPID_KEY = (typeof window !== 'undefined' && window.PUBLIC_VAPID_KEY) ? window.PUBLIC_VAPID_KEY : 'BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg';
+
+/**
+ * Pede permissão de notificações, obtém token FCM (web) e salva em Firestore
+ * Usa Firebase Messaging (getToken) com a VAPID public key.
+ */
+async function registerForPushNotifications(uid) {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    // inicializa messaging se necessário
+    if (!messaging) messaging = getMessaging(app);
+
+    const token = await getToken(messaging, { vapidKey: PUBLIC_VAPID_KEY });
+    if (!token) return;
+
+    // salva token no documento do usuário (pushTokens array)
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.exists() ? userSnap.data() : {};
+    const tokens = Array.isArray(data.pushTokens) ? data.pushTokens : [];
+    if (!tokens.includes(token)) {
+      tokens.push(token);
+      await setDoc(userRef, { pushTokens: tokens }, { merge: true });
+    }
+
+    // Escuta mensagens em foreground
+    onMessage(messaging, (payload) => {
+      console.log('Mensagem recebida em foreground:', payload);
+      // Opcional: mostrar toast no app
+      if (payload && payload.notification) {
+        const title = payload.notification.title || '';
+        const body = payload.notification.body || '';
+        // mostrar notificação local (apenas UI) para o usuário
+        try {
+          new Notification(title, { body });
+        } catch (e) {}
+      }
+    });
+
+  } catch (err) {
+    console.error('Erro ao registrar push:', err);
+  }
+}
 
 // Elementos DOM
 const feed = document.getElementById('feed');
@@ -553,7 +609,8 @@ async function buscarDadosUsuarioPorUid(uid) {
     return {
       userphoto,
       username: userData.username || '',
-      displayname: userData.displayname || ''
+      displayname: userData.displayname || '',
+      verified: userData.verified || false
     };
   } catch (error) {
     console.error("Erro ao buscar dados do usuário:", error);
@@ -696,6 +753,7 @@ async function renderizarComentarios(uid, postId, container) {
         const usernameParaExibir = comentario.userData?.username ? `@${comentario.userData.username}` : '';
         const fotoUsuario = comentario.userData?.userphoto || obterFotoPerfil(comentario.userData, null);
         const conteudoFormatado = formatarHashtags(comentario.content);
+        const isVerified = comentario.userData?.verified ? '<i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.85em; color: #4A90E2;"></i>' : '';
         const comentarioEl = document.createElement('div');
         comentarioEl.className = 'comentario-item';
         comentarioEl.innerHTML = `
@@ -703,7 +761,7 @@ async function renderizarComentarios(uid, postId, container) {
             <img src="${fotoUsuario}" alt="Avatar" class="comentario-avatar"
                  onerror="this.src='./src/icon/default.jpg'" />
             <div class="comentario-meta">
-              <strong class="comentario-nome" data-username="${comentario.senderid}">${nomeParaExibir}</strong>
+              <strong class="comentario-nome" data-username="${comentario.senderid}">${nomeParaExibir}${isVerified}</strong>
               <small class="comentario-usuario">${usernameParaExibir}</small>
               <small class="comentario-data">${formatarDataRelativa(comentario.create)}</small>
             </div>
@@ -995,7 +1053,13 @@ if (btnSave) {
           const nome = postEl.querySelector('.user-name-link');
           const username = postEl.querySelector('.post-username');
           if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
-          if (nome) nome.textContent = userData.displayname || userData.username || postData.creatorid;
+          if (nome) {
+            nome.textContent = userData.displayname || userData.username || postData.creatorid;
+            // Adiciona ícone de verificado se o usuário for verificado
+            if (userData.verified) {
+              nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+            }
+          }
           if (username) username.textContent = userData.username ? `@${userData.username}` : '';
         }
       });
@@ -1006,11 +1070,12 @@ if (btnSave) {
       if (btnLike && usuarioLogado) {
   const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
   getDoc(likerRef).then(likerSnap => {
-    if (likerSnap.exists() && likerSnap.data().like === true) {
-      btnLike.style.color = '#dc3545';
-    } else {
-      btnLike.style.color = '';
-    }
+if (likerSnap.exists() && likerSnap.data().like === true) {
+  btnLike.classList.add('liked');
+} else {
+  btnLike.classList.remove('liked');
+}
+
   });
 }
 
@@ -1206,37 +1271,43 @@ async function toggleLikePost(uid, postId, element) {
     let curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
 
     if (likerSnap.exists() && likerSnap.data().like === true) {
+      // DESCURTIR
       await updateDoc(likerRef, { like: false, likein: new Date() });
-      element.style.color = '';
+      element.classList.remove('liked');
       spanCurtidas.textContent = Math.max(0, curtidasAtuais - 1);
     } else {
+      // CURTIR
       if (likerSnap.exists()) {
         await updateDoc(likerRef, { like: true, likein: new Date() });
       } else {
         await setDoc(likerRef, { uid: uid, like: true, likein: new Date() });
       }
-      element.style.color = '#dc3545';
+      element.classList.add('liked');
       spanCurtidas.textContent = curtidasAtuais + 1;
     }
+
   } catch (error) {
     console.error("Erro ao curtir/descurtir post:", error);
     criarPopup('Erro', 'Não foi possível curtir/descurtir o post. Tente novamente.', 'error');
   }
 }
 
-// Listener para capturar cliques nos botões de like
+
 feed.addEventListener('click', async (e) => {
   const btnLike = e.target.closest('.btn-like');
-  if (btnLike) {
-    const uid = auth.currentUser?.uid; // ID do usuário logado
-    const postId = btnLike.dataset.id; // ID do post
-    if (uid && postId) {
-      await toggleLikePost(uid, postId, btnLike);
-    } else {
-      criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
-    }
+  if (!btnLike) return;
+
+  const uid = auth.currentUser?.uid;
+  const postId = btnLike.dataset.id;
+
+  if (!uid || !postId) {
+    criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
+    return;
   }
+
+  await toggleLikePost(uid, postId, btnLike);
 });
+
 
 
 
@@ -1858,6 +1929,8 @@ function carregarFotoPerfil() {
           console.warn('Foto de perfil não encontrada. Usando a padrão.');
           navPic.src = './src/icon/default.jpg';
         }
+        // Registrar token de push do usuário (se possível)
+        try { if (userId) registerForPushNotifications(userId); } catch(e) { console.warn('Falha ao registrar push:', e); }
       } catch (error) {
         console.error('Erro ao carregar a foto de perfil:', error);
         navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
@@ -2061,7 +2134,13 @@ if (avisoEl) {
             const nome = avisoEl.querySelector('.user-name-link');
             const username = avisoEl.querySelector('.post-username');
             if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
-            if (nome) nome.textContent = userData.displayname || userData.username || postData.creatorid;
+            if (nome) {
+              nome.textContent = userData.displayname || userData.username || postData.creatorid;
+              // Adiciona ícone de verificado se o usuário for verificado
+              if (userData.verified) {
+                nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+              }
+            }
             if (username) username.textContent = userData.username ? `@${userData.username}` : '';
           }
         });
