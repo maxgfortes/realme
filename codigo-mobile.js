@@ -2509,7 +2509,7 @@ if (containerFull && bgUrl) {
 */
 
   const headerPhoto = mediaData.headerphoto;
-  const headerEl = document.querySelector('.profile-header-bg');
+  const headerEl = document.querySelector('.profile-banner');
   if (headerEl && headerPhoto) {
     headerEl.style.backgroundImage = `url('${headerPhoto}')`;
     headerEl.style.backgroundSize = 'cover';
