@@ -6,8 +6,9 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(180deg, #020202 0%, #020202 50%, #020202 100%);
-      background-color: #020202;
+      background: #020202;
+      background: linear-gradient(180deg, #ff0000 0%, #020202 50%, #020202 100%);
+      background: #020202;
       min-height: 120vh;
       min-width: 100vw;
       height: 200px;
@@ -63,6 +64,12 @@
       font-weight: 700;
     }
 
+
+    .profile-banner {
+      background-color: #4A90E2;
+      height: 14vh;
+    }
+
     /* Container Principal */
     .full-profile-container {
       padding-top: 56px !important;
@@ -87,7 +94,7 @@
 
     /* Profile Header */
     .profile-header {
-      padding: 12px 12px 12px 12px;
+      padding: 4px 12px 12px 12px;
       position: relative;
         background-size: cover;
         background-position: center;
@@ -123,27 +130,32 @@
     .full-header {
       display: flex;
       gap: 10px;
-      margin-bottom: 6px;
+      height: 12vh;
     }
 
     .profile-pic {
-      width: 110px;
-      height: 110px;
-      border-radius: 15px;
+      width: 118px;
+      height: 118px;
+      border-radius: 12px;
       object-fit: cover;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
     }
 
+    .pfp {
+      top: -2.4vh !important;
+      position: relative;
+    }
+
     .profile-info-block {
       flex: 1;
-      padding-left: 4px;
     }
 
     .name-line {
       display: flex;
       align-items: center;
       gap: 8px;
+      
     }
 
     .profile-name {
@@ -161,7 +173,7 @@
     .handle {
       font-size: 15px;
       color: #aaa;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
       margin-top: 0px;
     }
@@ -173,9 +185,7 @@
       color: #ddd;
       text-align: center;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-      padding: 10px 0px 12px 12px;
-      border-radius: 8px;
-      
+      padding: 2px 0px 6px 12px;
     }
 
     .stats span {
@@ -185,7 +195,7 @@
     }
 
     .stats {
-      text-align: left;
+      text-align: center;
     }
 
     .stats strong {
@@ -209,7 +219,7 @@
   width: fit-content;
   background-color: transparent !important;
   backdrop-filter: blur(8px);
-  color: #f8f9f9;
+  color: #ccc;
   font-size: 10px;
 }
 
@@ -366,7 +376,7 @@
       display: block;
       filter: blur(0px);
       transition: filter 0.2s;
-      border-radius: 2px;
+      border-radius: 1px;
     }
 
     
@@ -787,7 +797,7 @@
 .postpreview {
   position: relative;
   width: 100%;
-  aspect-ratio: 1; /* Quadrado perfeito */
+  aspect-ratio: 1 / 1.4; /* Quadrado perfeito */
   overflow: hidden;
   cursor: pointer;
 }

@@ -1946,12 +1946,15 @@ function carregarFotoPerfil() {
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 
 // ===================
-// EVENT LISTENERS
+// EVENT LISTENERS - VERSÃO COMPLETA E CORRIGIDA
 // ===================
 function configurarEventListeners() {
+  // Botão de enviar post
   if (postButton) {
     postButton.addEventListener('click', sendPost);
   }
+  
+  // Enter no input de post
   if (postInput) {
     postInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -1960,56 +1963,64 @@ function configurarEventListeners() {
       }
     });
   }
+  
+  // Botão de carregar mais
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', loadPosts);
   }
+  
   if (feed) {
+    // ✅ ÚNICO LISTENER DE CLICK NO FEED
     feed.addEventListener('click', async (e) => {
       const btnLike = e.target.closest('.btn-like');
       const btnReport = e.target.closest('.btn-report');
       const btnComment = e.target.closest('.btn-comment');
       const userNameLink = e.target.closest('.user-name-link');
+      const btnVer = e.target.closest('.btn-ver-post');
+      const btnMore = e.target.closest(".more-options-button");
+      const btnDelete = e.target.closest(".btn-delete-post");
       const commentSubmit = e.target.closest('.comment-submit');
+
+      // CURTIR POST
       if (btnLike) {
-        const uid = btnLike.dataset.username;
+        const uid = auth.currentUser?.uid;
         const postId = btnLike.dataset.id;
-        curtirPost(uid, postId, btnLike);
+        if (uid && postId) {
+          await toggleLikePost(uid, postId, btnLike);
+        } else {
+          criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
+        }
       }
+
+      // DENUNCIAR POST
       if (btnReport) {
-  const postId = btnReport.dataset.id;
-  const uid = btnReport.dataset.username;
-  let targetOwnerUsername = "cache";
-  try {
-    const userData = await buscarDadosUsuarioPorUid(uid);
-    targetOwnerUsername = userData?.username || userData?.displayname || "cache";
-  } catch {}
-  criarModalDenuncia({
-    targetType: "post",
-    targetId: postId,
-    targetPath: `posts/${postId}`,
-    targetOwnerId: uid,
-    targetOwnerUsername
-  });
-}
-if (feed) {
-    feed.addEventListener('click', async (e) => {
-      // ... (código existente para btnLike, btnReport, btnVer, userNameLink) ...
+        const postId = btnReport.dataset.id;
+        const uid = btnReport.dataset.username;
+        let targetOwnerUsername = "cache";
+        try {
+          const userData = await buscarDadosUsuarioPorUid(uid);
+          targetOwnerUsername = userData?.username || userData?.displayname || "cache";
+        } catch {}
+        criarModalDenuncia({
+          targetType: "post",
+          targetId: postId,
+          targetPath: `posts/${postId}`,
+          targetOwnerId: uid,
+          targetOwnerUsername
+        });
+      }
 
-      const btnComment = e.target.closest('.btn-comment');
-      // O commentSubmit e a lógica de Enter dentro do feed SÓ serão usados para desktop
-      const commentSubmit = e.target.closest('.comment-submit'); 
-      
-      const isMobile = isMobileDevice(); // Use a nova função de detecção
-
+      // ABRIR COMENTÁRIOS
       if (btnComment) {
         const postId = btnComment.dataset.id;
         const uid = btnComment.dataset.username;
+        const isMobile = isMobileDevice();
 
         if (isMobile) {
-          // ABRIR MODAL MOBILE
+          // Mobile: abre modal
           abrirModalComentariosMobile(postId, uid);
         } else {
-          // LÓGICA EXISTENTE PARA DESKTOP
+          // Desktop: toggle seção
           const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
           if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
             commentsSection.style.display = 'block';
@@ -2021,11 +2032,154 @@ if (feed) {
         }
       }
 
-      // Lógica de envio de comentário no FEED (apenas para desktop, pois o mobile usará o modal)
-      if (commentSubmit && !isMobile) { 
+      // 👁️ VER POST DENUNCIADO
+      if (btnVer) {
+        const postId = btnVer.dataset.id;
+        const postRef = doc(db, 'posts', postId);
+        const postSnap = await getDoc(postRef);
+        
+        if (postSnap.exists()) {
+          const postData = postSnap.data();
+          const avisoEl = btnVer.closest('.post-card');
+          
+          if (avisoEl) {
+            avisoEl.innerHTML = `
+              <div class="post-header">
+                <div class="user-info">
+                  <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
+                       onerror="this.src='./src/icon/default.jpg'" />
+                  <div class="user-meta">
+                    <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
+                    <small class="post-username"></small>
+                  </div>
+                </div>
+                <div class="more-options">
+                  <button class="more-options-button">
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
+              ${postData.img ? `
+                <div class="post-image">
+                  <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
+                </div>
+              ` : postData.urlVideo ? `
+                <div class="post-video">
+                  <video src="${postData.urlVideo}" autoplay muted playsinline loop></video>
+                </div>
+              ` : ''}
+              <div class="post-actions">
+                <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
+                    <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
+                  </svg> <span>${postData.likes || 0}</span>
+                </button>
+                <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
+                  Comentar
+                </button>
+                <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
+                  <i class="fas fa-flag"></i> Denunciar
+                </button>
+              </div>
+              <div class="post-date">${formatarDataRelativa(postData.create)}</div>
+              <div class="comments-section" style="display: none;">
+                <div class="comment-form">
+                  <input type="text" class="comment-input" placeholder="Escreva um comentário..."
+                         data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+                  <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+                <div class="comments-area">
+                  <div class="comments-list"></div>
+                </div>
+              </div>
+            `;
+            avisoEl.classList.remove('post-oculto-aviso');
+            
+            // Atualiza dados do usuário
+            buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
+              if (userData) {
+                const avatar = avisoEl.querySelector('.avatar');
+                const nome = avisoEl.querySelector('.user-name-link');
+                const username = avisoEl.querySelector('.post-username');
+                if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
+                if (nome) {
+                  nome.textContent = userData.displayname || userData.username || postData.creatorid;
+                  if (userData.verified) {
+                    nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+                  }
+                }
+                if (username) username.textContent = userData.username ? `@${userData.username}` : '';
+              }
+            });
+          }
+        }
+      }
+
+      // 👤 LINK PARA PERFIL
+const userInfo = e.target.closest('.user-info');
+      if (userInfo && !e.target.closest('.more-options-button')) {
+        const userNameLink = userInfo.querySelector('.user-name-link');
+        if (userNameLink) {
+          const uid = userNameLink.dataset.username;
+          if (uid) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const page = isMobile ? 'pfmobile.html' : 'PF.html';
+            window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
+          }
+        }
+        return;
+      }
+
+      // ⋮ MENU 3 PONTINHOS
+      if (btnMore) {
+        const menu = btnMore.closest(".post-header").querySelector(".more-menu");
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+      }
+
+      // 🗑️ DELETAR POST
+      if (btnDelete) {
+        const postId = btnDelete.dataset.id;
+        const ownerId = btnDelete.dataset.owner;
+        const usuarioLogado = auth.currentUser;
+
+        if (!usuarioLogado) {
+          criarPopup("Erro", "Você precisa estar logado.", "error");
+          return;
+        }
+
+        if (usuarioLogado.uid !== ownerId) {
+          criarPopup("Erro", "Você não pode excluir este post.", "warning");
+          return;
+        }
+
+        mostrarPopupConfirmacao(
+          "Apagar Post",
+          "Tem certeza que deseja deletar este post?",
+          async () => {
+            try {
+              await deleteDoc(doc(db, "posts", postId));
+              await deleteDoc(doc(db, "users", ownerId, "posts", postId));
+              const postElement = btnDelete.closest(".post-card");
+              postElement.remove();
+              criarPopup("Sucesso", "Post apagado.", "success");
+            } catch (err) {
+              console.error(err);
+              criarPopup("Erro", "Não foi possível apagar o post.", "error");
+            }
+          }
+        );
+      }
+
+      // ✉️ ENVIAR COMENTÁRIO (DESKTOP APENAS)
+      if (commentSubmit && !isMobileDevice()) {
         const uid = commentSubmit.dataset.username;
         const postId = commentSubmit.dataset.postId;
         const commentInput = document.querySelector(`input[data-username="${uid}"][data-post-id="${postId}"]`);
+        
         if (commentInput && commentInput.value.trim()) {
           const sucesso = await adicionarComentario(uid, postId, commentInput.value.trim());
           if (sucesso) {
@@ -2039,12 +2193,13 @@ if (feed) {
       }
     });
 
-    // Lógica de Enter no FEED (apenas para desktop)
+    // ✅ ÚNICO LISTENER DE KEYPRESS NO FEED (DESKTOP)
     feed.addEventListener('keypress', async (e) => {
       if (e.key === 'Enter' && e.target.classList.contains('comment-input') && !isMobileDevice()) {
         e.preventDefault();
         const uid = e.target.dataset.username;
         const postId = e.target.dataset.postId;
+        
         if (e.target.value.trim()) {
           const sucesso = await adicionarComentario(uid, postId, e.target.value.trim());
           if (sucesso) {
@@ -2056,218 +2211,32 @@ if (feed) {
       }
     });
   }
-const btnVer = e.target.closest('.btn-ver-post');
-  if (btnVer) {
-    const postId = btnVer.dataset.id;
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    if (postSnap.exists()) {
-      const postData = postSnap.data();
-      const avisoEl = btnVer.closest('.post-card');
-if (avisoEl) {
-  avisoEl.innerHTML = `
-    <div class="post-header">
-      <div class="user-info">
-        <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/icon/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
-          <small class="post-username"></small>
-        </div>
-      </div>
-      <div class="more-options">
-        <button class="more-options-button">
-          <i class="fas fa-ellipsis-h"></i>
-        </button>
-      </div>
-    </div>
-    <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
-    ${
-  postData.img
-    ? `
-      <div class="post-image">
-        <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
-      </div>
-    `
-    : postData.urlVideo
-    ? `
-      <div class="post-video">
-        <video src="${postData.urlVideo}" autoplay muted playsinline loop></video>
-      </div>
-    `
-    : ''
 }
 
-    <div class="post-actions">
-      <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <i class="fas fa-heart"></i> <span>${postData.likes || 0}</span>
-      </button>
-      <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
-         Comentar
-      </button>
-      <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-        <i class="fas fa-flag"></i> Denunciar
-      </button>
-    </div>
-    <div class="post-date">${formatarDataRelativa(postData.create)}</div>
-    <div class="comments-section" style="display: none;">
-      <div class="comment-form">
-        <input type="text" class="comment-input" placeholder="Escreva um comentário..."
-               data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-        <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-          <i class="fas fa-paper-plane"></i>
-        </button>
-      </div>
-      <div class="comments-area">
-        <div class="comments-list"></div>
-      </div>
-    </div>
-  `;
-  avisoEl.classList.remove('post-oculto-aviso'); // <-- Adicione esta linha
-  // Atualiza nome e foto do usuário...
-
-        // Atualiza nome e foto do usuário
-        buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
-          if (userData) {
-            const avatar = avisoEl.querySelector('.avatar');
-            const nome = avisoEl.querySelector('.user-name-link');
-            const username = avisoEl.querySelector('.post-username');
-            if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
-            if (nome) {
-              nome.textContent = userData.displayname || userData.username || postData.creatorid;
-              // Adiciona ícone de verificado se o usuário for verificado
-              if (userData.verified) {
-                nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
-              }
-            }
-            if (username) username.textContent = userData.username ? `@${userData.username}` : '';
-          }
-        });
-      }
-    }
-  }
-      if (btnComment) {
-        const commentsSection = btnComment.closest('.post-card').querySelector('.comments-section');
-        if (commentsSection.style.display === 'none') {
-          commentsSection.style.display = 'block';
-          const uid = btnComment.dataset.username;
-          const postId = btnComment.dataset.id;
-          const commentsList = commentsSection.querySelector('.comments-list');
-          await renderizarComentarios(uid, postId, commentsList);
-        } else {
-          commentsSection.style.display = 'none';
-        }
-      }
-      if (userNameLink) {
-        const uid = userNameLink.dataset.username;
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const page = isMobile ? 'pfmobile.html' : 'PF.html';
-        window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
-      }
-      if (commentSubmit) {
-        const uid = commentSubmit.dataset.username;
-        const postId = commentSubmit.dataset.postId;
-        const commentInput = document.querySelector(`input[data-username="${uid}"][data-post-id="${postId}"]`);
-        if (commentInput && commentInput.value.trim()) {
-          const sucesso = await adicionarComentario(uid, postId, commentInput.value.trim());
-          if (sucesso) {
-            commentInput.value = '';
-            const commentsList = commentSubmit.closest('.comments-section').querySelector('.comments-list');
-            await renderizarComentarios(uid, postId, commentsList);
-          }
-        } else {
-          criarPopup('Campo Vazio', 'Digite um comentário antes de enviar!', 'warning');
-        }
-      }
-    });
-    feed.addEventListener('keypress', async (e) => {
-      if (e.key === 'Enter' && e.target.classList.contains('comment-input')) {
-        e.preventDefault();
-        const uid = e.target.dataset.username;
-        const postId = e.target.dataset.postId;
-        if (e.target.value.trim()) {
-          const sucesso = await adicionarComentario(uid, postId, e.target.value.trim());
-          if (sucesso) {
-            e.target.value = '';
-            const commentsList = e.target.closest('.comments-section').querySelector('.comments-list');
-            await renderizarComentarios(uid, postId, commentsList);
-          }
-        }
-      }
-    });
-  }
-  feed.addEventListener('click', async (e) => {
-  const btnLike = e.target.closest('.btn-like');
-  if (btnLike) {
-    const uid = auth.currentUser?.uid; // ID do usuário logado
-    const postId = btnLike.dataset.id; // ID do post
-    if (uid && postId) {
-      await toggleLikePost(uid, postId, btnLike);
-    } else {
-      criarPopup('Erro', 'Você precisa estar logado para curtir posts.', 'warning');
+// ===================
+// LISTENER PARA NOMES DE USUÁRIOS NOS COMENTÁRIOS
+// ===================
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('comentario-nome')) {
+    const uid = e.target.dataset.username;
+    if (uid) {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const page = isMobile ? 'pfmobile.html' : 'PF.html';
+      window.location.href = `${page}?userid=${encodeURIComponent(uid)}`;
     }
   }
 });
 
-feed.addEventListener("click", async (e) => {
-
-  // 🟦 ABRIR MENU DOS 3 PONTINHOS
-  const btnMore = e.target.closest(".more-options-button");
-  if (btnMore) {
-    const menu = btnMore.closest(".post-header").querySelector(".more-menu");
-    menu.style.display = menu.style.display === "none" ? "block" : "none";
-    return;
-  }
-
-  // 🟥 DELETAR POST
-  const btnDelete = e.target.closest(".btn-delete-post");
-  if (btnDelete) {
-    const postId = btnDelete.dataset.id;
-    const ownerId = btnDelete.dataset.owner;
-    const usuarioLogado = auth.currentUser;
-
-    if (!usuarioLogado) {
-      criarPopup("Erro", "Você precisa estar logado.", "error");
-      return;
-    }
-
-    // Só dono pode ver/opções
-    if (usuarioLogado.uid !== ownerId) {
-      criarPopup("Erro", "Você não pode excluir este post.", "warning");
-      return;
-    }
-
-    // CONFIRMAÇÃO
-    mostrarPopupConfirmacao(
-      "Apagar Post",
-      "Tem certeza que deseja deletar este post?",
-      async () => {
-        try {
-          // Apagar no caminho global
-          await deleteDoc(doc(db, "posts", postId));
-
-          // Apagar no caminho do usuário
-          await deleteDoc(doc(db, "users", ownerId, "posts", postId));
-
-          // Remover da tela
-          const postElement = btnDelete.closest(".post-card");
-          postElement.remove();
-
-          criarPopup("Sucesso", "Post apagado.", "success");
-
-        } catch (err) {
-          console.error(err);
-          criarPopup("Erro", "Não foi possível apagar o post.", "error");
-        }
-      }
-    );
+// ===================
+// LISTENER PARA VÍDEOS (PLAY/PAUSE AO CLICAR)
+// ===================
+document.addEventListener("click", (e) => {
+  const video = e.target.closest("video");
+  if (video) {
+    if (video.paused) video.play();
+    else video.pause();
   }
 });
-
-}
-
-
 
 
 // ===================

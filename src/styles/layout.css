@@ -1454,4 +1454,11 @@ textarea#postText:focus {
     }
   }
 
-  
+  .comment-input {
+    color: #ffffff;
+    font-size: 14px;
+  }
+
+  .user-info:hover {
+    cursor: pointer;
+  }
