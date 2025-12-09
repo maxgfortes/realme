@@ -2111,6 +2111,142 @@ async function aplicarTag2000sStyle(userid) {
   }
 }
 await aplicarTag2000sStyle(userid);
+
+
+// ============================================
+// APLICAR BORDAS NEON (BORDER1, BORDER2, BORDER3, BORDER4)
+// ============================================
+
+async function aplicarBordaNeon(userid) {
+  const userRef = doc(db, 'users', userid);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) return;
+  
+  const userData = userSnap.data();
+  
+  // Remove estilo anterior se existir
+  let styleElement = document.getElementById('neon-border-style');
+  if (styleElement) {
+    styleElement.remove();
+  }
+  
+  // Define as cores de cada borda
+  let borderStyle = null;
+  
+  if (userData.border1 === true) {
+    // AZUL
+    borderStyle = `
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: none;
+        border-radius: 0 0 29px 29px;
+        box-shadow: 
+          inset 0 0 20px rgb(4, 63, 255),
+          inset 0 0 40px rgb(0, 140, 255),
+          0 0 20px rgba(0, 160, 253, 0),
+          0 0 40px rgba(64, 224, 208, 0.3);
+        pointer-events: none;
+        z-index: 99999999999999999;
+        animation: neonPulse 3s ease-in-out infinite;
+      }
+    `;
+  } else if (userData.border2 === true) {
+    // VERMELHO
+    borderStyle = `
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: none;
+        border-radius: 0 0 29px 29px;
+        box-shadow: 
+          inset 0 0 20px rgb(255, 4, 4),
+          inset 0 0 40px rgb(255, 0, 0),
+          0 0 20px rgba(253, 0, 0, 0),
+          0 0 40px rgba(255, 64, 64, 0.3);
+        pointer-events: none;
+        z-index: 99999999999999999;
+        animation: neonPulse 3s ease-in-out infinite;
+      }
+    `;
+  } else if (userData.border3 === true) {
+    // BRANCO
+    borderStyle = `
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: none;
+        border-radius: 0 0 29px 29px;
+        box-shadow: 
+          inset 0 0 20px rgb(255, 255, 255),
+          inset 0 0 40px rgb(240, 240, 240),
+          0 0 20px rgba(255, 255, 255, 0),
+          0 0 40px rgba(255, 255, 255, 0.3);
+        pointer-events: none;
+        z-index: 99999999999999999;
+        animation: neonPulse 3s ease-in-out infinite;
+      }
+    `;
+  } else if (userData.border4 === true) {
+    // ROXO
+    borderStyle = `
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: none;
+        border-radius: 0 0 29px 29px;
+        box-shadow: 
+          inset 0 0 20px rgb(138, 43, 226),
+          inset 0 0 40px rgb(147, 51, 234),
+          0 0 20px rgba(138, 43, 226, 0),
+          0 0 40px rgba(168, 85, 247, 0.3);
+        pointer-events: none;
+        z-index: 99999999999999999;
+        animation: neonPulse 3s ease-in-out infinite;
+      }
+    `;
+  }
+  
+  // Adiciona o estilo se alguma borda estiver ativa
+  if (borderStyle) {
+    styleElement = document.createElement('style');
+    styleElement.id = 'neon-border-style';
+    styleElement.textContent = `
+      ${borderStyle}
+      
+      @keyframes neonPulse {
+        0%, 100% {
+          opacity: 1;
+          filter: brightness(1);
+        }
+        50% {
+          opacity: 0.8;
+          filter: brightness(1.2);
+        }
+      }
+    `;
+    document.head.appendChild(styleElement);
+  }
+}
+
+await aplicarBordaNeon(userid);
 }
 
 function carregarFotoPerfil() {
