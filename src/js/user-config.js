@@ -389,7 +389,7 @@ function setupFormSubmit() {
             // 3. Salva as configurações com as URLs atualizadas
             await salvarConfigPerfil(currentUser.uid, formData);
             
-            window.location.href = `PF.html?userid=${currentUser.uid}`;
+            window.location.href = `PF.html`;
         } catch (error) {
             alert('Erro ao salvar as configurações. Tente novamente. Erro: ' + error.message);
         } finally {

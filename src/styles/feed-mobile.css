@@ -2,7 +2,7 @@
 .welcome-container {
   margin-left: 0px !important;
   padding: 10px !important;
-  width: 100%;
+  width: 100% ;
   overflow-y: auto;
   height: 100vh;
   overflow-x: hidden;
@@ -245,7 +245,7 @@ body.modal-open {
   background-color: #333;
   border-radius: 50px;
   width: 60px;
-  height: 6px;
+  height: 4px;
   margin: 8px 20px;
 }
 
@@ -257,6 +257,16 @@ body.modal-open {
 .modal-info {
   padding: 2px;
   font-size: 18px;
+}
+
+.post-date-desktop {
+  display: none;
+}
+
+.post-footer-infos {
+  padding: 4px 0px 10px 8px;
+  font-size: 15.5px;
+  display: flex ;
 }
 
 
@@ -490,16 +500,19 @@ body.modal-open {
   border: 1px solid #2a2a2a;
   margin-bottom: 30px;
   box-shadow: 0 0 8px rgba(0,0,0,0.4);
+          background-color: #1f1f1f;
+        border: 1px solid #333333;
 }
 
 .post-card {
-  background: rgba(20, 20, 20, 0.582) !important;
+  background: rgb(20, 20, 20) !important;
   backdrop-filter: blur(none);
   border-radius: 16px;
-  margin-bottom: 20px;
-  border: 1px solid #111111 !important;
+  margin-bottom: 12px !important;
+  border: 1px solid #1d1d1d !important;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
   padding: 14px 14px 0px 14px;
+
 }
 
 .search-box-mobile {
@@ -533,8 +546,8 @@ body.modal-open {
 }
 
 .avatar {
-  width: 52px;
-  height: 52px;
+  width: 52px !important;
+  height: 52px !important;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #4A90E2;
@@ -575,8 +588,7 @@ body.modal-open {
 
 /* Texto do post */
 .post-text {
-  font-size: 15.5px;
-  line-height: 1.5;
+  font-size: 17px;
   margin: 0px 0 16px;
 }
 
@@ -1290,8 +1302,8 @@ textarea#postText:focus {
   padding-right: 12px;
   align-items: flex-start !important;
   justify-content: flex-start !important;
-  padding: 0px 0px 10px 0px !important;
-  flex: 1;
+  padding: 0px 0px 0px 0px !important;
+  flex: 1;;
   justify-content: space-between !important;
 }
 
@@ -1309,6 +1321,7 @@ textarea#postText:focus {
 
 .post-actions button {
   padding: 8px !important;
+  color: #c2c2c2;
 }
 
 .post-actions button:hover {
@@ -1321,20 +1334,20 @@ textarea#postText:focus {
 
 
 .btn-comment svg {
-  width: 24px !important;
-  height: 24px !important;
+  width: 22px !important;
+  height: 22px !important;
   fill: currentColor !important;
 }
 
 .btn-save svg {
-  width: 24px !important;
-  height: 24px !important;
+  width: 22px !important;
+  height: 22px !important;
   fill: currentColor !important;
 }
 
 .btn-share svg {
-  width: 24px !important;
-  height: 24px !important;
+  width: 22px !important;
+  height: 22px !important;
   fill: currentColor !important;
   margin-top: 2px;
 }
@@ -1357,7 +1370,7 @@ textarea#postText:focus {
 
 .post-actions button i{
   flex: none !important;
-  font-size: 26px !important;
+  font-size: 24px !important;
 }
 
 /* Esconder a data mobile por padrão (desktop) */

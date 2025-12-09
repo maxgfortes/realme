@@ -1007,7 +1007,10 @@ postEl.innerHTML = `
     </button>
     </div>
   </div>
-  <div class="post-date">${formatarDataRelativa(postData.create)}</div>
+  <div class="post-footer-infos">
+    <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
+    <small class="post-date-desktop">${formatarDataRelativa(postData.create)}</small>
+  </div>
   <div class="comments-section" style="display: none;">
     <div class="comment-form">
       <input type="text" class="comment-input" placeholder="Escreva um comentário..."
@@ -1023,6 +1026,26 @@ postEl.innerHTML = `
 </div>
 `;
 feed.appendChild(postEl);
+
+const usuarioLogado = auth.currentUser;
+
+if (usuarioLogado) {
+  gerarTextoCurtidoPor(postData.postid, usuarioLogado.uid).then(info => {
+    const footer = postEl.querySelector(".post-liked-by");
+
+    if (!footer) return;
+
+    if (info.total === 0) {
+      footer.style.display = "none";
+    } else {
+      footer.style.display = "block";
+
+      footer.innerHTML =
+        `Curtido por <strong>${info.username}</strong>` +
+        (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
+    }
+  });
+}
 
 
 
@@ -1066,7 +1089,6 @@ if (btnSave) {
 
       const btnLike = postEl.querySelector('.btn-like');
       const btnComment = postEl.querySelector('.btn-comment');
-      const usuarioLogado = auth.currentUser;
       if (btnLike && usuarioLogado) {
   const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
   getDoc(likerRef).then(likerSnap => {
@@ -1267,28 +1289,43 @@ async function toggleLikePost(uid, postId, element) {
 
   try {
     const likerSnap = await getDoc(likerRef);
-    const spanCurtidas = element.querySelector('span');
+    const spanCurtidas = element.querySelector("span");
     let curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
 
     if (likerSnap.exists() && likerSnap.data().like === true) {
       // DESCURTIR
-      await updateDoc(likerRef, { like: false, likein: new Date() });
-      element.classList.remove('liked');
+      await updateDoc(likerRef, {
+        like: false,
+        timestamp: Date.now()
+      });
+
+      element.classList.remove("liked");
       spanCurtidas.textContent = Math.max(0, curtidasAtuais - 1);
     } else {
       // CURTIR
       if (likerSnap.exists()) {
-        await updateDoc(likerRef, { like: true, likein: new Date() });
+        await updateDoc(likerRef, {
+          like: true,
+          timestamp: Date.now()
+        });
       } else {
-        await setDoc(likerRef, { uid: uid, like: true, likein: new Date() });
+        await setDoc(likerRef, {
+          uid,
+          like: true,
+          timestamp: Date.now()
+        });
       }
-      element.classList.add('liked');
+
+      element.classList.add("liked");
       spanCurtidas.textContent = curtidasAtuais + 1;
     }
 
+    // Atualiza "curtido por"
+    atualizarCurtidoPorDepoisDoLike(element, postId);
+
   } catch (error) {
-    console.error("Erro ao curtir/descurtir post:", error);
-    criarPopup('Erro', 'Não foi possível curtir/descurtir o post. Tente novamente.', 'error');
+    console.error("Erro ao curtir/descurtir:", error);
+    criarPopup("Erro", "Não foi possível curtir o post.", "error");
   }
 }
 
@@ -1308,6 +1345,94 @@ feed.addEventListener('click', async (e) => {
   await toggleLikePost(uid, postId, btnLike);
 });
 
+async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
+  const usuarioLogado = auth.currentUser;
+  const footer = btn.closest(".post-card").querySelector(".post-liked-by");
+
+  if (!footer || !usuarioLogado) return;
+
+  const info = await gerarTextoCurtidoPor(postId, usuarioLogado.uid);
+
+  if (info.total === 0) {
+    footer.style.display = "none";
+    return;
+  }
+
+  footer.style.display = "block";
+
+  footer.innerHTML =
+    `Curtido por <strong>${info.username}</strong>` +
+    (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
+}
+
+
+
+async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
+  const likersRef = collection(db, `posts/${postId}/likers`);
+  const likersSnap = await getDocs(likersRef);
+
+  let likersTotal = [];
+
+  likersSnap.forEach(doc => {
+    const data = doc.data();
+    if (data.like === true) {
+      likersTotal.push({
+        uid: doc.id,
+        timestamp: data.timestamp || 0
+      });
+    }
+  });
+
+  const total = likersTotal.length;
+
+  // 👉 CASO 1: Só você curtiu
+  const soVoceCurtiu = (total === 1 && likersTotal[0].uid === usuarioLogadoUid);
+
+  if (soVoceCurtiu) {
+    return {
+      username: "você",
+      total
+    };
+  }
+
+  // 👉 CASO 2: Tem mais curtidas além da sua
+  // Remove você para a exibição
+  const likersExibicao = likersTotal.filter(l => l.uid !== usuarioLogadoUid);
+
+  if (likersExibicao.length === 0) {
+    // Só você curtiu — mas esse caso já tratado acima
+    return { username: "você", total };
+  }
+
+  // Ordena por mais recente
+  likersExibicao.sort((a, b) => b.timestamp - a.timestamp);
+
+  // Buscar amigos
+  const amigosSnap = await getDocs(collection(db, `users/${usuarioLogadoUid}/friends`));
+  const amigosUid = amigosSnap.docs.map(d => d.id);
+
+  // Filtrar amigos (sem você)
+  const amigosQueCurtiram = likersExibicao.filter(l => amigosUid.includes(l.uid));
+
+  let uidEscolhido;
+
+  if (amigosQueCurtiram.length > 0) {
+    // amigo mais recente
+    uidEscolhido = amigosQueCurtiram[0].uid;
+  } else {
+    // qualquer pessoa mais recente
+    uidEscolhido = likersExibicao[0].uid;
+  }
+
+  // Busca o usuário escolhido
+  const userData = await buscarDadosUsuarioPorUid(uidEscolhido);
+  const username =
+    userData?.username ||
+    userData?.displayname ||
+    "usuário";
+
+  return { username, total };
+}
 
 
 

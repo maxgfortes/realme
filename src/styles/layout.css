@@ -1433,13 +1433,17 @@ textarea#postText:focus {
     display: flex;
     justify-content: flex-start;
   }
+
+  .post-footer-infos {
+  padding: 4px 0 10px 0;
+  font-size: 15.5px;
+  display: flex ;
+  justify-content: space-between;
+  color: #666;
+}
   
   
 
-  .storys{
-    display: none;
-  }
-  
   @media (max-width: 768px) {
     .upload-label {
       padding: 20px;
@@ -1460,5 +1464,9 @@ textarea#postText:focus {
   }
 
   .user-info:hover {
-    cursor: pointer;
+    cursor: pointer !important;
+  }
+
+  .storys {
+    display: none !important;
   }

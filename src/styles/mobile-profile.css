@@ -226,6 +226,7 @@
 .music {
   display: flex;
   padding: 4px;
+  padding-top: 8px;
   padding-left: 10px;
 }
 

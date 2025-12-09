@@ -1,0 +1,359 @@
+@media (max-width: 768px) {
+
+
+    .bullet {
+        padding: 8px;
+        color: #a8a8a8;
+    }
+
+    .bubble-container {
+        padding: 28px 14px;
+        display: none;
+    }
+
+    .user-info-bubble {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }   
+    
+    .user-meta-bubble {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-info-bubble .post-date {
+        display: flex;
+        color: rgb(202, 202, 202);
+        padding: 0px;
+        padding-left: 12px;
+        margin: 0;
+    }
+
+    .bubble-content {
+        margin-top: 10px;
+        font-size: 1rem;
+        background-color: #1f1f1f;
+        border: 1px solid #333333;
+        color: #cacaca;
+        padding: 12px 18px;
+        border-radius: 32px;
+        position: relative;
+    }
+
+
+    .bubble-content::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 7vh;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #1f1f1f;
+        border-top: 1px solid #333333;
+        pointer-events: none;
+        z-index: 9999999999999;
+    }
+
+        .bubble-content::before {
+        content: "";
+        position: absolute;
+        top: -22px;
+        left: 6vh;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1f1f1f;
+        border-top: 1px solid #333333;
+        pointer-events: none;
+        z-index: 9999999999999;
+    }
+
+    .post-date-bubble {
+        font-size: 0.8rem;
+        color: #a0a0a0;
+    }
+
+
+    .bubble-text {
+        font-size: 1rem;
+        line-height: 1.4;
+        color: #e0e0e0;
+        padding: 8px;
+    }
+
+    .more-bubble {
+        display: flex;
+        padding: 8px;
+        color: #838383;
+        justify-content: space-between;
+    }
+
+    .player-bubble {
+        display: flex;
+        align-self: center;
+    }
+
+    .player-bubble svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+        margin-right: 10px;
+        align-self: center;
+    }
+
+
+
+    .like-bubble i{
+        font-size: 1.4rem;
+        color: #e0e0e0;
+    }
+
+    .like-bubble {
+        background-color: transparent;
+        border: none;
+    }
+
+
+
+
+
+
+
+
+
+
+    /* hidden */
+
+    
+    .bullet {
+        padding: 8px;
+        color: #a8a8a8;
+    }
+
+    .hidden-container {
+        padding: 14px 14px;
+        background-color: #1f1f1f;
+        border: 1px solid #333333;
+        background: rgb(20, 20, 20) !important;
+  backdrop-filter: blur(none);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #1d1d1d !important;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  padding: 14px 14px 12px 14px;
+  display: none;
+    }
+
+    .user-info-hidden {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }   
+    
+    .user-meta-hidden {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-info-hidden .post-date {
+        display: flex;
+        color: rgb(202, 202, 202);
+        padding: 0px;
+        padding-left: 12px;
+        margin: 0;
+    }
+
+    .hidden-content {
+        font-size: 1rem;
+        color: #cacaca;
+        position: relative;
+    }
+
+
+    .post-date-hidden {
+        font-size: 0.8rem;
+        color: #a0a0a0;
+    }
+
+
+    .hidden-text {
+        font-size: 1rem;
+        line-height: 1.4;
+        color: #e0e0e0;
+        padding: 8px;
+    }
+
+    .more-hidden {
+        display: flex;
+        padding: 8px;
+        color: #838383;
+        justify-content: space-between;
+    }
+
+    .player-hidden {
+        display: flex;
+        align-self: center;
+    }
+
+    .player-hidden svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+        margin-right: 10px;
+        align-self: center;
+    }
+
+
+
+    .like-hidden i{
+        font-size: 1.6rem;
+        color: #e0e0e0;
+    }
+
+    .like-hidden {
+        background-color: transparent;
+        border: none;
+    }
+    
+    
+    
+}
+
+.bullet {
+        padding: 8px;
+        color: #a8a8a8;
+    }
+
+    .bubble-container {
+        padding: 28px 14px;
+    }
+
+    .user-info-bubble {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }   
+    
+    .user-meta-bubble {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-info-bubble .post-date {
+        display: flex;
+        color: rgb(202, 202, 202);
+        padding: 0px;
+        padding-left: 12px;
+        margin: 0;
+    }
+
+    .bubble-content {
+        margin-top: 10px;
+        font-size: 1rem;
+        background-color: #1f1f1f;
+        border: 1px solid #333333;
+        color: #cacaca;
+        padding: 12px 18px;
+        border-radius: 32px;
+        position: relative;
+    }
+
+
+    .bubble-content::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 7vh;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #1f1f1f;
+        border-top: 1px solid #333333;
+        pointer-events: none;
+        z-index: 9999999999999;
+    }
+
+        .bubble-content::before {
+        content: "";
+        position: absolute;
+        top: -22px;
+        left: 6vh;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #1f1f1f;
+        border-top: 1px solid #333333;
+        pointer-events: none;
+        z-index: 9999999999999;
+    }
+
+    .post-date-bubble {
+        font-size: 0.8rem;
+        color: #a0a0a0;
+    }
+
+
+    .bubble-text {
+        font-size: 1rem;
+        line-height: 1.4;
+        color: #e0e0e0;
+        padding: 8px;
+    }
+
+    .more-bubble {
+        display: flex;
+        padding: 8px;
+        color: #838383;
+        justify-content: space-between;
+    }
+
+    .player-bubble {
+        display: flex;
+        align-self: center;
+    }
+
+    .player-bubble svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+        margin-right: 10px;
+        align-self: center;
+    }
+
+
+
+    .like-bubble i{
+        font-size: 1.4rem;
+        color: #e0e0e0;
+    }
+
+    .like-bubble {
+        background-color: transparent;
+        border: none;
+    }
+    
+
+.name-particles {
+  position: relative !important;
+  width: 12vh !important;
+  height: 3vh !important;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hidden-container {
+    display: none;
+}
