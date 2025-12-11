@@ -98,12 +98,8 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      border-top: 1px solid #181818;
       padding: 10px 0;
       z-index: 1000;
-      box-shadow: 0 -4px 6px rgba(0,0,0,0.5);
     }
 
     .navbar-bottom-content {
@@ -510,13 +506,9 @@ display: none;
     left: 0;
     right: 0;
     height: 70px;
-    background: rgba(0, 0, 0, 0.815);
     backdrop-filter: blur(20px);
       bottom: 0 !important;
   top: auto !important;  /* garante que não vai colar no topo */
-  background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      background: rgba(0, 0, 0, 0.637) !important;
   backdrop-filter: blur(20px) !important;
   }
 
@@ -532,9 +524,9 @@ display: none;
     flex-direction: column;
     align-items: center;
     color: #aaa;
+    background-color: transparent !important;
     font-size: 20px;
     padding: 8px;
-    border-radius: 12px;
     transition: all 0.3s ease;
     min-width: 44px;
   }
@@ -557,7 +549,7 @@ display: none;
       left: 0;
       right: 0;
       height: 80px;
-      background: rgba(0, 0, 0, 0.712);
+      background: var(--navbar-bg);
       backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 9999;
@@ -731,11 +723,10 @@ display: none;
       left: 0 !important;
       right: 0 !important;
       height: 80px !important;
-      background: rgba(0, 0, 0, 0.712) !important;
+      background: var(--navbar-bg) !important;
       backdrop-filter: blur(20px) !important;
-      border-top: 1px solid #111111 !important;
+      border-top: 0.1px solid var(--navbar-border) !important;
       z-index: 9999 !important;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4) !important;
     }
 
 .navbar-bottom-content svg {
@@ -759,7 +750,8 @@ display: none;
       color: #f8f9f9 !important;
       font-size: 26px !important;
       padding: 8px;
-      border-radius: 12px;
+      border-radius: 0px !important;
+      background-color: transparent !important;
       transition: all 0.3s ease;
       text-decoration: none;
     }

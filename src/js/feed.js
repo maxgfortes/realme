@@ -753,7 +753,7 @@ async function renderizarComentarios(uid, postId, container) {
         const usernameParaExibir = comentario.userData?.username ? `@${comentario.userData.username}` : '';
         const fotoUsuario = comentario.userData?.userphoto || obterFotoPerfil(comentario.userData, null);
         const conteudoFormatado = formatarHashtags(comentario.content);
-        const isVerified = comentario.userData?.verified ? '<i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.85em; color: #4A90E2;"></i>' : '';
+        const isVerified = comentario.userData?.verified ? '<i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.85em; color: var(--verified-blue)"></i>' : '';
         const comentarioEl = document.createElement('div');
         comentarioEl.className = 'comentario-item';
         comentarioEl.innerHTML = `

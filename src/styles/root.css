@@ -1,0 +1,221 @@
+:root {
+  /* ========== CORES PRINCIPAIS ========== */
+  --primary-color: #4A90E2;
+  --primary-hover: #357ABD;
+  --primary-light: #63a9fa;
+  --primary-dark: #3578c9;
+  --primary-gradient: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  
+  /* ========== CORES DE FUNDO ========== */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1C1C1C;
+  --bg-tertiary: #141414;
+  --bg-card: rgba(20, 20, 20, 0.582);
+  --bg-card-solid: #1f1f1f;
+  --bg-section: #1b1b1b;
+  --bg-input: #474747;
+  --bg-hover: #3b3b3b;
+  --bg-modal: rgba(0, 0, 0, 0.85);
+  
+  /* ========== CORES DE BORDA ========== */
+  --border-primary: #2a2a2a;
+  --border-secondary: #363636;
+  --border-tertiary: #1a1a1a;
+  --border-light: #333333;
+  --border-lighter: #404040;
+  
+  /* ========== CORES DE TEXTO ========== */
+  --text-primary: #f8f9f9;
+  --text-secondary: #dbdbdb;
+  --text-tertiary: #cacaca;
+  --text-muted: #aaaaaa;
+  --text-disabled: #8d8d8d;
+  --text-dark: #666;
+  --text-darker: #555;
+  
+  /* ========== CORES DE STATUS ========== */
+  --success: #00D95F;
+  --warning: #d29922;
+  --error: #f85149;
+  --danger: #e91e63;
+  --info: #1DA1F2;
+  
+  /* ========== CORES SOCIAIS ========== */
+  --instagram: #E4405F;
+  --twitter: #1DA1F2;
+  --tiktok: #ff0050;
+  --youtube: #FF0000;
+  --github: #fff;
+  --linkedin: #0077B5;
+  --discord: #7289DA;
+  --spotify: #1DB954;
+  
+  /* ========== VERIFICAÇÃO/BADGES ========== */
+  --verified-blue: #1DA1F2;
+  --verified-gold: #FFD700;
+  --verified-green: #00D95F;
+  
+  /* ========== SOMBRAS ========== */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 0 20px rgba(0, 0, 0, 0.7);
+  --shadow-primary: 0 0 10px rgba(74, 144, 226, 0.6);
+  --shadow-inset: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644);
+  
+  /* ========== BLUR E EFEITOS ========== */
+  --blur-sm: blur(8px);
+  --blur-md: blur(12px);
+  --blur-lg: blur(20px);
+  --backdrop-blur: backdrop-filter: blur(20px);
+  
+  /* ========== BORDAS ARREDONDADAS ========== */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 50%;
+  --radius-pill: 200px;
+  
+  /* ========== ESPAÇAMENTOS ========== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  
+  /* ========== TAMANHOS DE FONTE ========== */
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+  --font-3xl: 28px;
+  --font-4xl: 32px;
+  
+  /* ========== TRANSIÇÕES ========== */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.4s ease;
+  --transition-cubic: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ========== Z-INDEX LAYERS ========== */
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1001;
+  --z-modal: 9999;
+  --z-overlay: 10000;
+  --z-tooltip: 99999;
+  --z-max: 999999;
+  
+  /* ========== NAVBAR/HEADER ========== */
+  --navbar-height: 60px;
+  --navbar-bg: #0f0f0f;
+  --navbar-border: #ffffff1a;
+  
+  /* ========== SIDEBAR ========== */
+  --sidebar-width: 220px;
+  --sidebar-bg: linear-gradient(0deg, #141414 0%, #141414 100%);
+  
+  /* ========== SCROLLBAR ========== */
+  --scrollbar-width: 12px;
+  --scrollbar-track: linear-gradient(0deg, #000000 0%, #161616 100%);
+  --scrollbar-thumb: rgba(74, 144, 226, 0.6);
+  --scrollbar-thumb-hover: rgba(74, 144, 226, 0.9);
+  
+  /* ========== GRADIENTES ========== */
+  --gradient-primary: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  --gradient-dark: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+  --gradient-fade: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+  --gradient-card: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  
+  /* ========== TAMANHOS DE AVATAR ========== */
+  --avatar-xs: 28px;
+  --avatar-sm: 40px;
+  --avatar-md: 48px;
+  --avatar-lg: 52px;
+  --avatar-xl: 118px;
+  
+  /* ========== PROFILE BANNER ========== */
+  --banner-height-mobile: 14vh;
+  --banner-height-desktop: 200px;
+}
+
+/* ========== VARIÁVEIS DINÂMICAS POR PERFIL ========== */
+/* Estas podem ser sobrescritas inline para cada perfil */
+.profile-dynamic {
+  --profile-color: var(--primary-color);
+}
+
+/* ========== TEMA ESCURO (PADRÃO) ========== */
+[data-theme="dark"] {
+  --bg-primary: #020202;
+  --text-primary: #f8f9f9;
+}
+
+/* ========== TEMA CLARO (OPCIONAL) ========== */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-primary: #1a1a1a;
+  --text-secondary: #333333;
+  --border-primary: #e0e0e0;
+}
+
+/* ========== SELEÇÃO DE TEXTO ========== */
+::selection {
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+}
+
+/* ========== SCROLLBAR GLOBAL ========== */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: content-box;
+}
+
+/* ========== UTILITIES CLASSES ========== */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-card { background: var(--bg-card); backdrop-filter: var(--blur-md); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+
+.border-primary { border: 1px solid var(--border-primary); }
+.border-secondary { border: 1px solid var(--border-secondary); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+.radius-sm { border-radius: var(--radius-sm); }
+.radius-md { border-radius: var(--radius-md); }
+.radius-lg { border-radius: var(--radius-lg); }
+.radius-full { border-radius: var(--radius-full); }
+
+.transition-fast { transition: var(--transition-fast); }
+.transition-normal { transition: var(--transition-normal); }
+
+

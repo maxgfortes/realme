@@ -130,6 +130,10 @@
 @media (max-width: 768px) {
 
 
+body {
+  background-color: var(--bg-primary);
+}
+
 .config-box-layout {
   width: 100vh !important;
   height: 100vh !important;
@@ -165,18 +169,19 @@ nav {
 .form-header {
   border-bottom: none;
   display: flex;
+  font-size: 20px;
 }
 
 .info-container {
   width: 45vh;
-    background: rgba(20, 20, 20, 0.582);
+  background: var(--bg-section);
   backdrop-filter: blur(8px);
   border: 1px solid #111111 !important;
 }
 
 .invite-tab {
   width: 45vh;
-    background: rgba(20, 20, 20, 0.582);
+  background: var(--bg-section);
   backdrop-filter: blur(8px);
   border: 1px solid #111111 !important;
 }

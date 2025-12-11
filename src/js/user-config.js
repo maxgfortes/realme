@@ -413,6 +413,7 @@ function inicializarFuncionalidades() {
     setupFloatingMenu();
     setupLogout();
     setupImageInputs();
+    carregarSessoes();
 }
 
 function setupTabs() {
@@ -587,4 +588,40 @@ async function atualizarMarqueeUltimoUsuario() {
     } else {
         marquee.textContent = "Bem-vindo ao RealMe!";
     }
+}
+
+
+async function carregarSessoes() {
+    const sessoesContainer = document.getElementById("listaSessoes");
+    if (!sessoesContainer || !currentUser) return;
+
+    const sessionsRef = collection(db, "users", currentUser.uid, "sessions");
+    const snapshot = await getDocs(sessionsRef);
+
+    sessoesContainer.innerHTML = "";
+
+    snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+
+        const item = document.createElement("div");
+        item.classList.add("session-item");
+
+        item.innerHTML = `
+            <p><b>Dispositivo:</b> ${data.device}</p>
+            <p><b>Navegador:</b> ${data.browser}</p>
+            <p><b>Ativada:</b> ${data.active ? "Sim" : "Não"}</p>
+            <button class="remover-sessao" data-id="${data.sessionId}">
+                Remover este dispositivo
+            </button>
+            <hr>
+        `;
+
+        sessoesContainer.appendChild(item);
+    });
+
+    document.querySelectorAll(".remover-sessao").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            removerSessao(e.target.dataset.id);
+        });
+    })
 }

@@ -6,9 +6,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #020202;
-      background: linear-gradient(180deg, #ff0000 0%, #020202 50%, #020202 100%);
-      background: #020202;
+      background: var(--bg-primary) !important;
       min-height: 120vh;
       min-width: 100vw;
       height: 200px;
@@ -66,7 +64,7 @@
 
 
     .profile-banner {
-      background-color: #4A90E2;
+      background-color: transparent;
       height: 14vh;
     }
 
@@ -140,6 +138,7 @@
       object-fit: cover;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
+      border: 3px solid var(--bg-primary);
     }
 
     .pfp {
@@ -497,11 +496,10 @@
       left: 0;
       right: 0;
       height: 80px;
-      background: rgba(0, 0, 0, 0.712);
+      background: var(--navbar-bg);
       backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 0.1px solid var(--navbar-border);
       z-index: 9999;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
     }
 
 .navbar-bottom-content svg {
@@ -687,7 +685,7 @@
   margin: 16px;
   font-size: 18px;
   color: #ccc;
-  background-color: #121212;
+  background-color: var(--bg-section);
   border-radius: 16px;
 }
 
@@ -766,7 +764,7 @@
 
 .verificado i {
   font-size: 18px;
-  color: #1DA1F2;
+  color: var(--verified-blue);
 }
 
 /* Tipos de verificação */
@@ -1192,11 +1190,10 @@
     z-index: 10000000; /* Garante que fique acima de tudo */
     top: 0;
     right: 0;
-    background-color: #020202; /* Cor de fundo escura, ajuste ao seu tema */
+    background-color: var(--bg-primary); /* Cor de fundo escura, ajuste ao seu tema */
     overflow-x: hidden; /* Desativa o scroll horizontal */
     padding-top: 20px;
     padding-top: env(safe-area-inset-top);
-    /* TRANSITION É O SEGREDO DO DESLIZE! */
     transition: 0.4s ease; 
     color: white;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidade */
@@ -1284,8 +1281,9 @@
 }
 
 .section-config p {
-  padding: 10px 26px;
-  font-size: 20px;
+  padding: 10px 16px;
+  font-size: 18px;
+  color: var(--text-muted);
   font-weight: bold;
 }
 
@@ -1296,15 +1294,13 @@
       left: 0;
       right: 0;
       height: 60px;
-      background: #020202;
-      background: linear-gradient(180deg, rgba(2, 2, 2, 1) 0%, #000000a2 100%);
+      background: var(--navbar-bg);
       backdrop-filter: blur(20px);
       display: flex;
       align-items: left;
       justify-content: space-between;
       padding: 0 16px;
       z-index: 9999;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
     }
 
 
@@ -1638,14 +1634,14 @@ textarea::placeholder {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0);
+  background: #00000000;
   pointer-events: none;
   transition: background 0.2s ease;
   z-index: 1;
 }
 
 .profile-body.transitioning::before {
-  background: rgba(0, 0, 0, 0.3);
+  background: transparent;
 }
 
 .tab {

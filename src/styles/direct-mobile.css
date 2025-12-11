@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #000000 !important;
+  background: var(--bg-primary);
   font-family: 'Inter', Arial, sans-serif;
   background-image: url("../bg/bg.jpg");
   background-size: cover;
@@ -12,8 +12,8 @@ body {
   overflow-x: hidden;
   overflow: hidden;
   position: fixed;
-        user-select: none !important;
-        -webkit-touch-callout: none; /* Disables the callout menu on long press in iOS Safari */
+  user-select: none !important;
+  -webkit-touch-callout: none; /* Disables the callout menu on long press in iOS Safari */
   -webkit-user-select: none; /* Safari, Chrome, Opera */
   -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Firefox */
@@ -25,9 +25,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(0, 0, 0, 0.404) !important;
+  background: transparent;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid #111111 !important;
+  border-bottom: 0.1px solid var(--navbar-border) !important;
   padding: 12px 16px;
   color: #fff;
   position: sticky;
@@ -461,11 +461,10 @@ body {
       left: 0;
       right: 0;
       height: 80px;
-      background: rgba(0, 0, 0, 0.712);
+      background: var(--navbar-bg);
       backdrop-filter: blur(20px);
-      border-top: 1px solid #111111 !important;
+      border-top: 0.1px solid var(--navbar-border) !important;
       z-index: 9999;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
     }
 
 .navbar-bottom-content svg {
@@ -665,3 +664,15 @@ body {
 
 
 
+.title {
+  display: none;
+  padding: 8px 16px;
+  font-size: 20px;
+  font-weight: bold;
+  justify-content: space-between;
+}
+
+.title p {
+  margin: 0;
+  padding: 0;
+}

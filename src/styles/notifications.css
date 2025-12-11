@@ -118,6 +118,10 @@
 
 
 @media (max-width: 768px) { 
+
+  body {
+    background-color: var(--bg-primary);
+  }
   .notifications-container {
     margin: 0px;
     border: none;
@@ -131,6 +135,10 @@
 
   nav {
     display: none;
+  }
+
+  .navbar-bottom {
+    display: none !important;
   }
 
   .notifications-header {

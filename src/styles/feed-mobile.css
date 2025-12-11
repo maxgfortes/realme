@@ -12,7 +12,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #020202 !important;
+  background-color: var(--bg-primary) ;
   background-image: none;
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -63,12 +63,11 @@ nav {
 
 
 .welcome-box {
-  background: rgba(20, 20, 20, 0.582);
+  background: var(--bg-card);
   backdrop-filter: blur(8px);
-  border: 1px solid #111111 !important;
+  border: 1px solid var(--border-primary) !important;
   border-radius: 12px;
   width: 100%;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
   margin-bottom: 0px;
 }
 
@@ -290,7 +289,7 @@ body.modal-open {
 
     
     .comment-form:focus-within {
-      border-color: #4A90E2;
+      border-color: var(--primary-color);
       box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
   outline: none;
   color: white;
@@ -300,7 +299,7 @@ body.modal-open {
 
 
     .comment-submit {
-      background: #4A90E2;
+      background: var(--primary-color);
       color: white;
       border: none;
       border-top-right-radius: 20px;
@@ -358,7 +357,7 @@ body.modal-open {
     }
 
     .comentario-nome:hover {
-      color: #4A90E2;
+      color: var(--primary-color);
     }
 
     .comentario-usuario,
@@ -386,7 +385,7 @@ body.modal-open {
     }
 
     .user-name-link:hover {
-      color: #4A90E2;
+      color: var(--primary-color);
     }
 
 
@@ -416,7 +415,7 @@ body.modal-open {
     .comment-submit-mobile {
       padding: 10px 20px;
       border-radius: 60px;
-      background-color: #4A90E2;
+      background-color: var(--primary-color);
       border: none;
       color: #fff;
     }
@@ -446,7 +445,7 @@ body.modal-open {
 }
 
 .user-welcome h1 .username {
-  color: #4A90E2;
+  color: var(--primary-color);
 }
 
 .welcome-start-pc {
@@ -487,7 +486,7 @@ body.modal-open {
 .section-friends-posts h2 {
   font-size: 32px;
   margin-bottom: 20px;
-  border-left: 4px solid #4A90E2;
+  border-left: 4px solid var(--primary-color);
   padding-left: 5px;
   margin-left: 6px;
 }
@@ -505,12 +504,12 @@ body.modal-open {
 }
 
 .post-card {
-  background: rgb(20, 20, 20) !important;
+  background: var(--bg-card) !important;
   backdrop-filter: blur(none);
   border-radius: 16px;
   margin-bottom: 12px !important;
-  border: 1px solid #1d1d1d !important;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  border: 0.1px solid var(--border-primary) !important;
+  box-shadow: none;
   padding: 14px 14px 0px 14px;
 
 }
@@ -546,11 +545,11 @@ body.modal-open {
 }
 
 .avatar {
-  width: 52px !important;
-  height: 52px !important;
+  width: 46px !important;
+  height: 46px !important;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #4A90E2;
+  border: 2px solid var(--primary-color);
 }
 
 .user-meta {
@@ -616,7 +615,7 @@ body.modal-open {
 }
 
 .post-actions button:hover {
-  color: #4A90E2;
+  color: var(--primary-color);
 }
 
 .post-actions button span {
@@ -706,7 +705,7 @@ body.modal-open {
   height: 64px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #4A90E2;
+  border: 2px solid var(--primary-color);
 }
 
 .online-user-meta {
@@ -751,7 +750,7 @@ body.modal-open {
 }
 
 .notifications-list i {
-  color: #4A90E2;
+  color: var(--primary-color);
 }
 
 
@@ -782,7 +781,7 @@ body.modal-open {
 }
 
 .follow-button {
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border: none;
   color: white;
   padding: 6px 12px;
@@ -856,7 +855,7 @@ body.modal-open {
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #4A90E2;
+  border: 2px solid var(--primary-color);
 }
 
 .new-user-info {
@@ -875,7 +874,7 @@ body.modal-open {
 }
 
 .new-user-info button {
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border: none;
   color: white;
   padding: 4px 10px;
@@ -907,7 +906,7 @@ body.modal-open {
 
 /* Caixa do conteúdo (estilo .welcome-box) */
 .post-modal-content {
-  background: rgba(20, 20, 20, 0.582);
+  background: var(--bg-primary);
   backdrop-filter: blur(8px);
   border: 1px solid #2a2a2a;
   border-radius: 12px;
@@ -949,7 +948,7 @@ textarea#postText {
 }
 
 textarea#postText:focus {
-  border-color: #4A90E2;
+  border-color: var(--primary-color);
   box-shadow: 0 0 10px rgba(74, 144, 226, 0.4);
 }
 
@@ -996,7 +995,7 @@ textarea#postText:focus {
   cursor: pointer;
   transition: background 0.3s ease;
     display: inline-block;
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -1037,7 +1036,7 @@ textarea#postText:focus {
 
 .start-button {
   display: inline-block;
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -1075,7 +1074,7 @@ textarea#postText:focus {
 
 .post-button {
   display: inline-block;
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   color: white;
   padding: 12px 20px;
   border-top-right-radius: 8px;
@@ -1110,7 +1109,7 @@ textarea#postText:focus {
   height: 40px;
 }
 .post-box:focus-within {
-  border-color: #4A90E2;
+  border-color: var(--primary-color);
   box-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
 }
 
@@ -1133,7 +1132,7 @@ textarea#postText:focus {
 }
 
 .post-button {
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border: none;
   color: white;
   padding: 10px 18px;
@@ -1174,7 +1173,7 @@ textarea#postText:focus {
 
 .feed-title-mobile {
     display: block;
-    border-left: 4px solid #4A90E2;
+    border-left: 4px solid var(--primary-color);
     padding-left: 5px;
     font-size: 24px;
     margin-bottom: 20px;
@@ -1457,11 +1456,9 @@ textarea#postText:focus {
       align-items: left;
       justify-content: space-between;
       z-index: 9999;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
-      background: #020202;
-      background: linear-gradient(180deg, rgba(2, 2, 2, 1) 0%, #000000a2 100%);
+      background: var(--gradient-fade);
       backdrop-filter: blur(20px) !important;
-      border-bottom: 1px solid #111111 !important;
+      border-bottom: 0.1px solid var(--border-primary) !important;
     }
       .navbar-top svg {
       margin-top: 8px;
@@ -1483,7 +1480,7 @@ textarea#postText:focus {
 
 .post-layer {
   position: absolute;
-  background-color: #020202;
+  background-color: var(--bg-primary);
   width: 100vw;
   display: flex;
   flex-direction: column !important;
@@ -1562,7 +1559,7 @@ textarea#postText:focus {
 }
 
 .post-btn button{
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border-radius: 1vh;
   color: #fff;
   font-size: 18px;
@@ -1611,7 +1608,7 @@ textarea#postText:focus {
   top: -7vh;
   padding: 1vh 1.2vh;
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border-top: 1px solid #63a9fa;
   border-radius: 8px;
   text-align: center;
@@ -1630,7 +1627,7 @@ textarea#postText:focus {
   top: -7vh;
   padding: 1vh 1.2vh;
   color: #fff;
-  background-color: #4A90E2;
+  background-color: var(--primary-color);
   border-top: 1px solid #63a9fa;
   border-radius: 8px;
   text-align: center;
@@ -1696,7 +1693,7 @@ textarea#postText:focus {
   height: 86px;
   width: 86px;
   border-radius: 50%;
-  border: 3px solid #4A90E2;
+  border: 3px solid var(--primary-color);
   padding: 3px;
 }
 
