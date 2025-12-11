@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mensagens | RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="./src/styles/direct-mobile.css" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </head>
 <body>
@@ -18,6 +20,10 @@
     <span class="dm-title" id="dmTitle">Usuário</span>
     <button class="dm-new-chat-btn"></button>
   </nav>
+  <div class="title">
+    <p>Mensagens</p>
+    <p>Grupos</p>
+  </div>
   <div class="dm-container">
     <div class="dm-users-list" id="dmUsersList">
       <div class="dm-search-box">
@@ -37,7 +43,7 @@
   <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
 </svg>
         </button>
-        <img src="./src/icon/default.jpg" alt="Foto" id="dmChatUserImg">
+        <img src="./src/icon/default.jpg" alt="Foto" id="dmChatUserImg" onerror="this.src='./src/icon/default.jpg'" >
         <span id="dmChatUserName" class="dm-chat-username" style="cursor:pointer;">Selecione uma conversa</span>
         <button class="dm-chat-options"><i class="fas fa-ellipsis-v"></i></button>
       </div>
@@ -46,6 +52,7 @@
       </div>
       <div class="dm-send-area">
         <div class="input-area">
+          <button type="text" id="img-dm" class="img-btn"><i class="fa-solid fa-image"></i></button>
           <input type="text" id="dmMsgInput" placeholder="Digite sua mensagem..." autocomplete="off" />
           <button id="dmSendBtn" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z"/></svg>

@@ -6,6 +6,7 @@
   <title>RealMe</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/explore.css">
+  <link rel="stylesheet" href="./src/styles/root.css">
   <!-- Para o notch/barra de status -->
   <meta name="theme-color" content="#020202">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +38,7 @@
 <div class="active-feed">
   <div class="header-actives">
     <h1>Atividades</h1>
-  </div>
+  </div> 
   <div class="activities">
     <div class="act-big">
       <div class="act-header">
@@ -55,7 +56,26 @@
         </div>
       </div>
       <div class="act-content">
-        <p><span>maxgfortes</span> e <span>vini demarco</span> agora são Amigos</p>
+        <div class="marquee"></div> 
+      </div>
+    </div>
+     <!-- <div class="act-big">
+      <div class="act-header">
+        <div class="profile-photos">
+            <div class="image user-img1"> <img  src="https://i.pinimg.com/originals/91/49/06/91490629481a6bd6fe2cbe97c91bdfbc.gif"></div>
+            <div class="image user-img2"> <img  src="https://i.pinimg.com/1200x/b3/44/c4/b344c4af850b01e9d27cd2a5f995fe58.jpg"></div>
+        </div>
+        <div class="user-info">
+          <div class="act-udisplay">maxgfortes</div>
+          <div class="act-username">@maxgfortes</div>
+        </div>
+        <div class="user-info">
+          <div class="act-udisplay">Vini demarco</div>
+          <div class="act-username">@affliccoes</div>
+        </div>
+      </div>
+      <div class="act-content">
+        <div class="marquee"></div> 
       </div>
     </div>
     <div class="act-doble">
@@ -92,8 +112,9 @@
           <div class="act-username">@davxz182</div>
         </div>
       </div>
+      
       <div class="act-content">
-        <p><span>davxz182</span> repostou uma publicação de <span>blink182.ww</span> Há 2 horas </p>
+        <p><span>davxz182</span> repostou uma publicação de <span>blink182.ww</span> Há 2 horas </p>    
       </div>
     </div>
     <div class="act-big">
@@ -535,7 +556,7 @@
       <div class="act-content">
         <p><span>feelingsanxiety</span> trocou mais de 234 mensagens hoje</p>
       </div>
-    </div>
+    </div> -->
     <div class="end-feed">
     <h3>As atividades acabaram...</h3>
     <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
@@ -586,6 +607,26 @@
   </nav>
 
 </body>
+
+<script type="module">
+  async function atualizarMarqueeUltimoUsuario() {
+  const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+  const docSnap = await getDoc(lastUpdateRef);
+  const marquee = document.querySelector(".marquee");
+  if (!marquee) return;
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const nomeUsuario = data.username || "Usuário";
+    marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+  } else {
+    marquee.textContent = "Bem-vindo ao RealMe!";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
+
+</script>
+<script type="module" src="./src/js/explore-activities.js"></script>
   <script type="module" src="codigo-mobile.js"></script>
   <script type="module" src="./src/js/global-messages.js"></script>
 </html>

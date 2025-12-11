@@ -6,6 +6,8 @@
   <title>RealMe</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/mobile-profile.css">
+  <link rel="stylesheet" href="./src/styles/base.css">
+  <link rel="stylesheet" href="./src/styles/root.css" />
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
   <!-- Para o notch/barra de status -->
@@ -385,6 +387,34 @@ window.setProfileColor = function(color) {
   document.documentElement.style.setProperty('--profile-color', color);
 }
 </script>
+
+<script>
+// FADE IN ao entrar
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("fade-in");
+});
+
+// FADE OUT ao clicar num link interno
+document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", e => {
+
+        // só para links do mesmo site
+        const sameSite = link.hostname === location.hostname;
+
+        if (sameSite) {
+            e.preventDefault();
+
+            document.body.classList.remove("fade-in");
+            document.body.classList.add("fade-out");
+
+            setTimeout(() => {
+                window.location.href = link.href;
+            }, 400); // igual ao tempo do CSS!
+        }
+    });
+});
+</script>
+
   <script type="module" src="codigo-mobile.js"></script>
   <script src="./src/js/pfp-navbar.js"></script>
   <script type="module" src="./src/js/global-messages.js"></script>

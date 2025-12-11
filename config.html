@@ -12,6 +12,7 @@
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
   <link rel="stylesheet" href="./src/styles/config-layout.css" />
   <link rel="stylesheet" href="./src/styles/config-components.css" />
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
@@ -317,6 +318,33 @@
 <div class="tab-content" id="conta">
   <div class="form-section">
     <div class="section-header">
+      <i class="fas fa-bell"></i>
+      <h3>Notificações</h3>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Notificações Push</label>
+        <p style="font-size: 13px; color: #999; margin-bottom: 12px;">Receba notificações quando alguém curte seu post, se registra ou entra no RealMe.</p>
+        <button type="button" id="enableNotificationsBtn" class="notification-btn" style="
+          background: #4A90E2;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.3s;
+          width: 100%;
+        ">
+          🔔 Ativar Notificações
+        </button>
+        <div id="notificationStatus" style="margin-top: 12px; font-size: 13px; color: #999;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="section-header">
       <i class="fas fa-envelope"></i>
       <h3>Informações de Contato</h3>
     </div>
@@ -331,6 +359,10 @@
       </div>
     </div>
   </div>
+
+  <h3>Dispositivos conectados</h3>
+<div id="listaSessoes"></div>
+
 
   <div class="form-section">
     <div class="section-header">
@@ -363,8 +395,142 @@
       <p>&copy; 2025 RealMe - Criado por Maxgfortes</p>
     </footer>
   </section>
-  <script type="module" src="./src/js/user-config.js"></script>
-  <script type="module" src="./src/js/navbar.js"></script>
+<script type="module" src="./src/js/user-config.js"></script>
+<script type="module" src="./src/js/navbar.js"></script>
+<script src="./src/js/config.js"></script>
+<script type="module">
+  // Import Firebase necessário
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  
+  const PUBLIC_VAPID_KEY = (typeof window !== 'undefined' && window.PUBLIC_VAPID_KEY) ? window.PUBLIC_VAPID_KEY : 'BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg';
+  let messaging;
+
+  const statusDiv = document.getElementById('notificationStatus');
+  const btn = document.getElementById('enableNotificationsBtn');
+
+  // Verifica status ao carregar a página
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      const tokens = userSnap.exists() && Array.isArray(userSnap.data().pushTokens) ? userSnap.data().pushTokens : [];
+      
+      if (tokens.length > 0) {
+        btn.textContent = '✅ Notificações Ativadas';
+        btn.disabled = true;
+        btn.style.background = '#28a745';
+        statusDiv.textContent = `Token salvo (${tokens.length} dispositivo${tokens.length > 1 ? 's' : ''})`;
+        statusDiv.style.color = '#28a745';
+      } else {
+        statusDiv.textContent = 'Clique no botão para ativar notificações';
+      }
+    }
+  });
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = '⏳ Ativando...';
+    
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        statusDiv.textContent = '❌ Você precisa estar logado';
+        statusDiv.style.color = '#dc3545';
+        btn.disabled = false;
+        btn.textContent = '🔔 Ativar Notificações';
+        return;
+      }
+
+      // Verifica suporte
+      if (!('Notification' in window)) {
+        statusDiv.textContent = '❌ Notificações não suportadas neste navegador';
+        statusDiv.style.color = '#dc3545';
+        btn.disabled = false;
+        btn.textContent = '🔔 Ativar Notificações';
+        return;
+      }
+
+      // Pede permissão
+      let permission = Notification.permission;
+      if (permission === 'default') {
+        permission = await Notification.requestPermission();
+        statusDiv.textContent = '🔔 Pedindo permissão...';
+      }
+
+      if (permission !== 'granted') {
+        statusDiv.textContent = '❌ Permissão negada. Verifique as configurações do navegador.';
+        statusDiv.style.color = '#dc3545';
+        btn.disabled = false;
+        btn.textContent = '🔔 Ativar Notificações';
+        return;
+      }
+
+      // Obtém token
+      if (!messaging) messaging = getMessaging(app);
+      const token = await getToken(messaging, { vapidKey: PUBLIC_VAPID_KEY });
+      
+      if (!token) {
+        statusDiv.textContent = '❌ Erro ao gerar token. Tente novamente.';
+        statusDiv.style.color = '#dc3545';
+        btn.disabled = false;
+        btn.textContent = '🔔 Ativar Notificações';
+        return;
+      }
+
+      // Salva no Firestore
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      const data = userSnap.exists() ? userSnap.data() : {};
+      const tokens = Array.isArray(data.pushTokens) ? data.pushTokens : [];
+      
+      if (!tokens.includes(token)) {
+        tokens.push(token);
+        await setDoc(userRef, { pushTokens: tokens }, { merge: true });
+      }
+
+      // Escuta mensagens em foreground
+      onMessage(messaging, (payload) => {
+        if (payload && payload.notification) {
+          const title = payload.notification.title || '';
+          const body = payload.notification.body || '';
+          try {
+            new Notification(title, { body });
+          } catch (e) {}
+        }
+      });
+
+      // Sucesso
+      btn.textContent = '✅ Notificações Ativadas';
+      btn.style.background = '#28a745';
+      statusDiv.textContent = `✅ Token salvo com sucesso! Você receberá notificações agora.`;
+      statusDiv.style.color = '#28a745';
+      
+    } catch (err) {
+      console.error('Erro ao ativar notificações:', err);
+      statusDiv.textContent = `❌ Erro: ${err.message}`;
+      statusDiv.style.color = '#dc3545';
+      btn.disabled = false;
+      btn.textContent = '🔔 Ativar Notificações';
+    }
+  });
+</script>
   <script>
     // Sistema de tabs
     document.addEventListener("DOMContentLoaded", function() {

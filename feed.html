@@ -18,12 +18,14 @@
   <link rel="stylesheet" href="./src/styles/components.css" />
   <link rel="stylesheet" href="./src/styles/media-queries.css" />
   <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="./src/styles/search.css">
   <link rel="stylesheet" href="./src/styles/loading.css">
   <link rel="stylesheet" href="./src/styles/feed.css">
   <link rel="stylesheet" href="./src/styles/feed-mobile.css">
   <link rel="stylesheet" href="./src/styles/report.css">
+  <link rel="stylesheet" href="./src/styles/bubble.css">
 
     <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
@@ -83,7 +85,7 @@
     }
 
     .post-text {
-      margin: 15px 0;
+      margin: 0px 0;
       font-size: 16px;
       line-height: 1.6;
       white-space: pre-wrap;
@@ -149,7 +151,7 @@
   }
 
   .post-text {
-    font-size: 15px;
+    font-size: 15px !important;
   }
 
   .post-actions {
@@ -374,19 +376,6 @@
   }
 }
 
-    .navbar-bottom {
-      position: fixed !important;
-      bottom: 0!important;
-      left: 0 !important;
-      right: 0 !important;
-      height: 80px !important;
-      background: rgba(0, 0, 0, 0.712) !important;
-      backdrop-filter: blur(20px) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-      z-index: 9999 !important;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4) !important;
-    }
-
 .navbar-bottom-content svg {
   width: 28px;  /* ou o tamanho que você usa nos outros ícones */
   height: 26px;
@@ -423,6 +412,7 @@
       border-radius: 50%;
       object-fit: cover;
     }
+
 
 /* ===================
    MELHORIAS VISUAIS PARA BOTÕES EXISTENTES
@@ -474,7 +464,10 @@
     <a href="feed.html"><i class="fas fa-home"></i> Início</a>
     <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
     <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
-    <a href="nt.html"><i class="fas fa-bell"></i> Notificações</a>
+    <a href="nt.html">
+      <i class="fas fa-bell"></i> Notificações
+      <span class="notification-badge" style="display: none;">0</span>
+    </a>
     <a href="feed.html" onclick=""><i class="fas fa-plus-square"></i> Criar</a>
     <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
     <!-- Menu Mais com submenu flutuante -->
@@ -603,8 +596,47 @@
               <i class="fa-solid fa-image"></i>
             </button>
           </div>
+    </section>
+    
+
+    <section class="storys">
+      <div class="story-area">
+        <div class="your-story">
+          <div class="my-story-pfp">
+            <img src="./src/icon/default.jpg" alt="Avatar">
+            <div class="add-story-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+          </div>
+          <div class="story-username">Seu Story</div>
+        </div>
+        <div class="friends-storys">
+          <div class="story-pfp">
+            <img src="./src/icon/default.jpg" alt="Avatar">
+          </div>
+          <div class="story-username">usuario</div>
+        </div>
+        <div class="friends-storys">
+          <div class="story-pfp">
+            <img src="./src/icon/default.jpg" alt="Avatar">
+          </div>
+          <div class="story-username">usuario</div>
+        </div>
+        <div class="friends-storys">
+          <div class="story-pfp">
+            <img src="./src/icon/default.jpg" alt="Avatar">
+          </div>
+          <div class="story-username">usuario</div>
+        </div>
+        <div class="friends-storys">
+          <div class="story-pfp">
+            <img src="./src/icon/default.jpg" alt="Avatar">
+          </div>
+          <div class="story-username">usuario</div>
+        </div>
       </div>
     </section>
+
 
     <section class="section-friends-posts" id="feed">
       <div class="feed-header">
@@ -621,6 +653,63 @@
         <button class="feed-option-button" data-filter="popular">Populares</button>
         <button class="feed-option-button" data-filter="sentimento">Sentimentos</button>
       </div>
+      </div>
+      <div class="bubble-container">
+        <div class="bubble-header">
+          <div class="user-info-bubble">
+            <img src="https://i.ibb.co/mVNCphFB/profile.jpg" alt="Avatar do usuário" class="avatar">
+            <div class="user-meta-bubble">
+              <strong class="user-name-link">maxgfortes</strong>
+              <small class="bullet">•</small>
+              <small class="post-date-bubble">Há 1h</small>
+            </div>
+          </div>
+        </div>
+        <div class="bubble-content">
+          <div class="bubble-text">
+            <p>Notas que duram 24 horas no feed e no perfil não aparece, espero que gostem!
+            </p>
+          </div>
+          <div class="more-bubble">
+            <div class="player-bubble">
+              <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg>
+              <p>Karma Police - Radiohead</p>
+            </div>
+            <div class="interaction">
+              <button class="like-bubble">
+                <i class="fas fa-heart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden-container">
+        <div class="hidden-header">
+          <div class="user-info-hidden">
+            <img src="./src/icon/lock-pfp.png" alt="Avatar do usuário" class="avatar">
+            <div class="user-meta-hidden">
+              <div class="name-particles">
+                <canvas id="particleCanvas"></canvas>
+              </div>
+              <small class="bullet">•</small>
+              <small class="post-date-hidden">Há muito tempo</small>
+            </div>
+          </div>
+        </div>
+        <div class="hidden-content">
+          <div class="hidden-text">
+            <p>Posts semi-anonimos, amigos veem que postou mas as outras pessoas não
+            </p>
+          </div>
+          <div class="more-hidden">
+            <div class="interaction-hidden">
+              <button class="like-hidden">
+                <i class="fas fa-heart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Posts aparecerão aqui -->
        <!-- Placeholder para posts -->
@@ -899,6 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', handleScroll);
 </script>
 
+<script src="./src/js/config.js"></script>
 <script type="module" src="./src/js/feed.js"></script>
 <script type="module" src="./src/js/pfp-navbar.js"></script>
 <script type="module" src="./src/js/search.js"></script>
@@ -943,6 +1033,10 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
       .then(() => console.log('Service Worker registrado com sucesso'))
       .catch(err => console.error('Falha ao registrar o SW:', err));
+    // Registrar o service worker de mensagens do Firebase (se existir na raiz)
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then(() => console.log('Firebase Messaging SW registrado com sucesso'))
+      .catch(err => console.warn('firebase-messaging-sw.js não encontrado ou falha ao registrar:', err));
   });
 }
 
@@ -989,9 +1083,104 @@ document.addEventListener('DOMContentLoaded', () => {
     // });
 });
 </script>
+<script>
+  const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = canvas.parentElement.offsetWidth;
+canvas.height = canvas.parentElement.offsetHeight;
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+
+draw() {
+  // Calcular distância das bordas
+  const distLeft = this.x;
+  const distRight = canvas.width - this.x;
+  const distTop = this.y;
+  const distBottom = canvas.height - this.y;
+  
+  // Pegar a menor distância
+  const minDist = Math.min(distLeft, distRight, distTop, distBottom);
+  
+  // Fade começa a 50px da borda
+  const fadeZone = 8;
+  let opacity = 0.5;
+  
+  if (minDist < fadeZone) {
+    opacity = 1 * (minDist / fadeZone); // fade proporcional
+  }
+  
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, 1, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+  ctx.fill();
+}
+}
+
+const particles = [];
+for (let i = 0; i < 100; i++) {
+  particles.push(new Particle());
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+<script>
+// FADE IN ao entrar
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("fade-in");
+});
+
+// FADE OUT ao clicar num link interno
+document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", e => {
+
+        // só para links do mesmo site
+        const sameSite = link.hostname === location.hostname;
+
+        if (sameSite) {
+            e.preventDefault();
+
+            document.body.classList.remove("fade-in");
+            document.body.classList.add("fade-out");
+
+            setTimeout(() => {
+                window.location.href = link.href;
+            }, 200); // igual ao tempo do CSS!
+        }
+    });
+});
+</script>
+
+
 
 <script src="./src/js/more.js"></script>
 <script src="./src/js/loading.js"></script>
-<script src="./src/js/notification.js"></script>
+<script type="module" src="./src/js/notification.js"></script>
+<script  type="module" src="./src/js/nt-notifications.js"></script>
+<script src="./src/js/theme-switcher.js"></script>
 </body>
 </html>
