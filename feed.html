@@ -554,29 +554,80 @@
   <!-- Main Content -->
   <div class="post-layer" id="postLayer">
     <div class="header-layer">
-      <h1>Criar Postagem</h1>
+      <h1>Nova postagem</h1>
             <button id="closeLayerBtn">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
   <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-</svg>
-      </button>
+</svg></button>
     </div>
     <div class="content-area">
-      <div class="content-input">
-        <div class="input-area">
-          <input class="text-post" placeholder="Oque você esta pensando?">
+      <div class="text-area">
+        <div class="text-input-area">
+          <input type="text" class="np-text-input" placeholder="escreva um pensamento...">
         </div>
-        <input class="img-post" placeholder="Oque você esta pensando?">
       </div>
-      <div class="post-btn">
-        <button>
-          <p>Postar!</p>
-        </button>
+      <div class="file-area">
+        <div class="title-area">Adicionar imagens</div>
+        <div class="file-input-area">
+          <div class="file-icon">
+            <svg  version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 198.931 198.931" xml:space="preserve">
+<g>
+	<g>
+		<g>
+			<path d="M99.469,69.561c-25.423,0-46.104,20.683-46.104,46.104s20.683,46.104,46.104,46.104
+				c25.421,0,46.104-20.683,46.104-46.104S124.89,69.561,99.469,69.561z M99.469,146.91c-17.229,0-31.245-14.017-31.245-31.245
+				c0-17.228,14.017-31.245,31.245-31.245c17.228,0,31.245,14.017,31.245,31.245C130.714,132.892,116.698,146.91,99.469,146.91z"/>
+			<path d="M175.499,44.681h-72.315h-3.715V27.956c0-9.393-7.64-17.036-17.033-17.036H44.247c-9.393,0-17.033,7.642-17.033,17.036
+				v16.726h-3.777C10.515,44.681,0,55.194,0,68.116v96.465c0,12.92,10.515,23.43,23.437,23.43h152.059
+				c12.925,0,23.435-10.51,23.435-23.43V68.116C198.934,55.194,188.421,44.681,175.499,44.681z M42.07,27.956
+				c0-1.201,0.976-2.176,2.177-2.176h38.189c1.199,0,2.174,0.976,2.174,2.177v16.726H42.07V27.956z M175.499,173.152H23.437
+				c-4.73,0-8.578-3.846-8.578-8.571V68.116c0-4.73,3.848-8.576,8.578-8.576h5.451H42.07h42.538h18.573h72.315
+				c4.73,0,8.576,3.846,8.576,8.576v96.465h0.003C184.075,169.306,180.229,173.152,175.499,173.152z"/>
+			<rect x="156.012" y="71.816" />
+		</g>
+	</g>
+</g>
+</svg>
+          </div>
+        </div>
+      </div>
+      <div class="music-area">
+        <div class="title-area">Musica</div>
+        <div class="music-input-area">
+          <input type="text" class="np-music-input" placeholder="cole o url da sua musica aqui...">
+        </div>
+      </div>
+      <div class="post-options">
+        <div class="sections-btn">
+          <button class="btn-option">
+            <i class="fa-solid fa-clock"></i>
+            <p>Tempo</p>
+          </button>
+        </div>
+        <div class="sections-btn">
+          <button class="btn-option">
+            <i class="fa-solid fa-globe"></i>
+            <p>Visibilidade</p>
+          </button>
+        </div>
+        <div class="sections-btn">
+          <button class="btn-option">
+            <i class="fa-solid fa-hand"></i>
+            <p>Privacidade</p>
+          </button>
+        </div>
+        <div class="sections-btn">
+          <button class="send-post-btn">
+            Publicar
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <main class="welcome-container">
+    <div class="main-content">
     <section class="welcome-box">
       <div class="user-welcome">
         <img src="./src/icon/default.jpg" alt="Avatar">
@@ -587,7 +638,7 @@
         <p class="welcome-start-mobile"></p>
           <div class="post-area">
             <div class="post-box">
-              <input type="text" placeholder="Escreva seu pensamento..."  spellcheck="false" autocomplete="off" />
+              <input type="text" placeholder="Oque você esta pensando?"  spellcheck="false" autocomplete="off" />
               <button class="post-button">
                 <i class="fas fa-plus-square"></i><p>Enviar Post!</p>
               </button>
@@ -599,11 +650,10 @@
     </section>
     
 
-    <section class="storys">
       <div class="story-area">
         <div class="your-story">
           <div class="my-story-pfp">
-            <img src="./src/icon/default.jpg" alt="Avatar">
+            <img src="https://i.ibb.co/hJx2P2vQ/IMG-6852.jpg" alt="Avatar">
             <div class="add-story-icon">
               <i class="fas fa-plus"></i>
             </div>
@@ -612,30 +662,30 @@
         </div>
         <div class="friends-storys">
           <div class="story-pfp">
-            <img src="./src/icon/default.jpg" alt="Avatar">
+            <img src="https://i.pinimg.com/736x/87/a1/85/87a185d3deed39a771c6bdc73fbd664b.jpg" alt="Avatar">
           </div>
-          <div class="story-username">usuario</div>
+          <div class="story-username">dr1nkkbefore...</div>
         </div>
         <div class="friends-storys">
           <div class="story-pfp">
-            <img src="./src/icon/default.jpg" alt="Avatar">
+            <img src="https://youhavetohearthisblog.wordpress.com/wp-content/uploads/2013/04/blink-182.jpg" alt="Avatar">
           </div>
-          <div class="story-username">usuario</div>
+          <div class="story-username">davzx182</div>
         </div>
         <div class="friends-storys">
           <div class="story-pfp">
-            <img src="./src/icon/default.jpg" alt="Avatar">
+            <img src="https://i.ibb.co/v5cgyDP/download-1.png" alt="Avatar">
           </div>
-          <div class="story-username">usuario</div>
+          <div class="story-username">c13</div>
         </div>
         <div class="friends-storys">
           <div class="story-pfp">
-            <img src="./src/icon/default.jpg" alt="Avatar">
+            <img src="https://i.ibb.co/zTqcXSkK/IMG-5777.jpg" alt="Avatar">
           </div>
-          <div class="story-username">usuario</div>
+          <div class="story-username">_mariiff</div>
         </div>
       </div>
-    </section>
+      <div class="story-hidden-bar"></div>
 
 
     <section class="section-friends-posts" id="feed">
@@ -725,6 +775,7 @@
       </div>
       <p>&copy; 2025 RealMe - Criado por maxgfortes</p>
     </footer>
+    </div>
   </main>
   <aside class="right-column">
     <div class="new-people">

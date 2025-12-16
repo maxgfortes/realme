@@ -2,7 +2,7 @@
 @media (max-width: 1024px) {
 
     body {
-        background-color: #181818;
+        background-color: var(--bg-primary);
         background-image: none;
     }
   .main {

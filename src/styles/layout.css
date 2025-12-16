@@ -1467,6 +1467,6 @@ textarea#postText:focus {
     cursor: pointer !important;
   }
 
-  .storys {
-    display: none !important;
+  .story-area {
+    display: none;
   }

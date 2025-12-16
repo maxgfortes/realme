@@ -247,15 +247,16 @@
     /* Action Buttons */
     .action-buttons {
       display: flex;
-      gap: 6px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 14px;
+      margin-bottom: 8px;
       padding: 0px 4px;
     }
 
     .action-buttons button {
   background: var(--profile-color, #4A90E2);
       color: #f8f9f9;
-      padding: 6px 22px !important;
+      padding: 5px 22px !important;
       border-radius: 8px;
       border: none;
       font-size: 16px;
@@ -362,8 +363,8 @@
     .mural-masonry {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      padding: 2px;
+      gap: 0px;
+      padding: 0px;
       margin-top: 0px;
       padding: 0px;
     }
@@ -376,7 +377,7 @@
       display: block;
       filter: blur(0px);
       transition: filter 0.2s;
-      border-radius: 1px;
+      border-radius: 0px;
     }
 
     
@@ -788,7 +789,7 @@
 .mural-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
+  gap: 1px;
   padding: 0;
   margin-top: 0;
 }

@@ -1,12 +1,13 @@
 @media (max-width: 768px)  {
 .welcome-container {
   margin-left: 0px !important;
-  padding: 10px !important;
+  padding: 0px !important;
   width: 100% ;
   overflow-y: auto;
   height: 100vh;
   overflow-x: hidden;
 }
+
 
 
 body {
@@ -268,6 +269,11 @@ body.modal-open {
   display: flex ;
 }
 
+.post-liked-by {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
 
 
 
@@ -473,13 +479,15 @@ body.modal-open {
   max-width: 800px;
   color: #dbdbdb;
   background: transparent;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(0px);
   border: none;
-  border-radius: 12px;
+  border-radius: 0px;
   margin-top: 0px;
   max-width: 800px;
   box-shadow: none;
-  margin: 32px 0px;
+  margin: 0px 0 32px 0;
+  padding-top: 10px;
+  background-color: var(--bg-primary);
 }
 
 /* Título da seção */
@@ -506,12 +514,11 @@ body.modal-open {
 .post-card {
   background: var(--bg-card) !important;
   backdrop-filter: blur(none);
-  border-radius: 16px;
+  border-radius: 12px !important;
   margin-bottom: 12px !important;
   border: 0.1px solid var(--border-primary) !important;
   box-shadow: none;
   padding: 14px 14px 0px 14px;
-
 }
 
 .search-box-mobile {
@@ -555,11 +562,11 @@ body.modal-open {
 .user-meta {
   display: flex;
   flex-direction: column;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .user-meta span {
-  font-size: 13px;
+  font-size: 12px;
   color: #aaaaaa;
 }
 
@@ -1098,7 +1105,7 @@ textarea#postText:focus {
   align-items: center;
   background: rgba(20, 20, 20, 0.6);
   border-radius: 8px;
-  max-width: 300px; /* ajuste conforme precisar */
+  width: 100%; /* ajuste conforme precisar */
   gap: 10px;
   border: 1px solid #2a2a2a;
   background: #474747; /* Quase preto, mas não absoluto */
@@ -1107,6 +1114,7 @@ textarea#postText:focus {
   border: 1px solid #363636; /* Cinza quase preto pra separar do fundo */
   box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644); /* Sombra interna clara no modo dark */
   height: 40px;
+  border-right: none;
 }
 .post-box:focus-within {
   border-color: var(--primary-color);
@@ -1155,8 +1163,8 @@ textarea#postText:focus {
 .file-button {
   height: 40px;
   padding: 8px;
-  padding-right: 2px;
-  margin-left: 8px;
+  margin-left: 1.2vh;
+
 }
 
 .file-button i {
@@ -1185,7 +1193,7 @@ textarea#postText:focus {
  .welcome-container {
   box-sizing: border-box;
   margin: 0;
-  padding: 8px;
+  padding: 0px;
   width: 100vw;
   max-width: 100vw;
   overflow-x: hidden;
@@ -1288,7 +1296,7 @@ textarea#postText:focus {
 }
 .feed-header h2 {
   font-size: 24px;
-  margin-top: 10px;
+  margin-left: 1vh;
 }
 
 .feed-options {
@@ -1385,7 +1393,7 @@ textarea#postText:focus {
   .post-username,
   .post-date-mobile {
     display: block;
-    animation: alternarTexto 12s infinite;
+    animation: alternarTexto 8s infinite;
   }
   
   .post-date-mobile {
@@ -1393,7 +1401,7 @@ textarea#postText:focus {
     top: 20px;
     left: 0;
     width: 100%;
-    animation-delay: 6s; /* Começa quando o username desaparece */
+    animation-delay: 4s; /* Começa quando o username desaparece */
     opacity: 0;
   }
   
@@ -1470,7 +1478,7 @@ textarea#postText:focus {
 .welcome-container {
   margin-left: 0px !important;
   margin-top: 0px !important;
-  padding: 10px !important;
+  padding: 0 !important;
   padding-top: 70px !important;
   padding-bottom: 70px !important;
   width: 100%;
@@ -1492,23 +1500,26 @@ textarea#postText:focus {
 
 .header-layer h1 {
   font-size: 3vh;
-  font-weight: 500;
+  font-size: 22px;
+  font-weight: bold;
 }
 
 .header-layer {
   display: flex;
   align-items: center;
   align-content: center;
-  border-bottom: 1px solid #1a1a1a;
-  padding: 1vh 1.8vh;
+  padding: 1.8vh 2.8vh;
   width: 100%;
+
   justify-content: space-between;
 }
+
 
 .header-layer svg {
   height: 22px;
   width: 22px;
   fill: #fff;
+  transform: rotateY(180deg);
 }
 
 .header-layer button {
@@ -1524,8 +1535,151 @@ textarea#postText:focus {
   height: 100%;
   display: flex;
   flex-direction: column !important;
-  justify-content: space-between;
 }
+
+.text-area {
+  padding: 0 12px 12px 12px;
+}
+
+.file-area {
+  padding: 0 12px 12px 12px;
+}
+
+.text-input-area {
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  height: 16vh;
+}
+
+.title-area {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 0 0 4px 8px;
+  color: var(--text-muted);
+}
+
+.file-input-area {
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  height: 46vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-area {
+  padding: 0 12px 12px 12px;
+}
+
+.music-input-area {
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  height: 6vh;
+}
+
+.np-music-input {
+  background-color: transparent;
+  font-size: 16px;
+  color: #fff;
+  width: 100%;
+  padding: 1.6vh 1.8vh;
+  border: none;
+}
+
+.np-music-input::placeholder {
+  color: var(--text-dark);
+}
+
+
+.post-options {
+  display: flex;
+}
+
+.file-icon {
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  align-self: center;
+}
+
+.file-icon svg {
+  align-self: center;
+  justify-self: center;
+  width: 30%;
+  fill: #333;
+  display: none;
+}
+
+
+.btn-option {
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: right !important;
+  border: none;
+  background: transparent;
+  justify-content: center;
+}
+
+.btn-option p {
+  color: var(--text-muted);
+  display: flex;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center !important;
+  align-self: center !important;
+}
+
+
+.btn-option i {
+  text-align: center;
+  padding: 6px;
+}
+
+
+.sections-btn {
+  padding: 8px;
+  width: 100%;
+}
+
+
+
+
+.send-post-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  border-top: 1px solid var(--primary-light);
+  margin-right: 6px;
+}
+
+
+.np-text-input {
+  background-color: transparent;
+  padding: 1vh 1.8vh;
+  font-size: 16px;
+  width: 100%;
+  border: none;
+  color: #fff;
+}
+
+.np-text-input::placeholder {
+  color: var(--text-dark);
+}
+
+.np-text-input:focus {
+  outline: none;
+}
+
+
+
 
 .content-input {
   display: flex;
@@ -1650,17 +1804,26 @@ textarea#postText:focus {
 }
 
 
+.story-hidden-bar {
+  height: 1vh;
+  width: 100vh;
+  background-color: red;
+  translate: 0 -1vh;
+  background-color: var(--bg-primary);
+}
+
 .storys {
-  padding: 22px 12px;
-  display: flex;
-  display: none;
+  display: flex !important;
+  padding: 0 !important;
+  width: 100%;
 }
 
 .story-area {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   overflow-x: auto;
-  padding-bottom: 10px;
+  padding: 12px 12px;
+  width: 100%;
 }
 
 .storys::after {
@@ -1696,6 +1859,7 @@ textarea#postText:focus {
   border: 3px solid var(--primary-color);
   padding: 3px;
 }
+
 
 
 .my-story-pfp img{
