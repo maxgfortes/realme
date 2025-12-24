@@ -653,7 +653,7 @@ display: none;
       background: var(--navbar-bg);
       backdrop-filter: blur(20px);
       border-top: 0.1px solid var(--navbar-border);
-      z-index: 999;
+      z-index: 999 !important;
     }
 
 .navbar-bottom-content svg {
@@ -694,3 +694,4 @@ display: none;
       border-radius: 50%;
       object-fit: cover;
     }
+
