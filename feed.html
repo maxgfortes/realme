@@ -26,7 +26,8 @@
   <link rel="stylesheet" href="./src/styles/feed-mobile.css">
   <link rel="stylesheet" href="./src/styles/report.css">
   <link rel="stylesheet" href="./src/styles/bubble.css">
-
+  <link rel="stylesheet" href="./src/styles/feeds-tab.css">
+  <link rel="stylesheet" href="./src/styles/storys.css">
     <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
 
@@ -376,44 +377,6 @@
   }
 }
 
-.navbar-bottom-content svg {
-  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 26px;
-  fill: currentColor; /* pega a cor do texto do link */
-}
-
-    .navbar-bottom-content {
-      display: flex !important;
-      justify-content: space-around !important;
-      align-items: center !important;
-      height: 100% !important;
-      padding-bottom: 20px !important;
-    }
-
-    .navbar-bottom a {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      color: #f8f9f9 !important;
-      font-size: 26px !important;
-      padding: 8px !important;
-      border-radius: 12px !important;
-      transition: all 0.3s ease !important;
-      text-decoration: none !important;
-    }
-
-    .navbar-bottom a:hover {
-      color: #4A90E2 !important;
-    }
-
-    .profile-mini {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-
 /* ===================
    MELHORIAS VISUAIS PARA BOTÕES EXISTENTES
    =================== */
@@ -422,6 +385,45 @@
   
 </head>
 <body id="page-body">
+
+
+  <section class="storys-overlay hidden-story" id="story-box">
+    <div class="story-view">
+      <div class="story-box">
+        <div class="story-media"></div>
+        <div class="story-header">
+          <div class="profile-pfp">
+            <img src="./src/icon/default.jpg">
+          </div>
+          <div class="profile-info">
+            <div class="username-story">username</div>
+            <div class="story-bullet"></div>
+            <div class="story-date">há 2 horas</div>
+          </div>
+        </div>
+      </div>
+      <div class="story-slider">
+        <div class="slider1"></div>
+        <div class="slider2"></div>
+        <div class="slider3"></div>
+      </div>
+      <div class="story-action">
+        <div class="story-send-comment">
+          <button>
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
+          </button>
+        </div>
+        <div class="reply-story">
+          <input placeholder="Responder...">
+        </div>
+        <div class="like-story">
+          <button>
+            <i class="fas fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="glass-overlay"></div>
 
@@ -448,16 +450,31 @@
   </nav>
 
   <div class="navbar-top">
-      <button class="post-mobile-btn" id="openPostLayer">
+      <button class="top-btn" id="openPostLayer">
         <i class="fa-solid fa-plus"></i>
       </button>
-      <div class="logo-mobile">RealMe</div>
-      <a href="nt.html" class="search-mobile-btn" aria-label="Buscar">
+      <div class="logo-mobile" id="feed-toggle">RealMe</div>
+      <a href="nt.html" class="top-btn2">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
       </a>
   </div>
 
-  <div id="mobile-search-container"></div>
+  <div class="feeds-tab hidden" id="feed-box">
+    <div class="feeds">
+      <div class="feeds-btns">
+        <i class="fa-solid fa-newspaper"></i>
+        <button class="feed-btn">Posts Publicos</button>
+      </div>
+      <div class="feeds-btns">
+        <i class="fa-solid fa-star"></i>
+        <button class="feed-btn">Para você</button>
+      </div>
+      <div class="feeds-btns">
+        <i class="fa-solid fa-user-group"></i>
+        <button class="feed-btn">Amigos</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -554,8 +571,17 @@
   <!-- Main Content -->
   <div class="post-layer" id="postLayer">
     <div class="header-layer">
-      <h1>Nova postagem</h1>
-            <button id="closeLayerBtn">
+      <h1 class="header">Nova postagem <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 width="800px" height="800px" viewBox="0 0 528.899 528.899"
+	 xml:space="preserve">
+<g>
+	<path d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981
+		c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611
+		C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069
+		L27.473,390.597L0.3,512.69z"/>
+</g>
+</svg></h1> 
+            <button id="closeLayerBtn" class="back-post">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
   <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
 </svg></button>
@@ -660,7 +686,7 @@
           </div>
           <div class="story-username">Seu Story</div>
         </div>
-        <div class="friends-storys">
+        <div class="friends-storys" id="story-toggle">
           <div class="story-pfp">
             <img src="https://i.pinimg.com/736x/87/a1/85/87a185d3deed39a771c6bdc73fbd664b.jpg" alt="Avatar">
           </div>
@@ -704,36 +730,7 @@
         <button class="feed-option-button" data-filter="sentimento">Sentimentos</button>
       </div>
       </div>
-      <div class="bubble-container">
-        <div class="bubble-header">
-          <div class="user-info-bubble">
-            <img src="https://i.ibb.co/mVNCphFB/profile.jpg" alt="Avatar do usuário" class="avatar">
-            <div class="user-meta-bubble">
-              <strong class="user-name-link">maxgfortes</strong>
-              <small class="bullet">•</small>
-              <small class="post-date-bubble">Há 1h</small>
-            </div>
-          </div>
-        </div>
-        <div class="bubble-content">
-          <div class="bubble-text">
-            <p>Notas que duram 24 horas no feed e no perfil não aparece, espero que gostem!
-            </p>
-          </div>
-          <div class="more-bubble">
-            <div class="player-bubble">
-              <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg>
-              <p>Karma Police - Radiohead</p>
-            </div>
-            <div class="interaction">
-              <button class="like-bubble">
-                <i class="fas fa-heart"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    
       <div class="hidden-container">
         <div class="hidden-header">
           <div class="user-info-hidden">
@@ -831,37 +828,20 @@
   </aside>
 
 
-    <!-- Navbar Bottom -->
-  <nav class="navbar-bottom">
+   <!-- Navbar Bottom -->
+  <nav class="navbar-bottom" id="navbar-bottom">
     <div class="navbar-bottom-content">
-      <a href="feed.html">
-        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832">
-  <path fill-rule="nonzero" d="M29.337 511.832c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542H29.337z"/>
-</svg>
+      <a href="feed.html" class="active-bar">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832"><path fill-rule="nonzero" d="M29.337 511.832c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542H29.337z"/></svg>
       </a>
       <a href="acharamigos.html">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<g>
-	<path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3
-		c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3
-		S384,459.8,384,448z"/>
-	<path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64
-		V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7
-		V64z"/>
-	<path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9
-		V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/>
-	<path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26
-		c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3
-		c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/>
-</g>
-</svg>
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
       </a>
       <a href="direct-mobile.html">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 506 511.682"><path fill-rule="nonzero" d="M76.022 432.762c-14.224-17.624-28.477-36.009-40.468-55.504-13.738-22.329-24.838-46.442-30.326-73.172-14.057-68.387.935-136.064 36.561-190.148C77.414 59.833 133.687 19.322 202.118 5.235c68.394-14.071 136.056.928 190.14 36.547 54.105 35.632 94.638 91.912 108.71 160.35 7.003 34.067 6.445 67.452-.116 99.01-7.018 33.734-20.937 65.408-39.78 93.639-25.671 38.445-58.723 65.581-98.51 82.009-39.837 16.45-86.054 21.88-138.014 16.979l-9.714-.928c-19.966-1.928-27.528-2.653-33.487-1.094-4.343 1.181-9.932 3.69-18.842 7.677l-8.381 3.734c-20.756 9.229-36.009 10.44-47.878 6.14-15.499-5.618-22.503-17.566-25.765-33.023-1.624-7.706-2.139-15.739-2.675-24.221-.399-6.445-.841-13.231-1.784-19.292zm47.972-127.857l61.768-98.785c10.976-16.573 33.719-20.177 49.357-7.924l52.024 40.917c4.785 3.734 11.469 3.886 16.363.319l66.038-46.413c9.678-7.032 21.873 4.698 15.297 14.681l-62.355 97.785c-10.977 16.566-33.719 20.176-49.357 7.917l-52.024-40.918c-4.785-3.734-11.462-3.893-16.363-.319l-65.509 47.37c-9.671 7.032-21.872-4.64-15.239-14.63zM74.761 353.16c11.976 19.473 26.273 37.597 40.323 54.902a22.782 22.782 0 014.785 9.693c2.501 10.962 3.175 21.532 3.799 31.428.384 6.104.754 11.919 1.493 16.232 2.226-.775 5.633-2.16 10.462-4.299l8.177-3.596c11.23-5.031 18.284-8.192 25.679-10.164h.094c13.688-3.646 23.49-2.711 49.581-.188l9.716.928c44.484 4.197 83.43-.196 116.25-13.746 31.246-12.905 57.36-34.444 77.833-65.103 15.616-23.395 27.144-49.596 32.936-77.457 5.336-25.686 5.8-52.822.116-80.48-11.52-56.026-44.673-102.084-88.919-131.221-44.274-29.158-99.72-41.432-155.79-29.891-56.012 11.528-102.07 44.674-131.199 88.912-29.166 44.282-41.433 99.728-29.906 155.798 4.205 20.495 13.246 39.852 24.57 58.252z"/></svg>
       </a>
       <a href="explorar.html">
-        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="pfmobile.html">
         <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
@@ -1233,5 +1213,169 @@ document.querySelectorAll("a").forEach(link => {
 <script type="module" src="./src/js/notification.js"></script>
 <script  type="module" src="./src/js/nt-notifications.js"></script>
 <script src="./src/js/theme-switcher.js"></script>
+<script>
+const btn = document.getElementById("feed-toggle");
+const box = document.getElementById("feed-box");
+
+btn.addEventListener("click", () => {
+  box.classList.toggle("hidden");
+});
+
+let ultimoScroll = 0;
+
+window.addEventListener("scroll", () => {
+  const scrollAtual = window.scrollY;
+  const barra = document.getElementById("navbar-bottom");
+  
+  if (scrollAtual > ultimoScroll && scrollAtual > 100) {
+    // Rolando para BAIXO - esconde a barra
+    barra.classList.add("hidden-nav");
+  } else {
+    // Rolando para CIMA - mostra a barra
+    barra.classList.remove("hidden-nav");
+  }
+  
+  ultimoScroll = scrollAtual;
+});
+
+
+
+
+
+
+
+
+
+
+// Aguarda o DOM carregar completamente
+document.addEventListener("DOMContentLoaded", () => {
+  
+  // Toggle do feed
+  const btn = document.getElementById("feed-toggle");
+  const box = document.getElementById("feed-box");
+
+  btn.addEventListener("click", () => {
+    box.classList.toggle("hidden");
+  });
+
+  // Esconder/mostrar navbar ao rolar
+  const navbar = document.getElementById("navbar-bottom");
+  let ultimoScroll = 0;
+
+  window.addEventListener("scroll", () => {
+    const scrollAtual = window.scrollY;
+    
+    console.log("Rolou! Scroll:", scrollAtual);
+    
+    if (scrollAtual > ultimoScroll && scrollAtual > 100) {
+      console.log("🔽 Descendo - esconde navbar");
+      navbar.classList.add("navbar-hidden");
+    } else {
+      console.log("🔼 Subindo - mostra navbar");
+      navbar.classList.remove("navbar-hidden");
+    }
+    
+    ultimoScroll = scrollAtual;
+  });
+  
+});
+
+</script>
+
+ <script>
+  
+document.addEventListener("DOMContentLoaded", () => {
+  
+  // ============================================
+  // TOGGLE DO MENU FEED
+  // ============================================
+  const feedToggle = {
+    btn: document.getElementById("feed-toggle"),
+    box: document.getElementById("feed-box"),
+    
+    init() {
+      if (!this.btn || !this.box) return;
+      this.btn.addEventListener("click", () => this.toggle());
+    },
+    
+    toggle() {
+      this.box.classList.toggle("hidden");
+    }
+  };
+
+
+
+
+
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const friendsStorys = document.querySelector(".friends-storys");
+  const storyOverlay = document.querySelector(".storys-overlay");
+  
+  if (!friendsStorys || !storyOverlay) {
+    console.error("Elementos não encontrados!");
+    return;
+  }
+  
+  friendsStorys.style.cursor = "pointer";
+  
+  // Abrir story ao clicar
+  friendsStorys.addEventListener("click", () => {
+    storyOverlay.classList.remove("hidden-story");
+  });
+  
+  // OPCIONAL: Fechar ao clicar fora
+  storyOverlay.addEventListener("click", (e) => {
+    if (e.target === storyOverlay) {
+      storyOverlay.classList.add("hidden-story");
+    }
+  });
+});
+  // ============================================
+  // NAVBARS - ESCONDER/MOSTRAR AO ROLAR
+  // ============================================
+  const navbarScroll = {
+    container: document.querySelector(".welcome-container"),
+    navbarBottom: document.getElementById("navbar-bottom"),
+    navbarTop: document.querySelector(".navbar-top"), // ADICIONADO
+    lastScroll: 0,
+    threshold: 100,
+    
+    init() {
+      if (!this.container) return;
+      this.container.addEventListener("scroll", () => this.handleScroll());
+    },
+    
+    handleScroll() {
+      const currentScroll = this.container.scrollTop;
+      
+      if (currentScroll > this.lastScroll && currentScroll > this.threshold) {
+        this.hide();
+      } 
+      else if (currentScroll < this.lastScroll) {
+        this.show();
+      }
+      
+      this.lastScroll = currentScroll;
+    },
+    
+    hide() {
+      if (this.navbarTop) this.navbarTop.classList.add("navbar-hidden"); // ADICIONADO
+    },
+    
+    show() {
+      if (this.navbarTop) this.navbarTop.classList.remove("navbar-hidden"); // ADICIONADO
+    }
+  };
+  
+  // ============================================
+  // INICIALIZA TUDO
+  // ============================================
+  feedToggle.init();
+  navbarScroll.init();
+  
+});
+</script> 
 </body>
 </html>
