@@ -653,7 +653,7 @@ display: none;
       background: var(--navbar-bg);
       backdrop-filter: blur(20px);
       border-top: 0.1px solid var(--navbar-border);
-      z-index: 9999;
+      z-index: 999;
     }
 
 .navbar-bottom-content svg {
