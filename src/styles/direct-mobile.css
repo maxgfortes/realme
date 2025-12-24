@@ -470,8 +470,12 @@ body {
 .navbar-bottom-content svg {
   width: 28px;  /* ou o tamanho que você usa nos outros ícones */
   height: 26px;
-  fill: currentColor; /* pega a cor do texto do link */
+  fill: #888; /* pega a cor do texto do link */
 }
+
+    .active-bar svg{
+      fill:  #fff;
+    }
 
     .navbar-bottom-content {
       display: flex;
@@ -487,10 +491,10 @@ body {
       align-items: center;
       color: #f8f9f9;
       font-size: 26px;
-      padding: 8px;
+      padding: 0px;
       transition: all 0.3s ease;
       text-decoration: none;
-      margin-bottom: 30px;
+      margin-bottom: 34px;
     }
 
 

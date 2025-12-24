@@ -1,0 +1,152 @@
+.storys-overlay {
+    background-color: var(--bg-primary);
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999999999999 !important;
+    padding: 12px;
+}
+
+.hidden-story {
+    display: none;
+}
+
+.story-view {
+    width: 100%;
+    height: 100%;
+}
+
+.story-box {
+    background-color: #333;
+    border-radius: 12px;
+    height: 90%;
+    position: relative;
+}
+
+.story-header {
+    bottom: 0;
+    position: absolute;
+    padding: 8px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.profile-pfp img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+}
+
+.username-story {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profile-info {
+    gap: 8px;
+    align-items: center;
+    padding: 0 14px;
+}
+
+.story-date {
+    font-size: 14px;
+}
+
+.story-slider {
+    padding: 6px 0;
+    width: 100%;
+    height: 16px;
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.slider1 {
+    background-color: #cfcfcf;
+    border-radius: 99999999999px;
+    width: 100%;
+    height: 100%;
+}
+
+.slider2 {
+    background-color: #cfcfcf;
+    border-radius: 9999999999999px;
+    width: 100%;
+    height: 100%;
+}
+
+.story-action {
+    padding: 6px 0;
+    display: flex;
+    width: 100%;
+    height: auto;
+    justify-content: space-between;
+}
+
+.reply-story {
+    background-color: #333;
+    height: 40px;
+    width: 34vh;
+    border-radius: 99999999999999px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.reply-story input {
+    background-color: transparent;
+    justify-self: center;
+    align-self: center;
+    padding: 8px;
+    width: 100%;
+    text-align: center;
+    border: none;
+    font-size: 16px;
+    color: #fff;
+}
+
+.reply-story input:focus {
+    outline: none;
+}
+
+
+
+
+.story-send-comment{
+    width: 40px;
+    height: 40px;
+}
+
+.story-send-comment button {
+    background-color: #333;
+    height: 100%;
+    width: 100%;
+    border: none;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.story-send-comment svg {
+    height: 22px;
+    fill: #aaa;
+}
+
+.like-story {
+    width: 40px;
+    height: 40px;
+}
+
+.like-story button {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background-color: #333;
+    border: none;
+}
+
+.like-story i{
+    color: #aaa;
+    font-size: 22px;
+}

@@ -859,6 +859,194 @@ function formatarDataRelativa(data) {
 // ===================
 // ...existing code...
 
+// Função para verificar se o bubble ainda é válido (menos de 24h)
+function bubbleEstaValido(createTimestamp) {
+  const agora = new Date();
+  let dataCriacao;
+  
+  if (typeof createTimestamp === 'object' && createTimestamp.seconds) {
+    dataCriacao = new Date(createTimestamp.seconds * 1000);
+  } else {
+    dataCriacao = new Date(createTimestamp);
+  }
+  
+  const diferencaHoras = (agora - dataCriacao) / (1000 * 60 * 60);
+  return diferencaHoras < 24;
+}
+
+// Função para carregar bubbles
+async function carregarBubbles() {
+  try {
+    const bubblesQuery = query(
+      collection(db, 'bubbles'),
+      orderBy('create', 'desc'),
+      limit(50) // Carrega os 50 mais recentes
+    );
+    
+    const bubblesSnapshot = await getDocs(bubblesQuery);
+    const bubblesValidos = [];
+    
+    for (const bubbleDoc of bubblesSnapshot.docs) {
+      const bubbleData = bubbleDoc.data();
+      
+      // Verifica se o bubble ainda é válido (menos de 24h)
+      if (bubbleEstaValido(bubbleData.create)) {
+        bubblesValidos.push({
+          ...bubbleData,
+          bubbleid: bubbleDoc.id,
+          tipo: 'bubble'
+        });
+      } else {
+        // Opcional: deletar bubbles expirados
+        // await deleteDoc(doc(db, 'bubbles', bubbleDoc.id));
+      }
+    }
+    
+    return bubblesValidos;
+  } catch (error) {
+    console.error("Erro ao carregar bubbles:", error);
+    return [];
+  }
+}
+
+// Função para renderizar um bubble no feed
+function renderizarBubble(bubbleData, feed) {
+  const bubbleEl = document.createElement('div');
+  bubbleEl.className = 'bubble-container';
+  bubbleEl.innerHTML = `
+    <div class="bubble-header">
+      <div class="user-info-bubble">
+        <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
+             onerror="this.src='./src/icon/default.jpg'" />
+        <div class="user-meta-bubble">
+          <strong class="user-name-link" data-username="${bubbleData.creatorid}">Carregando...</strong>
+          <small class="bullet">•</small>
+          <small class="post-date-bubble">${formatarDataRelativa(bubbleData.create)}</small>
+        </div>
+      </div>
+    </div>
+    <div class="bubble-content">
+      <div class="bubble-text">
+        <p>${formatarHashtags(bubbleData.content || 'Conteúdo não disponível')}</p>
+      </div>
+      <div class="more-bubble">
+        ${bubbleData.musicUrl && bubbleData.musicUrl.trim() !== "" ? `
+          <div class="player-bubble">
+            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512">
+              <path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/>
+            </svg>
+            <p class="music-name">Música</p>
+          </div>
+        ` : ''}
+        <div class="interaction">
+          <button class="like-bubble" data-bubble-id="${bubbleData.bubbleid}" data-creator-id="${bubbleData.creatorid}">
+            <i class="far fa-heart"></i>
+            <span class="like-count">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  feed.appendChild(bubbleEl);
+  
+  // Buscar dados do usuário
+  buscarDadosUsuarioPorUid(bubbleData.creatorid).then(userData => {
+    if (userData) {
+      const avatar = bubbleEl.querySelector('.avatar');
+      const nome = bubbleEl.querySelector('.user-name-link');
+      
+      if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
+      if (nome) {
+        nome.textContent = userData.displayname || userData.username || bubbleData.creatorid;
+        if (userData.verified) {
+          nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+        }
+      }
+    }
+  });
+  
+  // Configurar botão de like
+  const btnLike = bubbleEl.querySelector('.like-bubble');
+  const usuarioLogado = auth.currentUser;
+  
+  if (btnLike && usuarioLogado) {
+    // Verificar se o usuário já curtiu
+    const likerRef = doc(db, `bubbles/${bubbleData.bubbleid}/likers/${usuarioLogado.uid}`);
+    getDoc(likerRef).then(likerSnap => {
+      if (likerSnap.exists() && likerSnap.data().like === true) {
+        btnLike.classList.add('liked');
+        btnLike.querySelector('i').className = 'fas fa-heart';
+      }
+    });
+    
+    // Contar likes
+    contarLikesBubble(bubbleData.bubbleid).then(totalLikes => {
+      const span = btnLike.querySelector('.like-count');
+      if (span) span.textContent = totalLikes;
+    });
+    
+    // Adicionar evento de clique
+    btnLike.addEventListener('click', async () => {
+      await toggleLikeBubble(bubbleData.bubbleid, btnLike);
+    });
+  }
+}
+
+// Função para contar likes de um bubble
+async function contarLikesBubble(bubbleId) {
+  try {
+    const likersQuery = query(
+      collection(db, `bubbles/${bubbleId}/likers`),
+      where('like', '==', true)
+    );
+    const snapshot = await getDocs(likersQuery);
+    return snapshot.size;
+  } catch (error) {
+    console.error("Erro ao contar likes do bubble:", error);
+    return 0;
+  }
+}
+
+// Função para dar/remover like em um bubble
+async function toggleLikeBubble(bubbleId, btnElement) {
+  const usuarioLogado = auth.currentUser;
+  if (!usuarioLogado) {
+    criarPopup('Erro', 'Você precisa estar logado para curtir.', 'error');
+    return;
+  }
+  
+  try {
+    const likerRef = doc(db, `bubbles/${bubbleId}/likers/${usuarioLogado.uid}`);
+    const likerSnap = await getDoc(likerRef);
+    
+    if (likerSnap.exists() && likerSnap.data().like === true) {
+      // Remover like
+      await deleteDoc(likerRef);
+      btnElement.classList.remove('liked');
+      btnElement.querySelector('i').className = 'far fa-heart';
+    } else {
+      // Adicionar like
+      await setDoc(likerRef, {
+        like: true,
+        likein: serverTimestamp(),
+        uid: usuarioLogado.uid
+      });
+      btnElement.classList.add('liked');
+      btnElement.querySelector('i').className = 'fas fa-heart';
+    }
+    
+    // Atualizar contador
+    const totalLikes = await contarLikesBubble(bubbleId);
+    const span = btnElement.querySelector('.like-count');
+    if (span) span.textContent = totalLikes;
+    
+  } catch (error) {
+    console.error("Erro ao curtir bubble:", error);
+    criarPopup('Erro', 'Não foi possível curtir este bubble.', 'error');
+  }
+}
+
 async function loadPosts() {
   if (loading || !hasMorePosts) return;
   loading = true;
@@ -867,7 +1055,16 @@ async function loadPosts() {
     loadMoreBtn.textContent = "Carregando...";
   }
 
+
   try {
+
+
+    if (!lastPostSnapshot) {
+      const bubbles = await carregarBubbles();
+      bubbles.forEach(bubble => {
+        renderizarBubble(bubble, feed);
+      });
+    }
     // Busca lote de posts ordenados por data (mais recentes primeiro)
     let postsQuery = query(
       collection(db, 'posts'),
@@ -1505,14 +1702,11 @@ function setCache(key, value) {
 async function buscarUsuarioCached(uid) {
   const key = `user_cache_${uid}`;
 
-  // 1. Tenta pegar do cache
   const cache = getCache(key);
   if (cache) return cache;
 
-  // 2. Busca remoto
   const dados = await buscarDadosUsuarioPorUid(uid);
 
-  // 3. Salva no cache
   if (dados) setCache(key, dados);
 
   return dados;
@@ -1520,7 +1714,80 @@ async function buscarUsuarioCached(uid) {
 
 
 // ==============================
-// GREETING COM CACHE
+// NEVE ❄️ (SIMPLES)
+// ==============================
+let neveAtiva = false;
+
+function iniciarNeve() {
+  if (neveAtiva) return;
+  neveAtiva = true;
+
+  let container = document.getElementById('snow-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'snow-container';
+    document.body.appendChild(container);
+
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.pointerEvents = 'none';
+    container.style.zIndex = '9999999999';
+  }
+
+  if (!document.getElementById('snow-style')) {
+    const style = document.createElement('style');
+    style.id = 'snow-style';
+    style.innerHTML = `
+      .snowflake {
+        position: absolute;
+        top: -20px;
+        color: white;
+        opacity: 0.8;
+        animation-name: snow-fall, snow-sway;
+        animation-timing-function: linear, ease-in-out;
+        animation-iteration-count: infinite, infinite;
+      }
+
+      @keyframes snow-fall {
+        to {
+          transform: translateY(110vh);
+        }
+      }
+
+      @keyframes snow-sway {
+        0%   { margin-left: 0px; }
+        50%  { margin-left: 30px; }
+        100% { margin-left: 0px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  setInterval(() => {
+    const floco = document.createElement('div');
+    floco.className = 'snowflake';
+    floco.textContent = '❄';
+
+    const size = 8 + Math.random() * 14;
+    const fallDuration = 10 + Math.random() * 8; // queda lenta
+    const swayDuration = 4 + Math.random() * 6;   // balanço suave
+
+    floco.style.left = Math.random() * 100 + 'vw';
+    floco.style.fontSize = size + 'px';
+    floco.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+
+    container.appendChild(floco);
+
+    setTimeout(() => floco.remove(), (fallDuration + 2) * 1000);
+  }, 650);
+}
+
+
+// ==============================
+// GREETING COM CACHE + NATAL
 // ==============================
 async function atualizarGreeting() {
   const usuarioLogado = auth.currentUser;
@@ -1529,19 +1796,39 @@ async function atualizarGreeting() {
   const loadingInfo = mostrarLoading('Carregando dados do usuário...');
 
   try {
-    // 🔥 Agora usando CACHE!
     const userData = await buscarUsuarioCached(usuarioLogado.uid);
 
-    // Determinar saudação
-    const agora = new Date();
-    const hora = agora.getHours();
+    // Saudação normal
+    const hora = new Date().getHours();
     let saudacao;
 
     if (hora >= 5 && hora < 12) saudacao = "Bom dia";
     else if (hora >= 12 && hora < 18) saudacao = "Boa tarde";
     else saudacao = "Boa noite";
 
-    // Determinar nome
+    // 🎄 NATAL SIMPLES
+    const agora = new Date();
+    const mes = agora.getMonth(); // 0 = jan
+    const dia = agora.getDate();
+
+    const ehNatal = mes === 11 && dia >= 23 && dia <= 29;
+
+    if (ehNatal) {
+      // greeting especial às vezes
+      if (Math.random() <= 0.3) {
+        const natalGreetings = [
+          "Feliz Natal ",
+          "Ho ho ho ",
+          "Boas festas "
+        ];
+        saudacao = natalGreetings[Math.floor(Math.random() * natalGreetings.length)];
+      }
+
+      // neve sempre no natal
+      iniciarNeve();
+    }
+
+    // Nome
     const nome =
       userData?.displayname ||
       userData?.nome ||
@@ -1550,19 +1837,14 @@ async function atualizarGreeting() {
       usuarioLogado.nome ||
       usuarioLogado.email;
 
-    // Aplicar saudação
+    // DOM
     const greetingElement = document.getElementById('greeting');
-    if (greetingElement) {
-      greetingElement.textContent = saudacao;
-    }
-
-    // Aplicar nome
     const usernameElement = document.getElementById('username');
-    if (usernameElement) {
-      usernameElement.textContent = nome;
-    }
 
-    // Foto de perfil
+    if (greetingElement) greetingElement.textContent = saudacao;
+    if (usernameElement) usernameElement.textContent = nome;
+
+    // Foto
     const urlFotoPerfil = obterFotoPerfil(userData, usuarioLogado);
 
     const fotoPerfilWelcome =
@@ -1581,30 +1863,10 @@ async function atualizarGreeting() {
     esconderLoading();
 
   } catch (error) {
-
     console.error("Erro ao atualizar greeting:", error);
 
     clearInterval(loadingInfo.interval);
     esconderLoading();
-
-    const fallbackNome =
-      usuarioLogado.displayName ||
-      usuarioLogado.displayname ||
-      usuarioLogado.nome ||
-      usuarioLogado.email;
-
-    const greetingElement = document.getElementById('greeting');
-    const usernameElement = document.getElementById('username');
-
-    if (greetingElement) greetingElement.textContent = "Olá";
-    if (usernameElement) usernameElement.textContent = fallbackNome;
-
-    const urlFotoFallback = obterFotoPerfil(null, usuarioLogado);
-    const fotoPerfilGreeting = document.querySelector('.greeting-profile-pic');
-
-    if (fotoPerfilGreeting && urlFotoFallback !== './src/icon/default.jpg') {
-      fotoPerfilGreeting.src = urlFotoFallback;
-    }
   }
 }
 
