@@ -1811,7 +1811,7 @@ async function atualizarGreeting() {
     const mes = agora.getMonth(); // 0 = jan
     const dia = agora.getDate();
 
-    const ehNatal = mes === 11 && dia >= 23 && dia <= 29;
+    const ehNatal = mes === 11 && dia >= 23 && dia <= 27;
 
     if (ehNatal) {
       // greeting especial às vezes
