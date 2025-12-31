@@ -23,7 +23,7 @@
   width: 12px;
 }
 
-.close-preferences-btn {
+.close-btn {
   display: none !important;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .user img {
-  width: 100%;
+  width: 200px;
   height: 200px; /* define altura fixa pro card ficar uniforme */
   object-fit: cover; /* mantém proporção sem distorcer */
   display: block;
@@ -173,6 +173,17 @@ html, body {
 .filter-group.disabled {
   opacity: 0.4;
   pointer-events: none;
+}
+
+.opt-left {
+  display: none;
+}
+
+.title-page {
+  text-align: center;
+  color: #fafafa;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 /* Botão fixo na parte de baixo */
@@ -815,11 +826,6 @@ select {
             .card-image {
                 width: 120px;
                 height: 120px;
-            }
-            
-            .friends-header {
-                flex-direction: column;
-                gap: 10px;
             }
         }
 

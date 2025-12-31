@@ -232,28 +232,37 @@ async function criarElementoNotificacao(notif, currentUserId) {
   const div = document.createElement('div');
   div.className = `notification-item ${!notif.read ? 'unread' : ''}`;
   div.setAttribute('data-notif-id', notif.id);
-  
+
   const icone = getIconeNotificacao(notif.type);
   const tempo = formatarTempo(notif.createdAt);
-  
+
   div.innerHTML = `
-    <div class="notification-text">
-      ${icone}
-      <p><b><i>${notif.fromUserName}</i></b> ${notif.body}</p>
+    <div class="notification-content">
+      <img
+        src="${notif.fromUserPhoto}"
+        class="notification-avatar"
+        alt="Avatar de ${notif.fromUserName}"
+        onerror="this.src='./src/icon/default.jpg'"
+      />
+
+      <div class="notification-text">
+        <p>
+          ${icone}
+          <b><i>${notif.fromUserName}</i></b> ${notif.body}
+        </p>
+      </div>
+      <span class="notification-time">${tempo}</span>
     </div>
-    <div class="notification-time">${tempo}</div>
   `;
 
-  // Adiciona evento de clique
   div.style.cursor = 'pointer';
+
   div.addEventListener('click', async () => {
-    // Marca como lida
     if (!notif.read) {
       await marcarComoLida(currentUserId, notif.id);
       div.classList.remove('unread');
     }
 
-    // Redireciona se tiver URL
     if (notif.url) {
       window.location.href = notif.url;
     }
@@ -261,7 +270,6 @@ async function criarElementoNotificacao(notif, currentUserId) {
 
   return div;
 }
-
 
 // ===================
 // ÍCONE POR TIPO

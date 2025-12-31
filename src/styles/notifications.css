@@ -117,10 +117,54 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.notification-item {
+  padding: 16px 16px;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.notification-text p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.notification-time {
+  font-size: 14px;
+  color: #888;
+}
+
+
 @media (max-width: 768px) { 
 
   body {
     background-color: var(--bg-primary);
+    position: fixed !important;
   }
   .notifications-container {
     margin: 0px;
@@ -131,6 +175,7 @@
     backdrop-filter: none;
     overflow-y: auto;
     padding: 0px;
+    position: fixed;
   }
 
   nav {
@@ -228,7 +273,6 @@
   }
 
   .notification-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background-color: transparent;
   }
-
 }

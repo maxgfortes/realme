@@ -6,7 +6,9 @@ import {
   getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Config Firebase
+/* ===============================
+   CONFIG FIREBASE
+================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -21,19 +23,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Utilitário para buscar dados do usuário
+/* ===============================
+   DETECTA MOBILE
+================================ */
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+    || window.innerWidth <= 768;
+}
+
+/* ===============================
+   BUSCAR DADOS DO USUÁRIO
+================================ */
 async function getUserData(uid) {
   const userDoc = await getDoc(doc(db, "users", uid));
   if (!userDoc.exists()) return null;
-  const data = userDoc.data();
 
-  // Busca a foto em /users/{uid}/user-infos/user-media
+  const data = userDoc.data();
   let userphoto = "./src/icon/default.jpg";
+
   try {
-    const mediaDoc = await getDoc(doc(db, "users", uid, "user-infos", "user-media"));
-    if (mediaDoc.exists()) {
-      const mediaData = mediaDoc.data();
-      if (mediaData.userphoto) userphoto = mediaData.userphoto;
+    const mediaDoc = await getDoc(
+      doc(db, "users", uid, "user-infos", "user-media")
+    );
+    if (mediaDoc.exists() && mediaDoc.data().userphoto) {
+      userphoto = mediaDoc.data().userphoto;
     }
   } catch (e) {}
 
@@ -44,13 +57,17 @@ async function getUserData(uid) {
   };
 }
 
-// Função para pegar parâmetros da URL
+/* ===============================
+   PARÂMETROS DA URL
+================================ */
 function getUrlParam(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
 
-// Renderiza uma lista (seguidores, seguindo, amigos)
+/* ===============================
+   RENDERIZA LISTAS
+================================ */
 async function renderUserList(listType, userId) {
   let listContainer;
 
@@ -65,26 +82,21 @@ async function renderUserList(listType, userId) {
   if (!listContainer) return;
 
   listContainer.innerHTML = `
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-  </div>
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
   `;
 
   let uids = [];
 
-  // --- LISTAR SEGUIDORES ---
   if (listType === "followers") {
     const snap = await getDocs(collection(db, "users", userId, "followers"));
     uids = snap.docs.map(d => d.id);
-  }
-
-  // --- LISTAR SEGUINDO ---
+  } 
   else if (listType === "following") {
     const snap = await getDocs(collection(db, "users", userId, "following"));
     uids = snap.docs.map(d => d.id);
-  }
-
-  // --- LISTAR AMIGOS (mutuamente seguindo) ---
+  } 
   else if (listType === "friends") {
     const followersSnap = await getDocs(collection(db, "users", userId, "followers"));
     const followingSnap = await getDocs(collection(db, "users", userId, "following"));
@@ -92,17 +104,17 @@ async function renderUserList(listType, userId) {
     const followers = followersSnap.docs.map(d => d.id);
     const following = followingSnap.docs.map(d => d.id);
 
-    // INTERSEÇÃO → quem segue e é seguido
     uids = followers.filter(uid => following.includes(uid));
   }
 
   if (uids.length === 0) {
-    listContainer.innerHTML = '<div class="no-comments">Nenhum usuário encontrado.</div>';
+    listContainer.innerHTML =
+      '<div class="no-comments">Nenhum usuário encontrado.</div>';
     return;
   }
 
+  const profilePage = isMobile() ? "PFmobile.html" : "PF.html";
   let html = "";
-  const usuarioLogado = auth.currentUser?.uid;
 
   for (const uid of uids) {
     const userData = await getUserData(uid);
@@ -111,8 +123,12 @@ async function renderUserList(listType, userId) {
     html += `
       <div class="user-list">
         <div class="user-item">
-          <a href="PF.html?userid=${uid}" class="user-link" style="display: contents;">
-            <img src="${userData.userphoto}" alt="Avatar do Usuário" class="user-avatar" onerror="this.src='./src/icon/default.jpg'">
+          <a href="${profilePage}?userid=${uid}" 
+             class="user-link" style="display: contents;">
+            <img src="${userData.userphoto}" 
+                 alt="Avatar do Usuário" 
+                 class="user-avatar"
+                 onerror="this.src='./src/icon/default.jpg'">
             <div class="user-info">
               <span class="user-name">${userData.displayname}</span>
               <span class="user-username">@${userData.username}</span>
@@ -126,61 +142,61 @@ async function renderUserList(listType, userId) {
   listContainer.innerHTML = html;
 }
 
-
-// Remove usuário da lista (exemplo para seguidores)
+/* ===============================
+   REMOVER USUÁRIO
+================================ */
 async function removerUsuario(uid, type, currentUserId) {
   if (!uid || !type || !currentUserId) return;
+
   let ref1, ref2;
+
   if (type === "followers") {
-    // Remove o seguidor da minha lista de seguidores
     ref1 = doc(db, "users", currentUserId, "followers", uid);
-    // Remove eu da lista de seguindo do outro usuário
     ref2 = doc(db, "users", uid, "following", currentUserId);
-  } else if (type === "following") {
-    // Remove o usuário da minha lista de seguindo
+  } 
+  else if (type === "following") {
     ref1 = doc(db, "users", currentUserId, "following", uid);
-    // Remove eu da lista de seguidores do outro usuário
     ref2 = doc(db, "users", uid, "followers", currentUserId);
-  } else if (type === "friends") {
-    // Remove amizade dos dois lados
+  } 
+  else if (type === "friends") {
     ref1 = doc(db, "users", currentUserId, "friends", uid);
     ref2 = doc(db, "users", uid, "friends", currentUserId);
   }
+
   if (ref1) await deleteDoc(ref1);
   if (ref2) await deleteDoc(ref2);
-  // Atualiza a lista
+
   renderUserList(type, currentUserId);
 }
 
-
-// Inicialização
+/* ===============================
+   INIT
+================================ */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
 
-  // Pega o userid da URL ou do usuário logado
   const userId = getUrlParam("userid") || user.uid;
 
-  // Busca o displayname do usuário da lista
   let displayName = "você";
   const userDoc = await getDoc(doc(db, "users", userId));
   if (userDoc.exists()) {
-    displayName = userDoc.data().displayname || userDoc.data().username || "usuário";
+    displayName =
+      userDoc.data().displayname ||
+      userDoc.data().username ||
+      "usuário";
   }
 
-  // Atualiza o nome do usuário nas listas
   document.querySelectorAll(".list-header p").forEach(p => {
     p.textContent = `de ${displayName}`;
   });
 
-  // Renderiza as listas
   renderUserList("followers", userId);
   renderUserList("following", userId);
   renderUserList("friends", userId);
 
-  // Remove usuário da lista imediatamente, sem confirmação
   document.body.addEventListener("click", async (e) => {
     if (e.target.classList.contains("remove")) {
       const uid = e.target.getAttribute("data-uid");

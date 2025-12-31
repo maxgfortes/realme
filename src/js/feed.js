@@ -37,6 +37,7 @@ import {
 } from './save-posts.js';
 
 let lastPostSnapshot = null; 
+let allItems = []; 
 
 // ConfiguraÃ§Ã£o do Firebase
 const firebaseConfig = {
@@ -1047,6 +1048,202 @@ async function toggleLikeBubble(bubbleId, btnElement) {
   }
 }
 
+function renderPost(postData, feed) {
+  // OCULTA DO FEED NORMAL SE visible: false
+  if (postData.visible === false) {
+    const avisoEl = document.createElement('div');
+    avisoEl.className = 'post-card post-oculto-aviso';
+    avisoEl.innerHTML = `
+      <div class="post-oculto-msg">
+        <p>Este conteúdo foi denunciado por muitos usuários.<br>Você ainda quer ver?</p>
+        <button class="btn-ver-post" data-id="${postData.postid}">Ver assim mesmo</button>
+      </div>
+    `;
+    feed.appendChild(avisoEl);
+    return;
+  }
+
+  const postEl = document.createElement('div');
+  postEl.className = 'post-card';
+  postEl.innerHTML = `
+    <div class="post-header">
+      <div class="user-info">
+        <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
+             onerror="this.src='./src/icon/default.jpg'" />
+        <div class="user-meta">
+          <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
+          <small class="post-username"></small>
+          <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
+        </div>
+      </div>
+      <div class="left-space-options">
+        <div class="more-options">
+          <button class="more-options-button">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+        </div>
+        <div class="more-menu" style="display:none">
+          <button class="btn-delete-post" data-id="${postData.postid}" data-owner="${postData.creatorid}">
+            Apagar post
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="post-content">
+      <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
+      ${
+        (postData.img && postData.img.trim() !== "")
+          ? `
+            <div class="post-image">
+              <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
+            </div>
+          `
+          : (postData.urlVideo && postData.urlVideo.trim() !== "")
+          ? `
+            <div class="post-video">
+              <video src="${postData.urlVideo}"
+                     autoplay
+                     muted
+                     playsinline
+                     controls
+                     loop></video>
+            </div>
+          `
+          : ''
+      }
+      <div class="post-actions">
+        <div class="post-actions-left">
+          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
+            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
+              <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
+            </svg> <span>${postData.likes || 0}</span>
+          </button>
+          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
+            <span>${postData.comentarios || 0}</span>
+          </button>
+          <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 108.3"><title>instagram-share</title><path d="M96.14,12.47l-76.71-1.1,28.3,27.85L96.14,12.47ZM53.27,49l9.88,39.17L102.1,22,53.27,49ZM117,1.6a5.59,5.59,0,0,1,4.9,8.75L66.06,105.21a5.6,5.6,0,0,1-10.44-1.15L41.74,49,1.67,9.57A5.59,5.59,0,0,1,5.65,0L117,1.6Z"/></svg>
+            <p>Compartilhar</p>
+          </button>
+          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
+            <i class="fas fa-flag"></i> <p>Denunciar</p>
+          </button>
+        </div>
+        <div class="post-actions-rigth">
+          <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
+            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
+            <p>Salvar</p>
+          </button>
+        </div>
+      </div>
+      <div class="post-footer-infos">
+        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
+        <small class="post-date-desktop">${formatarDataRelativa(postData.create)}</small>
+      </div>
+      <div class="comments-section" style="display: none;">
+        <div class="comment-form">
+          <input type="text" class="comment-input" placeholder="Escreva um comentário..."
+                 data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+          <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="comments-area">
+          <div class="comments-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  feed.appendChild(postEl);
+
+  const usuarioLogado = auth.currentUser;
+
+  if (usuarioLogado) {
+    gerarTextoCurtidoPor(postData.postid, usuarioLogado.uid).then(info => {
+      const footer = postEl.querySelector(".post-liked-by");
+
+      if (!footer) return;
+
+      if (info.total === 0) {
+        footer.style.display = "none";
+      } else {
+        footer.style.display = "block";
+
+        footer.innerHTML =
+          `Curtido por <strong>${info.username}</strong>` +
+          (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
+      }
+    });
+  }
+
+  // Configura botão de salvar
+  const btnSave = postEl.querySelector('.btn-save');
+  if (btnSave) {
+    // Verifica se já está salvo
+    verificarSeEstaSalvo(postData.postid).then(estaSalvo => {
+      if (estaSalvo) {
+        btnSave.classList.add('saved');
+        btnSave.querySelector('i').className = 'fas fa-bookmark';
+      }
+    });
+
+    // Adiciona evento de clique
+    btnSave.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await toggleSalvarPost(postData.postid, postData.creatorid, btnSave);
+    });
+    configurarAutoPauseVideos();
+    configurarLimiteRepeticoes();
+  }
+
+  // Atualiza nome e foto do usuário assim que possível (não trava o loading)
+  buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
+    if (userData) {
+      const avatar = postEl.querySelector('.avatar');
+      const nome = postEl.querySelector('.user-name-link');
+      const username = postEl.querySelector('.post-username');
+      if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
+      if (nome) {
+        nome.textContent = userData.displayname || userData.username || postData.creatorid;
+        // Adiciona ícone de verificado se o usuário for verificado
+        if (userData.verified) {
+          nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+        }
+      }
+      if (username) username.textContent = userData.username ? `@${userData.username}` : '';
+    }
+  });
+
+  const btnLike = postEl.querySelector('.btn-like');
+  const btnComment = postEl.querySelector('.btn-comment');
+  if (btnLike && usuarioLogado) {
+    const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
+    getDoc(likerRef).then(likerSnap => {
+      if (likerSnap.exists() && likerSnap.data().like === true) {
+        btnLike.classList.add('liked');
+      } else {
+        btnLike.classList.remove('liked');
+      }
+    });
+  }
+
+  // Atualiza contadores apenas se os botões existirem (evita erro se estrutura mudar)
+  contarLikes(postData.postid).then(totalLikes => {
+    if (btnLike) {
+      const span = btnLike.querySelector('span');
+      if (span) span.textContent = totalLikes;
+    }
+  }).catch(() => {});
+
+  contarComentarios(postData.postid).then(totalComentarios => {
+    if (btnComment) {
+      const span = btnComment.querySelector('span');
+      if (span) span.textContent = totalComentarios;
+    }
+  }).catch(() => {});
+}
+
 async function loadPosts() {
   if (loading || !hasMorePosts) return;
   loading = true;
@@ -1055,16 +1252,15 @@ async function loadPosts() {
     loadMoreBtn.textContent = "Carregando...";
   }
 
-
   try {
+    // Remove existing bubbles to avoid duplicates
+    allItems = allItems.filter(item => item.tipo !== 'bubble');
 
+    const bubbles = await carregarBubbles();
+    bubbles.forEach(bubble => {
+      allItems.push(bubble);
+    });
 
-    if (!lastPostSnapshot) {
-      const bubbles = await carregarBubbles();
-      bubbles.forEach(bubble => {
-        renderizarBubble(bubble, feed);
-      });
-    }
     // Busca lote de posts ordenados por data (mais recentes primeiro)
     let postsQuery = query(
       collection(db, 'posts'),
@@ -1111,210 +1307,30 @@ async function loadPosts() {
       return dataB - dataA;
     });
 
-    for (const postData of postsParaAdicionar) {
-      // OCULTA DO FEED NORMAL SE visible: false
-      if (postData.visible === false) {
-        const avisoEl = document.createElement('div');
-        avisoEl.className = 'post-card post-oculto-aviso';
-        avisoEl.innerHTML = `
-          <div class="post-oculto-msg">
-            <p>Este conteúdo foi denunciado por muitos usuários.<br>Você ainda quer ver?</p>
-            <button class="btn-ver-post" data-id="${postData.postid}">Ver assim mesmo</button>
-          </div>
-        `;
-        feed.appendChild(avisoEl);
-        continue;
+    postsParaAdicionar.forEach(post => {
+      allItems.push({ ...post, tipo: 'post' });
+    });
+
+    // Sort allItems by create desc
+    allItems.sort((a, b) => {
+      let dataA = a.create;
+      let dataB = b.create;
+      if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
+      else dataA = new Date(dataA).getTime() / 1000;
+      if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
+      else dataB = new Date(dataB).getTime() / 1000;
+      return dataB - dataA;
+    });
+
+    // Clear feed and render all
+    feed.innerHTML = '';
+    for (const item of allItems) {
+      if (item.tipo === 'bubble') {
+        renderizarBubble(item, feed);
+      } else {
+        renderPost(item, feed);
       }
-
-      
-
- // Renderiza o post normalmente
-const postEl = document.createElement('div');
-postEl.className = 'post-card';
-postEl.innerHTML = `
-  <div class="post-header">
-    <div class="user-info">
-      <img src="./src/icon/default.jpg" alt="Avatar do usuário" class="avatar"
-           onerror="this.src='./src/icon/default.jpg'" />
-      <div class="user-meta">
-        <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
-        <small class="post-username"></small>
-        <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
-      </div>
-    </div>
-    <div class="left-space-options">
-        <div class="more-options">
-      <button class="more-options-button">
-        <i class="fas fa-ellipsis-h"></i>
-      </button>
-    </div>
-    <div class="more-menu" style="display:none">
-      <button class="btn-delete-post" data-id="${postData.postid}" data-owner="${postData.creatorid}">
-       Apagar post
-      </button>
-    </div>
-    </div>
-  </div>
-  <div class="post-content">
-  <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
- ${ 
-  (postData.img && postData.img.trim() !== "") 
-    ? `
-      <div class="post-image">
-        <img src="${postData.img}" loading="lazy" onclick="abrirModalImagem('${postData.img}')">
-      </div>
-    `
-    : (postData.urlVideo && postData.urlVideo.trim() !== "")
-    ? `
-      <div class="post-video">
-        <video src="${postData.urlVideo}" 
-               autoplay 
-               muted 
-               playsinline 
-               controls
-               loop></video>
-      </div>
-    `
-    : ''
-}
-
-  <div class="post-actions">
-   <div class=post-actions-left>
-    <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
-  <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
-</svg> <span>${postData.likes || 0}</span>
-    </button>
-    <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
-      <span>${postData.comentarios || 0}</span>
-    </button>
-    <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 108.3"><title>instagram-share</title><path d="M96.14,12.47l-76.71-1.1,28.3,27.85L96.14,12.47ZM53.27,49l9.88,39.17L102.1,22,53.27,49ZM117,1.6a5.59,5.59,0,0,1,4.9,8.75L66.06,105.21a5.6,5.6,0,0,1-10.44-1.15L41.74,49,1.67,9.57A5.59,5.59,0,0,1,5.65,0L117,1.6Z"/></svg>
-    <p>Compartilhar</p>
-    </button>
-    <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-      <i class="fas fa-flag"></i> <p>Denunciar</p>
-    </button>
-   </div>
-   <div class="post-actions-rigth">
-    <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
-    <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
-    <p>Salvar</p>
-    </button>
-    </div>
-  </div>
-  <div class="post-footer-infos">
-    <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-    <small class="post-date-desktop">${formatarDataRelativa(postData.create)}</small>
-  </div>
-  <div class="comments-section" style="display: none;">
-    <div class="comment-form">
-      <input type="text" class="comment-input" placeholder="Escreva um comentário..."
-             data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-      <button class="comment-submit" data-username="${postData.creatorid}" data-post-id="${postData.postid}">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-    <div class="comments-area">
-      <div class="comments-list"></div>
-    </div>
-  </div>
-</div>
-`;
-feed.appendChild(postEl);
-
-const usuarioLogado = auth.currentUser;
-
-if (usuarioLogado) {
-  gerarTextoCurtidoPor(postData.postid, usuarioLogado.uid).then(info => {
-    const footer = postEl.querySelector(".post-liked-by");
-
-    if (!footer) return;
-
-    if (info.total === 0) {
-      footer.style.display = "none";
-    } else {
-      footer.style.display = "block";
-
-      footer.innerHTML =
-        `Curtido por <strong>${info.username}</strong>` +
-        (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
     }
-  });
-}
-
-
-
-// Configura botão de salvar
-const btnSave = postEl.querySelector('.btn-save');
-if (btnSave) {
-  // Verifica se já está salvo
-  verificarSeEstaSalvo(postData.postid).then(estaSalvo => {
-    if (estaSalvo) {
-      btnSave.classList.add('saved');
-      btnSave.querySelector('i').className = 'fas fa-bookmark';
-    }
-  });
-
-  // Adiciona evento de clique
-  btnSave.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    await toggleSalvarPost(postData.postid, postData.creatorid, btnSave);
-  });
-  configurarAutoPauseVideos();
-  configurarLimiteRepeticoes();
-}
-
-      // Atualiza nome e foto do usuário assim que possível (não trava o loading)
-      buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
-        if (userData) {
-          const avatar = postEl.querySelector('.avatar');
-          const nome = postEl.querySelector('.user-name-link');
-          const username = postEl.querySelector('.post-username');
-          if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
-          if (nome) {
-            nome.textContent = userData.displayname || userData.username || postData.creatorid;
-            // Adiciona ícone de verificado se o usuário for verificado
-            if (userData.verified) {
-              nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
-            }
-          }
-          if (username) username.textContent = userData.username ? `@${userData.username}` : '';
-        }
-      });
-
-      const btnLike = postEl.querySelector('.btn-like');
-      const btnComment = postEl.querySelector('.btn-comment');
-      if (btnLike && usuarioLogado) {
-  const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
-  getDoc(likerRef).then(likerSnap => {
-if (likerSnap.exists() && likerSnap.data().like === true) {
-  btnLike.classList.add('liked');
-} else {
-  btnLike.classList.remove('liked');
-}
-
-  });
-}
-
-      // Atualiza contadores apenas se os botões existirem (evita erro se estrutura mudar)
-      contarLikes(postData.postid).then(totalLikes => {
-        if (btnLike) {
-          const span = btnLike.querySelector('span');
-          if (span) span.textContent = totalLikes;
-        }
-      }).catch(() => {});
-
-      contarComentarios(postData.postid).then(totalComentarios => {
-        if (btnComment) {
-          const span = btnComment.querySelector('span');
-          if (span) span.textContent = totalComentarios;
-        }
-      }).catch(() => {});
-    }
-
-    
 
     if (postsSnapshot.size < POSTS_LIMIT) {
       hasMorePosts = false;
@@ -1811,7 +1827,7 @@ async function atualizarGreeting() {
     const mes = agora.getMonth(); // 0 = jan
     const dia = agora.getDate();
 
-    const ehNatal = mes === 11 && dia >= 23 && dia <= 27;
+    const ehNatal = mes === 11 && dia >= 23 && dia <= 29;
 
     if (ehNatal) {
       // greeting especial às vezes
@@ -3061,6 +3077,325 @@ function adicionarEstilosCSS() {
 }
 
 // ===================
+// SISTEMA DE TIPOS DE POST
+// ===================
+let currentPostType = 'post';
+let postImageFile = null;
+let storyImageFile = null;
+
+function inicializarSistemaTipoPost() {
+  const tabs = document.querySelectorAll('.post-type-tab');
+  const contentTypes = document.querySelectorAll('.post-content-type');
+  const sendBtn = document.querySelector('.send-post-btn');
+
+  // Troca de tabs
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const type = tab.dataset.type;
+      
+      // Atualiza tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Atualiza conteúdo
+      contentTypes.forEach(ct => ct.classList.remove('active'));
+      document.querySelector(`.post-content-type[data-type="${type}"]`).classList.add('active');
+      
+      currentPostType = type;
+      
+      // Limpa inputs
+      limparInputsPost();
+    });
+  });
+
+  // Contador de caracteres
+  document.querySelectorAll('.np-text-input').forEach(textarea => {
+    textarea.addEventListener('input', (e) => {
+      const counter = e.target.parentElement.querySelector('.char-counter');
+      if (counter) {
+        const max = parseInt(textarea.getAttribute('maxlength'));
+        const current = e.target.value.length;
+        counter.textContent = `${current}/${max}`;
+        
+        if (current >= max * 0.9) {
+          counter.classList.add('limit');
+        } else {
+          counter.classList.remove('limit');
+        }
+      }
+    });
+  });
+
+  // Upload de imagem POST
+  const postFileArea = document.getElementById('post-file-input');
+  if (postFileArea) {
+    postFileArea.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => handlePostImageUpload(e.target.files[0]);
+      input.click();
+    });
+  }
+
+  // Upload de imagem STORY
+  const storyFileArea = document.getElementById('story-file-input');
+  if (storyFileArea) {
+    storyFileArea.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => handleStoryImageUpload(e.target.files[0]);
+      input.click();
+    });
+  }
+
+  // Remover imagem POST
+  document.querySelector('.remove-image-post')?.addEventListener('click', () => {
+    postImageFile = null;
+    document.querySelector('.image-preview-post').style.display = 'none';
+  });
+
+  // Remover imagem STORY
+  document.querySelector('.remove-image-story')?.addEventListener('click', () => {
+    storyImageFile = null;
+    document.querySelector('.image-preview-story').style.display = 'none';
+  });
+
+  // Botão de enviar
+  sendBtn.addEventListener('click', enviarPublicacao);
+}
+
+function handlePostImageUpload(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    criarPopup('Erro', 'Apenas imagens são permitidas', 'error');
+    return;
+  }
+
+  postImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.querySelector('.image-preview-post');
+    preview.querySelector('img').src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleStoryImageUpload(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    criarPopup('Erro', 'Apenas imagens são permitidas', 'error');
+    return;
+  }
+
+  storyImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.querySelector('.image-preview-story');
+    preview.querySelector('img').src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function limparInputsPost() {
+  document.querySelectorAll('.np-text-input').forEach(input => {
+    input.value = '';
+    const counter = input.parentElement.querySelector('.char-counter');
+    if (counter) {
+      const max = input.getAttribute('maxlength');
+      counter.textContent = `0/${max}`;
+      counter.classList.remove('limit');
+    }
+  });
+  
+  postImageFile = null;
+  storyImageFile = null;
+  document.querySelector('.image-preview-post').style.display = 'none';
+  document.querySelector('.image-preview-story').style.display = 'none';
+}
+
+async function enviarPublicacao() {
+  const usuarioLogado = auth.currentUser;
+  if (!usuarioLogado) {
+    criarPopup('Erro', 'Você precisa estar logado.', 'warning');
+    return;
+  }
+
+  const activeContent = document.querySelector('.post-content-type.active');
+  const textarea = activeContent.querySelector('.np-text-input');
+  const texto = textarea ? textarea.value.trim() : '';
+
+  if (currentPostType === 'post') {
+    await enviarPost(usuarioLogado, texto, postImageFile);
+  } else if (currentPostType === 'bubble') {
+    await enviarBubble(usuarioLogado, texto);
+  } else if (currentPostType === 'story') {
+    await enviarStory(usuarioLogado, storyImageFile);
+  }
+}
+
+async function enviarPost(user, texto, imageFile) {
+  if (!texto && !imageFile) {
+    criarPopup('Campo Vazio', 'Adicione texto ou imagem!', 'warning');
+    return;
+  }
+
+  tocarSomEnvio();
+  criarAnimacaoAviaoPapel();
+  const loadingInfo = mostrarLoading('Enviando post...');
+
+  try {
+    const postId = gerarIdUnico('post');
+    let urlImagem = '';
+    let deleteUrlImagem = '';
+
+    if (imageFile) {
+      atualizarTextoLoading('Fazendo upload da imagem...');
+      const uploadResult = await uploadImagemPost(imageFile, user.uid);
+      
+      if (!uploadResult.success) {
+        clearInterval(loadingInfo.interval);
+        esconderLoading();
+        criarPopup('Erro no Upload', uploadResult.error, 'error');
+        return;
+      }
+      
+      urlImagem = uploadResult.url;
+      deleteUrlImagem = uploadResult.deleteUrl;
+    }
+
+    atualizarTextoLoading('Salvando post...');
+
+    const postData = {
+      content: texto,
+      img: urlImagem,
+      imgDeleteUrl: deleteUrlImagem,
+      urlVideo: '',
+      likes: 0,
+      saves: 0,
+      comentarios: 0,
+      postid: postId,
+      creatorid: user.uid,
+      reports: 0,
+      visible: true,
+      create: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'users', user.uid, 'posts', postId), postData);
+    await setDoc(doc(db, 'posts', postId), postData);
+
+    limparInputsPost();
+    document.getElementById('closeLayerBtn').click();
+    
+    feed.innerHTML = '';
+    lastPostSnapshot = null;
+    hasMorePosts = true;
+    loading = false;
+    await loadPosts();
+
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Sucesso!', 'Post enviado com sucesso!', 'success');
+
+  } catch (error) {
+    console.error("Erro ao enviar post:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao enviar post: ' + error.message, 'error');
+  }
+}
+
+async function enviarBubble(user, texto) {
+  if (!texto) {
+    criarPopup('Campo Vazio', 'Escreva algo para o bubble!', 'warning');
+    return;
+  }
+
+  tocarSomEnvio();
+  const loadingInfo = mostrarLoading('Enviando bubble...');
+
+  try {
+    const bubbleId = gerarIdUnico('bubble');
+
+    const bubbleData = {
+      content: texto,
+      bubbleid: bubbleId,
+      creatorid: user.uid,
+      create: serverTimestamp(),
+      musicUrl: ''
+    };
+
+    await setDoc(doc(db, 'bubbles', bubbleId), bubbleData);
+
+    limparInputsPost();
+    document.getElementById('closeLayerBtn').click();
+
+    feed.innerHTML = '';
+    lastPostSnapshot = null;
+    hasMorePosts = true;
+    loading = false;
+    await loadPosts();
+
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Sucesso!', 'Bubble publicado!', 'success');
+
+  } catch (error) {
+    console.error("Erro ao enviar bubble:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao enviar bubble: ' + error.message, 'error');
+  }
+}
+
+async function enviarStory(user, imageFile) {
+  if (!imageFile) {
+    criarPopup('Imagem Obrigatória', 'Stories precisam de uma imagem!', 'warning');
+    return;
+  }
+
+  tocarSomEnvio();
+  const loadingInfo = mostrarLoading('Enviando story...');
+
+  try {
+    atualizarTextoLoading('Fazendo upload da imagem...');
+    const uploadResult = await uploadImagemPost(imageFile, user.uid);
+    
+    if (!uploadResult.success) {
+      clearInterval(loadingInfo.interval);
+      esconderLoading();
+      criarPopup('Erro no Upload', uploadResult.error, 'error');
+      return;
+    }
+
+    const storyId = gerarIdUnico('story');
+
+    const storyData = {
+      storyid: storyId,
+      creatorId: user.uid,
+      img: uploadResult.url,
+      create: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'storys', storyId), storyData);
+
+    limparInputsPost();
+    document.getElementById('closeLayerBtn').click();
+
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Sucesso!', 'Story publicado!', 'success');
+
+  } catch (error) {
+    console.error("Erro ao enviar story:", error);
+    clearInterval(loadingInfo.interval);
+    esconderLoading();
+    criarPopup('Erro', 'Erro ao enviar story: ' + error.message, 'error');
+  }
+}
+
+// ===================
 // INICIALIZAÇÃO
 // ===================
 
@@ -3072,6 +3407,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   criarInputVideo();
   await atualizarGreeting();
   configurarLinks();
+  inicializarSistemaTipoPost();
   configurarEventListeners();
   configurarScrollInfinito();
   await atualizarMarquee();

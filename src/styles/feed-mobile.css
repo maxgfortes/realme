@@ -116,7 +116,7 @@ body.modal-open {
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.336);
-      z-index: 10009990;
+      z-index: 10000;
       display: none; /* Começa oculto */
       overflow: hidden;
     }
@@ -1577,6 +1577,9 @@ textarea#postText:focus {
   height: 100%;
   display: flex;
   flex-direction: column !important;
+  justify-content: space-between;
+  padding: 12px;
+  padding-bottom: 30px;
 }
 
 .text-area {
@@ -1590,7 +1593,6 @@ textarea#postText:focus {
 .text-input-area {
   border-radius: 12px;
   background-color: #1a1a1a;
-  border: 1px solid #333;
   height: 16vh;
 }
 
@@ -1604,7 +1606,6 @@ textarea#postText:focus {
 .file-input-area {
   border-radius: 12px;
   background-color: #1a1a1a;
-  border: 1px solid #333;
   height: 46vh;
   display: flex;
   align-items: center;
@@ -1690,7 +1691,17 @@ textarea#postText:focus {
 .sections-btn {
   padding: 8px;
   width: 100%;
+  position: relative;
 }
+
+.inactive-btn p{
+  color: #444;
+}
+
+.inactive-btn i{
+  color: #444;
+}
+
 
 
 
@@ -1704,6 +1715,8 @@ textarea#postText:focus {
   border: none;
   border-top: 1px solid var(--primary-light);
   margin-right: 6px;
+  width: 100%;
+  bottom: 0;
 }
 
 

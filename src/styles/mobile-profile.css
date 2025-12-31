@@ -147,7 +147,6 @@
       object-fit: cover;
       flex-shrink: 0;
       border: 3px solid var(--bg-primary);
-      background-color: var(--bg-primary);
     }
 
     .pfp {

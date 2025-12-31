@@ -3,48 +3,59 @@
 
     body {
         background: var(--bg-primary) !important;
+        position: fixed !important;
+        overflow: hidden;
     }
     .option-bar{
         display: none !important;
     }
 
-    .options {
-        height: 76vh !important;
+    .option-bar.open{
+        padding: 0 !important;
     }
 
-    .filtros {
-        height: 800px !important;
+    .options {
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
+
+    .lm {
+        padding: 4px;
+        margin: 0;
+        justify-content: center;
+    }
+
 
     .friends-container{
         margin: 0 !important;
-        margin-top: 60px !important;
         padding: 0 !important;
         width: 100vw !important;
         max-width: 100vw !important;
-        height: calc(100vh - 60px) !important; /* Preenche da navbar até o fundo */
-        margin-bottom: 120px !important; /* Remove margem inferior para ocupar tudo */
         overflow-y: auto !important; /* Permite rolagem vertical se necessário */
         border-radius: 0 !important; /* Remove bordas arredondadas */
         border: none;
     }
 
+input.estilo {
+ width: 100%;
+ padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #222; /* Quase preto, mas não absoluto */
+  border: none;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  color: #cacaca;
+}
+
     /* Botão de filtros visível apenas em mobile */
-    .filter-btn {
-        display: block !important;
-        background: transparent !important;
-        border-left: 1px solid #4A90E2 !important;
-        color: #000000 !important;
-        padding: 4px 16px !important;
-        border-radius: 0px !important;
-        cursor: pointer !important;
-        font-size: 16px !important;
-        transition: all 0.3s ease !important;
+    .toggle-btn {
+        color: red;
     }
 
-    .filter-btn:hover {
-        background: rgba(74, 144, 226, 0.3) !important;
-    }
 
     /* Sidebar como drawer em mobile (direita) */
     .option-bar {
@@ -57,15 +68,19 @@
         background: var(--bg-primary) !important;
         border: none !important;
         border-radius: 0 !important;
-        padding: 20px !important;
+        padding: 0 !important;
         z-index: 3000 !important;
         transition: right 0.3s ease !important;
-        overflow-y: auto !important;
         box-shadow: -2px 0 10px rgba(0,0,0,0.5) !important;
+    }
+
+    .option-bar h1 {
+        display: none;
     }
 
     .option-bar.open {
         right: 0 !important; /* Visível quando tem classe 'open' */
+        position: fixed;
     }
 
     /* Overlay para fechar sidebar */
@@ -79,9 +94,43 @@
         z-index: 2999;
     }
 
+    .options-header svg {
+        height: 24px;
+        width: 24px;
+        fill: #fff;
+    }
+
+    .options-header button {
+        background: transparent;
+        border: none;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .options-header {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        padding: 12px 20px;
+        justify-content: space-between;
+    }
+
+    .opt-left {
+        display: flex;
+    }
+
+    .title-options {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 600;
+        margin-left: 16px;
+    }
+
     .filtros {
-        height: 800px !important;
+        max-height: 80vh;
         overflow-x: auto;
+        padding: 20px;
     }
 
     .sidebar-overlay.show {
@@ -110,8 +159,10 @@
       display: flex;
       align-items: left;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 !important;
+      margin: 0 !important;
       z-index: 999;
+      display: none ;
     }
 
     .nav-header {
@@ -119,9 +170,10 @@
         display: flex;
         align-items: center;
         text-align: center;
-        font-size: 24px;
         font-weight: 600;
-        margin-left: 6%;
+        font-size: 22px;
+        padding: 12px;
+        display: none;
     }
 
 
@@ -134,41 +186,45 @@
     background: var(--bg-primary);
     position: fixed;
     width: 100vw;
-    height: 10%;
+    margin: 0px;
     z-index: 999999;
     border: none;
+    display: flex !important;
+    padding: 10px 14px;
 }
 
-.friends-header button {
-        display: block !important;
-        background: transparent !important;
-        border: none;
-        border-left: 1px solid var(--primary-color)!important;
-        color: #4A90E2 !important;
-        padding: 4px 22px !important;
-        border-radius: 0px !important;
-        cursor: pointer !important;
-        font-size: 16px !important;
-        transition: all 0.3s ease !important;
+
+.friends-header svg {
+    height: 22px;
+    fill: currentColor;
 }
 
-.friends-header button:first-child {
-    border: none !important;
+.title-page {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    font-size: 22px;
+    padding: 12px;
 }
 
-.friends-header a {
-        display: block !important;
-        background: transparent!important;
-        border-left: 1px solid #4A90E2 !important;
-        color: #4A90E2 !important;
-        padding: 4px 16px !important;
-        border-radius: 0px !important;
-        cursor: pointer !important;
-        font-size: 16px !important;
-        transition: all 0.3s ease !important;
-        text-decoration: none;
-        display: none !important;
+.filter-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s;
+    display: flex;
+    background-color: #222;
+    padding: 14px 14px;
+    border-radius: 50%;
 }
+
+
+
+
+
 
 .user {
     font-size: 14px;
@@ -177,17 +233,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    border: #1a1a1a solid 1px;
+    background-color: #202020;
 }
 
 
 .user img {
-    width: 62px;
-    height: 62px;
+    width: 200px !important;
+    height: 200px !important;
     object-fit: cover;
 }
 
 nav {
-    display: none !important;
+    display: none;
 }
 
 
@@ -230,15 +288,14 @@ nav {
 }
 
 .friend-card {
-    margin-top: 60px !important;
+    margin-top: 50px !important;
     height: 70% !important;
     width: 70% !important;
 }
 
 .friend-card img {
-    width: 100% !important;
+    width: 400px !important;
     height: 400px !important;
-    max-height: 400px !important;
     object-fit: cover !important;
     margin-top: 0px !important;
     border: none !important;
@@ -256,27 +313,49 @@ nav {
 .friends-list {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px !important;
-    padding: 20px 10px !important;
-    margin-top: 70px !important;
-    padding-bottom: 100px !important;
+    padding: 20px 10px;
+    padding-bottom: 200px !important;
+    padding-top: 80px;
 }
 
-.user  img {
-    height: 100% !important;
-}
 
-    .filtros {
-        min-height: 54vh !important;
-        max-height: 54vh !important;
-        overflow-x: auto;
-    }
 
-    .close-preferences-btn {
+    .close-btn {
   display: flex !important;
 }
 .age {
     display: none !important;
 }
+
+.search-btn {
+    bottom: 40px;
+    width: 100%;
+    padding: 15px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    bottom: 40px;
+    width: 100%;
+    padding: 15px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-btn-area {
+    padding: 12px;
+}
+
+
 
 
 .carousel-cards-wrapper {

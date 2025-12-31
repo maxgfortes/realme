@@ -205,6 +205,17 @@ dmChatUserName.addEventListener("click", () => {
   if (userid) window.location.href = `pfmobile.html?userid=${userid}`;
 });
 
+// Marcar mensagens como lidas ao abrir o chat
+async function marcarMensagensComoLidas(chatId, mensagens) {
+  for (const m of mensagens) {
+    // Só marca como lida se não for do usuário logado e ainda não estiver lida
+    if (m.sender !== loggedUser && !m.read) {
+      const msgRef = doc(db, "chats", chatId, "messages", m.id);
+      await updateDoc(msgRef, { read: true });
+    }
+  }
+}
+
 // Carrega mensagens em tempo real
 function carregarMensagensTempoReal() {
   if (unsubscribeMessages) unsubscribeMessages();
@@ -224,6 +235,9 @@ function carregarMensagensTempoReal() {
       mensagens.push(m);
     });
 
+    // Marcar como lidas as mensagens recebidas
+    await marcarMensagensComoLidas(chatId, mensagens);
+
     // Som de recebimento só para novas mensagens recebidas
     if (
       mensagens.length > ultimaQtdMensagens &&
@@ -238,6 +252,15 @@ function carregarMensagensTempoReal() {
 
 let lastSender = null;
 let bloco = null;
+
+// Encontrar o índice da última mensagem enviada pelo usuário
+let lastUserMsgIndex = -1;
+for (let i = mensagens.length - 1; i >= 0; i--) {
+  if (mensagens[i].sender === loggedUser) {
+    lastUserMsgIndex = i;
+    break;
+  }
+}
 
 mensagens.forEach((m, idx) => {
     const isSender = m.sender === loggedUser;
@@ -268,7 +291,7 @@ mensagens.forEach((m, idx) => {
     }
 
     // Footer apenas na ÚLTIMA mensagem enviada por VOCÊ
-    if (isSender && isLastMsg) {
+    if (idx === lastUserMsgIndex) {
         const footer = document.createElement("div");
         footer.className = "dm-msg-footer";
 

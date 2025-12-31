@@ -44,8 +44,6 @@
 
       .mobilelogo h1 {
         display: block;
-        border-left: 6px solid #4A90E2;
-        text-align: left;
         padding-left: 10px;
         color: #cacaca;
       }
