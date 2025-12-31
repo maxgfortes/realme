@@ -70,16 +70,11 @@
 
   <div class="friends-container">
         <div class="friends-header">
-            <div class="view-toggle">
-                <button class="toggle-btn active" data-view="carousel">Cards</button>
-                <button class="toggle-btn" data-view="grid">Grid</button>
-                <button class="toggle-btn filter-btn" id="filterBtn">Buscar</button>
-                <a href="map.html">Mapa</a>
-            </div>
+          <div class="title-page"><p>Pessoas parecidas com você</p></div>
+          <button class="filter-btn" id="filterBtn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg></button>
         </div>
-
         <!-- VIEW GRID (Original) -->
-        <div class="grid-view" id="gridView">
+        <div class="grid-view active" id="gridView">
             <div class="friends-list">
                 <a class="user" href="#" data-username="afliccoess">
                     <img src="https://lastfm.freetls.fastly.net/i/u/avatar170s/3c04e79db06c605e5de3897555a9a34e.png" alt="Vini demarco">
@@ -151,32 +146,29 @@
         </div>
 
 
-  <!-- VIEW CAROUSEL (Novo) -->
-        <div class="carousel-view active" id="carouselView">
-            <div class="carousel-container">
-                <div class="cards-wrapper" id="cardsWrapper">
-                    <!-- Cards serão gerados dinamicamente -->
-                </div>
-            </div>
-            <div class="carousel-controls">
-                <button class="nav-btn" id="prevBtn">‹</button>
-                <div class="indicators" id="indicators"></div>
-                <button class="nav-btn" id="nextBtn">›</button>
-            </div>
-        </div>
     </div>
 
 <aside class="option-bar">
   <h1>Preferencias</h1>
-  <div class="options">
-      <!-- Checkbox “Igual a mim” -->
-      <div class="lm">
+  <div class="options-header">
+    <div class="opt-left">
+          <button class="close-btn" id="closeOptionsBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+    </button>
+    <div class="title-options">Voltar</div>
+    </div>
+    <div class="opt-right">
+            <div class="lm">
         <p>Igual a mim</p>
         <label class="switch">
           <input type="checkbox" id="igualAMim">
           <span class="slider"></span>
         </label>
       </div>
+    </div>
+  </div>
+  <div class="options">
+      <!-- Checkbox “Igual a mim” -->
   <div class="filtros">
     <div class="estilo">
       <p>Estilo</p>
@@ -273,7 +265,9 @@
     </div>
 
   </div>
-  <button class="search-btn" type="submit" form="search-form">Buscar!</button>
+  <div class="search-btn-area">
+    <button class="search-btn" type="submit" form="search-form">Buscar!</button>
+  </div>
 </div>
 
   <!-- Botão fixo -->
@@ -281,9 +275,6 @@
 </aside>
 </div>
 
-  <div class="nav-mobile">
-      <div class="nav-header"><p>Pessoas parecidas com você</p></div>
-  </div>
 
   <!-- Navbar Bottom -->
   <nav class="navbar-bottom">
@@ -291,35 +282,18 @@
       <a href="feed.html">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832"><path fill-rule="nonzero" d="M43.084 468.748h116.942V364.721c0-25.882 10.609-49.45 27.679-66.528l.082-.081c17.077-17.07 40.645-27.679 66.527-27.679 25.844 0 49.412 10.617 66.519 27.687l.082.081c17.092 17.151 27.686 40.697 27.686 66.52v104.027h119.315V253.009L255.846 51.151 43.084 253.768v214.98zm138.484 43.084H29.337c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542z"/></svg>
       </a>
-      <a href="acharamigos.html">
-<svg width="800px" height="800px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-  <g clip-path="url(#clip0_1251_98416)">
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M9 0C5.96243 0 3.5 2.46243 3.5 5.5C3.5 8.53757 5.96243 11 9 11C12.0376 11 14.5 8.53757 14.5 5.5C14.5 2.46243 12.0376 0 9 0ZM5.5 5.5C5.5 3.567 7.067 2 9 2C10.933 2 12.5 3.567 12.5 5.5C12.5 7.433 10.933 9 9 9C7.067 9 5.5 7.433 5.5 5.5Z" />
-    <path d="M15.5 0C14.9477 0 14.5 0.447715 14.5 1C14.5 1.55228 14.9477 2 15.5 2C17.433 2 19 3.567 19 5.5C19 7.433 17.433 9 15.5 9C14.9477 9 14.5 9.44771 14.5 10C14.5 10.5523 14.9477 11 15.5 11C18.5376 11 21 8.53757 21 5.5C21 2.46243 18.5376 0 15.5 0Z" />
-    <path d="M19.0837 14.0157C19.3048 13.5096 19.8943 13.2786 20.4004 13.4997C22.5174 14.4246 24 16.538 24 19V21C24 21.5523 23.5523 22 23 22C22.4477 22 22 21.5523 22 21V19C22 17.3613 21.0145 15.9505 19.5996 15.3324C19.0935 15.1113 18.8625 14.5217 19.0837 14.0157Z"/>
-    <path d="M6 13C2.68629 13 0 15.6863 0 19V21C0 21.5523 0.447715 22 1 22C1.55228 22 2 21.5523 2 21V19C2 16.7909 3.79086 15 6 15H12C14.2091 15 16 16.7909 16 19V21C16 21.5523 16.4477 22 17 22C17.5523 22 18 21.5523 18 21V19C18 15.6863 15.3137 13 12 13H6Z"/>
-  </g>
-  <defs>
-    <clipPath id="clip0_1251_98416">
-      <rect width="24" height="24" fill="white"/>
-    </clipPath>
-  </defs>
-  <ellipse cx="9.203" cy="5.686" rx="3.974" ry="3.89"/>
-  <ellipse cx="8.949" cy="17.693" rx="7.948" ry="3.129"/>
-  <rect x="0.905" y="19.066" width="16.105" height="2.921" />
-  <path  d="M 20.053 8.503 C 17.494 6.721 18.686 0.235 20.239 0.238 C 13.183 0.005 11.847 9.09 19.424 9.531" transform="matrix(-1, 0, 0, -1, 34.50581791, 9.88500966)"/>
-  <path style=" stroke-width: 1; transform-box: fill-box; transform-origin: 50% 50%;" d="M 23.81 21.114 C 22.291 19.332 21.826 13.844 22.748 13.847 C 17.069 12.341 18.308 21.348 22.696 22.017" transform="matrix(-1, 0, 0, -1, -0.000002, 0)"/>
-  <rect x="21.158" y="20.873" width="1.996" height="1.123" />
-</svg>
+      <a href="acharamigos.html" class="active-bar">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      </a>
       </a>
       <a href="direct-mobile.html">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 506 511.682"><path fill-rule="nonzero" d="M76.022 432.762c-14.224-17.624-28.477-36.009-40.468-55.504-13.738-22.329-24.838-46.442-30.326-73.172-14.057-68.387.935-136.064 36.561-190.148C77.414 59.833 133.687 19.322 202.118 5.235c68.394-14.071 136.056.928 190.14 36.547 54.105 35.632 94.638 91.912 108.71 160.35 7.003 34.067 6.445 67.452-.116 99.01-7.018 33.734-20.937 65.408-39.78 93.639-25.671 38.445-58.723 65.581-98.51 82.009-39.837 16.45-86.054 21.88-138.014 16.979l-9.714-.928c-19.966-1.928-27.528-2.653-33.487-1.094-4.343 1.181-9.932 3.69-18.842 7.677l-8.381 3.734c-20.756 9.229-36.009 10.44-47.878 6.14-15.499-5.618-22.503-17.566-25.765-33.023-1.624-7.706-2.139-15.739-2.675-24.221-.399-6.445-.841-13.231-1.784-19.292zm47.972-127.857l61.768-98.785c10.976-16.573 33.719-20.177 49.357-7.924l52.024 40.917c4.785 3.734 11.469 3.886 16.363.319l66.038-46.413c9.678-7.032 21.873 4.698 15.297 14.681l-62.355 97.785c-10.977 16.566-33.719 20.176-49.357 7.917l-52.024-40.918c-4.785-3.734-11.462-3.893-16.363-.319l-65.509 47.37c-9.671 7.032-21.872-4.64-15.239-14.63zM74.761 353.16c11.976 19.473 26.273 37.597 40.323 54.902a22.782 22.782 0 014.785 9.693c2.501 10.962 3.175 21.532 3.799 31.428.384 6.104.754 11.919 1.493 16.232 2.226-.775 5.633-2.16 10.462-4.299l8.177-3.596c11.23-5.031 18.284-8.192 25.679-10.164h.094c13.688-3.646 23.49-2.711 49.581-.188l9.716.928c44.484 4.197 83.43-.196 116.25-13.746 31.246-12.905 57.36-34.444 77.833-65.103 15.616-23.395 27.144-49.596 32.936-77.457 5.336-25.686 5.8-52.822.116-80.48-11.52-56.026-44.673-102.084-88.919-131.221-44.274-29.158-99.72-41.432-155.79-29.891-56.012 11.528-102.07 44.674-131.199 88.912-29.166 44.282-41.433 99.728-29.906 155.798 4.205 20.495 13.246 39.852 24.57 58.252z"/></svg>
       </a>
       <a href="explorar.html">
-        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="pfmobile.html">
-        <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini">
+        <img src="./src/icon/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </nav>
@@ -514,49 +488,14 @@
             }
         }
 
-        // Toggle entre views
-        class ViewToggle {
-            constructor() {
-                this.currentView = 'carousel';
-                this.init();
-            }
-
-            init() {
-                const toggleButtons = document.querySelectorAll('.toggle-btn');
-                toggleButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const viewType = btn.dataset.view;
-                        this.switchView(viewType);
-                        toggleButtons.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                    });
-                });
-            }
-
-            switchView(viewType) {
-                const gridView = document.getElementById('gridView');
-                const carouselView = document.getElementById('carouselView');
-                if (viewType === 'grid') {
-                    gridView.classList.add('active');
-                    carouselView.classList.remove('active');
-                    this.currentView = 'grid';
-                } else {
-                    carouselView.classList.add('active');
-                    gridView.classList.remove('active');
-                    this.currentView = 'carousel';
-                }
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            const carousel = new FriendsCarousel();
-            const viewToggle = new ViewToggle();
             console.log('Sistema de amigos inicializado!');
 
             // Botão de filtros para mobile
             const filterBtn = document.getElementById('filterBtn');
             const optionBar = document.querySelector('.option-bar');
             const overlay = document.querySelector('.sidebar-overlay');
+            const closeOptionsBtn = document.getElementById('closeOptionsBtn');
 
             if (filterBtn && optionBar && overlay) {
                 filterBtn.addEventListener('click', () => {
@@ -569,9 +508,67 @@
                     overlay.classList.remove('show');
                 });
             }
+
+            if (closeOptionsBtn) {
+                closeOptionsBtn.addEventListener('click', () => {
+                    optionBar.classList.remove('open');
+                    overlay.classList.remove('show');
+                });
+            }
+
+            // Redirecionar perfis para mobile ou desktop
+            const userLinks = document.querySelectorAll('.user');
+            userLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const username = link.getAttribute('data-username');
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    const url = isMobile ? `pfmobile.html?username=${username}` : `PF.html?username=${username}`;
+                    window.location.href = url;
+                });
+            });
+
+            // Imagens padrão em caso de erro
+            const userImages = document.querySelectorAll('.user img');
+            userImages.forEach(img => {
+                img.onerror = function() {
+                    this.src = './src/icon/default.jpg';
+                };
+            });
         });
+
+function carregarFotoPerfil() {
+  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userId = user.uid; // Obtém o ID do usuário logado
+      try {
+        // Busca a URL da foto de perfil no Firestore
+        const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
+        const userMediaSnap = await getDoc(userMediaRef);
+
+        if (userMediaSnap.exists()) {
+          const userPhoto = userMediaSnap.data().userphoto || './src/icon/default.jpg';
+          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+        } else {
+          console.warn('Foto de perfil não encontrada. Usando a padrão.');
+          navPic.src = './src/icon/default.jpg';
+        }
+        // Registrar token de push do usuário (se possível)
+        try { if (userId) registerForPushNotifications(userId); } catch(e) { console.warn('Falha ao registrar push:', e); }
+      } catch (error) {
+        console.error('Erro ao carregar a foto de perfil:', error);
+        navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
+      }
+    } else {
+      console.warn('Usuário não autenticado.');
+      navPic.src = './src/icon/default.jpg'; // Usa a foto padrão se não estiver logado
+    }
+  });
+}
 </script>
-<script type="module">
+<script type="module">    
 // ===============================
 //  acharAmigos.js
 //  Busca usuários semelhantes no Firestore por pontos de similaridade
@@ -718,7 +715,6 @@ function removerLoading() {
 }
 
 let cacheUltimosUsuarios = [];
-let carouselInstance = null;
 
 function renderizarResultados(resultados) {
   if (!cardsWrapper) return;
@@ -741,7 +737,7 @@ function renderizarResultados(resultados) {
     card.className = 'friend-card';
     card.innerHTML = `
       <div class="card-content">
-        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" onerror="this.src='./src/icon/default.jpg'">
         <div class="card-info">
           <div class="card-name">${u.displayname}</div>
           <div class="card-username">@${u.username}</div>
@@ -753,22 +749,21 @@ function renderizarResultados(resultados) {
       </div>
     `;
     cardsWrapper.appendChild(card);
+
+    // Truncar nomes longos
+    const profileName = card.querySelector('.card-name');
+    if (profileName && profileName.textContent.length > 10) {
+      profileName.textContent = profileName.textContent.substring(0,10) + '...';
+    }
+    const profileUsername = card.querySelector('.card-username');
+    if (profileUsername && profileUsername.textContent.length > 10) {
+      profileUsername.textContent = profileUsername.textContent.substring(0,10) + '...';
+    }
   });
 
   // Salva no cache
   cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
   localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
-
-  // Atualiza o carrossel com os dados buscados
-  if (carouselInstance) {
-    const users = resultadosUnicos.map(u => ({
-      name: u.displayname,
-      username: '@' + u.username,
-      image: u.userphoto,
-      profile: `PF.html?userid=${u.id}`
-    }));
-    carouselInstance.setUsers(users);
-  }
 }
 
 function renderizarGrid(resultados) {
@@ -814,15 +809,12 @@ function renderizarGrid(resultados) {
 
 // Exibe cache ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
-  carouselInstance = new FriendsCarousel();
-  carouselInstance.bindEvents();
   const cache = localStorage.getItem('ultimosUsuarios');
   if (cache) {
     const usuarios = JSON.parse(cache);
     renderizarResultados(usuarios);
     renderizarGrid(usuarios);
   }
-  const viewToggle = new ViewToggle();
   console.log('Sistema de amigos inicializado!');
 });
 
@@ -835,11 +827,6 @@ async function buscarUsuariosSemelhantes() {
     optionBar.classList.remove('open');
     overlay.classList.remove('show');
   }
-
-  // TROCA PARA VIEW DE GRID COMO PADRÃO
-  const gridBtn = document.querySelector('[data-view="grid"]');
-  if (gridBtn) gridBtn.click();
-
 
   mostrarLoading();
   const filtros = coletarFiltros();
@@ -1170,47 +1157,7 @@ class FriendsCarousel {
     bindEvents() {
         document.getElementById('nextBtn').addEventListener('click', () => this.next());
         document.getElementById('prevBtn').addEventListener('click', () => this.prev());
-        document.addEventListener('keydown', (e) => {
-            if (document.getElementById('carouselView').classList.contains('active')) {
-                if (e.key === 'ArrowRight') this.next();
-                if (e.key === 'ArrowLeft') this.prev();
-            }
-        });
         
-    }
-}
-
-// Toggle entre views
-class ViewToggle {
-    constructor() {
-        this.currentView = 'carousel';
-        this.init();
-    }
-
-    init() {
-        const toggleButtons = document.querySelectorAll('.toggle-btn');
-        toggleButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const viewType = btn.dataset.view;
-                this.switchView(viewType);
-                toggleButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-    }
-
-    switchView(viewType) {
-        const gridView = document.getElementById('gridView');
-        const carouselView = document.getElementById('carouselView');
-        if (viewType === 'grid') {
-            gridView.classList.add('active');
-            carouselView.classList.remove('active');
-            this.currentView = 'grid';
-        } else {
-            carouselView.classList.add('active');
-            gridView.classList.remove('active');
-            this.currentView = 'carousel';
-        }
     }
 }
 
@@ -1277,53 +1224,6 @@ async function atualizarMarqueeUltimoUsuario() {
 }
 
 document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
-
-// Botão para fechar modal de preferências em mobile
-document.addEventListener('DOMContentLoaded', () => {
-  const optionBar = document.querySelector('.option-bar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  
-  if (optionBar && overlay) {
-    // Cria o botão de fechar
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'close-preferences-btn';
-    closeBtn.innerHTML = '<i class="fas fa-times"></i> Fechar';
-    closeBtn.style.cssText = `
-      position: sticky;
-      top: 10px;
-      right: 10px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      z-index: 3001;
-      margin-bottom: 20px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    `;
-    
-    // Adiciona o botão no topo da barra
-    const h1 = optionBar.querySelector('h1');
-    if (h1) {
-      h1.insertAdjacentElement('afterend', closeBtn);
-    } else {
-      optionBar.insertBefore(closeBtn, optionBar.firstChild);
-    }
-    
-    // Função para fechar
-    closeBtn.addEventListener('click', () => {
-      optionBar.classList.remove('open');
-      overlay.classList.remove('show');
-    });
-  }
-});
 
 </script>
 

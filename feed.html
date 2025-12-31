@@ -569,88 +569,102 @@
 </div>-->
 
   <!-- Main Content -->
-  <div class="post-layer" id="postLayer">
-    <div class="header-layer">
-      <h1 class="header">Nova postagem <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 width="800px" height="800px" viewBox="0 0 528.899 528.899"
-	 xml:space="preserve">
-<g>
-	<path d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981
-		c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611
-		C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069
-		L27.473,390.597L0.3,512.69z"/>
-</g>
-</svg></h1> 
-            <button id="closeLayerBtn" class="back-post">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
-  <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-</svg></button>
-    </div>
-    <div class="content-area">
+<div class="post-layer" id="postLayer">
+  <div class="header-layer">
+    <h1 class="header">Nova publicação</h1> 
+    <button id="closeLayerBtn" class="back-post">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+        <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- TABS DE TIPO DE POST -->
+  <div class="post-type-tabs">
+    <button class="post-type-tab active" data-type="post">
+      <i class="fas fa-image"></i>
+      Post
+    </button>
+    <button class="post-type-tab" data-type="bubble">
+      <i class="fas fa-comment-dots"></i>
+      Bubble
+    </button>
+    <button class="post-type-tab" data-type="story">
+      <i class="fas fa-clock"></i>
+      Story
+    </button>
+  </div>
+
+  <div class="content-area">
+    <!-- POST NORMAL -->
+    <div class="post-content-type active" data-type="post">
       <div class="text-area">
         <div class="text-input-area">
-          <input type="text" class="np-text-input" placeholder="escreva um pensamento...">
+          <textarea class="np-text-input" placeholder="Escreva um pensamento..." maxlength="500"></textarea>
+          <small class="char-counter">0/500</small>
         </div>
       </div>
       <div class="file-area">
-        <div class="title-area">Adicionar imagens</div>
-        <div class="file-input-area">
+        <div class="title-area">Adicionar imagem</div>
+        <div class="file-input-area" id="post-file-input">
           <div class="file-icon">
-            <svg  version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 viewBox="0 0 198.931 198.931" xml:space="preserve">
-<g>
-	<g>
-		<g>
-			<path d="M99.469,69.561c-25.423,0-46.104,20.683-46.104,46.104s20.683,46.104,46.104,46.104
-				c25.421,0,46.104-20.683,46.104-46.104S124.89,69.561,99.469,69.561z M99.469,146.91c-17.229,0-31.245-14.017-31.245-31.245
-				c0-17.228,14.017-31.245,31.245-31.245c17.228,0,31.245,14.017,31.245,31.245C130.714,132.892,116.698,146.91,99.469,146.91z"/>
-			<path d="M175.499,44.681h-72.315h-3.715V27.956c0-9.393-7.64-17.036-17.033-17.036H44.247c-9.393,0-17.033,7.642-17.033,17.036
-				v16.726h-3.777C10.515,44.681,0,55.194,0,68.116v96.465c0,12.92,10.515,23.43,23.437,23.43h152.059
-				c12.925,0,23.435-10.51,23.435-23.43V68.116C198.934,55.194,188.421,44.681,175.499,44.681z M42.07,27.956
-				c0-1.201,0.976-2.176,2.177-2.176h38.189c1.199,0,2.174,0.976,2.174,2.177v16.726H42.07V27.956z M175.499,173.152H23.437
-				c-4.73,0-8.578-3.846-8.578-8.571V68.116c0-4.73,3.848-8.576,8.578-8.576h5.451H42.07h42.538h18.573h72.315
-				c4.73,0,8.576,3.846,8.576,8.576v96.465h0.003C184.075,169.306,180.229,173.152,175.499,173.152z"/>
-			<rect x="156.012" y="71.816" />
-		</g>
-	</g>
-</g>
-</svg>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.931 198.931">
+              <path d="M99.469,69.561c-25.423,0-46.104,20.683-46.104,46.104s20.683,46.104,46.104,46.104c25.421,0,46.104-20.683,46.104-46.104S124.89,69.561,99.469,69.561z M99.469,146.91c-17.229,0-31.245-14.017-31.245-31.245c0-17.228,14.017-31.245,31.245-31.245c17.228,0,31.245,14.017,31.245,31.245C130.714,132.892,116.698,146.91,99.469,146.91z M175.499,44.681h-72.315h-3.715V27.956c0-9.393-7.64-17.036-17.033-17.036H44.247c-9.393,0-17.033,7.642-17.033,17.036v16.726h-3.777C10.515,44.681,0,55.194,0,68.116v96.465c0,12.92,10.515,23.43,23.437,23.43h152.059c12.925,0,23.435-10.51,23.435-23.43V68.116C198.934,55.194,188.421,44.681,175.499,44.681z M42.07,27.956c0-1.201,0.976-2.176,2.177-2.176h38.189c1.199,0,2.174,0.976,2.174,2.177v16.726H42.07V27.956z M175.499,173.152H23.437c-4.73,0-8.578-3.846-8.578-8.571V68.116c0-4.73,3.848-8.576,8.578-8.576h5.451H42.07h42.538h18.573h72.315c4.73,0,8.576,3.846,8.576,8.576v96.465h0.003C184.075,169.306,180.229,173.152,175.499,173.152z"/>
+            </svg>
           </div>
         </div>
-      </div>
-      <div class="music-area">
-        <div class="title-area">Musica</div>
-        <div class="music-input-area">
-          <input type="text" class="np-music-input" placeholder="cole o url da sua musica aqui...">
-        </div>
-      </div>
-      <div class="post-options">
-        <div class="sections-btn">
-          <button class="btn-option">
-            <i class="fa-solid fa-clock"></i>
-            <p>Tempo</p>
-          </button>
-        </div>
-        <div class="sections-btn">
-          <button class="btn-option">
-            <i class="fa-solid fa-globe"></i>
-            <p>Visibilidade</p>
-          </button>
-        </div>
-        <div class="sections-btn">
-          <button class="btn-option">
-            <i class="fa-solid fa-hand"></i>
-            <p>Privacidade</p>
-          </button>
-        </div>
-        <div class="sections-btn">
-          <button class="send-post-btn">
-            Publicar
-          </button>
+        <div class="image-preview-post" style="display:none;">
+          <img src="" alt="Preview">
+          <button class="remove-image-post"><i class="fas fa-times"></i></button>
         </div>
       </div>
     </div>
+
+    <!-- BUBBLE -->
+    <div class="post-content-type" data-type="bubble">
+      <div class="text-area">
+        <div class="text-input-area">
+          <textarea class="np-text-input" placeholder="Escreva um pensamento..." maxlength="160"></textarea>
+          <small class="char-counter">0/160</small>
+        </div>
+      </div>
+      <div class="bubble-info">
+        <i class="fas fa-info-circle"></i>
+        <p>Notas duram 24 horas e são exibidos no topo do feed</p>
+      </div>
+    </div>
+
+    <!-- STORY -->
+    <div class="post-content-type" data-type="story">
+      <div class="file-area">
+        <div class="title-area">Adicionar imagem do story</div>
+        <div class="file-input-area" id="story-file-input">
+          <div class="file-icon">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.931 198.931">
+              <path d="M99.469,69.561c-25.423,0-46.104,20.683-46.104,46.104s20.683,46.104,46.104,46.104c25.421,0,46.104-20.683,46.104-46.104S124.89,69.561,99.469,69.561z M99.469,146.91c-17.229,0-31.245-14.017-31.245-31.245c0-17.228,14.017-31.245,31.245-31.245c17.228,0,31.245,14.017,31.245,31.245C130.714,132.892,116.698,146.91,99.469,146.91z M175.499,44.681h-72.315h-3.715V27.956c0-9.393-7.64-17.036-17.033-17.036H44.247c-9.393,0-17.033,7.642-17.033,17.036v16.726h-3.777C10.515,44.681,0,55.194,0,68.116v96.465c0,12.92,10.515,23.43,23.437,23.43h152.059c12.925,0,23.435-10.51,23.435-23.43V68.116C198.934,55.194,188.421,44.681,175.499,44.681z M42.07,27.956c0-1.201,0.976-2.176,2.177-2.176h38.189c1.199,0,2.174,0.976,2.174,2.177v16.726H42.07V27.956z M175.499,173.152H23.437c-4.73,0-8.578-3.846-8.578-8.571V68.116c0-4.73,3.848-8.576,8.578-8.576h5.451H42.07h42.538h18.573h72.315c4.73,0,8.576,3.846,8.576,8.576v96.465h0.003C184.075,169.306,180.229,173.152,175.499,173.152z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="image-preview-story" style="display:none;">
+          <img src="" alt="Preview">
+          <button class="remove-image-story"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div class="story-info">
+        <i class="fas fa-info-circle"></i>
+        <p>Stories duram 24 horas e aparecem no círculo de stories</p>
+      </div>
+    </div>
+
+    <div class="post-options">
+      <div class="sections-btn">
+        <button class="send-post-btn">
+          Publicar
+        </button>
+      </div>
+    </div>
   </div>
+</div>
 
   <main class="welcome-container">
     <div class="main-content">
@@ -679,7 +693,7 @@
       <div class="story-area">
         <div class="your-story">
           <div class="my-story-pfp">
-            <img src="https://i.ibb.co/hJx2P2vQ/IMG-6852.jpg" alt="Avatar">
+            <img src="./src/icon/default.jpg" alt="Avatar">
             <div class="add-story-icon">
               <i class="fas fa-plus"></i>
             </div>
@@ -1284,98 +1298,115 @@ document.addEventListener("DOMContentLoaded", () => {
 
  <script>
   
+// ============================================
+// TOGGLE SUPER SIMPLES
+// ============================================
+
+// ============================================
+// TOGGLE - SÓ UM ABERTO POR VEZ
+// ============================================
+
 document.addEventListener("DOMContentLoaded", () => {
   
-  // ============================================
-  // TOGGLE DO MENU FEED
-  // ============================================
-  const feedToggle = {
-    btn: document.getElementById("feed-toggle"),
-    box: document.getElementById("feed-box"),
-    
-    init() {
-      if (!this.btn || !this.box) return;
-      this.btn.addEventListener("click", () => this.toggle());
-    },
-    
-    toggle() {
-      this.box.classList.toggle("hidden");
-    }
-  };
-
-
-
-
-
-
-
-  document.addEventListener("DOMContentLoaded", () => {
-  const friendsStorys = document.querySelector(".friends-storys");
-  const storyOverlay = document.querySelector(".storys-overlay");
+  // FEED TOGGLE
+  const feedBtn = document.getElementById("feed-toggle");
+  const feedBox = document.getElementById("feed-box");
   
-  if (!friendsStorys || !storyOverlay) {
-    console.error("Elementos não encontrados!");
-    return;
+  if (feedBtn && feedBox) {
+    feedBtn.onclick = () => feedBox.classList.toggle("hidden");
   }
+
+  // TIME TOGGLE
+  const timeBtn = document.getElementById("time-toggle");
+  const timeBox = document.getElementById("time-box");
   
-  friendsStorys.style.cursor = "pointer";
-  
-  // Abrir story ao clicar
-  friendsStorys.addEventListener("click", () => {
-    storyOverlay.classList.remove("hidden-story");
-  });
-  
-  // OPCIONAL: Fechar ao clicar fora
-  storyOverlay.addEventListener("click", (e) => {
-    if (e.target === storyOverlay) {
-      storyOverlay.classList.add("hidden-story");
-    }
-  });
-});
-  // ============================================
-  // NAVBARS - ESCONDER/MOSTRAR AO ROLAR
-  // ============================================
-  const navbarScroll = {
-    container: document.querySelector(".welcome-container"),
-    navbarBottom: document.getElementById("navbar-bottom"),
-    navbarTop: document.querySelector(".navbar-top"), // ADICIONADO
-    lastScroll: 0,
-    threshold: 100,
-    
-    init() {
-      if (!this.container) return;
-      this.container.addEventListener("scroll", () => this.handleScroll());
-    },
-    
-    handleScroll() {
-      const currentScroll = this.container.scrollTop;
-      
-      if (currentScroll > this.lastScroll && currentScroll > this.threshold) {
-        this.hide();
-      } 
-      else if (currentScroll < this.lastScroll) {
-        this.show();
+  // VISI TOGGLE
+  const visiBtn = document.getElementById("visi-toggle");
+  const visiBox = document.getElementById("visi-box");
+
+  //PRIVACY TOGGLE
+  const pvBtn = document.getElementById("pv-toggle");
+  const pvBox = document.getElementById("pv-box");
+
+
+  // FUNÇÃO PARA FECHAR TODOS
+  function fecharTodos() {
+    if (timeBox) timeBox.classList.add("hidden-post-options");
+    if (visiBox) visiBox.classList.add("hidden-post-options");
+  }
+
+  // TIME - Fecha outros antes de abrir
+  if (timeBtn && timeBox) {
+    timeBtn.onclick = () => {
+      const estava_aberto = !timeBox.classList.contains("hidden-post-options");
+      fecharTodos(); // Fecha todos primeiro
+      if (!estava_aberto) {
+        timeBox.classList.remove("hidden-post-options"); // Abre só esse
       }
-      
-      this.lastScroll = currentScroll;
-    },
+    };
+  }
+
+  // VISI - Fecha outros antes de abrir
+  if (visiBtn && visiBox) {
+    visiBtn.onclick = () => {
+      const estava_aberto = !visiBox.classList.contains("hidden-post-options");
+      fecharTodos(); // Fecha todos primeiro
+      if (!estava_aberto) {
+        visiBox.classList.remove("hidden-post-options"); // Abre só esse
+      }
+    };
+  }
+
+  // STORY TOGGLE
+  const storyBtn = document.querySelector(".friends-storys");
+  const storyBox = document.querySelector(".storys-overlay");
+  
+  if (storyBtn && storyBox) {
+    storyBtn.onclick = () => storyBox.classList.remove("hidden-story");
+    storyBox.onclick = (e) => {
+      if (e.target === storyBox) storyBox.classList.add("hidden-story");
+    };
+  }
+
+  // FECHAR MENUS AO CLICAR FORA
+  document.onclick = (e) => {
+    // Fecha feed se clicar fora
+    if (feedBox && !feedBox.contains(e.target) && !feedBtn.contains(e.target)) {
+      feedBox.classList.add("hidden");
+    }
     
-    hide() {
-      if (this.navbarTop) this.navbarTop.classList.add("navbar-hidden"); // ADICIONADO
-    },
-    
-    show() {
-      if (this.navbarTop) this.navbarTop.classList.remove("navbar-hidden"); // ADICIONADO
+    // Fecha time se clicar fora
+    if (timeBox && !timeBox.contains(e.target) && !timeBtn.contains(e.target)) {
+      timeBox.classList.add("hidden-post-options");
+    }
+
+    // Fecha visi se clicar fora
+    if (visiBox && !visiBox.contains(e.target) && !visiBtn.contains(e.target)) {
+      visiBox.classList.add("hidden-post-options");
     }
   };
+
+  // ESCONDER NAVBAR AO ROLAR
+  const navbar = document.querySelector(".navbar-top");
+  let lastScroll = 0;
   
-  // ============================================
-  // INICIALIZA TUDO
-  // ============================================
-  feedToggle.init();
-  navbarScroll.init();
-  
+  document.querySelector(".welcome-container")?.addEventListener("scroll", function() {
+    const currentScroll = this.scrollTop;
+    
+    if (currentScroll > lastScroll && currentScroll > 100) {
+      navbar?.classList.add("navbar-hidden");
+    } else {
+      navbar?.classList.remove("navbar-hidden");
+    }
+    
+    lastScroll = currentScroll;
+  });
+
 });
+
+
+
+
 </script> 
 </body>
 </html>

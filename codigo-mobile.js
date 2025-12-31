@@ -1217,7 +1217,7 @@ window.carregarLinks = carregarLinks;
 
 
 // ===================
-// SISTEMA DE MÚSICA DO PERFIL - VERSÃO MOBILE-FRIENDLY
+// SISTEMA DE MÚSICA DO PERFIL - YOUTUBE FIXED PARA iOS
 // ===================
 
 let player = null;
@@ -1247,15 +1247,12 @@ function loadYouTubeAPI() {
 function extractYouTubeID(url) {
   if (!url) return null;
   
-  // https://www.youtube.com/watch?v=VIDEO_ID
   let match = url.match(/[?&]v=([^&]+)/);
   if (match) return match[1];
   
-  // https://youtu.be/VIDEO_ID
   match = url.match(/youtu\.be\/([^?]+)/);
   if (match) return match[1];
   
-  // https://www.youtube.com/embed/VIDEO_ID
   match = url.match(/embed\/([^?]+)/);
   if (match) return match[1];
   
@@ -1327,28 +1324,28 @@ async function inicializarSistemaDeMusicaProfile(userid) {
       playerContainer.style.cssText = 'position:fixed;bottom:-100px;right:-100px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;';
       document.body.appendChild(playerContainer);
     } else {
-      // Limpa container existente
       playerContainer.innerHTML = '';
     }
 
     console.log('🎵 Criando player YouTube...');
 
-    // Cria novo player (NÃO toca automaticamente)
+    // Cria novo player
     player = new YT.Player('bgMusic', {
       height: '1',
       width: '1',
       videoId: videoId,
       playerVars: {
-        autoplay: 0,
+        autoplay: 0,        // NÃO toca automaticamente
         loop: 1,
         playlist: videoId,
         controls: 0,
         showinfo: 0,
         modestbranding: 1,
         enablejsapi: 1,
-        playsinline: 1, // CRUCIAL para iOS
+        playsinline: 1,     // CRUCIAL para iOS
         rel: 0,
-        fs: 0
+        fs: 0,
+        mute: 0             // NÃO inicia mutado
       },
       events: {
         onReady: onPlayerReady,
@@ -1356,7 +1353,6 @@ async function inicializarSistemaDeMusicaProfile(userid) {
         onError: onPlayerError
       }
     });
-    // O botão será habilitado em onPlayerReady
 
   } catch (e) {
     console.error('❌ Erro ao inicializar música:', e);
@@ -1369,31 +1365,37 @@ function onPlayerReady(event) {
   musicReady = true;
   playerInitialized = true;
   
+  // ⭐ IMPORTANTE: Define volume e desmuta
+  try {
+    player.unMute();           // DESMUTA o player
+    player.setVolume(50);      // Volume 50%
+    console.log('✅ Player desmutado e volume configurado');
+  } catch (e) {
+    console.error('Erro ao configurar áudio:', e);
+  }
+  
   const btnPause = document.getElementById('btnPauseMusic');
   if (btnPause) {
     btnPause.style.opacity = '1';
     btnPause.style.cursor = 'pointer';
     btnPause.disabled = false;
     console.log('✅ Botão habilitado');
-    // Garante que só toca após clique do usuário
-    btnPause.onclick = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleMusic();
-    };
-    btnPause.ontouchend = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleMusic();
-    };
+    
+    // Remove listeners antigos
+    btnPause.onclick = null;
+    btnPause.ontouchend = null;
+    
+    // Adiciona novos listeners
+    btnPause.addEventListener('click', handleMusicToggle);
+    btnPause.addEventListener('touchend', handleMusicToggle);
   }
-  // Define volume padrão
-  try {
-    player.setVolume(50);
-    console.log('✅ Volume configurado');
-  } catch (e) {
-    console.error('Erro ao configurar volume:', e);
-  }
+}
+
+// Handler unificado para clique/toque
+function handleMusicToggle(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  toggleMusic();
 }
 
 // Monitora estado do player
@@ -1411,7 +1413,7 @@ function onPlayerStateChange(event) {
     console.log('⏸️ Pausado/Parado');
   }
   
-  // Se terminou, reinicia (loop manual como backup)
+  // Se terminou, reinicia
   if (event.data === 0) {
     setTimeout(() => {
       try {
@@ -1434,9 +1436,6 @@ function onPlayerError(event) {
 // Toggle play/pause
 function toggleMusic() {
   console.log('🎵 toggleMusic chamado');
-  console.log('- Player:', player);
-  console.log('- Ready:', musicReady);
-  console.log('- Initialized:', playerInitialized);
   
   if (!player) {
     console.error('❌ Player não existe');
@@ -1444,13 +1443,7 @@ function toggleMusic() {
   }
   
   if (!musicReady || !playerInitialized) {
-    console.warn('⚠️ Player não está pronto, tentando inicializar...');
-    try {
-      player.playVideo();
-      console.log('✅ Tentativa de play enviada');
-    } catch (e) {
-      console.error('❌ Erro ao tentar tocar:', e);
-    }
+    console.warn('⚠️ Player não está pronto');
     return;
   }
 
@@ -1458,18 +1451,32 @@ function toggleMusic() {
     const state = player.getPlayerState();
     console.log('🎵 Estado atual:', state);
     
-    // -1 = unstarted, 0 = ended, 1 = playing, 2 = paused, 3 = buffering, 5 = cued
     if (state === 1) {
+      // Está tocando → pausa
       player.pauseVideo();
       console.log('⏸️ Pausando...');
     } else {
+      // Não está tocando → toca
+      // ⭐ IMPORTANTE: Desmuta antes de tocar (iOS precisa disso)
+      player.unMute();
       player.playVideo();
       console.log('▶️ Tocando...');
+      
+      // Força desmute após 100ms (garantia para iOS)
+      setTimeout(() => {
+        try {
+          if (player.isMuted()) {
+            player.unMute();
+            console.log('🔊 Forçado unmute no iOS');
+          }
+        } catch (e) {}
+      }, 100);
     }
   } catch (e) {
     console.error('❌ Erro ao toggle:', e);
-    // Tenta forçar play como último recurso
+    // Último recurso: força play com unmute
     try {
+      player.unMute();
       player.playVideo();
     } catch (e2) {
       console.error('❌ Erro ao forçar play:', e2);
@@ -1477,10 +1484,46 @@ function toggleMusic() {
   }
 }
 
+// Função para ajustar volume (opcional)
+function setMusicVolume(volume) {
+  if (player && musicReady) {
+    try {
+      player.setVolume(Math.max(0, Math.min(100, volume)));
+      console.log('🔊 Volume ajustado para:', volume);
+    } catch (e) {
+      console.error('Erro ao ajustar volume:', e);
+    }
+  }
+}
+
+// Função para verificar se está mutado (debug)
+function checkMuteStatus() {
+  if (player && musicReady) {
+    try {
+      const isMuted = player.isMuted();
+      const volume = player.getVolume();
+      console.log('🔇 Mutado:', isMuted);
+      console.log('🔊 Volume:', volume);
+      return { isMuted, volume };
+    } catch (e) {
+      console.error('Erro ao verificar status:', e);
+    }
+  }
+  return null;
+}
+
 // Exporta funções
 window.inicializarSistemaDeMusicaProfile = inicializarSistemaDeMusicaProfile;
 window.toggleMusic = toggleMusic;
+window.setMusicVolume = setMusicVolume;
+window.checkMuteStatus = checkMuteStatus;
 
+// ===================
+// DEBUG NO CONSOLE
+// ===================
+// Para testar, abra o console do Safari no iPhone e digite:
+// checkMuteStatus()  → mostra se está mutado
+// setMusicVolume(80) → ajusta volume para 80% 
 // ===================
 // SISTEMA DE LINKS
 // ===================
@@ -2617,6 +2660,8 @@ async function atualizarImagensPerfil(userData, userid) {
   const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
   const mediaSnap = await getDoc(mediaRef);
   const mediaData = mediaSnap.exists() ? mediaSnap.data() : {};
+
+  
 
   const profilePic = document.querySelector('.profile-pic');
   if (profilePic) {
