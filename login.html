@@ -16,6 +16,7 @@
 <link rel="icon" href="./src/icon/icon.png" type="image/png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="./src/styles/styles-mobile/login.css" />
+<link rel="stylesheet" href="./src/styles/root.css" />
 
     <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
@@ -35,488 +36,233 @@
   <!-- Para Twitter -->
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
 
-    body {
-      background-image: url("src/bg/bg.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-      color: #dbdbdb;
-      background-color: #000000;
-      height: 100vh;
-      overflow: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      margin: 0px;
-    }
+/* ================= BODY ================= */
+body {
+  color: #dbdbdb;
+  background-image: url("src/bg/bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: var(--bg-primary, #020202);
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
 
-    body::-webkit-scrollbar {
-      display: none;
-    }
+/* ================= MAIN ================= */
+.main {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
 
-    .navarea {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
+/* ================= GREETING PC ================= */
+.greeting-pc {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .login-mobile {
-      display: none;
-    }
+.greeting-pc img {
+  width: 600px;
+  height: auto;
+  object-fit: cover;
+}
 
-    .loginarea {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+/* ================= FORM SECTION ================= */
+.form-section {
+  width: 50%;
+  min-height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scrollbar-width: thin;
+  scrollbar-color: #4A90E2 transparent;
+  background-color: var(--bg-primary, #020202);
+}
 
+.form-section::-webkit-scrollbar {
+  width: 8px;
+}
 
+.form-section::-webkit-scrollbar-thumb {
+  background: #4A90E2;
+  border-radius: 10px;
+}
 
-    .main {
-      display: flex;
-      height: calc(100vh - 60px);
-      margin-top: 60px;
-    }
+/* ================= CONTAINER ================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 40px;
+}
 
-    .greating {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 40px;
-      text-align: left;
-    }
+/* ================= TITLES ================= */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: normal;
+}
 
-    .greating h2 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      color: #f7f7f7;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-    }
+.logo {
+background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 
-    .greating-mobile {
-      display: none;
-    }
+/* ================= FORM ================= */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 2vh;
+}
 
-    .greating h2 span {
-      color: #4A90E2;
-    }
-    
-    .greating p {
-      font-size: 1.3rem;
-      color: #bbb;
-      line-height: 1.6;
-    }
+label {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
 
-    .form-section {
-      width: 50%;
-      overflow-y: auto;
-      padding: 20px;
-      scrollbar-width: thin;
-      scrollbar-color: #4A90E2 transparent;
-    }
+input[type="email"],
+input[type="password"] {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #1a1a1a;
+  color: #ddd;
+  font-size: 15px;
+  outline: none;
+  width: 100%;
+}
 
-    .form-section::-webkit-scrollbar {
-      width: 8px;
-    }
+input::placeholder {
+  color: #555;
+}
 
-    .form-section::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
+input:focus {
+  background: #1a1a1a;
+  color: #fff;
+}
 
-    .form-section::-webkit-scrollbar-thumb {
-      background: #4A90E2;
-      border-radius: 10px;
-    }
+/* ================= BUTTON ================= */
+.entrarBtn {
+  margin-top: 10px;
+background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .form-section::-webkit-scrollbar-thumb:hover {
-      background: #357ABD;
-    }
+/* ================= FORGOT PASSWORD ================= */
+.forgot-password {
+  display: flex;
+  justify-content: flex-end;
+}
 
-    .container {
-      background: rgba(20, 20, 20, 0.247);
-      backdrop-filter: blur(8px);
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 30px 40px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
-      max-width: 480px;
-      margin: 20px auto;
-      margin-top: 80px;
-    }
+.forgot-password button {
+  background: transparent;
+  border: none;
+  color: #777;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-    h1 {
-      text-align: center;
-      color: #f7f7f7;
-      margin-bottom: 25px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-    }
+/* ================= LINK ================= */
+.link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+.link a {
+  color: #4A90E2;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-    label {
-      font-size: 14px;
-      color: #bbb;
-      margin-bottom: 6px;
-      display: block;
-      font-weight: 600;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="number"],
-    select {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-      color: #ddd;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    input[type="number"]:focus,
-    select:focus {
-      border-color: #0084ff;
-      box-shadow: 0 0 5px #0084ff;
-      background: #1a1a1a;
-      color: #fff;
-    }
-
-    input[type="emaillog"],
-    input[type="passwordlog"],
-    select {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-      color: #ddd;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-    }
-
-    input[type="emaillog"]:focus,
-    input[type="passwordlog"]:focus,
-    select:focus {
-      border-color: #0084ff;
-      box-shadow: 0 0 5px #0084ff;
-      background: #1a1a1a;
-      color: #fff;
-    } 
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    @keyframes glow {
-  0% {
-    border-color: #333;
-    box-shadow: none;
-    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-    color: #ddd;
+/* ================= MOBILE ================= */
+@media (max-width: 780px) {
+  body {
+    overflow: hidden;
+    position: fixed;
+    padding: 0;
+    background-image: none;
   }
-  50% {
-    border-color: #0084ff;
-    box-shadow: 0 0 5px #0084ff;
-    background: #1a1a1a;
-    color: #fff;
+
+  .main {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    bottom: 0;
   }
-  100% {
-    border-color: #333;
-    box-shadow: none;
-    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-    color: #ddd;
+
+  .greeting-pc {
+    display: none;
+  }
+
+  .form-section {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .container {
+    padding: 20px;
   }
 }
 
-.glow {
-  animation: glow 1.2s ease-in-out; /* duração curta */
-}
-
-
-    select {
-      cursor: pointer;
-    }
-
-
-    .entrarBtn {
-      display: inline-block;
-      background-color: #4A90E2;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      border-top: 1px solid #63a9fa;
-      transition: background-color 0.3s;
-      border: none;
-      width: 100%;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #357ABD;
-    }
-
-    nav {
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      border-bottom: 1px solid #121212;
-      display: flex;
-      align-items: center;
-      padding: 0px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-      height: 60px;
-    }
-
-
-    .logo {
-      font-weight: bold;
-      font-size: 30px;
-      color: #707070;
-      padding: 10px;
-    }
-
-    .logo_area{
-      padding: 0px;
-      padding-right: 35px;
-      padding-left: 20px;
-    }
-    
-    .link {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .link a {
-      color: #0084ff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-
-    input:is(:-webkit-autofill, :autofill) {
-      display: flex !important;
-      align-items: center !important;
-      background: #000000 !important;
-      border-radius: 8px !important;
-      border: 1px solid #242424 !important;
-      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0) !important;
-      color: #dbdbdb !important;
-      padding: 10px 15px !important;
-      font-size: 16px !important;
-      outline: none !important;
-      width: 100% !important;
-
-      -webkit-box-shadow: 0 0 0 1000px #131313 inset !important;
-      -webkit-text-fill-color: #dbdbdb !important;
-    }
-
-    input:-moz-autofill {
-      display: flex !important;
-      align-items: center !important;
-      background: #474747 !important;
-      border-radius: 8px !important;
-      border: 1px solid #363636 !important;
-      box-shadow: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644) !important;
-      color: #dbdbdb !important;
-      padding: 10px 15px !important;
-      font-size: 16px !important;
-      outline: none !important;
-      width: 100% !important;
-
-      box-shadow: 0 0 0 1000px #474747 inset !important;
-      -moz-text-fill-color: #dbdbdb !important;
-    }
-
-    @media (max-width: 768px) {
-      .main {
-        flex-direction: column;
-        height: auto;
-        margin-top: 0px;
-      }
-
-      body {
-        background-color: #020202;
-        background-image: none;
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-      }
-
-
-      nav {
-        display: none;
-      }
-      
-      .greating {
-        width: 100%;
-        padding: 20px;
-        text-align: center;
-      }
-      
-      .greating h2 {
-        font-size: 2rem;
-        display: none;
-      }
-      
-      .greating p {
-        font-size: 1.1rem;
-      }
-      
-      .form-section {
-        width: 100%;
-        height: auto;
-        min-height: 100vh !important;
-        margin-top: 0px !important;
-        position: relative;
-
-      }
-      
-      .container {
-        margin: 10px;
-        border: none;
-        margin: 0px;
-        box-shadow: none;
-        backdrop-filter: blur(none);
-        -webkit-backdrop-filter: blur(none);
-        background-color: #00000000;
-        margin-top: 0px !important;
-      }
-
-      .mobilelogo h1 {
-        display: block;
-        border-bottom: 2px solid #4A90E2;
-        padding-bottom: 40px;
-        text-align: center;
-        padding-left: 0px;
-        font-size: 34px;
-        border-image: linear-gradient(90deg,rgba(0, 0, 0, 0) 0%, #4A90E2 20%, #4A90E2 82%,rgba(0, 0, 0, 0) 100%) 1;
-        color: #cacaca;
-        border-left: none;
-        border: none !important;
-
-      }
-
-      input {
-        font-size: 28px;
-        padding: 10px;
-        -webkit-autofill: none;
-      }
-
-
-      .greating-desktop {
-        display: none;
-      }
-
-      .greating-mobile {
-        display: block;
-      }
-
-      .greating-mobile h1 {
-        display: block;
-        border-left: 1px solid #4A90E2;
-      }
-
-
-      .greating p {
-        display: none;
-      }
-
-      .link {
-        font-size: 0.9rem;
-        margin-top: 50px;
-      }
-
-      a:active {
-        text-decoration: none !important;
-      }
-
-      a:hover {
-        text-decoration: none !important;
-      }
-
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 20px;
-        margin: 10px;
-      }
-      
-      .form-section {
-        max-height: 60vh;
-      }
-    }
     
   </style>
 </head>
 <body>
 
-  <nav>
-    <div class="navarea">
-      <div class="logo">RealMe</div>
-    </div>
-  </nav>
-
   <div class="main">
-    <div class="greating">
-      <h2>Bem-vindo ao <span>RealMe</span>!</h2>
-      <p>Conecte-se, descubra e faça novas amizades.</p>
-    </div>
-    
+    <div class="greeting-pc">
+      <img src="./src/bg/welcome-login.png" alt="Welcome Image" />
+    </div>  
     <div class="form-section">
       <div class="container">
-        <h1 class="greating-desktop">Fazer Login</h1>
         <div class="mobilelogo">
-          <h1 class="login-mobile">Bem vindo de volta ao <span>RealMe</span>!</h1>
+          <h1 class="login-mobile">Fazer login no <span class="logo">RealMe</span>!</h1>
         </div>
         <form>
           <div>
             <label for="email">Email</label>
-              <input type="email" id="emaillog" name="email" placeholder="Email da conta" required autocomplete="off" autofocus="off" />
+              <input type="email" id="emaillog" name="email" placeholder="Email" required autocomplete="off" autofocus="off" />
             </div>
           <div>
             <label for="senha">Senha</label>
-            <input type="password" id="passwordlog" name="senha" placeholder="Senha da conta" required autocomplete="off" autofocus="off"/>
+            <input type="password" id="passwordlog" name="senha" placeholder="Senha" required autocomplete="off" autofocus="off"/>
           </div>
+          <div class="forgot-password"><div></div><button>esqueceu a senha?</button></div>
           <button class="entrarBtn" type="submit">Entrar</button>
         </form>
         <div class="link">
-          <p>Não tem conta ainda? <a href="index.html">Criar Conta</a></p>
+          <p>Ainda não tem conta? <a href="index.html">Criar Conta</a></p>
         </div>
       </div>
     </div>
