@@ -1871,7 +1871,7 @@ textarea#postText:focus {
 }
 
 .storys {
-  display: flex !important;
+  display: none !important;
   padding: 0 !important;
   width: 100%;
 }
