@@ -1877,7 +1877,7 @@ textarea#postText:focus {
 }
 
 .story-area {
-  display: flex;
+  display: none;
   gap: 12px;
   overflow-x: auto;
   padding: 12px 12px;
