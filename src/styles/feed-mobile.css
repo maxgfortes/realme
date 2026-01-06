@@ -1871,13 +1871,13 @@ textarea#postText:focus {
 }
 
 .storys {
-  display: none !important;
+  display: flex !important;
   padding: 0 !important;
   width: 100%;
 }
 
 .story-area {
-  display: none;
+  display: flex;
   gap: 12px;
   overflow-x: auto;
   padding: 12px 12px;

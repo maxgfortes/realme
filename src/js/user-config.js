@@ -389,7 +389,9 @@ function setupFormSubmit() {
             // 3. Salva as configurações com as URLs atualizadas
             await salvarConfigPerfil(currentUser.uid, formData);
             
-            window.location.href = `PF.html`;
+            // Verifica se é mobile e redireciona para a página apropriada
+            const isMobile = window.innerWidth <= 768;
+            window.location.href = isMobile ? 'pfmobile.html' : 'PF.html';
         } catch (error) {
             alert('Erro ao salvar as configurações. Tente novamente. Erro: ' + error.message);
         } finally {

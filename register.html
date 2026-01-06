@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+
+    <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+   <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+  color: #dbdbdb;
+  background-color: var(--bg-primary, #0f0f0f);
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background-image: url('./src/bg/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ================= MAIN ================= */
+.main {
+  display: flex;
+  width: 100%;
+}
+
+/* ================= GREETING PC ================= */
+.greeting-pc {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.greeting-pc img {
+  width: 80%;
+  height: auto;
+}
+
+/* ================= FORM SECTION ================= */
+.form-section {
+  width: 50%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  scrollbar-width: thin;
+  scrollbar-color: #4A90E2 transparent;
+  overflow: auto;
+  background-color: var(--bg-primary, #0f0f0f);
+}
+
+.form-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-section::-webkit-scrollbar-thumb {
+  background: #4A90E2;
+  border-radius: 10px;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 40px;
+  height: 150vh;
+}
+
+/* ================= TITLES ================= */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+.logo {
+background: #63cbff;
+background: linear-gradient(155deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 33%, rgba(74, 144, 226, 1) 69%, rgba(99, 203, 255, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ================= FORM ================= */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 2vh;
+}
+
+label {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select  {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #1a1a1a;
+  color: #ddd;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+
+input[type="date"] {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #1a1a1a;
+  color: #ddd;
+  font-size: 15px;
+  outline: none;
+  width: 93%;
+}
+
+input::placeholder {
+  color: #555;
+}
+
+input:focus {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* ================= BUTTON ================= */
+.entrarBtn {
+  margin-top: 10px;
+background: #63cbff;
+background: linear-gradient(155deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 33%, rgba(74, 144, 226, 1) 69%, rgba(99, 203, 255, 1) 100%);
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ================= FORGOT PASSWORD ================= */
+.forgot-password {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.forgot-password button {
+  background: transparent;
+  border: none;
+  color: #777;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ================= LINK ================= */
+.link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
+
+.link a {
+  color: #4A90E2;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.user-contract {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.user-contract a {
+  color: #4A90E2;
+  text-decoration: none;
+}
+/* ================= MOBILE ================= */
+@media (max-width: 780px) {
+  body {
+    padding: 0;
+    background-image: none;
+    height: 132vh;
+  }
+
+  .main {
+    flex-direction: column;
+  }
+
+  .greeting-pc {
+    display: none;
+  }
+
+  .form-section {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .container {
+    padding: 20px;
+    overflow: hidden;
+  }
+}
+
+    
+  </style>
+</head>
+<body>
+
+  <div class="main">
+    <div class="greeting-pc">
+      <img src="./src/bg/conections.png" alt="Welcome to RealMe" />
+    </div>  
+    <div class="form-section">
+<div class="container">
+          <h1>Bem vindo ao <span class="logo">RealMe</span></h1>
+        <form>
+      <div>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+      </div>
+      <div>
+        <label for="sobrenome">Sobrenome</label>
+        <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required />
+      </div>
+      <div>
+        <label for="usuario">Nome de Usuário</label>
+        <input type="text" id="usuario" name="usuario" placeholder="Escolha um nome de usuário" required />
+      </div>
+      <div>
+        <label for="sobrenome">E-mail</label>
+        <input type="text" id="email" name="email" placeholder="meunome@email.com" required />
+      </div>
+      
+      <div>
+        <label for="genero">Gênero</label>
+        <select id="genero" name="genero" required>
+          <option value="" disabled selected>Selecione o gênero</option>
+          <option value="masculino">Masculino</option>
+          <option value="feminino">Feminino</option>
+          <option value="outro">Outro</option>
+          <option value="prefiro_nao_dizer">Prefiro não dizer</option>
+        </select>
+      </div>
+      <div>
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
+      </div>
+      <div>
+        <label for="convite">Convite</label>
+        <input type="text" id="convite" name="convite" placeholder="Código do convite" required />
+      </div>
+      <div class="form-group">
+        <label for="nascimento">Data de Nascimento</label>
+        <input type="date" id="nascimento" name="nascimento" required />
+      </div>
+      
+      <button type="submit" class="entrarBtn">Criar Conta</button>
+    </form>
+        <div class="link">
+          <p>já tem uma conta? <a href="login.html">Entrar</a></p>
+        </div>
+        <div class="user-contract">
+          <p>Ao se inscrever, você concorda com nossos <a href="termos.html">Termos</a>, <a href="politica_dados.html">Política de Dados</a> e <a href="cookies.html">Política de Cookies</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+ <!-- <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+    authDomain: "ifriendmatch.firebaseapp.com",
+    projectId: "ifriendmatch",
+    storageBucket: "ifriendmatch.appspot.com",
+    messagingSenderId: "306331636603",
+    appId: "1:306331636603:web:c0ae0bd22501895e3de",
+    measurementId: "G-D96BEW6RC3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Verificação instantânea - executa ANTES da página carregar
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Usuário já está logado, redireciona imediatamente
+      window.location.replace("feed.html"); // use replace para não adicionar ao histórico
+    } else {
+      // Usuário não está logado, mostra a página
+      document.body.style.display = 'block';
+    }
+  });
+</script>-->
+
+  <script type="module" src="./src/js/signup.js"></script>
+
+  <script>
+  document.getElementById("entrarBtn").addEventListener("click", () => {
+    const emailInput = document.getElementById("emaillog");
+    const passInput  = document.getElementById("passwordlog");
+
+    // aplica a classe
+    [emailInput, passInput].forEach(input => {
+      input.classList.add("glow");
+
+      // remove depois que animação acabar (senão não repete)
+      input.addEventListener("animationend", () => {
+        input.classList.remove("glow");
+      }, { once: true });
+    });
+  });
+</script>
+<script>
+// AUTO PREENCHER O CÓDIGO DE CONVITE DA URL
+const params = new URLSearchParams(window.location.search);
+const conviteURL = params.get("convite");
+
+if (conviteURL) {
+  const input = document.getElementById("convite");
+  if (input) {
+    input.value = conviteURL.toUpperCase();
+    input.style.borderColor = "#51cf66"; // verde
+    setTimeout(() => {
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  }
+}
+</script>
+</body>
+</html>
+
