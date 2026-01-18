@@ -95,7 +95,7 @@ function setupImageInputs() {
             }
             
             // Validar tamanho (máx 5MB)
-            if (file.size > 5 * 1024 * 1024) {
+            if (file.size > 14 * 1024 * 1024) {
                 alert('A imagem deve ter no máximo 5MB.');
                 input.value = '';
                 filesToUpload.delete(fieldName);
@@ -373,33 +373,37 @@ function setupFormSubmit() {
             submitBtn.disabled = true;
         }
 
-        try {
-            const formData = new FormData(form);
-            
-            // 1. Processa o upload de imagens pendentes
-            await processPendingUploads(formData);
-            
-            // 2. CONVERTE A URL DA MÚSICA DO YOUTUBE (NOVO PASSO DE CONVERSÃO)
-            const musicThemeUrl = formData.get('musicTheme');
-            if (musicThemeUrl) {
-                const embedUrl = convertToEmbedUrl(musicThemeUrl);
-                formData.set('musicTheme', embedUrl); // Atualiza o formData com a URL convertida
-            }
-            
-            // 3. Salva as configurações com as URLs atualizadas
-            await salvarConfigPerfil(currentUser.uid, formData);
-            
-            // Verifica se é mobile e redireciona para a página apropriada
-            const isMobile = window.innerWidth <= 768;
-            window.location.href = isMobile ? 'pfmobile.html' : 'PF.html';
-        } catch (error) {
-            alert('Erro ao salvar as configurações. Tente novamente. Erro: ' + error.message);
-        } finally {
-            if (submitBtn) {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }
-        }
+       // Localize este trecho dentro da função setupFormSubmit, logo após o salvarConfigPerfil
+try {
+    const formData = new FormData(form);
+    
+    // 1. Processa o upload de imagens pendentes
+    await processPendingUploads(formData);
+    
+    // 2. Converte a URL da música
+    const musicThemeUrl = formData.get('musicTheme');
+    if (musicThemeUrl) {
+        const embedUrl = convertToEmbedUrl(musicThemeUrl);
+        formData.set('musicTheme', embedUrl);
+    }
+    
+    // 3. Salva no Firestore
+    await salvarConfigPerfil(currentUser.uid, formData);
+    
+    // --- LÓGICA DE REDIRECIONAMENTO MELHORADA ---
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                    || window.innerWidth <= 768;
+
+    if (isMobile) {
+        window.location.href = 'pfmobile.html';
+    } else {
+        window.location.href = 'PF.html';
+    }
+    // --------------------------------------------
+
+} catch (error) {
+    alert('Erro ao salvar: ' + error.message);
+}
     });
 }
 

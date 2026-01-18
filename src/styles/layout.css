@@ -157,11 +157,11 @@
   border-radius: 10px;
   overflow: hidden;
   max-height: 500px;
+  align-self: center;
 }
 
 .post-image img {
-  width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
   border-radius: 8px;

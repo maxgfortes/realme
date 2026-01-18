@@ -458,29 +458,6 @@ function detectarLinksMaliciosos(texto) {
   return { malicioso: false };
 }
 
-// ===================
-// VALIDAR URL DE IMAGEM
-// ===================
-async function validarUrlImagem(url) {
-  if (!url || typeof url !== 'string') return false;
-  try {
-    new URL(url);
-    const extensoesImagem = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-    const urlLower = url.toLowerCase();
-    if (extensoesImagem.some(ext => urlLower.includes(ext))) {
-      return true;
-    }
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      return contentType && contentType.startsWith('image/');
-    } catch {
-      return true;
-    }
-  } catch {
-    return false;
-  }
-}
 
 // ===================
 // SISTEMA DE LOADING
@@ -620,78 +597,40 @@ async function buscarDadosUsuarioPorUid(uid) {
 }
 
 
-// ===================
-// SCROLL INFINITO
-// ===================
 function configurarScrollInfinito() {
-  let isScrolling = false;
   window.addEventListener('scroll', async () => {
-    if (isScrolling || loading || !hasMorePosts) return;
+    // 1. Cálculo da posição atual do scroll
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
-    if (scrollTop + windowHeight >= documentHeight - 200) {
-      isScrolling = true;
-      await loadPosts();
-      isScrolling = false;
+
+    // 2. Definir uma margem para carregar antes de chegar ao fim (ex: 300px)
+    const threshold = 300;
+
+    if (scrollTop + windowHeight >= documentHeight - threshold) {
+      
+      // Verifica qual DIV de feed está visível no momento
+      const divFirebase = document.getElementById('feed');
+      const divMastodon = document.getElementById('feed2');
+
+      // Lógica para o Feed do Firebase (ID: feed)
+      if (divFirebase && window.getComputedStyle(divFirebase).display !== 'none') {
+        if (!loading && hasMorePosts) {
+          console.log("A carregar mais posts do Firebase...");
+          await loadPosts();
+        }
+      }
+
+      // Lógica para o Feed do Mastodon (ID: feed2)
+      if (divMastodon && window.getComputedStyle(divMastodon).display !== 'none') {
+        // Nota: no seu código original verificava 'block', mas 'none' é mais seguro
+        if (!loadingMastodon) {
+          console.log("A carregar mais posts do Mastodon...");
+          await carregarFeedMastodon(true); 
+        }
+      }
     }
   });
-}
-
-// ===================
-// CARREGAR POSTS DO FEED (posts/{postid}) - VERSÃO CORRIGIDA
-// ===================
-async function carregarTodosOsPosts() {
-  const loadingInfo = mostrarLoading('Buscando posts...');
-  try {
-    const postsRef = collection(db, 'posts');
-    const postsSnapshot = await getDocs(postsRef);
-    const todosOsPosts = [];
-    
-    for (const postDoc of postsSnapshot.docs) {
-      const postData = postDoc.data();
-      const userData = await buscarDadosUsuarioPorUid(postData.creatorid);
-      todosOsPosts.push({
-        id: postDoc.id,
-        userData: userData,
-        ...postData
-      });
-    }
-    
-    // ORDENAÇÃO CORRIGIDA - Posts mais recentes primeiro
-    todosOsPosts.sort((a, b) => {
-      if (!a.create || !b.create) return 0;
-      
-      // Tratamento para diferentes tipos de timestamp
-      let dataA, dataB;
-      
-      // Se for timestamp do Firestore (objeto com seconds)
-      if (typeof a.create === 'object' && a.create.seconds) {
-        dataA = new Date(a.create.seconds * 1000);
-      } else {
-        dataA = new Date(a.create);
-      }
-      
-      if (typeof b.create === 'object' && b.create.seconds) {
-        dataB = new Date(b.create.seconds * 1000);
-      } else {
-        dataB = new Date(b.create);
-      }
-      
-      // Ordena do mais recente (dataB) para o mais antigo (dataA)
-      return dataB.getTime() - dataA.getTime();
-    });
-    
-    clearInterval(loadingInfo.interval);
-    esconderLoading();
-    return todosOsPosts;
-  } catch (error) {
-    console.error("Erro ao carregar posts:", error);
-    clearInterval(loadingInfo.interval);
-    esconderLoading();
-    criarPopup('Erro', 'Não foi possível carregar os posts. Tente novamente.', 'error');
-    return [];
-  }
 }
 
 // ===================
@@ -1356,6 +1295,160 @@ async function loadPosts() {
 
 
 
+
+
+// --- Variáveis de Controlo do ActivityPub (AP) ---
+let lastMastodonId = null;
+let loadingMastodon = false;
+
+// Seleção de Elementos (Certifica-te que estes IDs existem no HTML)
+const btnFirebase = document.getElementById('p1');
+const btnAP = document.getElementById('p2');
+const divFirebase = document.getElementById('feed');
+const divMastodon = document.getElementById('feed2');
+
+// Configuração do Algoritmo "Global Jovem"
+const INSTANCIAS_ALVO = ['mastodon.social', 'mstdn.jp', 'mastodon.org.uk', 'mstdn.ca'];
+const IDIOMAS_BLOQUEADOS = ['ar', 'es'];
+const TERMOS_JOVENS = ['gaming', 'tech', 'anime', 'music', 'streaming', 'ai', 'art', 'fashion', 'cod', 'kpop', 'meme'];
+
+// --- Alternância de Abas ---
+function alternarAbas(ativa) {
+    if (ativa === 'ap') {
+        divFirebase.style.display = 'none';
+        divMastodon.style.display = 'block';
+        btnAP.classList.add('active');
+        btnFirebase.classList.remove('active');
+        if (divMastodon.innerHTML.trim() === "") carregarFeedMastodon();
+    } else {
+        divMastodon.style.display = 'none';
+        divFirebase.style.display = 'block';
+        btnFirebase.classList.add('active');
+        btnAP.classList.remove('active');
+    }
+}
+
+if(btnFirebase && btnAP) {
+    btnFirebase.addEventListener('click', () => alternarAbas('firebase'));
+    btnAP.addEventListener('click', () => alternarAbas('ap'));
+}
+
+// --- Algoritmo de Curadoria AP ---
+async function carregarFeedMastodon(isNextPage = false) {
+    if (loadingMastodon) return;
+    loadingMastodon = true;
+
+    const container = document.getElementById('feed2');
+    
+    if (!isNextPage) {
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:#888;"><i class="fas fa-sync fa-spin"></i> A curar feed internacional...</div>';
+        lastMastodonId = null;
+    }
+
+    try {
+        // Seleciona uma instância da lista para diversificar
+        const instancia = INSTANCIAS_ALVO[Math.floor(Math.random() * INSTANCIAS_ALVO.length)];
+        let url = `https://${instancia}/api/v1/timelines/public?limit=40`;
+        if (isNextPage && lastMastodonId) url += `&max_id=${lastMastodonId}`;
+
+        const response = await fetch(url);
+        const posts = await response.json();
+
+        if (posts.length > 0) {
+            if (!isNextPage) container.innerHTML = '';
+
+            posts.forEach(post => {
+                // 1. FILTROS RÍGIDOS (Bots e Idiomas Bloqueados)
+                if (post.account.bot) return;
+                if (IDIOMAS_BLOQUEADOS.includes(post.language)) return;
+
+                // 2. FILTRO DE CONTEÚDO (Remove caracteres Árabes ou Espanhóis via Regex)
+                const regexBloqueio = /[\u0600-\u06FF]|¿|¡/i;
+                if (regexBloqueio.test(post.content)) return;
+
+                // 3. LOGICA DO ALGORITMO JOVEM/ALTA
+                const texto = post.content.toLowerCase();
+                const eJovem = TERMOS_JOVENS.some(t => texto.includes(t));
+                const temMedia = post.media_attachments.length > 0;
+                
+                // Só mostra se for conteúdo "Jovem", se tiver media, ou se for muito popular
+                if (!eJovem && !temMedia && post.reblogs_count < 3) return;
+
+                const card = document.createElement('div');
+                card.className = 'post-card';
+
+                // Processamento de Media
+                // --- No loop posts.forEach dentro de carregarFeedMastodon ---
+
+let mediaHtml = '';
+if (temMedia) {
+    // Usamos a classe 'post-image' que você estilizou
+    mediaHtml = '<div class="post-image">'; 
+    
+    post.media_attachments.forEach(media => {
+        if (media.type === 'image') {
+            // Adicionamos a tag img que o seu CSS vai estilizar
+            mediaHtml += `
+                <img src="${media.preview_url || media.url}" 
+                     loading="lazy" 
+                     alt="Post media">`;
+        } else if (media.type === 'video' || media.type === 'gifv') {
+            // Para vídeos, mantemos a lógica, mas dentro do container estilizado
+            mediaHtml += `
+                <video controls playsinline loop muted 
+                       style="max-width: 100%; max-height: 500px; border-radius: 8px;">
+                    <source src="${media.url}" type="video/mp4">
+                </video>`;
+        }
+    });
+    mediaHtml += '</div>';
+}
+
+                card.innerHTML = `
+                    <div class="post-header" style="display:flex; align-items:center; gap:12px;">
+                        <img src="${post.account.avatar}" class="avatar" style="width:45px; height:45px; border-radius:50%;" onerror="this.src='./src/icon/default.jpg'">
+                        <div class="user-meta">
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <strong style="color:#fff;">${post.account.display_name || post.account.username}</strong>
+                                <span style="font-size:9px; background:#1d9bf0; color:white; padding:1px 5px; border-radius:3px;">${instancia.toUpperCase()}</span>
+                            </div>
+                            <small style="color:#71767b;">@${post.account.username} • Global Feed</small>
+                        </div>
+                    </div>
+                    <div class="post-content" style="margin-top:12px;">
+                        <div class="post-text" style="color:#e7e9ea; line-height:1.5; font-size:15px;">${post.content}</div>
+                        ${mediaHtml}
+                    </div>
+                    <div class="post-footer" style="margin-top:15px; display:flex; justify-content:space-between; color:#71767b; max-width:400px;">
+                        <span><i class="far fa-comment"></i> ${post.replies_count}</span>
+                        <span><i class="fas fa-retweet"></i> ${post.reblogs_count}</span>
+                        <span><i class="far fa-heart"></i> ${post.favourites_count}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lastMastodonId = posts[posts.length - 1].id;
+            
+            // Ativa o Auto-Pause que já tens no feed.js
+            if (typeof configurarAutoPauseVideos === 'function') configurarAutoPauseVideos();
+        }
+    } catch (error) {
+        console.error("Erro na curadoria:", error);
+    } finally {
+        loadingMastodon = false;
+    }
+}
+
+// Integração com o teu listener de Scroll existente
+window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 400) {
+        if (divMastodon.style.display === 'block' && !loadingMastodon) {
+            carregarFeedMastodon(true);
+        }
+    }
+});
 // ...existing code...
 // ===================
 // ENVIAR POST - VERSÃO OTIMIZADA

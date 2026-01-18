@@ -147,7 +147,6 @@
       object-fit: cover;
       flex-shrink: 0;
       border: 3px solid var(--bg-primary);
-      background-color: var(--bg-primary);
     }
 
     .pfp {
@@ -236,7 +235,7 @@
   padding: 4px;
   padding-top: 8px;
   padding-left: 10px;
-  display: none;
+  display: none;;
 }
 
 .music svg {
@@ -244,6 +243,7 @@
   height: 18px;
   fill: currentColor; /* pega a cor do texto do link */
   margin-top: 4px;
+  display: none;
 }
 
 .music span {
@@ -252,6 +252,7 @@
   color: #ccc;
   text-shadow: 2px 2px 4px black;
   font-weight: bold;
+  display: none;
 }
 
     /* Action Buttons */
@@ -2067,4 +2068,17 @@ user-select: none;
 /* Só aparece quando tem a classe 'active' */
 .tag04.active {
   display: inline-flex;
+}
+
+
+/* No bloco <style> do seu pfmobile.html */
+#musicPlayer, #bgMusic {
+    display: block !important;    /* Força a exibição ignorando outras regras */
+    visibility: visible !important;
+    width: 100% !important;       /* Ocupa a largura total no celular */
+    height: 150px !important;     /* Altura suficiente para os controles aparecerem */
+    margin: 6px 0 !important;
+    border-radius: 22px;
+    border: 1px solid #505050 !important; /* Borda colorida para você ver onde ele está */
+    z-index: 9999 !important;
 }

@@ -1478,6 +1478,7 @@ textarea#postText:focus {
       justify-content: space-between;
       background: #0F0F0F;
       border-bottom: 0.1px solid var(--border-primary);
+      border-bottom: none;
       z-index: 9999;
     }
 
@@ -1871,7 +1872,7 @@ textarea#postText:focus {
 }
 
 .storys {
-  display: none !important;
+  display: flex !important;
   padding: 0 !important;
   width: 100%;
 }
@@ -1960,6 +1961,5 @@ textarea#postText:focus {
   object-fit: cover;
   display: block;
 }
-
 
 }

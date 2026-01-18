@@ -1,0 +1,106 @@
+  
+    /* Navbar Bottom */
+    .navbar-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+    }
+
+.navbar-bottom-content svg {
+  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 26px;
+  fill: #cacaca; /* pega a cor do texto do link */
+}
+
+
+    .active-bar {
+      background-color: #8888886b !important;
+    }
+
+    .navbar-bottom-content {
+      display: flex;
+      height: 100%;
+      padding-bottom: 28px;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .nav-left {
+      display: flex;
+      background-color: #33333370;
+      backdrop-filter: blur(12px);
+      border-top: 0.1px solid var(--navbar-border);
+      border-bottom: 1px solid var(--navbar-border);
+      border-radius: 9999999999999px;
+      padding: 4px 6px;
+      gap: 16px;
+    }
+
+    .nav-right {
+      background-color: #33333370;
+      backdrop-filter: blur(12px);
+      border-top: 0.1px solid var(--navbar-border);
+      border-bottom: 1px solid var(--navbar-border);
+      display: flex;
+      padding: 4px 6px;
+      border-radius: 999999999999px;
+    }
+
+    .pfa {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 8px 10px !important;
+      background-color: transparent ;
+      border-radius: 99999999999999px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 12px 18px;
+      border-radius: 99999999999999px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:hover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 12px 18px;
+      border-radius: 99999999999999px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .navbar-bottom a:active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8f9f9;
+      font-size: 26px;
+      padding: 12px 18px;
+      border-radius: 99999999999999px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+
+    .profile-mini {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
