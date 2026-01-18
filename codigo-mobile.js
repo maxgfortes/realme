@@ -1268,9 +1268,8 @@ async function inicializarSistemaDeMusicaProfile(userid) {
     const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
     const mediaSnap = await getDoc(mediaRef);
     const musicTitleEl = document.getElementById('musicTitle');
-    const btnPause = document.getElementById('btnPauseMusic');
 
-    // Reseta
+    // Reset de variáveis globais
     musicUrl = "";
     musicName = "";
     musicReady = false;
@@ -1282,83 +1281,72 @@ async function inicializarSistemaDeMusicaProfile(userid) {
       if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
     }
 
-    console.log('🎵 Música encontrada:', musicName, musicUrl);
-
-    // Atualiza UI
+    // Atualiza o título na interface
     if (musicTitleEl) musicTitleEl.textContent = musicName || "Música do perfil";
     
-    // Mostra/esconde bloco
+    // Mostra o bloco pai se houver URL
     if (musicBlock) {
       musicBlock.style.display = musicUrl ? 'flex' : 'none';
     }
 
-    if (!musicUrl) {
-      console.log('❌ Nenhuma música configurada');
-      return;
-    }
+    if (!musicUrl) return;
 
-    // Carrega API do YouTube
     await loadYouTubeAPI();
-
     const videoId = extractYouTubeID(musicUrl);
-    if (!videoId) {
-      console.error('❌ URL inválida:', musicUrl);
-      return;
-    }
+    if (!videoId) return;
 
-    console.log('✅ Video ID extraído:', videoId);
-
-    // Destroi player antigo se existir
-    if (player) {
-      try {
-        player.destroy();
-      } catch (e) {}
-      player = null;
-    }
-
-    // Cria container para o player se não existir
+    // Gerenciamento do Container do Player
     let playerContainer = document.getElementById('bgMusic');
     if (!playerContainer) {
       playerContainer = document.createElement('div');
       playerContainer.id = 'bgMusic';
-      playerContainer.style.cssText = 'position:fixed;bottom:-100px;right:-100px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;';
-      document.body.appendChild(playerContainer);
-    } else {
-      playerContainer.innerHTML = '';
+      // Tenta inserir dentro da div .music ou no body como fallback
+      (musicBlock || document.body).appendChild(playerContainer);
     }
 
-    console.log('🎵 Criando player YouTube...');
+    // --- FORÇAR VISIBILIDADE CRÍTICA ---
+    // Remove o "display: none" que pode vir do CSS
+    playerContainer.style.setProperty('display', 'block', 'important');
+    playerContainer.style.setProperty('visibility', 'visible', 'important');
+    playerContainer.style.width = '100%';
+    playerContainer.style.height = '150px'; 
+    playerContainer.style.backgroundColor = '#000'; // Fundo preto para evitar buracos brancos
+    playerContainer.innerHTML = ''; 
 
-    // Cria novo player
+    if (player) {
+      try { player.destroy(); } catch (e) {}
+      player = null;
+    }
+
+    // Criação do Player com parâmetros para Mobile
     player = new YT.Player('bgMusic', {
-      height: '1',
-      width: '1',
+      height: '150',
+      width: '100%',
       videoId: videoId,
       playerVars: {
-        autoplay: 0,        // NÃO toca automaticamente
-        loop: 1,
-        playlist: videoId,
-        controls: 0,
-        showinfo: 0,
-        modestbranding: 1,
-        enablejsapi: 1,
-        playsinline: 1,     // CRUCIAL para iOS
-        rel: 0,
-        fs: 0,
-        mute: 0             // NÃO inicia mutado
+        'autoplay': 1,       // Tenta iniciar automaticamente
+        'loop': 1,
+        'playlist': videoId,
+        'controls': 1,       // Exibe controles para garantir que o usuário veja o player
+        'modestbranding': 1,
+        'playsinline': 1,    // Essencial para não abrir em tela cheia no iOS
+        'enablejsapi': 1
       },
       events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange,
-        onError: onPlayerError
+        'onReady': (event) => {
+            console.log("✅ Player pronto");
+            // Se autoplay falhar (bloqueio de navegador), o player ainda estará visível
+            onPlayerReady(event);
+        },
+        'onStateChange': onPlayerStateChange,
+        'onError': onPlayerError
       }
     });
 
   } catch (e) {
-    console.error('❌ Erro ao inicializar música:', e);
+    console.error('❌ Erro:', e);
   }
 }
-
 // Quando player está pronto
 function onPlayerReady(event) {
   console.log('✅ Player YouTube pronto!');
@@ -1527,68 +1515,107 @@ window.checkMuteStatus = checkMuteStatus;
 // ===================
 // SISTEMA DE LINKS
 // ===================
+// ===================
+// SISTEMA DE LINKS
+// ===================
 async function carregarLinks(userid) {
   const linksContainer = document.querySelector('.links-tab .about-container');
   if (!linksContainer) return;
+  
+  linksContainer.innerHTML = `
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Carregando links...</p>
+    </div>
+  `;
+  
   const userRef = doc(db, 'users', userid, 'user-infos', 'user-media');
   const userDoc = await getDoc(userRef);
+  
   linksContainer.innerHTML = '';
+  
   if (!userDoc.exists()) {
     linksContainer.innerHTML = `
-      <div class="empty-links"><div class="empty-icon"><i class="fas fa-link"></i></div>
-      <h3>Usuário não encontrado</h3></div>
+      <div class="empty-links">
+        <div class="empty-icon"><i class="fas fa-link"></i></div>
+        <h3>Usuário não encontrado</h3>
+      </div>
     `;
     return;
   }
+  
   const data = userDoc.data();
-  // Monta os links sociais a partir dos campos salvos
-  const socialLinks = [
-    data.instagram ? {
-      label: 'Instagram',
-      url: `https://instagram.com/${data.instagram}`,
-      icon: 'fab fa-instagram'
-    } : null,
-    data.twitter ? {
-      label: 'Twitter/X',
-      url: `https://twitter.com/${data.twitter}`,
-      icon: 'fab fa-twitter'
-    } : null,
-    data.spotify ? {
-      label: 'Spotify',
-      url: `https://open.spotify.com/user/${data.spotify}`,
-      icon: 'fab fa-spotify'
-    } : null,
-    data.github ? {
-      label: 'GitHub',
-      url: `https://github.com/${data.github}`,
-      icon: 'fab fa-github'
-    } : null,
-    data.customLink ? {
-      label: 'Outro',
-      url: data.customLink.startsWith('http') ? data.customLink : `https://${data.customLink}`,
-      icon: 'fas fa-link'
-    } : null
-  ].filter(Boolean);
-
-  if (socialLinks.length === 0) {
+  const links = data.links || {};
+  
+  // Verifica se há algum link válido
+  const hasValidLinks = Object.values(links).some(url => url && url.trim());
+  
+  if (!hasValidLinks) {
     linksContainer.innerHTML = `
-      <div class="empty-links"><div class="empty-icon"><i class="fas fa-link"></i></div>
-      <h3>Nenhum link ainda</h3><p>Este usuário ainda não adicionou nenhum link.</p></div>
+      <div class="empty-links">
+        <div class="empty-icon"><i class="fas fa-link"></i></div>
+        <h3>Nenhum link ainda</h3>
+        <p>Este usuário ainda não adicionou nenhum link.</p>
+      </div>
     `;
     return;
   }
-
-  socialLinks.forEach(link => {
-    const linkElement = document.createElement('div');
-    linkElement.className = 'link-box';
-    linkElement.innerHTML = `
-      <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="user-link">
-        <i class="${link.icon}"></i>
-        <span>${link.label}</span>
-        <i class="fas fa-external-link-alt link-arrow"></i>
-      </a>
-    `;
-    linksContainer.appendChild(linkElement);
+  
+  // Renderiza cada link válido
+  Object.entries(links).forEach(([key, url]) => {
+    if (url && url.trim()) {
+      const linkElement = document.createElement('div');
+      linkElement.className = 'link-box';
+      
+      // Detecta o tipo de link e define o ícone apropriado
+      let icon = 'fas fa-external-link-alt';
+      let label = key.charAt(0).toUpperCase() + key.slice(1); // Capitaliza a primeira letra
+      
+      if (url.includes('instagram.com')) {
+        icon = 'fab fa-instagram';
+        label = 'Instagram';
+      } else if (url.includes('twitter.com') || url.includes('x.com')) {
+        icon = 'fab fa-twitter';
+        label = 'Twitter/X';
+      } else if (url.includes('tiktok.com')) {
+        icon = 'fab fa-tiktok';
+        label = 'TikTok';
+      } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        icon = 'fab fa-youtube';
+        label = 'YouTube';
+      } else if (url.includes('github.com')) {
+        icon = 'fab fa-github';
+        label = 'GitHub';
+      } else if (url.includes('linkedin.com')) {
+        icon = 'fab fa-linkedin';
+        label = 'LinkedIn';
+      } else if (url.includes('discord')) {
+        icon = 'fab fa-discord';
+        label = 'Discord';
+      } else if (url.includes('spotify.com')) {
+        icon = 'fab fa-spotify';
+        label = 'Spotify';
+      } else if (url.includes('twitch.tv')) {
+        icon = 'fab fa-twitch';
+        label = 'Twitch';
+      } else if (url.includes('reddit.com')) {
+        icon = 'fab fa-reddit';
+        label = 'Reddit';
+      }
+      
+      // Garante que a URL tenha protocolo
+      const finalUrl = url.startsWith('http') ? url : `https://${url}`;
+      
+      linkElement.innerHTML = `
+        <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="user-link">
+          <i class="${icon}"></i>
+          <span>${label}</span>
+          <i class="fas fa-external-link-alt link-arrow"></i>
+        </a>
+      `;
+      
+      linksContainer.appendChild(linkElement);
+    }
   });
 }
 

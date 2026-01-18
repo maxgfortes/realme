@@ -104,7 +104,7 @@
         </div>
       </div>
       <div class="music">
-        <button id="btnPauseMusic" class="iframe-btn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg> </button>
+        <button id="start" class="iframe-btn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg> </button>
         <span id="musicTitle" style="margin-left:8px;font-weight:500;"></span>
       </div>
       <div class="action-buttons">
@@ -275,7 +275,6 @@
 
 <!-- Iframe invisível -->
 <!-- Player YouTube invisível -->
-<div id="bgMusic" style="position: fixed; bottom: 0; right: 0; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
 </body>
 
 <script>
@@ -393,6 +392,37 @@ document.querySelectorAll("a").forEach(link => {
             }, 400); // igual ao tempo do CSS!
         }
     });
+});
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.getElementById('start');
+  const playerIframe = document.querySelector('#musicPlayer iframe');
+
+  if (startBtn && playerIframe) {
+    startBtn.addEventListener('click', () => {
+      // No iPhone, a reprodução DEVE ser disparada por um evento de clique
+      // Esta técnica tenta forçar o play enviando o parâmetro de autoplay na URL
+      let currentSrc = playerIframe.src;
+      
+      if (currentSrc.includes('?')) {
+        playerIframe.src = currentSrc + "&autoplay=1";
+      } else {
+        playerIframe.src = currentSrc + "?autoplay=1";
+      }
+
+      // Feedback visual opcional
+      startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+      setTimeout(() => {
+          startBtn.style.display = 'none'; // Esconde o botão após dar o play
+      }, 1000);
+    });
+  }
 });
 </script>
 
