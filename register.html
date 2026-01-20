@@ -46,13 +46,11 @@ body {
   background-color: var(--bg-primary, #0f0f0f);
   height: 100vh;
   width: 100%;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   background-image: url('./src/bg/bg.jpg');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
 }
 
 /* ================= MAIN ================= */
@@ -242,12 +240,10 @@ background: linear-gradient(155deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
 
   .form-section {
     width: 100%;
-    overflow: hidden;
   }
 
   .container {
     padding: 20px;
-    overflow: hidden;
   }
 }
 
@@ -294,10 +290,6 @@ background: linear-gradient(155deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
       <div>
         <label for="senha">Senha</label>
         <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
-      </div>
-      <div>
-        <label for="convite">Convite</label>
-        <input type="text" id="convite" name="convite" placeholder="Código do convite" required />
       </div>
       <div class="form-group">
         <label for="nascimento">Data de Nascimento</label>
