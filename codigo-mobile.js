@@ -377,11 +377,6 @@ async function configurarBotaoSeguir(targetUserId) {
     editBtn.className = 'btn-edit-profile';
     editBtn.onclick = () => window.location.href = 'config.html';
     followBtn.parentNode.appendChild(editBtn);
-    const inviteBtn = document.createElement('button');
-    inviteBtn.textContent = 'Convidar amigos';
-    inviteBtn.className = 'btn-invite';
-    inviteBtn.onclick = () => window.location.href = 'invites.html';
-    followBtn.parentNode.appendChild(inviteBtn);
     return;     
   }
   let isFollowing = await verificarSeEstaSeguindo(currentUserId, targetUserId);
