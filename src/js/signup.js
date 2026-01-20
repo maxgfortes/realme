@@ -3,7 +3,8 @@ import {
   getFirestore, doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, Timestamp, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
-  getAuth, createUserWithEmailAndPassword, updateProfile, signOut, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence
+  getAuth, createUserWithEmailAndPassword, updateProfile, signOut, signInWithEmailAndPassword, 
+  onAuthStateChanged, setPersistence, browserLocalPersistence, sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
 
@@ -32,8 +33,6 @@ function showError(message) {
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';
     errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else {
-    alert(message);
   }
 }
 
@@ -43,8 +42,6 @@ function showSuccess(message) {
     successDiv.textContent = message;
     successDiv.style.display = 'block';
     successDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else {
-    alert(message);
   }
 }
 
@@ -68,6 +65,72 @@ function showLoading(show) {
     loginBtn.disabled = show;
     loginBtn.textContent = show ? 'Entrando...' : 'Entrar';
   }
+}
+
+// ===================
+// MODAL DE VERIFICAÇÃO
+// ===================
+function showEmailVerificationModal(email) {
+  // Remove modal anterior se existir
+  const oldModal = document.getElementById('email-verification-modal');
+  if (oldModal) oldModal.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'email-verification-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      text-align: center;
+      color: #dbdbdb;
+    ">
+      <h2 style="color: #4A90E2; margin-bottom: 20px;">📧 Verifique seu Email</h2>
+      <p style="margin-bottom: 15px;">Enviamos um email de verificação para:</p>
+      <p style="color: #4A90E2; font-weight: bold; margin-bottom: 20px;">${email}</p>
+      <p style="margin-bottom: 25px; color: #aaa;">Clique no link do email para verificar sua conta. Após verificar, clique no botão abaixo.</p>
+      <button id="check-verification-btn" style="
+        background: #4A90E2;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 10px;
+      ">Já Verifiquei Meu Email</button>
+      <br>
+      <button id="resend-email-btn" style="
+        background: transparent;
+        color: #4A90E2;
+        border: 1px solid #4A90E2;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      ">Reenviar Email</button>
+      <p id="verification-status" style="margin-top: 15px; color: #aaa; font-size: 14px;"></p>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  return modal;
 }
 
 // ===================
@@ -103,16 +166,6 @@ async function verificarUsernameDisponivel(username) {
     const usernameRef = doc(db, "usernames", username.toLowerCase());
     const usernameSnap = await getDoc(usernameRef);
     return !usernameSnap.exists();
-  } catch (error) {
-    return true;
-  }
-}
-async function verificarEmailDisponivel(email) {
-  try {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", email.toLowerCase()));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.empty;
   } catch (error) {
     return true;
   }
@@ -166,22 +219,102 @@ function downloadAccountInfoSimple({ usuario, email, senha }) {
 }
 
 // ===================
-// GERAÇÃO DE CÓDIGO DE CONVITE
+// VERIFICAR EMAIL
 // ===================
-function gerarCodigoConvite() {
-  let codigo = '';
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  for (let i = 0; i < 12; i++) {
-    codigo += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return codigo;
+async function verificarEmailValidado(user, userData) {
+  return new Promise((resolve, reject) => {
+    const checkInterval = setInterval(async () => {
+      try {
+        await user.reload();
+        if (user.emailVerified) {
+          clearInterval(checkInterval);
+          resolve(true);
+        }
+      } catch (error) {
+        clearInterval(checkInterval);
+        reject(error);
+      }
+    }, 2000);
+
+    // Timeout de 10 minutos
+    setTimeout(() => {
+      clearInterval(checkInterval);
+      reject(new Error('Timeout na verificação de email'));
+    }, 600000);
+  });
 }
 
 // ===================
-// CADASTRO - Auth primeiro, Database depois
+// COMPLETAR CADASTRO
 // ===================
+async function completarCadastro(user, userData) {
+  console.log("🔄 Completando cadastro após verificação de email...");
+
+  try {
+    // Atualizar Auth Profile
+    await updateProfile(user, { displayName: userData.nome });
+
+    // Reservar username
+    await setDoc(doc(db, "usernames", userData.username), {
+      uid: user.uid,
+      email: userData.email,
+      reservadoEm: serverTimestamp()
+    });
+
+    // Criar documento do usuário
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      username: userData.username,
+      email: userData.email,
+      name: userData.nome,
+      surname: userData.sobrenome,
+      displayname: userData.nome,
+      nascimento: userData.nascimento,
+      gender: userData.genero,
+      criadoem: serverTimestamp(),
+      ultimaAtualizacao: serverTimestamp(),
+      emailVerified: true,
+      ultimoLogin: serverTimestamp(),
+      versao: "2.1",
+      senha: userData.senha
+    });
+
+    // Atualizar lastupdate
+    await setDoc(doc(db, "lastupdate", "latestUser"), { 
+      username: userData.username,
+      timestamp: serverTimestamp()
+    }, { merge: true });
+
+    // Criar registro em newusers
+    await setDoc(doc(db, "newusers", user.uid), {
+      userid: user.uid,
+      createdat: serverTimestamp()
+    });
+
+    // Salvar dados privados
+    await setDoc(doc(db, "privateUsers", user.uid), {
+      email: userData.email,
+      senha: userData.senha,
+      criadoem: serverTimestamp()
+    });
+
+    console.log("✅ Cadastro completado com sucesso!");
+    
+    downloadAccountInfoSimple({ 
+      usuario: userData.username, 
+      email: userData.email, 
+      senha: userData.senha 
+    });
+
+    return true;
+  } catch (error) {
+    console.error("❌ Erro ao completar cadastro:", error);
+    throw error;
+  }
+}
+
 // ===================
-// CADASTRO - Auth primeiro, Database depois
+// CADASTRO COM VALIDAÇÃO DE EMAIL
 // ===================
 async function criarContaSegura(event) {
   event.preventDefault();
@@ -194,10 +327,9 @@ async function criarContaSegura(event) {
   const nascimento = document.getElementById('nascimento').value;
   const genero = document.getElementById('genero').value;
   const senha = document.getElementById('senha').value.trim();
-  const convite = document.getElementById('convite').value.trim().toUpperCase();
 
   // VALIDAÇÕES BÁSICAS
-  if (!username || !nome || !sobrenome || !email || !nascimento || !genero || !senha || !convite) {
+  if (!username || !nome || !sobrenome || !email || !nascimento || !genero || !senha) {
     showError("Preencha todos os campos obrigatórios.");
     return;
   }
@@ -217,33 +349,12 @@ async function criarContaSegura(event) {
     showError("Data de nascimento inválida. Você deve ter entre 13 e 120 anos.");
     return;
   }
-  if (convite.length !== 12) {
-    showError("O código de convite deve ter 12 caracteres.");
-    return;
-  }
 
   showLoading(true);
 
   try {
-    // ETAPA 1: VALIDAÇÕES PRÉ-AUTH (leitura pública permitida)
-    console.log("1️⃣ Validando convite...");
-    const conviteRef = doc(db, "invites", convite);
-    const conviteSnap = await getDoc(conviteRef);
-    
-    if (!conviteSnap.exists()) {
-      showError("Código de convite não encontrado.");
-      showLoading(false);
-      return;
-    }
-    
-    if (conviteSnap.data().usado) {
-      showError("Este convite já foi utilizado.");
-      showLoading(false);
-      return;
-    }
-    console.log("✅ Convite válido!");
-
-    console.log("2️⃣ Verificando disponibilidade do username...");
+    // VERIFICAR DISPONIBILIDADE DO USERNAME
+    console.log("🔍 Verificando disponibilidade do username...");
     const usernameRef = doc(db, "usernames", username);
     const usernameSnap = await getDoc(usernameRef);
     
@@ -254,112 +365,100 @@ async function criarContaSegura(event) {
     }
     console.log("✅ Username disponível!");
 
-
-    // ETAPA 2: CRIAR CONTA NO AUTH
-    console.log("3️⃣ Criando conta no Firebase Auth...");
+    // CRIAR CONTA NO AUTH
+    console.log("🔐 Criando conta no Firebase Auth...");
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
     console.log("✅ Conta criada no Auth! UID:", user.uid);
-    console.log("✅ Usuário está autenticado:", auth.currentUser ? "SIM" : "NÃO");
 
-    // AGUARDAR PROPAGAÇÃO DO AUTH (crítico!)
-    console.log("⏳ Aguardando propagação do Auth...");
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("✅ Auth propagado!");
+    // ENVIAR EMAIL DE VERIFICAÇÃO
+    console.log("📧 Enviando email de verificação...");
+    await sendEmailVerification(user);
+    console.log("✅ Email de verificação enviado!");
 
-    // ETAPA 3: AGORA SIM, SALVAR DADOS NO DATABASE (usuário está autenticado!)
-    console.log("4️⃣ Atualizando perfil do Auth...");
-    await updateProfile(user, { displayName: nome });
-    console.log("✅ Profile atualizado");
+    showLoading(false);
 
-    console.log("5️⃣ Reservando username no Database...");
-    await setDoc(doc(db, "usernames", username), {
-      uid: user.uid,
-      email: email,
-      reservadoEm: serverTimestamp()
-    });
-    console.log("✅ Username reservado");
-
-    console.log("6️⃣ Criando documento do usuário...");
+    // Preparar dados do usuário
     const dataNascimento = new Date(nascimento);
     const userData = {
-      uid: user.uid,
-      username: username,
-      email: email,
-      name: nome,
-      surname: sobrenome,
-      displayname: nome,
+      username,
+      nome,
+      sobrenome,
+      email,
       nascimento: Timestamp.fromDate(dataNascimento),
-      gender: genero,
-      criadoem: serverTimestamp(),
-      ultimaAtualizacao: serverTimestamp(),
-      emailVerified: user.emailVerified,
-      ultimoLogin: serverTimestamp(),
-      versao: "2.1",
-      senha: senha
+      genero,
+      senha
     };
-    await setDoc(doc(db, "users", user.uid), userData);
-    console.log("✅ Documento do usuário criado");
 
-    console.log("7️⃣ Atualizando lastupdate...");
-    await setDoc(doc(db, "lastupdate", "latestUser"), { 
-      username: username,
-      timestamp: serverTimestamp()
-    }, { merge: true });
-    console.log("✅ Lastupdate atualizado");
+    // MOSTRAR MODAL DE VERIFICAÇÃO
+    const modal = showEmailVerificationModal(email);
+    const statusElement = modal.querySelector('#verification-status');
+    const checkBtn = modal.querySelector('#check-verification-btn');
+    const resendBtn = modal.querySelector('#resend-email-btn');
 
-    console.log("8️⃣ Criando registro em newusers...");
-    await setDoc(doc(db, "newusers", user.uid), {
-      userid: user.uid,
-      createdat: serverTimestamp()
+    // Botão de verificar
+    checkBtn.addEventListener('click', async () => {
+      checkBtn.disabled = true;
+      checkBtn.textContent = 'Verificando...';
+      statusElement.textContent = 'Aguardando verificação...';
+      statusElement.style.color = '#4A90E2';
+
+      try {
+        await user.reload();
+        
+        if (user.emailVerified) {
+          statusElement.textContent = '✅ Email verificado! Completando cadastro...';
+          statusElement.style.color = '#51cf66';
+          
+          await completarCadastro(user, userData);
+          
+          modal.remove();
+          showSuccess('Conta criada com sucesso! Redirecionando...');
+          
+          setTimeout(() => {
+            window.location.href = 'feed.html';
+          }, 1500);
+        } else {
+          statusElement.textContent = '❌ Email ainda não foi verificado. Verifique sua caixa de entrada.';
+          statusElement.style.color = '#ff6b6b';
+          checkBtn.disabled = false;
+          checkBtn.textContent = 'Já Verifiquei Meu Email';
+        }
+      } catch (error) {
+        console.error("Erro ao verificar:", error);
+        statusElement.textContent = '❌ Erro ao verificar. Tente novamente.';
+        statusElement.style.color = '#ff6b6b';
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'Já Verifiquei Meu Email';
+      }
     });
-    console.log("✅ Newuser criado");
 
-    console.log("9️⃣ Salvando dados privados...");
-    await setDoc(doc(db, "privateUsers", user.uid), {
-      email: email,
-      senha: senha,
-      criadoem: serverTimestamp()
+    // Botão de reenviar
+    resendBtn.addEventListener('click', async () => {
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Enviando...';
+      
+      try {
+        await sendEmailVerification(user);
+        statusElement.textContent = '✅ Email reenviado com sucesso!';
+        statusElement.style.color = '#51cf66';
+        
+        setTimeout(() => {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Reenviar Email';
+          statusElement.textContent = '';
+        }, 3000);
+      } catch (error) {
+        console.error("Erro ao reenviar:", error);
+        statusElement.textContent = '❌ Erro ao reenviar. Aguarde um momento.';
+        statusElement.style.color = '#ff6b6b';
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Reenviar Email';
+      }
     });
-    console.log("✅ Dados privados salvos");
-
-    console.log("🔟 Marcando convite como usado...");
-    await updateDoc(conviteRef, {
-      usado: true,
-      usadoPor: user.uid,
-      usadoEm: serverTimestamp()
-    });
-    console.log("✅ Convite marcado como usado");
-
-    console.log("1️⃣1️⃣ Gerando códigos de convite...");
-    const convites = [];
-    for (let i = 0; i < 3; i++) {
-      const codigo = gerarCodigoConvite();
-      await setDoc(doc(db, "invites", codigo), {
-        criadoPor: user.uid,
-        usado: false,
-        usadoPor: null,
-        criadoEm: serverTimestamp()
-      });
-      convites.push(codigo);
-    }
-
-    console.log("1️⃣2️⃣ Salvando convites no perfil...");
-    await updateDoc(doc(db, "users", user.uid), {
-      convites: convites,
-      convitesRestantes: 3
-    });
-    
-    downloadAccountInfoSimple({ usuario: username, email, senha });
-    
-    // Redireciona imediatamente
-    window.location.href = 'feed.html';
 
   } catch (error) {
     console.error("❌ ERRO:", error);
-    console.error("Código:", error.code);
-    console.error("Mensagem:", error.message);
-    
     showLoading(false);
     
     let errorMessage = "Erro ao criar conta. Tente novamente.";
@@ -381,9 +480,6 @@ async function criarContaSegura(event) {
         case 'auth/network-request-failed':
           errorMessage = "Erro de conexão com a internet.";
           break;
-        case 'permission-denied':
-          errorMessage = "Erro de permissão. Entre em contato com o suporte.";
-          break;
         default:
           errorMessage = `Erro: ${error.message}`;
       }
@@ -392,6 +488,7 @@ async function criarContaSegura(event) {
     showError(errorMessage);
   }
 }
+
 // ===================
 // LOGIN
 // ===================
@@ -420,6 +517,13 @@ async function loginUser(event) {
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
 
+    if (!user.emailVerified) {
+      showError("Por favor, verifique seu email antes de fazer login.");
+      await signOut(auth);
+      showLoading(false);
+      return;
+    }
+
     await updateDoc(doc(db, "users", user.uid), {
       ultimoLogin: serverTimestamp()
     });
@@ -435,7 +539,6 @@ async function loginUser(event) {
     setTimeout(() => {
       window.location.href = "feed.html";
     }, 1000);
-    
 
   } catch (error) {
     showLoading(false);
@@ -445,9 +548,7 @@ async function loginUser(event) {
     if (error.code === 'auth/invalid-email') msg = "Email inválido.";
     showError(msg);
   }
-  
 }
-
 
 // ===================
 // VALIDAÇÃO EM TEMPO REAL
@@ -489,17 +590,6 @@ function configurarValidacoes() {
   if (senhaInput) {
     senhaInput.addEventListener('input', function() {
       if (validarSenha(this.value)) {
-        this.style.borderColor = '#51cf66';
-      } else {
-        this.style.borderColor = '#ff6b6b';
-      }
-    });
-  }
-  const conviteInput = document.getElementById('convite');
-  if (conviteInput) {
-    conviteInput.addEventListener('input', function() {
-      this.value = this.value.toUpperCase().replace(/\s/g, '');
-      if (this.value.length === 12) {
         this.style.borderColor = '#51cf66';
       } else {
         this.style.borderColor = '#ff6b6b';
