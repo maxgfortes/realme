@@ -38,10 +38,46 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+
 let currentUser = null;
 let currentUserId = null;
 let currentUserData = null;
 let profileUserId;
+
+
+// CACHE E PROMISE POOL
+const cache = {
+  users: new Map(),
+  photos: new Map(),
+  posts: new Map(),
+  stats: new Map(),
+  media: new Map()
+};
+
+class PromisePool {
+  constructor(limit = 5) {
+    this.limit = limit;
+    this.active = 0;
+    this.queue = [];
+  }
+
+  async add(fn) {
+    while (this.active >= this.limit) {
+      await new Promise(resolve => this.queue.push(resolve));
+    }
+    this.active++;
+    try {
+      return await fn();
+    } finally {
+      this.active--;
+      const resolve = this.queue.shift();
+      if (resolve) resolve();
+    }
+  }
+}
+
+const pool = new PromisePool(5);
+
 
 
 onAuthStateChanged(auth, async (user) => {
@@ -233,25 +269,36 @@ async function loadUserPhotoLazy(userId, imgElement) {
   });
 }
 
-// ===================
-// FUNÇÕES AUXILIARES
-// ===================
+
 async function getUserData(userid) {
+  if (cache.users.has(userid)) {
+    return cache.users.get(userid);
+  }
+  
   const userRef = doc(db, "users", userid);
   const userSnap = await getDoc(userRef);
-  return userSnap.exists() ? userSnap.data() : {};
+  const data = userSnap.exists() ? userSnap.data() : {};
+  
+  cache.users.set(userid, data);
+  return data;
 }
 
-// Função correta para buscar foto de perfil do post
+// ============================================
+
 async function getUserPhoto(userid) {
+  if (cache.photos.has(userid)) {
+    return cache.photos.get(userid);
+  }
+  
   const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
   const mediaSnap = await getDoc(mediaRef);
-  if (mediaSnap.exists()) {
-    return mediaSnap.data().userphoto || './src/icon/default.jpg';
-  }
-  return './src/icon/default.jpg';
+  const photo = mediaSnap.exists() 
+    ? (mediaSnap.data().userphoto || './src/icon/default.jpg')
+    : './src/icon/default.jpg';
+  
+  cache.photos.set(userid, photo);
+  return photo;
 }
-
 // ===================
 // SISTEMA DE SEGUIR/SEGUINDO
 // ===================
@@ -1656,21 +1703,7 @@ async function atualizarMarqueeUltimoUsuario() {
 document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
 
 
-function configurarInterfacePerfil(userid) {
-  const navbarBottom = document.querySelector('.navbar-bottom');
-  const settingsBtn = document.getElementById('open-settings-btn');
-  const isOwnProfile = userid === currentUserId;
-  
-  if (isOwnProfile) {
-    // É SEU PERFIL - mostra navbar e configs
-    if (navbarBottom) navbarBottom.style.display = 'flex';
-    if (settingsBtn) settingsBtn.style.display = 'block';
-  } else {
-    // É PERFIL DE OUTRA PESSOA - esconde navbar e configs
-    if (navbarBottom) navbarBottom.style.display = 'none';
-    if (settingsBtn) settingsBtn.style.display = 'none';
-  }
-}
+// ============================================
 
 async function carregarPerfilCompleto() {
   const userid = determinarUsuarioParaCarregar();
@@ -1679,108 +1712,246 @@ async function carregarPerfilCompleto() {
     return;
   }
 
-  /*configurarInterfacePerfil(userid);*/
-  const userData = await getUserData(userid);
-  const aboutRef = doc(db, "users", userid, "user-infos", "about");
-  const aboutSnap = await getDoc(aboutRef);
-  const aboutData = aboutSnap.exists() ? aboutSnap.data() : {};
-  atualizarInformacoesBasicas(userData, userid);
-  atualizarVisaoGeral(aboutData);
-  atualizarGostosDoUsuario(userid);
-  atualizarSobre(userData);
-  atualizarImagensPerfil(userData, userid);
-  await atualizarEstatisticasPerfil(userid);
-  await configurarBotaoSeguir(userid);
-  await carregarPostsDoMural(userid);
-await removerBlurSeTemFundo(userid);
-await inicializarSistemaDeMusicaProfile(userid); // ← Nova função
+  // FASE 1: Dados críticos (aparecem IMEDIATAMENTE)
+  await carregarDadosCriticos(userid);
 
-  // Atualiza src do iframe bgMusic com a música do perfil e exibe o bloco só se houver música
-  try {
-    const musicBlock = document.querySelector('.music');
-    const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
-    const mediaSnap = await getDoc(mediaRef);
-    const iframe = document.getElementById('bgMusic');
-    let musicUrl = "";
-    let musicName = "";
-    if (mediaSnap.exists()) {
-      const mediaData = mediaSnap.data();
-      if (mediaData.musicTheme) musicUrl = mediaData.musicTheme;
-      if (mediaData.musicThemeName) musicName = mediaData.musicThemeName;
-    }
-    if (iframe) {
-      iframe.src = musicUrl || "";
-    }
-    // Atualiza o nome da música ao lado do botão
-    const musicTitleEl = document.getElementById('musicTitle');
-    if (musicTitleEl) musicTitleEl.textContent = musicName || "";
-    // Exibe o bloco .music como flex só se houver música
-    if (musicBlock) {
-      if (musicUrl) {
-        musicBlock.style.display = 'flex';
-      }
-    }
+  // FASE 2: Dados secundários (carregam em background)
+  Promise.all([
+    carregarDadosSecundarios(userid),
+    carregarImagensSecundarias(userid),
+    carregarEstatisticas(userid)
+  ]).catch(err => console.error('Erro em dados secundários:', err));
 
-    // --- AUTOPLAY EM IPHONE E OUTROS: listeners globais para tocar música ao primeiro clique/touch ---
-    if (musicUrl && iframe) {
-      let musicStarted = false;
-      function startMusicOnce() {
-        if (musicStarted) return;
-        try {
-          // Para iOS: força reload do src e play
-          iframe.src = musicUrl;
-          // Para browsers que aceitam play() em audio/iframe
-          if (iframe.contentWindow && typeof iframe.contentWindow.postMessage === 'function') {
-            iframe.contentWindow.postMessage('play', '*');
-          }
-        } catch (e) {}
-        musicStarted = true;
-        document.removeEventListener('click', startMusicOnce, true);
-        document.removeEventListener('touchstart', startMusicOnce, true);
-        document.removeEventListener('keydown', startMusicOnce, true);
-      }
-      document.addEventListener('click', startMusicOnce, true);
-      document.addEventListener('touchstart', startMusicOnce, true);
-      document.addEventListener('keydown', startMusicOnce, true);
-    }
-  } catch (e) {}
-
-
-  // Configura botão de mensagem
-  const btnMsg = document.getElementById('btnMensagemPerfil') || document.querySelector('.btn-msg');
-  if (btnMsg && userid !== currentUserId) {
-    btnMsg.onclick = () => iniciarChatComUsuario(userid);
-    btnMsg.style.display = 'inline-block';
-  } else if (btnMsg) {
-    btnMsg.style.display = 'none';
-  }
-
-  // Função de cor personalizada removida
-  async function aplicarCorPersonalizada(userid) {
-  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
-  const mediaSnap = await getDoc(mediaRef);
-
-  // Limpa estilos personalizados se não houver cor
-  if (!mediaSnap.exists() || !mediaSnap.data().profileColor) {
-    removerEstilosPersonalizados();
-    return;
-  }
-
-  const cor = mediaSnap.data().profileColor;
-
-  // Bloqueia cor com transparência
-  if (corTemTransparencia(cor)) return;
-
-  // Aplica cores em diferentes aspectos
-  aplicarCoresMenu(cor);
-  aplicarCoresBotoes(cor);
-  aplicarCoresImagens(cor);
-  aplicarCoresTextos(cor);
-  aplicarCoresLinks(cor);
-  aplicarCoresInteracoes(cor);
-  aplicarCoresFormularios(cor);
-  aplicarCoresCards(cor);
+  // FASE 3: Dados terciários (carregam por último)
+  setTimeout(() => {
+    carregarDadosTerciarios(userid).catch(err => 
+      console.error('Erro em dados terciários:', err)
+    );
+  }, 100);
 }
+
+// ===== FASE 1: DADOS CRÍTICOS =====
+async function carregarDadosCriticos(userid) {
+  try {
+    const [userData, mediaData] = await Promise.all([
+      getUserData(userid),
+      pool.add(async () => {
+        const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+        const mediaSnap = await getDoc(mediaRef);
+        return mediaSnap.exists() ? mediaSnap.data() : {};
+      })
+    ]);
+
+    // Cache media data
+    cache.media.set(userid, mediaData);
+
+    // Atualiza UI crítica imediatamente
+    atualizarInformacoesBasicasRapido(userData, userid);
+    atualizarImagensCriticas(userData, userid, mediaData);
+    
+    // Aplica cor personalizada básica SE existir
+    if (mediaData.profileColor && !corTemTransparencia(mediaData.profileColor)) {
+      aplicarCoresBasicas(mediaData.profileColor);
+    }
+    
+  } catch (err) {
+    console.error('Erro ao carregar dados críticos:', err);
+  }
+}
+
+function atualizarInformacoesBasicasRapido(userData, userid) {
+  const displayName = userData.displayname || "Usuário";
+  const username = userData.username || userid;
+  
+  // Atualiza apenas elementos críticos visíveis
+  const updates = [
+    ['displayname', displayName],
+    ['username', `@${username}`],
+    ['headername', username],
+    ['nomeUsuario', displayName],
+    ['statususername', `${displayName} esta:`]
+  ];
+  
+  updates.forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+}
+
+async function atualizarImagensCriticas(userData, userid, mediaData) {
+  const userPhoto = mediaData.userphoto || './src/icon/default.jpg';
+  
+  // Foto de perfil
+  const profilePic = document.querySelector('.profile-pic');
+  if (profilePic) {
+    profilePic.src = userPhoto;
+    profilePic.onerror = () => { profilePic.src = './src/icon/default.jpg'; };
+  }
+
+  // Header/Banner com lazy loading
+  if (mediaData.headerphoto) {
+    const headerEl = document.querySelector('.profile-banner');
+    if (headerEl) {
+      const img = new Image();
+      img.onload = () => {
+        headerEl.style.backgroundImage = `url('${mediaData.headerphoto}')`;
+        headerEl.style.backgroundSize = 'cover';
+        headerEl.style.backgroundPosition = 'center';
+      };
+      img.src = mediaData.headerphoto;
+    }
+  }
+}
+
+function aplicarCoresBasicas(cor) {
+  let style = document.getElementById('cores-basicas');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'cores-basicas';
+    document.head.appendChild(style);
+  }
+  
+  style.textContent = `
+    .slide { background-color: ${cor}; }
+    .action-buttons button { background: ${cor} !important; }
+    .empty-icon { color: ${cor}; }
+  `;
+}
+
+// ===== FASE 2: DADOS SECUNDÁRIOS =====
+async function carregarDadosSecundarios(userid) {
+  try {
+    const [userData, aboutData] = await Promise.all([
+      getUserData(userid),
+      pool.add(async () => {
+        const aboutRef = doc(db, "users", userid, "user-infos", "about");
+        const aboutSnap = await getDoc(aboutRef);
+        return aboutSnap.exists() ? aboutSnap.data() : {};
+      })
+    ]);
+
+    // Atualiza informações completas
+    atualizarInformacoesBasicas(userData, userid);
+    atualizarVisaoGeral(aboutData);
+    atualizarSobre(userData);
+    atualizarGostosDoUsuario(userid);
+    
+  } catch (err) {
+    console.error('Erro ao carregar dados secundários:', err);
+  }
+}
+
+async function carregarImagensSecundarias(userid) {
+  try {
+    let mediaData = cache.media.get(userid);
+    
+    if (!mediaData) {
+      const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+      const mediaSnap = await getDoc(mediaRef);
+      mediaData = mediaSnap.exists() ? mediaSnap.data() : {};
+      cache.media.set(userid, mediaData);
+    }
+
+    // Atualiza todas as fotos secundárias
+    const userPics = document.querySelectorAll('.user-pic');
+    const photo = mediaData.userphoto || './src/icon/default.jpg';
+    userPics.forEach(pic => {
+      pic.src = photo;
+      pic.onerror = () => { pic.src = './src/icon/default.jpg'; };
+    });
+
+    // Remove blur se tiver background
+    if (mediaData.background) {
+      const glassOverlay = document.querySelector('.glass-overlay');
+      if (glassOverlay) glassOverlay.style.display = 'none';
+    }
+
+  } catch (err) {
+    console.error('Erro ao carregar imagens secundárias:', err);
+  }
+}
+
+async function carregarEstatisticas(userid) {
+  try {
+    await Promise.all([
+      configurarBotaoSeguir(userid),
+      atualizarEstatisticasPerfil(userid)
+    ]);
+    
+    // Configura botão de mensagem
+    const btnMsg = document.getElementById('btnMensagemPerfil') || document.querySelector('.btn-msg');
+    if (btnMsg && userid !== currentUserId) {
+      btnMsg.onclick = () => iniciarChatComUsuario(userid);
+      btnMsg.style.display = 'inline-block';
+    } else if (btnMsg) {
+      btnMsg.style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Erro ao carregar estatísticas:', err);
+  }
+}
+
+// ===== FASE 3: DADOS TERCIÁRIOS =====
+async function carregarDadosTerciarios(userid) {
+  try {
+    // Carrega posts primeiro (mais importante)
+    await carregarPostsDoMural(userid);
+    
+    // Depois carrega o resto em paralelo
+    await Promise.all([
+      inicializarSistemaDeMusicaProfile(userid),
+      aplicarEstilosCompletos(userid),
+      aplicarVerificado(userid),
+      aplicarTag(userid),
+      aplicarTagAltStyle(userid),
+      aplicarTagGothStyle(userid),
+      aplicarTag2000sStyle(userid),
+      aplicarBordaNeon(userid)
+    ]);
+    
+  } catch (err) {
+    console.error('Erro ao carregar dados terciários:', err);
+  }
+}
+
+// Função que aplica TODAS as cores personalizadas
+async function aplicarEstilosCompletos(userid) {
+  try {
+    let mediaData = cache.media.get(userid);
+    
+    if (!mediaData) {
+      const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
+      const mediaSnap = await getDoc(mediaRef);
+      mediaData = mediaSnap.exists() ? mediaSnap.data() : {};
+      cache.media.set(userid, mediaData);
+    }
+
+    // Se não tiver cor personalizada, limpa estilos e retorna
+    if (!mediaData.profileColor) {
+      removerEstilosPersonalizados();
+      return;
+    }
+
+    const cor = mediaData.profileColor;
+
+    // Bloqueia cor com transparência
+    if (corTemTransparencia(cor)) return;
+
+    // Aplica TODAS as cores em diferentes aspectos
+    aplicarCoresMenu(cor);
+    aplicarCoresBotoes(cor);
+    aplicarCoresImagens(cor);
+    aplicarCoresTextos(cor);
+    aplicarCoresLinks(cor);
+    aplicarCoresInteracoes(cor);
+    aplicarCoresFormularios(cor);
+    aplicarCoresCards(cor);
+    
+  } catch (err) {
+    console.error('Erro ao aplicar estilos completos:', err);
+  }
+}
+
 
 // ============================================
 // VERIFICAÇÃO DE TRANSPARÊNCIA
@@ -2312,38 +2483,50 @@ async function aplicarBordaNeon(userid) {
 }
 
 await aplicarBordaNeon(userid);
-}
 
 function carregarFotoPerfil() {
-  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+  const navPic = document.getElementById('nav-pic');
+  const defaultPic = './src/icon/default.jpg';
 
+  // --- PASSO 1: CARREGAMENTO IMEDIATO (CACHE) ---
+  // Tenta pegar a URL que salvamos na última vez que ele entrou
+  const cachedPhoto = localStorage.getItem('user_photo_cache');
+  if (cachedPhoto) {
+    navPic.src = cachedPhoto;
+  }
+
+  // --- PASSO 2: VALIDAÇÃO EM SEGUNDO PLANO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const userId = user.uid; // Obtém o ID do usuário logado
+      const userId = user.uid;
       try {
-        // Busca a URL da foto de perfil no Firestore
         const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
         const userMediaSnap = await getDoc(userMediaRef);
 
         if (userMediaSnap.exists()) {
-          const userPhoto = userMediaSnap.data().userphoto || './src/icon/default.jpg';
-          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+          const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+
+          // Se a foto do banco for diferente da foto que está no cache agora
+          if (userPhoto !== cachedPhoto) {
+            navPic.src = userPhoto; // Atualiza a imagem na tela
+            localStorage.setItem('user_photo_cache', userPhoto); // Atualiza o cache para a próxima vez
+          }
         } else {
-          console.warn('Foto de perfil não encontrada. Usando a padrão.');
-          navPic.src = './src/icon/default.jpg';
+          navPic.src = defaultPic;
+          localStorage.removeItem('user_photo_cache');
         }
       } catch (error) {
-        console.error('Erro ao carregar a foto de perfil:', error);
-        navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
+        console.error('Erro ao buscar foto:', error);
+        if (!cachedPhoto) navPic.src = defaultPic;
       }
     } else {
-      console.warn('Usuário não autenticado.');
-      navPic.src = './src/icon/default.jpg'; // Usa a foto padrão se não estiver logado
+      // Se não está logado, limpa o cache e volta pra padrão
+      navPic.src = defaultPic;
+      localStorage.removeItem('user_photo_cache');
     }
   });
 }
 
-// Chama a função ao carregar a página
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 
 // ===================
@@ -2674,52 +2857,6 @@ function setupSettingsSidebar() {
 // Chame a função de inicialização
 // Se o seu código já usa um evento de 'DOMContentLoaded', adicione a função lá.
 setupSettingsSidebar();
-
-// ===================
-// ATUALIZAÇÃO DE IMAGENS DO PERFIL
-// ===================
-async function atualizarImagensPerfil(userData, userid) {
-  const mediaRef = doc(db, "users", userid, "user-infos", "user-media");
-  const mediaSnap = await getDoc(mediaRef);
-  const mediaData = mediaSnap.exists() ? mediaSnap.data() : {};
-
-  
-
-  const profilePic = document.querySelector('.profile-pic');
-  if (profilePic) {
-    profilePic.src = mediaData.userphoto || './src/icon/default.jpg';
-    profilePic.onerror = () => { profilePic.src = './src/icon/default.jpg'; };
-  }
-
-  const userPics = document.querySelectorAll('.user-pic');
-  userPics.forEach(pic => {
-    pic.src = mediaData.userphoto || './src/icon/default.jpg';
-    pic.onerror = () => { pic.src = './src/icon/default.jpg'; };
-  });
-
-  // Removido: aplicação de cor personalizada
-
-/* === APLICAR FUNDO GERAL NA CONTAINER-FULL ===
-const bgUrl = mediaData.background;
-const containerFull = document.querySelector(".full-profile-container");
-
-if (containerFull && bgUrl) {
-    containerFull.style.setProperty("background-image", `url('${bgUrl}')`, "important");
-    containerFull.style.setProperty("background-size", "cover", "important");
-    containerFull.style.setProperty("background-position", "center", "important");
-    containerFull.style.setProperty("background-repeat", "no-repeat", "important");
-}
-*/
-
-  const headerPhoto = mediaData.headerphoto;
-  const headerEl = document.querySelector('.profile-banner');
-  if (headerEl && headerPhoto) {
-    headerEl.style.backgroundImage = `url('${headerPhoto}')`;
-    headerEl.style.backgroundSize = 'cover';
-    headerEl.style.backgroundPosition = 'center';
-  }
-}
-
 renderFeedGrid(postsArray);
 
 // ===================
