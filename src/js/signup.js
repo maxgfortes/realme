@@ -251,6 +251,9 @@ async function completarCadastro(user, userData) {
   console.log("🔄 Completando cadastro após verificação de email...");
 
   try {
+    const agora = serverTimestamp();
+    const agoraDate = new Date();
+
     // Atualizar Auth Profile
     await updateProfile(user, { displayName: userData.nome });
 
@@ -258,44 +261,150 @@ async function completarCadastro(user, userData) {
     await setDoc(doc(db, "usernames", userData.username), {
       uid: user.uid,
       email: userData.email,
-      reservadoEm: serverTimestamp()
+      username: userData.username,
+      reservadoEm: agora,
+      criadoEm: agora,
+      ativo: true
     });
 
-    // Criar documento do usuário
+    // Criar documento do usuário completo
     await setDoc(doc(db, "users", user.uid), {
+      // Identificação
       uid: user.uid,
       username: userData.username,
       email: userData.email,
+      
+      // Informações pessoais
       name: userData.nome,
       surname: userData.sobrenome,
       displayname: userData.nome,
+      fullname: `${userData.nome} ${userData.sobrenome}`,
       nascimento: userData.nascimento,
       gender: userData.genero,
-      criadoem: serverTimestamp(),
-      ultimaAtualizacao: serverTimestamp(),
+      
+      // Timestamps
+      criadoEm: agora,
+      criadoEmISO: agoraDate.toISOString(),
+      ultimaAtualizacao: agora,
+      ultimaAtualizacaoISO: agoraDate.toISOString(),
+      ultimoLogin: agora,
+      ultimoLoginISO: agoraDate.toISOString(),
+      
+      // Verificação e segurança
       emailVerified: true,
-      ultimoLogin: serverTimestamp(),
+      emailVerifiedAt: agora,
+      accountActive: true,
+      accountStatus: "active",
+      
+      // Metadados
       versao: "2.1",
-      senha: userData.senha
+      plataforma: "web",
+      userAgent: navigator.userAgent,
+      idioma: navigator.language || 'pt-BR',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      
+      // Configurações padrão
+      privacidade: {
+        perfilPublico: true,
+        aceitaMensagens: true,
+        mostraOnline: true
+      },
+      
+      // Estatísticas iniciais
+      stats: {
+        posts: 0,
+        seguidores: 0,
+        seguindo: 0,
+        curtidas: 0
+      },
+      
+      // Flags
+      isNewUser: true,
+      completedOnboarding: false,
+      termsAccepted: true,
+      termsAcceptedAt: agora
     });
 
     // Atualizar lastupdate
     await setDoc(doc(db, "lastupdate", "latestUser"), { 
       username: userData.username,
-      timestamp: serverTimestamp()
+      uid: user.uid,
+      email: userData.email,
+      timestamp: agora,
+      timestampISO: agoraDate.toISOString()
     }, { merge: true });
 
-    // Criar registro em newusers
+    // Criar registro em newusers com mais informações
     await setDoc(doc(db, "newusers", user.uid), {
       userid: user.uid,
-      createdat: serverTimestamp()
+      username: userData.username,
+      email: userData.email,
+      displayname: userData.nome,
+      createdat: agora,
+      createdatISO: agoraDate.toISOString(),
+      plataforma: "web",
+      versao: "2.1"
     });
 
-    // Salvar dados privados
+    // Salvar dados privados com mais informações
     await setDoc(doc(db, "privateUsers", user.uid), {
+      uid: user.uid,
+      username: userData.username,
       email: userData.email,
-      senha: userData.senha,
-      criadoem: serverTimestamp()
+      senha: userData.senha, // Considere remover isso por segurança
+      
+      // Timestamps
+      criadoEm: agora,
+      criadoEmISO: agoraDate.toISOString(),
+      ultimaAtualizacao: agora,
+      
+      // Informações de segurança
+      ultimaTrocaSenha: agora,
+      tentativasLogin: 0,
+      ultimoIPLogin: null, // Pode ser capturado via backend
+      
+      // Backup de recuperação
+      recoveryEmail: userData.email,
+      phoneNumber: null,
+      
+      // Histórico
+      loginHistory: [{
+        timestamp: agora,
+        timestampISO: agoraDate.toISOString(),
+        tipo: "primeiro_login",
+        plataforma: "web"
+      }]
+    });
+
+    // Criar documento de configurações do usuário
+    await setDoc(doc(db, "userSettings", user.uid), {
+      uid: user.uid,
+      notificacoes: {
+        email: true,
+        push: false,
+        curtidas: true,
+        comentarios: true,
+        novosSeguidor: true,
+        mensagens: true
+      },
+      tema: "auto",
+      idioma: "pt-BR",
+      criadoEm: agora,
+      atualizadoEm: agora
+    });
+
+    // Criar documento de atividades (log inicial)
+    await setDoc(doc(db, "userActivity", user.uid), {
+      uid: user.uid,
+      primeiroAcesso: agora,
+      ultimoAcesso: agora,
+      totalAcessos: 1,
+      atividades: [{
+        tipo: "cadastro_completo",
+        timestamp: agora,
+        timestampISO: agoraDate.toISOString(),
+        detalhes: "Conta criada e email verificado"
+      }]
     });
 
     console.log("✅ Cadastro completado com sucesso!");
@@ -312,6 +421,7 @@ async function completarCadastro(user, userData) {
     throw error;
   }
 }
+
 
 // ===================
 // CADASTRO COM VALIDAÇÃO DE EMAIL
