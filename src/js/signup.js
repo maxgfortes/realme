@@ -290,12 +290,7 @@ async function completarCadastro(user, userData) {
       createdat: serverTimestamp()
     });
 
-    // Salvar dados privados
-    await setDoc(doc(db, "privateUsers", user.uid), {
-      email: userData.email,
-      senha: userData.senha,
-      criadoem: serverTimestamp()
-    });
+
 
     console.log("✅ Cadastro completado com sucesso!");
     
