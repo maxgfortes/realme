@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, Timestamp, updateDoc
+  getFirestore, doc, setDoc, getDoc, serverTimestamp, deleteDoc, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, createUserWithEmailAndPassword, updateProfile, signOut, signInWithEmailAndPassword, 
@@ -71,7 +71,6 @@ function showLoading(show) {
 // MODAL DE VERIFICAÇÃO
 // ===================
 function showEmailVerificationModal(email) {
-  // Remove modal anterior se existir
   const oldModal = document.getElementById('email-verification-modal');
   if (oldModal) oldModal.remove();
 
@@ -124,7 +123,18 @@ function showEmailVerificationModal(email) {
         border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
+        margin-bottom: 10px;
       ">Reenviar Email</button>
+      <br>
+      <button id="cancel-signup-btn" style="
+        background: transparent;
+        color: #ff6b6b;
+        border: 1px solid #ff6b6b;
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+      ">Cancelar Cadastro</button>
       <p id="verification-status" style="margin-top: 15px; color: #aaa; font-size: 14px;"></p>
     </div>
   `;
@@ -140,35 +150,29 @@ function validarEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
 function validarUsername(username) {
   const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
   return usernameRegex.test(username);
 }
+
 function validarSenha(senha) {
   return senha.length >= 6;
 }
+
 function validarNascimento(nascimento) {
   if (!nascimento) return false;
   const data = new Date(nascimento);
   const hoje = new Date();
-  const idade = hoje.getFullYear() - data.getFullYear();
-  return idade >= 13 && idade <= 120;
-}
-
-// ===================
-// DISPONIBILIDADE
-// ===================
-async function verificarUsernameDisponivel(username) {
-  try {
-    const userRef = doc(db, "users", username);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) return false;
-    const usernameRef = doc(db, "usernames", username.toLowerCase());
-    const usernameSnap = await getDoc(usernameRef);
-    return !usernameSnap.exists();
-  } catch (error) {
-    return true;
+  let idade = hoje.getFullYear() - data.getFullYear();
+  const mesAtual = hoje.getMonth();
+  const mesNasc = data.getMonth();
+  
+  if (mesAtual < mesNasc || (mesAtual === mesNasc && hoje.getDate() < data.getDate())) {
+    idade--;
   }
+  
+  return idade >= 13 && idade <= 120;
 }
 
 // ===================
@@ -181,20 +185,29 @@ function downloadAccountInfoSimple({ usuario, email, senha }) {
   <meta charset="UTF-8">
   <title>Dados RealMe</title>
   <style>
-    body { background-image: url('https://i.postimg.cc/9FcFz827/bg.jpg');  
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed;
-  color: #dbdbdb;
-  display: flex;
-  overflow-y: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none; color: #eee; font-family: Arial; padding: 40px; }
-    .container { background: rgba(20, 20, 20, 0.247);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px; padding: 30px; max-width: 400px; margin: auto; }
+    body { 
+      background-image: url('https://i.postimg.cc/9FcFz827/bg.jpg');  
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      color: #dbdbdb;
+      display: flex;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      font-family: Arial;
+      padding: 40px;
+    }
+    .container { 
+      background: rgba(20, 20, 20, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+    }
     h2 { color: #4A90E2; }
     p { font-size: 18px; margin: 10px 0; }
   </style>
@@ -209,6 +222,7 @@ function downloadAccountInfoSimple({ usuario, email, senha }) {
   </div>
 </body>
 </html>`;
+  
   const blob = new Blob([htmlContent], { type: 'text/html' });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -219,29 +233,31 @@ function downloadAccountInfoSimple({ usuario, email, senha }) {
 }
 
 // ===================
-// VERIFICAR EMAIL
+// LIMPAR CONTA NÃO VERIFICADA
 // ===================
-async function verificarEmailValidado(user, userData) {
-  return new Promise((resolve, reject) => {
-    const checkInterval = setInterval(async () => {
+async function limparContaNaoVerificada(user, username) {
+  console.log("🧹 Limpando conta não verificada...");
+  
+  try {
+    // Remover reserva de username se existir
+    if (username) {
       try {
-        await user.reload();
-        if (user.emailVerified) {
-          clearInterval(checkInterval);
-          resolve(true);
-        }
-      } catch (error) {
-        clearInterval(checkInterval);
-        reject(error);
+        await deleteDoc(doc(db, "usernames", username));
+        console.log("✅ Username liberado:", username);
+      } catch (e) {
+        console.log("⚠️ Username não estava reservado");
       }
-    }, 2000);
-
-    // Timeout de 10 minutos
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      reject(new Error('Timeout na verificação de email'));
-    }, 600000);
-  });
+    }
+    
+    // Deletar usuário do Auth
+    if (user) {
+      await user.delete();
+      console.log("✅ Usuário removido do Auth");
+    }
+    
+  } catch (error) {
+    console.error("❌ Erro ao limpar conta:", error);
+  }
 }
 
 // ===================
@@ -334,7 +350,7 @@ async function completarCadastro(user, userData) {
       timestampISO: agoraDate.toISOString()
     }, { merge: true });
 
-    // Criar registro em newusers com mais informações
+    // Criar registro em newusers
     await setDoc(doc(db, "newusers", user.uid), {
       userid: user.uid,
       username: userData.username,
@@ -346,12 +362,11 @@ async function completarCadastro(user, userData) {
       versao: "2.1"
     });
 
-    // Salvar dados privados com mais informações
+    // Salvar dados privados (considere criptografar a senha)
     await setDoc(doc(db, "privateUsers", user.uid), {
       uid: user.uid,
       username: userData.username,
       email: userData.email,
-      senha: userData.senha, // Considere remover isso por segurança
       
       // Timestamps
       criadoEm: agora,
@@ -361,7 +376,7 @@ async function completarCadastro(user, userData) {
       // Informações de segurança
       ultimaTrocaSenha: agora,
       tentativasLogin: 0,
-      ultimoIPLogin: null, // Pode ser capturado via backend
+      ultimoIPLogin: null,
       
       // Backup de recuperação
       recoveryEmail: userData.email,
@@ -376,7 +391,7 @@ async function completarCadastro(user, userData) {
       }]
     });
 
-    // Criar documento de configurações do usuário
+    // Criar documento de configurações
     await setDoc(doc(db, "userSettings", user.uid), {
       uid: user.uid,
       notificacoes: {
@@ -393,7 +408,7 @@ async function completarCadastro(user, userData) {
       atualizadoEm: agora
     });
 
-    // Criar documento de atividades (log inicial)
+    // Criar documento de atividades
     await setDoc(doc(db, "userActivity", user.uid), {
       uid: user.uid,
       primeiroAcesso: agora,
@@ -422,7 +437,6 @@ async function completarCadastro(user, userData) {
   }
 }
 
-
 // ===================
 // CADASTRO COM VALIDAÇÃO DE EMAIL
 // ===================
@@ -430,37 +444,43 @@ async function criarContaSegura(event) {
   event.preventDefault();
   hideMessages();
 
-  let username = document.getElementById('usuario').value.trim().toLowerCase();
-  const nome = document.getElementById('nome').value.trim();
-  const sobrenome = document.getElementById('sobrenome').value.trim();
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const nascimento = document.getElementById('nascimento').value;
-  const genero = document.getElementById('genero').value;
-  const senha = document.getElementById('senha').value.trim();
+  const username = document.getElementById('usuario')?.value.trim().toLowerCase();
+  const nome = document.getElementById('nome')?.value.trim();
+  const sobrenome = document.getElementById('sobrenome')?.value.trim();
+  const email = document.getElementById('email')?.value.trim().toLowerCase();
+  const nascimento = document.getElementById('nascimento')?.value;
+  const genero = document.getElementById('genero')?.value;
+  const senha = document.getElementById('senha')?.value;
 
   // VALIDAÇÕES BÁSICAS
   if (!username || !nome || !sobrenome || !email || !nascimento || !genero || !senha) {
     showError("Preencha todos os campos obrigatórios.");
     return;
   }
+  
   if (!validarEmail(email)) {
     showError("Digite um email válido.");
     return;
   }
+  
   if (!validarUsername(username)) {
     showError("Username inválido (3-20 caracteres, apenas letras, números e _).");
     return;
   }
+  
   if (!validarSenha(senha)) {
     showError("Senha deve ter pelo menos 6 caracteres.");
     return;
   }
+  
   if (!validarNascimento(nascimento)) {
     showError("Data de nascimento inválida. Você deve ter entre 13 e 120 anos.");
     return;
   }
 
   showLoading(true);
+
+  let userTemp = null;
 
   try {
     // VERIFICAR DISPONIBILIDADE DO USERNAME
@@ -475,21 +495,21 @@ async function criarContaSegura(event) {
     }
     console.log("✅ Username disponível!");
 
-    // CRIAR CONTA NO AUTH
-    console.log("🔐 Criando conta no Firebase Auth...");
+    // CRIAR CONTA NO AUTH (temporária)
+    console.log("🔐 Criando conta temporária no Firebase Auth...");
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-    console.log("✅ Conta criada no Auth! UID:", user.uid);
+    userTemp = userCredential.user;
+    console.log("✅ Conta temporária criada! UID:", userTemp.uid);
 
     // ENVIAR EMAIL DE VERIFICAÇÃO
     console.log("📧 Enviando email de verificação...");
-    await sendEmailVerification(user);
+    await sendEmailVerification(userTemp);
     console.log("✅ Email de verificação enviado!");
 
     showLoading(false);
 
     // Preparar dados do usuário
-    const dataNascimento = new Date(nascimento);
+    const dataNascimento = new Date(nascimento + 'T00:00:00');
     const userData = {
       username,
       nome,
@@ -505,22 +525,36 @@ async function criarContaSegura(event) {
     const statusElement = modal.querySelector('#verification-status');
     const checkBtn = modal.querySelector('#check-verification-btn');
     const resendBtn = modal.querySelector('#resend-email-btn');
+    const cancelBtn = modal.querySelector('#cancel-signup-btn');
+
+    // Botão de cancelar
+    cancelBtn.addEventListener('click', async () => {
+      if (confirm('Tem certeza que deseja cancelar o cadastro? Sua conta será deletada.')) {
+        statusElement.textContent = 'Cancelando...';
+        statusElement.style.color = '#ff6b6b';
+        
+        await limparContaNaoVerificada(userTemp, username);
+        
+        modal.remove();
+        showError('Cadastro cancelado.');
+      }
+    });
 
     // Botão de verificar
     checkBtn.addEventListener('click', async () => {
       checkBtn.disabled = true;
       checkBtn.textContent = 'Verificando...';
-      statusElement.textContent = 'Aguardando verificação...';
+      statusElement.textContent = 'Verificando email...';
       statusElement.style.color = '#4A90E2';
 
       try {
-        await user.reload();
+        await userTemp.reload();
         
-        if (user.emailVerified) {
+        if (userTemp.emailVerified) {
           statusElement.textContent = '✅ Email verificado! Completando cadastro...';
           statusElement.style.color = '#51cf66';
           
-          await completarCadastro(user, userData);
+          await completarCadastro(userTemp, userData);
           
           modal.remove();
           showSuccess('Conta criada com sucesso! Redirecionando...');
@@ -529,7 +563,7 @@ async function criarContaSegura(event) {
             window.location.href = 'feed.html';
           }, 1500);
         } else {
-          statusElement.textContent = '❌ Email ainda não foi verificado. Verifique sua caixa de entrada.';
+          statusElement.textContent = '❌ Email ainda não verificado. Verifique sua caixa de entrada e spam.';
           statusElement.style.color = '#ff6b6b';
           checkBtn.disabled = false;
           checkBtn.textContent = 'Já Verifiquei Meu Email';
@@ -549,7 +583,7 @@ async function criarContaSegura(event) {
       resendBtn.textContent = 'Enviando...';
       
       try {
-        await sendEmailVerification(user);
+        await sendEmailVerification(userTemp);
         statusElement.textContent = '✅ Email reenviado com sucesso!';
         statusElement.style.color = '#51cf66';
         
@@ -557,19 +591,33 @@ async function criarContaSegura(event) {
           resendBtn.disabled = false;
           resendBtn.textContent = 'Reenviar Email';
           statusElement.textContent = '';
-        }, 3000);
+        }, 5000);
       } catch (error) {
         console.error("Erro ao reenviar:", error);
-        statusElement.textContent = '❌ Erro ao reenviar. Aguarde um momento.';
+        
+        let errorMsg = '❌ Erro ao reenviar.';
+        if (error.code === 'auth/too-many-requests') {
+          errorMsg = '❌ Muitas tentativas. Aguarde alguns minutos.';
+        }
+        
+        statusElement.textContent = errorMsg;
         statusElement.style.color = '#ff6b6b';
-        resendBtn.disabled = false;
-        resendBtn.textContent = 'Reenviar Email';
+        
+        setTimeout(() => {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Reenviar Email';
+        }, 3000);
       }
     });
 
   } catch (error) {
     console.error("❌ ERRO:", error);
     showLoading(false);
+    
+    // Limpar conta se algo deu errado
+    if (userTemp) {
+      await limparContaNaoVerificada(userTemp, username);
+    }
     
     let errorMessage = "Erro ao criar conta. Tente novamente.";
     
@@ -609,12 +657,13 @@ async function loginUser(event) {
   const emailInput = document.getElementById('emaillog');
   const senhaInput = document.getElementById('passwordlog');
   const email = emailInput?.value.trim();
-  const senha = senhaInput?.value.trim();
+  const senha = senhaInput?.value;
 
   if (!email || !senha) {
     showError("Preencha todos os campos");
     return;
   }
+  
   if (!validarEmail(email)) {
     showError("Digite um email válido");
     return;
@@ -634,9 +683,15 @@ async function loginUser(event) {
       return;
     }
 
-    await updateDoc(doc(db, "users", user.uid), {
-      ultimoLogin: serverTimestamp()
-    });
+    // Atualizar último login
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        ultimoLogin: serverTimestamp(),
+        ultimoLoginISO: new Date().toISOString()
+      }, { merge: true });
+    } catch (updateError) {
+      console.log("⚠️ Aviso: não foi possível atualizar último login");
+    }
 
     const userSessionData = {
       uid: user.uid,
@@ -646,16 +701,30 @@ async function loginUser(event) {
     };
     localStorage.setItem("userSessionData", JSON.stringify(userSessionData));
 
+    showSuccess("Login realizado com sucesso!");
+    
     setTimeout(() => {
       window.location.href = "feed.html";
     }, 1000);
 
   } catch (error) {
     showLoading(false);
+    console.error("Erro no login:", error);
+    
     let msg = "Erro ao fazer login. Tente novamente.";
-    if (error.code === 'auth/user-not-found') msg = "Usuário não encontrado.";
-    if (error.code === 'auth/wrong-password') msg = "Senha incorreta.";
-    if (error.code === 'auth/invalid-email') msg = "Email inválido.";
+    
+    if (error.code === 'auth/user-not-found') {
+      msg = "Usuário não encontrado.";
+    } else if (error.code === 'auth/wrong-password') {
+      msg = "Senha incorreta.";
+    } else if (error.code === 'auth/invalid-email') {
+      msg = "Email inválido.";
+    } else if (error.code === 'auth/invalid-credential') {
+      msg = "Credenciais inválidas. Verifique email e senha.";
+    } else if (error.code === 'auth/too-many-requests') {
+      msg = "Muitas tentativas. Aguarde alguns minutos.";
+    }
+    
     showError(msg);
   }
 }
@@ -667,39 +736,54 @@ function configurarValidacoes() {
   const usernameInput = document.getElementById('usuario');
   if (usernameInput) {
     usernameInput.addEventListener('input', function() {
-      this.value = this.value.toLowerCase().replace(/\s/g, '');
-      this.value = this.value.replace(/[^a-z0-9_]/g, '');
-      if (validarUsername(this.value)) {
+      let valor = this.value.toLowerCase();
+      valor = valor.replace(/\s/g, '');
+      valor = valor.replace(/[^a-z0-9_]/g, '');
+      this.value = valor;
+      
+      if (valor.length === 0) {
+        this.style.borderColor = '';
+      } else if (validarUsername(valor)) {
         this.style.borderColor = '#51cf66';
       } else {
         this.style.borderColor = '#ff6b6b';
       }
     });
   }
+  
   const emailInput = document.getElementById('email');
   if (emailInput) {
     emailInput.addEventListener('blur', function() {
-      if (validarEmail(this.value)) {
+      const valor = this.value.trim();
+      if (valor.length === 0) {
+        this.style.borderColor = '';
+      } else if (validarEmail(valor)) {
         this.style.borderColor = '#51cf66';
       } else {
         this.style.borderColor = '#ff6b6b';
       }
     });
   }
+  
   const nascimentoInput = document.getElementById('nascimento');
   if (nascimentoInput) {
     nascimentoInput.addEventListener('change', function() {
-      if (validarNascimento(this.value)) {
+      if (this.value && validarNascimento(this.value)) {
         this.style.borderColor = '#51cf66';
-      } else {
+      } else if (this.value) {
         this.style.borderColor = '#ff6b6b';
+      } else {
+        this.style.borderColor = '';
       }
     });
   }
+  
   const senhaInput = document.getElementById('senha');
   if (senhaInput) {
     senhaInput.addEventListener('input', function() {
-      if (validarSenha(this.value)) {
+      if (this.value.length === 0) {
+        this.style.borderColor = '';
+      } else if (validarSenha(this.value)) {
         this.style.borderColor = '#51cf66';
       } else {
         this.style.borderColor = '#ff6b6b';
@@ -712,15 +796,20 @@ function configurarValidacoes() {
 // INICIALIZAÇÃO
 // ===================
 function inicializar() {
+  console.log("🚀 Inicializando aplicação...");
+  
   configurarValidacoes();
 
   const signupForm = document.querySelector('.form-section form');
   if (signupForm) {
     signupForm.addEventListener('submit', criarContaSegura);
+    console.log("✅ Formulário de cadastro configurado");
   }
+  
   const navForm = document.querySelector('nav form');
   if (navForm) {
     navForm.addEventListener('submit', loginUser);
+    console.log("✅ Formulário de login configurado");
   }
 }
 
@@ -729,5 +818,3 @@ if (document.readyState === 'loading') {
 } else {
   inicializar();
 }
-
-window.addEventListener('load', inicializar);
