@@ -261,22 +261,42 @@ async function completarCadastro(user, userData) {
       reservadoEm: serverTimestamp()
     });
 
-    // Criar documento do usuário
+// Criar documento do usuário completo
     await setDoc(doc(db, "users", user.uid), {
+      // Identificação
       uid: user.uid,
       username: userData.username,
       email: userData.email,
+      
+      // Informações pessoais
       name: userData.nome,
       surname: userData.sobrenome,
       displayname: userData.nome,
+      fullname: `${userData.nome} ${userData.sobrenome}`,
       nascimento: userData.nascimento,
       gender: userData.genero,
-      criadoem: serverTimestamp(),
-      ultimaAtualizacao: serverTimestamp(),
+      
+      // Timestamps
+      criadoEm: agora,
+      criadoEmISO: agoraDate.toISOString(),
+      ultimaAtualizacao: agora,
+      ultimaAtualizacaoISO: agoraDate.toISOString(),
+      ultimoLogin: agora,
+      ultimoLoginISO: agoraDate.toISOString(),
+      
+      // Verificação e segurança
       emailVerified: true,
-      ultimoLogin: serverTimestamp(),
+      emailVerifiedAt: agora,
+      accountActive: true,
+      accountStatus: "active",
+      
+      // Metadados
       versao: "2.1",
-      senha: userData.senha
+      plataforma: "web",
+      userAgent: navigator.userAgent,
+      idioma: navigator.language || 'pt-BR',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      
     });
 
     // Atualizar lastupdate
