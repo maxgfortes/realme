@@ -254,72 +254,28 @@ async function completarCadastro(user, userData) {
     // Atualizar Auth Profile
     await updateProfile(user, { displayName: userData.nome });
 
-// Reservar username
+    // Reservar username
     await setDoc(doc(db, "usernames", userData.username), {
       uid: user.uid,
       email: userData.email,
-      username: userData.username,
-      reservadoEm: agora,
-      criadoEm: agora,
-      ativo: true
+      reservadoEm: serverTimestamp()
     });
 
-    // Criar documento do usuário completo
+    // Criar documento do usuário
     await setDoc(doc(db, "users", user.uid), {
-      // Identificação
       uid: user.uid,
       username: userData.username,
       email: userData.email,
-      
-      // Informações pessoais
       name: userData.nome,
       surname: userData.sobrenome,
       displayname: userData.nome,
-      fullname: `${userData.nome} ${userData.sobrenome}`,
       nascimento: userData.nascimento,
       gender: userData.genero,
-      
-      // Timestamps
-      criadoEm: agora,
-      criadoEmISO: agoraDate.toISOString(),
-      ultimaAtualizacao: agora,
-      ultimaAtualizacaoISO: agoraDate.toISOString(),
-      ultimoLogin: agora,
-      ultimoLoginISO: agoraDate.toISOString(),
-      
-      // Verificação e segurança
+      criadoem: serverTimestamp(),
+      ultimaAtualizacao: serverTimestamp(),
       emailVerified: true,
-      emailVerifiedAt: agora,
-      accountActive: true,
-      accountStatus: "active",
-      
-      // Metadados
-      versao: "2.1",
-      plataforma: "web",
-      userAgent: navigator.userAgent,
-      idioma: navigator.language || 'pt-BR',
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      
-      // Configurações padrão
-      privacidade: {
-        perfilPublico: true,
-        aceitaMensagens: true,
-        mostraOnline: true
-      },
-      
-      // Estatísticas iniciais
-      stats: {
-        posts: 0,
-        seguidores: 0,
-        seguindo: 0,
-        curtidas: 0
-      },
-      
-      // Flags
-      isNewUser: true,
-      completedOnboarding: false,
-      termsAccepted: true,
-      termsAcceptedAt: agora
+      ultimoLogin: serverTimestamp(),
+      versao: "2.1"
     });
 
     // Atualizar lastupdate
