@@ -275,8 +275,7 @@ async function completarCadastro(user, userData) {
       ultimaAtualizacao: serverTimestamp(),
       emailVerified: true,
       ultimoLogin: serverTimestamp(),
-      versao: "2.1",
-      senha: userData.senha
+      versao: "2.1"
     });
 
     // Atualizar lastupdate
@@ -386,8 +385,7 @@ async function criarContaSegura(event) {
       sobrenome,
       email,
       nascimento: Timestamp.fromDate(dataNascimento),
-      genero,
-      senha
+      genero
     };
 
     // MOSTRAR MODAL DE VERIFICAÇÃO
