@@ -141,7 +141,7 @@ function validarEmail(email) {
   return emailRegex.test(email);
 }
 function validarUsername(username) {
-  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+  const usernameRegex = /^[a-z0-9_]{3,20}$/;
   return usernameRegex.test(username);
 }
 function validarSenha(senha) {
@@ -275,7 +275,8 @@ async function completarCadastro(user, userData) {
       ultimaAtualizacao: serverTimestamp(),
       emailVerified: true,
       ultimoLogin: serverTimestamp(),
-      versao: "2.1"
+      versao: "2.1",
+      senha: userData.senha
     });
 
     // Atualizar lastupdate
@@ -385,7 +386,8 @@ async function criarContaSegura(event) {
       sobrenome,
       email,
       nascimento: Timestamp.fromDate(dataNascimento),
-      genero
+      genero,
+      senha
     };
 
     // MOSTRAR MODAL DE VERIFICAÇÃO
