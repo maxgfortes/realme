@@ -131,10 +131,6 @@ body {
   font-size: 22px;
 }
 
-.dm-user-btn.active, .dm-user-btn:hover {
-  background: #4A90E2;
-  color: #fff;
-}
 
 .dm-user-btn img {
   width: 66px;
@@ -547,7 +543,7 @@ body {
 .dm-msg-bubble {
     padding: 0px 14px;
     border-radius: 2.8vh;
-    margin: 2px 0;
+    margin: 1px 0;
     max-width: 100%;
     word-break: break-word;
     padding-top: 0px !important;
@@ -644,7 +640,7 @@ body {
 .deles {
     border-radius: 2vh;
     max-width: 75%;
-    margin: 2px 0;
+    margin: 1px 0;
 }
 
 .deles:only-child {

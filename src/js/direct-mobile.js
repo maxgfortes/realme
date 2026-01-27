@@ -58,20 +58,133 @@ let allChats = [];
 let chatsArray = [];
 let ultimaQtdMensagens = 0;
 
+// Cache de dados de usuários
+const userCache = {
+  photos: new Map(),
+  names: new Map(),
+  
+  setPhoto(userId, photoUrl) {
+    this.photos.set(userId, photoUrl);
+    localStorage.setItem(`user_photo_${userId}`, photoUrl);
+  },
+  
+  getPhoto(userId) {
+    if (this.photos.has(userId)) return this.photos.get(userId);
+    const cached = localStorage.getItem(`user_photo_${userId}`);
+    if (cached) {
+      this.photos.set(userId, cached);
+      return cached;
+    }
+    return null;
+  },
+  
+  setName(userId, displayName) {
+    this.names.set(userId, displayName);
+    localStorage.setItem(`user_name_${userId}`, displayName);
+  },
+  
+  getName(userId) {
+    if (this.names.has(userId)) return this.names.get(userId);
+    const cached = localStorage.getItem(`user_name_${userId}`);
+    if (cached) {
+      this.names.set(userId, cached);
+      return cached;
+    }
+    return null;
+  }
+};
+
+// Cache de conversas
+const conversasCache = {
+  data: null,
+  timestamp: 0,
+  ttl: 30000, // 30 segundos
+  
+  set(data) {
+    this.data = data;
+    this.timestamp = Date.now();
+    localStorage.setItem('conversas_cache', JSON.stringify({
+      data,
+      timestamp: this.timestamp
+    }));
+  },
+  
+  get() {
+    if (this.data && Date.now() - this.timestamp < this.ttl) {
+      return this.data;
+    }
+    
+    const cached = localStorage.getItem('conversas_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Date.now() - parsed.timestamp < this.ttl) {
+        this.data = parsed.data;
+        this.timestamp = parsed.timestamp;
+        return this.data;
+      }
+    }
+    return null;
+  },
+  
+  clear() {
+    this.data = null;
+    this.timestamp = 0;
+    localStorage.removeItem('conversas_cache');
+  }
+};
+
 // Gera chatId
 function gerarChatId(user1, user2) {
   return `chat-${[user1, user2].sort().join("-")}`;
 }
 
+// Busca dados do usuário com cache
+async function buscarDadosUsuario(userId) {
+  let photoUrl = userCache.getPhoto(userId) || "./src/icon/default.jpg";
+  let displayName = userCache.getName(userId) || userId;
+  
+  // Busca em background para atualizar cache
+  Promise.all([
+    getDoc(doc(db, "users", userId, "user-infos", "user-media")).then(mediaDoc => {
+      if (mediaDoc.exists() && mediaDoc.data().userphoto) {
+        const newPhoto = mediaDoc.data().userphoto;
+        if (newPhoto !== photoUrl) {
+          userCache.setPhoto(userId, newPhoto);
+        }
+      }
+    }).catch(() => {}),
+    
+    getDoc(doc(db, "users", userId)).then(userDoc => {
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const newName = data.displayname || data.username || userId;
+        if (newName !== displayName) {
+          userCache.setName(userId, newName);
+        }
+      }
+    }).catch(() => {})
+  ]);
+  
+  return { photoUrl, displayName };
+}
+
 // Carrega lista de conversas
 async function carregarConversas(filtrarTermo = "") {
-  dmUsersList.querySelectorAll(".dm-user-btn").forEach(e => e.remove());
+  // Carrega do cache primeiro
+  const cached = conversasCache.get();
+  if (cached && !filtrarTermo) {
+    renderizarConversas(cached, filtrarTermo);
+  }
+  
   if (!loggedUser) return;
+  
   const chatsRef = collection(db, "chats");
   const q = query(chatsRef, where("participants", "array-contains", loggedUser));
   const chatsSnap = await getDocs(q);
 
   chatsArray = [];
+  const promises = [];
+  
   for (const chatDoc of chatsSnap.docs) {
     const chatData = chatDoc.data();
     if (chatData.participants && chatData.participants.includes(loggedUser)) {
@@ -83,33 +196,39 @@ async function carregarConversas(filtrarTermo = "") {
           lastMessage: chatData.lastMessage || "",
           chatData
         });
+        
+        // Busca dados do usuário em paralelo
+        promises.push(buscarDadosUsuario(friendId));
       }
     }
   }
+  
+  // Aguarda todas as buscas de dados
+  await Promise.all(promises);
+  
   chatsArray.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
-
   allChats = chatsArray;
+  
+  // Salva no cache
+  conversasCache.set(chatsArray);
+  
+  renderizarConversas(chatsArray, filtrarTermo);
+}
 
+// Renderiza conversas na tela
+function renderizarConversas(chatsArray, filtrarTermo = "") {
+  dmUsersList.querySelectorAll(".dm-user-btn").forEach(e => e.remove());
+  
   const friendsUnicos = new Set();
+  const fragment = document.createDocumentFragment();
+  
   for (const chatObj of chatsArray) {
     const friendId = chatObj.friendId;
     if (friendsUnicos.has(friendId)) continue;
     friendsUnicos.add(friendId);
 
-    let friendPhotoUrl = "./src/icon/default.jpg";
-    let friendDisplayName = friendId;
-    try {
-      const friendMediaDoc = await getDoc(doc(db, "users", friendId, "user-infos", "user-media"));
-      if (friendMediaDoc.exists()) {
-        const data = friendMediaDoc.data();
-        if (data.userphoto) friendPhotoUrl = data.userphoto;
-      }
-      const friendDoc = await getDoc(doc(db, "users", friendId));
-      if (friendDoc.exists()) {
-        const data = friendDoc.data();
-        friendDisplayName = data.displayname || data.username || friendId;
-      }
-    } catch (error) {}
+    const friendPhotoUrl = userCache.getPhoto(friendId) || "./src/icon/default.jpg";
+    const friendDisplayName = userCache.getName(friendId) || friendId;
 
     if (filtrarTermo && !friendDisplayName.toLowerCase().includes(filtrarTermo.toLowerCase())) continue;
 
@@ -123,50 +242,63 @@ async function carregarConversas(filtrarTermo = "") {
       </div>
     `;
     btn.addEventListener("click", () => selecionarUsuario(friendId, friendPhotoUrl, friendDisplayName));
-    dmUsersList.appendChild(btn);
+    fragment.appendChild(btn);
   }
+  
+  dmUsersList.appendChild(fragment);
 }
 
 function carregarFotoPerfil() {
-  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+  const navPic = document.getElementById('nav-pic');
+  const defaultPic = './src/icon/default.jpg';
 
+  // Carregamento imediato do cache
+  const cachedPhoto = localStorage.getItem('user_photo_cache');
+  if (cachedPhoto) {
+    navPic.src = cachedPhoto;
+  }
+
+  // Validação em segundo plano
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const userId = user.uid; // Obtém o ID do usuário logado
+      const userId = user.uid;
       try {
-        // Busca a URL da foto de perfil no Firestore
         const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
         const userMediaSnap = await getDoc(userMediaRef);
 
         if (userMediaSnap.exists()) {
-          const userPhoto = userMediaSnap.data().userphoto || './src/icon/default.jpg';
-          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+          const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+
+          if (userPhoto !== cachedPhoto) {
+            navPic.src = userPhoto;
+            localStorage.setItem('user_photo_cache', userPhoto);
+          }
         } else {
-          console.warn('Foto de perfil não encontrada. Usando a padrão.');
-          navPic.src = './src/icon/default.jpg';
+          navPic.src = defaultPic;
+          localStorage.removeItem('user_photo_cache');
         }
       } catch (error) {
-        console.error('Erro ao carregar a foto de perfil:', error);
-        navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
+        console.error('Erro ao buscar foto:', error);
+        if (!cachedPhoto) navPic.src = defaultPic;
       }
     } else {
-      console.warn('Usuário não autenticado.');
-      navPic.src = './src/icon/default.jpg'; // Usa a foto padrão se não estiver logado
+      navPic.src = defaultPic;
+      localStorage.removeItem('user_photo_cache');
     }
   });
 }
 
-// Chama a função ao carregar a página
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 
 // Busca conversas
 dmSearchInput.addEventListener("input", () => {
   const termo = dmSearchInput.value.trim();
-  carregarConversas(termo);
+  renderizarConversas(chatsArray, termo);
 });
+
 dmSearchBtn.addEventListener("click", () => {
   const termo = dmSearchInput.value.trim();
-  carregarConversas(termo);
+  renderizarConversas(chatsArray, termo);
 });
 
 // Seleciona usuário e carrega chat
@@ -194,7 +326,7 @@ dmBackBtn.addEventListener('click', () => {
   dmChatHeader.style.display = "none";
 });
 
-// Botão de voltar da navbar (opcional, para mobile)
+// Botão de voltar da navbar
 dmListBackBtn.addEventListener('click', () => {
   window.history.back();
 });
@@ -207,13 +339,14 @@ dmChatUserName.addEventListener("click", () => {
 
 // Marcar mensagens como lidas ao abrir o chat
 async function marcarMensagensComoLidas(chatId, mensagens) {
+  const promises = [];
   for (const m of mensagens) {
-    // Só marca como lida se não for do usuário logado e ainda não estiver lida
     if (m.sender !== loggedUser && !m.read) {
       const msgRef = doc(db, "chats", chatId, "messages", m.id);
-      await updateDoc(msgRef, { read: true });
+      promises.push(updateDoc(msgRef, { read: true }));
     }
   }
+  await Promise.all(promises);
 }
 
 // Carrega mensagens em tempo real
@@ -236,7 +369,7 @@ function carregarMensagensTempoReal() {
     });
 
     // Marcar como lidas as mensagens recebidas
-    await marcarMensagensComoLidas(chatId, mensagens);
+    marcarMensagensComoLidas(chatId, mensagens);
 
     // Som de recebimento só para novas mensagens recebidas
     if (
@@ -248,29 +381,33 @@ function carregarMensagensTempoReal() {
     }
     ultimaQtdMensagens = mensagens.length;
 
-    dmMessages.innerHTML = "";
-
-let lastSender = null;
-let bloco = null;
-
-// Encontrar o índice da última mensagem enviada pelo usuário
-let lastUserMsgIndex = -1;
-for (let i = mensagens.length - 1; i >= 0; i--) {
-  if (mensagens[i].sender === loggedUser) {
-    lastUserMsgIndex = i;
-    break;
-  }
+    renderizarMensagens(mensagens);
+  });
 }
 
-mensagens.forEach((m, idx) => {
+// Renderiza mensagens
+function renderizarMensagens(mensagens) {
+  const fragment = document.createDocumentFragment();
+  let lastSender = null;
+  let bloco = null;
+
+  // Encontrar o índice da última mensagem enviada pelo usuário
+  let lastUserMsgIndex = -1;
+  for (let i = mensagens.length - 1; i >= 0; i--) {
+    if (mensagens[i].sender === loggedUser) {
+      lastUserMsgIndex = i;
+      break;
+    }
+  }
+
+  mensagens.forEach((m, idx) => {
     const isSender = m.sender === loggedUser;
-    const isLastMsg = idx === mensagens.length - 1;
 
     // Quebra o bloco quando trocar o remetente
     if (m.sender !== lastSender) {
-        bloco = document.createElement("div");
-        bloco.className = "dm-msg-bloco " + (isSender ? "meu-bloco" : "deles-bloco");
-        dmMessages.appendChild(bloco);
+      bloco = document.createElement("div");
+      bloco.className = "dm-msg-bloco " + (isSender ? "meu-bloco" : "deles-bloco");
+      fragment.appendChild(bloco);
     }
 
     // Cria a bubble
@@ -281,53 +418,48 @@ mensagens.forEach((m, idx) => {
 
     // Foto da outra pessoa: somente na ÚLTIMA mensagem do bloco dela
     if (!isSender) {
-        const next = mensagens[idx + 1];
-        if (!next || next.sender === loggedUser) {
-            const img = document.createElement("img");
-            img.className = "dm-msg-foto";
-            img.src = dmChatUserImg.src;
-            bloco.appendChild(img);
-        }
+      const next = mensagens[idx + 1];
+      if (!next || next.sender === loggedUser) {
+        const img = document.createElement("img");
+        img.className = "dm-msg-foto";
+        img.src = dmChatUserImg.src;
+        bloco.appendChild(img);
+      }
     }
 
     // Footer apenas na ÚLTIMA mensagem enviada por VOCÊ
     if (idx === lastUserMsgIndex) {
-        const footer = document.createElement("div");
-        footer.className = "dm-msg-footer";
+      const footer = document.createElement("div");
+      footer.className = "dm-msg-footer";
 
-        const time = formatarTempoRelativo(
-            m.timestamp ? m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000) : new Date()
-        );
+      const time = formatarTempoRelativo(
+        m.timestamp ? m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000) : new Date()
+      );
 
-        const visto = m.read ? "• visto" : "• enviado";
+      const visto = m.read ? "• visto" : "• enviado";
 
-        footer.innerHTML = `<span>${time}</span> <span class="dm-visto">${visto}</span>`;
-        bloco.appendChild(footer);
+      footer.innerHTML = `<span>${time}</span> <span class="dm-visto">${visto}</span>`;
+      bloco.appendChild(footer);
     }
 
     lastSender = m.sender;
-});
-
-dmMessages.scrollTop = dmMessages.scrollHeight;
-
   });
+
+  dmMessages.innerHTML = "";
+  dmMessages.appendChild(fragment);
+  dmMessages.scrollTop = dmMessages.scrollHeight;
 }
-
-
 
 function enviarMensagemHandler(e) {
   if (e) e.preventDefault();
   enviarMensagem();
 }
 
-
-
 let enviando = false;
 let ultimoEnvio = 0;
 
 async function enviarMensagem() {
   const agora = Date.now();
-  // Bloqueio por tempo: só permite enviar se passou pelo menos 700ms do último envio
   if (enviando || (agora - ultimoEnvio < 700)) return;
   enviando = true;
   ultimoEnvio = agora;
@@ -338,7 +470,7 @@ async function enviarMensagem() {
     return;
   }
   dmMsgInput.value = "";
-  dmMsgInput.blur(); // Remove foco para evitar disparos extras
+  dmMsgInput.blur();
 
   const chatId = gerarChatId(loggedUser, selectedUser);
   const msgDocRef = doc(collection(db, "chats", chatId, "messages"));
@@ -347,20 +479,22 @@ async function enviarMensagem() {
     sender: loggedUser,
     timestamp: serverTimestamp()
   };
+  
   try {
-    await setDoc(msgDocRef, msgData);
-    const chatRef = doc(db, "chats", chatId);
-    await updateDoc(chatRef, {
-      lastMessage: conteudo,
-      lastMessageTime: serverTimestamp()
-    });
+    await Promise.all([
+      setDoc(msgDocRef, msgData),
+      updateDoc(doc(db, "chats", chatId), {
+        lastMessage: conteudo,
+        lastMessageTime: serverTimestamp()
+      })
+    ]);
     audioSend.play();
+    conversasCache.clear(); // Limpa cache para atualizar lista
   } catch (err) {
-    // erro opcional
+    console.error('Erro ao enviar mensagem:', err);
   }
   enviando = false;
 }
-
 
 // Formata tempo relativo
 function formatarTempoRelativo(date) {
@@ -392,9 +526,7 @@ function tempoRelativo(timestamp) {
   return "Enviado agora mesmo";
 }
 
-
-
-// Eventos (registrados só uma vez)
+// Eventos
 dmSendBtn.addEventListener("click", enviarMensagemHandler);
 dmMsgInput.addEventListener("keypress", function(e) {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -402,20 +534,24 @@ dmMsgInput.addEventListener("keypress", function(e) {
   }
 });
 
-
-
 // Autenticação e inicialização
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     loggedUser = user.uid;
-    // Busca nome do usuário logado
+    
+    // Busca nome do usuário logado do cache primeiro
+    let displayName = userCache.getName(loggedUser) || loggedUser;
+    dmTitle.textContent = displayName;
+    
+    // Atualiza em background
     const userDoc = await getDoc(doc(db, "users", loggedUser));
-    let displayName = loggedUser;
     if (userDoc.exists()) {
       const data = userDoc.data();
-      displayName = data.displayname || data.username || loggedUser;
+      const newName = data.displayname || data.username || loggedUser;
+      userCache.setName(loggedUser, newName);
+      dmTitle.textContent = newName;
     }
-    dmTitle.textContent = displayName;
+    
     carregarConversas();
   } else {
     window.location.href = "login.html";

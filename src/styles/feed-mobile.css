@@ -531,7 +531,7 @@ body.modal-open {
   border-left: none;
   border: none !important;
   background: transparent !important;
-  border-bottom: 2px solid var(--border-primary) !important;
+  border-bottom: 0.1px solid var(--border-primary) !important;
   border-radius: 0px !important;
 }
 

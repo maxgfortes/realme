@@ -5,33 +5,46 @@ const auth = getAuth();
 const db = getFirestore();
 
 function carregarFotoPerfil() {
-  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+  const navPic = document.getElementById('nav-pic');
+  const defaultPic = './src/icon/default.jpg';
 
+  // --- PASSO 1: CARREGAMENTO IMEDIATO (CACHE) ---
+  // Tenta pegar a URL que salvamos na última vez que ele entrou
+  const cachedPhoto = localStorage.getItem('user_photo_cache');
+  if (cachedPhoto) {
+    navPic.src = cachedPhoto;
+  }
+
+  // --- PASSO 2: VALIDAÇÃO EM SEGUNDO PLANO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const userId = user.uid; // Obtém o ID do usuário logado
+      const userId = user.uid;
       try {
-        // Busca a URL da foto de perfil no Firestore
         const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
         const userMediaSnap = await getDoc(userMediaRef);
 
         if (userMediaSnap.exists()) {
-          const userPhoto = userMediaSnap.data().userphoto || './src/icon/default.jpg';
-          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+          const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+
+          // Se a foto do banco for diferente da foto que está no cache agora
+          if (userPhoto !== cachedPhoto) {
+            navPic.src = userPhoto; // Atualiza a imagem na tela
+            localStorage.setItem('user_photo_cache', userPhoto); // Atualiza o cache para a próxima vez
+          }
         } else {
-          console.warn('Foto de perfil não encontrada. Usando a padrão.');
-          navPic.src = './src/icon/default.jpg';
+          navPic.src = defaultPic;
+          localStorage.removeItem('user_photo_cache');
         }
       } catch (error) {
-        console.error('Erro ao carregar a foto de perfil:', error);
-        navPic.src = './src/icon/default.jpg'; // Usa a foto padrão em caso de erro
+        console.error('Erro ao buscar foto:', error);
+        if (!cachedPhoto) navPic.src = defaultPic;
       }
     } else {
-      console.warn('Usuário não autenticado.');
-      navPic.src = './src/icon/default.jpg'; // Usa a foto padrão se não estiver logado
+      // Se não está logado, limpa o cache e volta pra padrão
+      navPic.src = defaultPic;
+      localStorage.removeItem('user_photo_cache');
     }
   });
 }
 
-// Chama a função ao carregar a página
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);

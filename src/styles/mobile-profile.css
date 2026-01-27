@@ -1321,14 +1321,12 @@
 
 .depoimento-card {
   width: 100%;
-  border-bottom: 1px solid #1a1a1a;
-  padding: 12px;
+  padding: 12px 12px 22px 12px;
   font-size: 12px;
 }
 
 .depoimento-card:last-child {
   width: 100%;
-  border-bottom: 1px solid #1a1a1a;
   padding: 12px;
   font-size: 12px;
   margin-bottom: 100px;
@@ -1336,7 +1334,6 @@
 
 .depoimento-card:hover {
   width: 100%;
-  border-bottom: 1px solid #1a1a1a !important;
   padding: 12px;
   font-size: 12px;
 }
@@ -1396,7 +1393,9 @@
 
 .depoimento-form {
   padding: 12px;
-  border-bottom: 1px solid #1a1a1a;
+  width: 100%;
+  bottom: 80px;
+  height: 60px;
 }
 
 .depoimento-form h4 {
@@ -1414,7 +1413,7 @@
   height: 4.65vh;
   background-color: #222;
   border: none;
-  border-radius: 16px;
+  border-radius: 999999999px;
   color: white;
   padding: 8px 12px;
   outline: none !important;
@@ -1428,7 +1427,7 @@
   width: 100% !important;
   height: 4.65vh;
   border: none !important;
-  border-radius: 16px;
+  border-radius: 999999999px;
   color: white;
   padding: 8px 12px;
   outline: none !important;
@@ -1445,8 +1444,8 @@ textarea::placeholder {
 
 .form-actions button {
   font-size: 14px;
-  border-radius: 16px;
-  height: 4.7vh;
+  border-radius: 999999999px;
+  height: 4.68vh;
   font-weight: bold;
   background-color: #333;
   border: none;
@@ -2083,3 +2082,5 @@ user-select: none;
     border: 1px solid #505050 !important; /* Borda colorida para você ver onde ele está */
     z-index: 9999 !important;
 }
+
+
