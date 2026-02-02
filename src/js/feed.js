@@ -598,13 +598,27 @@ async function buscarDadosUsuarioPorUid(uid) {
 
 
 function configurarScrollInfinito() {
-  window.addEventListener('scroll', async () => {
-    // 1. Cálculo da posição atual do scroll
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
+  // Detecta scroll em qualquer elemento da página
+  document.addEventListener('scroll', async (e) => {
+    let scrollTop, windowHeight, documentHeight;
+    const target = e.target;
+    
+    // Para document/window/body
+    if (target === document || target === document.documentElement || target === document.body) {
+      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      windowHeight = window.innerHeight;
+      documentHeight = document.documentElement.scrollHeight;
+    } 
+    // Para qualquer elemento com scroll (como welcome-container)
+    else if (target.scrollHeight > target.clientHeight) {
+      scrollTop = target.scrollTop;
+      windowHeight = target.clientHeight;
+      documentHeight = target.scrollHeight;
+    } else {
+      return; // Não tem scroll, ignora
+    }
 
-    // 2. Definir uma margem para carregar antes de chegar ao fim (ex: 300px)
+    // Definir uma margem para carregar antes de chegar ao fim
     const threshold = 300;
 
     if (scrollTop + windowHeight >= documentHeight - threshold) {
@@ -623,14 +637,13 @@ function configurarScrollInfinito() {
 
       // Lógica para o Feed do Mastodon (ID: feed2)
       if (divMastodon && window.getComputedStyle(divMastodon).display !== 'none') {
-        // Nota: no seu código original verificava 'block', mas 'none' é mais seguro
         if (!loadingMastodon) {
           console.log("A carregar mais posts do Mastodon...");
           await carregarFeedMastodon(true); 
         }
       }
     }
-  });
+  }, true); // true = captura eventos de scroll de todos os elementos
 }
 
 // ===================
@@ -781,12 +794,12 @@ function formatarDataRelativa(data) {
     const meses = Math.floor(dias / 30);
     const anos = Math.floor(dias / 365);
     if (minutos < 1) return 'Agora mesmo';
-    else if (minutos < 60) return `Há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
-    else if (horas < 24) return `Há ${horas} hora${horas !== 1 ? 's' : ''}`;
-    else if (dias < 7) return `Há ${dias} dia${dias !== 1 ? 's' : ''}`;
-    else if (semanas < 4) return `Há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
-    else if (meses < 12) return `Há ${meses} mês${meses !== 1 ? 'es' : ''}`;
-    else return `Há    ${anos} ano${anos !== 1 ? 's' : ''}`;
+    else if (minutos < 60) return `há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+    else if (horas < 24) return `há ${horas} hora${horas !== 1 ? 's' : ''}`;
+    else if (dias < 7) return `há ${dias} dia${dias !== 1 ? 's' : ''}`;
+    else if (semanas < 4) return `há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
+    else if (meses < 12) return `há ${meses} mês${meses !== 1 ? 'es' : ''}`;
+    else return `há    ${anos} ano${anos !== 1 ? 's' : ''}`;
   } catch (error) {
     console.error("Erro ao formatar data:", error);
     return 'Data inválida';
@@ -1011,7 +1024,6 @@ function renderPost(postData, feed) {
              onerror="this.src='./src/icon/default.jpg'" />
         <div class="user-meta">
           <strong class="user-name-link" data-username="${postData.creatorid}">Carregando...</strong>
-          <small class="post-username"></small>
           <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
         </div>
       </div>
@@ -1050,6 +1062,7 @@ function renderPost(postData, feed) {
           `
           : ''
       }
+
       <div class="post-actions">
         <div class="post-actions-left">
           <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -1062,7 +1075,7 @@ function renderPost(postData, feed) {
             <span>${postData.comentarios || 0}</span>
           </button>
           <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 108.3"><title>instagram-share</title><path d="M96.14,12.47l-76.71-1.1,28.3,27.85L96.14,12.47ZM53.27,49l9.88,39.17L102.1,22,53.27,49ZM117,1.6a5.59,5.59,0,0,1,4.9,8.75L66.06,105.21a5.6,5.6,0,0,1-10.44-1.15L41.74,49,1.67,9.57A5.59,5.59,0,0,1,5.65,0L117,1.6Z"/></svg>
+            <svg width="252" height="253" viewBox="0 0 252 253"  xmlns="http://www.w3.org/2000/svg"><path d="M207.821 9.02051C228.731 3.33416 247.898 22.5349 242.175 43.4346L192.671 224.216C186.201 247.842 154.655 252.357 141.818 231.494L100.558 164.439L97.285 159.121L101.649 154.656L167.753 87.0137L165.087 84.2861L99.2411 151.665L94.6532 156.358L89.1542 152.777L20.7343 108.225C0.472592 95.0309 5.33388 64.0873 28.6649 57.7422L207.821 9.02051Z" stroke="#D9D9D9" stroke-width="20"/></svg>
             <p>Compartilhar</p>
           </button>
           <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -1076,9 +1089,8 @@ function renderPost(postData, feed) {
           </button>
         </div>
       </div>
-      <div class="post-footer-infos">
+                  <div class="post-footer-infos">
         <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-        <small class="post-date-desktop">${formatarDataRelativa(postData.create)}</small>
       </div>
       <div class="comments-section" style="display: none;">
         <div class="comment-form">
@@ -1107,11 +1119,48 @@ function renderPost(postData, feed) {
       if (info.total === 0) {
         footer.style.display = "none";
       } else {
-        footer.style.display = "block";
+        footer.style.display = "flex";
+        footer.style.alignItems = "center";
+        footer.style.gap = "8px";
 
-        footer.innerHTML =
-          `Curtido por <strong>${info.username}</strong>` +
-          (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
+        // Renderiza as fotos de perfil
+        let fotosHTML = '';
+        if (info.fotos && info.fotos.length > 0) {
+          fotosHTML = '<div style="display: flex; margin-right: 4px;">';
+          info.fotos.forEach((foto, index) => {
+            fotosHTML += `
+              <img 
+                src="${foto}" 
+                alt="Avatar" 
+                style="
+                  width: 20px; 
+                  height: 20px; 
+                  border-radius: 50%; 
+                  object-fit: cover;
+                  ${index > 0 ? 'margin-left: -8px;' : ''}
+                "
+              />
+            `;
+          });
+          fotosHTML += '</div>';
+        }
+
+        // Monta o texto
+        let textoHTML = '<span>Curtido por ';
+        
+        if (info.usernames.length === 1) {
+          textoHTML += `<strong>${info.usernames[0]}</strong>`;
+        } else if (info.usernames.length === 2) {
+          textoHTML += `<strong>${info.usernames[0]}</strong>, <strong>${info.usernames[1]}</strong>`;
+        }
+        
+        if (info.total > info.usernames.length) {
+          textoHTML += ` e outras ${info.total - info.usernames.length} pessoas`;
+        }
+        
+        textoHTML += '</span>';
+
+        footer.innerHTML = fotosHTML + textoHTML;
       }
     });
   }
@@ -1136,7 +1185,7 @@ function renderPost(postData, feed) {
     configurarLimiteRepeticoes();
   }
 
-  // Atualiza nome e foto do usuário assim que possível (não trava o loading)
+// Atualiza nome e foto do usuário assim que possível (não trava o loading)
   buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
     if (userData) {
       const avatar = postEl.querySelector('.avatar');
@@ -1144,13 +1193,15 @@ function renderPost(postData, feed) {
       const username = postEl.querySelector('.post-username');
       if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
       if (nome) {
-        nome.textContent = userData.displayname || userData.username || postData.creatorid;
+        // Mostra apenas o username no topo
+        nome.textContent = userData.username || postData.creatorid;
         // Adiciona ícone de verificado se o usuário for verificado
         if (userData.verified) {
-          nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
+          nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 2px; font-size: 0.8em; color: #4A90E2;"></i>`;
         }
       }
-      if (username) username.textContent = userData.username ? `@${userData.username}` : '';
+      // Remove ou deixa vazio o elemento post-username
+      if (username) username.textContent = '';
     }
   });
 
@@ -1186,19 +1237,35 @@ function renderPost(postData, feed) {
 async function loadPosts() {
   if (loading || !hasMorePosts) return;
   loading = true;
+  
+  // Adiciona indicador suave no final do feed
+  let loadingIndicator = document.getElementById('scroll-loading-indicator');
+  if (!loadingIndicator && feed.children.length > 0) {
+    loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'scroll-loading-indicator';
+    loadingIndicator.style.cssText = `
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    `;
+    loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando mais posts...';
+    feed.appendChild(loadingIndicator);
+  }
+  
   if (loadMoreBtn) {
     loadMoreBtn.disabled = true;
     loadMoreBtn.textContent = "Carregando...";
   }
 
   try {
-    // Remove existing bubbles to avoid duplicates
-    allItems = allItems.filter(item => item.tipo !== 'bubble');
-
-    const bubbles = await carregarBubbles();
-    bubbles.forEach(bubble => {
-      allItems.push(bubble);
-    });
+    // PRIMEIRA CARGA: carrega bubbles
+    if (!lastPostSnapshot) {
+      const bubbles = await carregarBubbles();
+      bubbles.forEach(bubble => {
+        allItems.push(bubble);
+      });
+    }
 
     // Busca lote de posts ordenados por data (mais recentes primeiro)
     let postsQuery = query(
@@ -1222,6 +1289,8 @@ async function loadPosts() {
         loadMoreBtn.textContent = "Não há mais posts";
         loadMoreBtn.disabled = true;
       }
+      // Remove indicador
+      if (loadingIndicator) loadingIndicator.remove();
       loading = false;
       return;
     }
@@ -1235,7 +1304,7 @@ async function loadPosts() {
       postsParaAdicionar.push(postData);
     }
 
-    // Ordena manualmente por segurança (caso algum create esteja inconsistente)
+    // Ordena manualmente por segurança
     postsParaAdicionar.sort((a, b) => {
       let dataA = a.create;
       let dataB = b.create;
@@ -1250,24 +1319,37 @@ async function loadPosts() {
       allItems.push({ ...post, tipo: 'post' });
     });
 
-    // Sort allItems by create desc
-    allItems.sort((a, b) => {
-      let dataA = a.create;
-      let dataB = b.create;
-      if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
-      else dataA = new Date(dataA).getTime() / 1000;
-      if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
-      else dataB = new Date(dataB).getTime() / 1000;
-      return dataB - dataA;
-    });
+    // PRIMEIRA CARGA: renderiza tudo
+    if (feed.children.length === 0 || (feed.children.length === 1 && feed.children[0].id === 'scroll-loading-indicator')) {
+      // Sort allItems by create desc
+      allItems.sort((a, b) => {
+        let dataA = a.create;
+        let dataB = b.create;
+        if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
+        else dataA = new Date(dataA).getTime() / 1000;
+        if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
+        else dataB = new Date(dataB).getTime() / 1000;
+        return dataB - dataA;
+      });
 
-    // Clear feed and render all
-    feed.innerHTML = '';
-    for (const item of allItems) {
-      if (item.tipo === 'bubble') {
-        renderizarBubble(item, feed);
-      } else {
-        renderPost(item, feed);
+      // Remove indicador antes de renderizar
+      if (loadingIndicator) loadingIndicator.remove();
+
+      for (const item of allItems) {
+        if (item.tipo === 'bubble') {
+          renderizarBubble(item, feed);
+        } else {
+          renderPost(item, feed);
+        }
+      }
+    } 
+    // SCROLL INFINITO: adiciona apenas os novos posts no final
+    else {
+      // Remove indicador antes de adicionar posts
+      if (loadingIndicator) loadingIndicator.remove();
+      
+      for (const post of postsParaAdicionar) {
+        renderPost(post, feed);
       }
     }
 
@@ -1288,6 +1370,9 @@ async function loadPosts() {
     if (loadMoreBtn) {
       loadMoreBtn.textContent = "Erro ao carregar";
     }
+    // Remove indicador em caso de erro
+    const loadingIndicator = document.getElementById('scroll-loading-indicator');
+    if (loadingIndicator) loadingIndicator.remove();
     criarPopup('Erro', 'Não foi possível carregar mais posts.', 'error');
   }
   loading = false;
@@ -1664,11 +1749,48 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
     return;
   }
 
-  footer.style.display = "block";
+  footer.style.display = "flex";
+  footer.style.alignItems = "center";
+  footer.style.gap = "8px";
 
-  footer.innerHTML =
-    `Curtido por <strong>${info.username}</strong>` +
-    (info.total > 1 ? ` e outras ${info.total - 1} pessoas` : "");
+  // Renderiza as fotos de perfil
+  let fotosHTML = '';
+  if (info.fotos && info.fotos.length > 0) {
+    fotosHTML = '<div style="display: flex; margin-right: 4px;">';
+    info.fotos.forEach((foto, index) => {
+      fotosHTML += `
+        <img 
+          src="${foto}" 
+          alt="Avatar" 
+          style="
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            object-fit: cover;
+            ${index > 0 ? 'margin-left: -8px;' : ''}
+          "
+        />
+      `;
+    });
+    fotosHTML += '</div>';
+  }
+
+  // Monta o texto
+  let textoHTML = '<span>Curtido por ';
+  
+  if (info.usernames.length === 1) {
+    textoHTML += `<strong>${info.usernames[0]}</strong>`;
+  } else if (info.usernames.length === 2) {
+    textoHTML += `<strong>${info.usernames[0]}</strong>, <strong>${info.usernames[1]}</strong>`;
+  }
+  
+  if (info.total > info.usernames.length) {
+    textoHTML += ` e outras ${info.total - info.usernames.length} pessoas`;
+  }
+  
+  textoHTML += '</span>';
+
+  footer.innerHTML = fotosHTML + textoHTML;
 }
 
 
@@ -1695,9 +1817,20 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
   const soVoceCurtiu = (total === 1 && likersTotal[0].uid === usuarioLogadoUid);
 
   if (soVoceCurtiu) {
+    // Busca sua foto
+    let minhaFoto = '';
+    try {
+      const photoRef = doc(db, "users", usuarioLogadoUid, "user-infos", "user-media");
+      const photoSnap = await getDoc(photoRef);
+      if (photoSnap.exists()) {
+        minhaFoto = photoSnap.data().userphoto || '';
+      }
+    } catch {}
+
     return {
-      username: "você",
-      total
+      usernames: ["você"],
+      total,
+      fotos: [minhaFoto || './src/icon/default.jpg']
     };
   }
 
@@ -1706,8 +1839,7 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
   const likersExibicao = likersTotal.filter(l => l.uid !== usuarioLogadoUid);
 
   if (likersExibicao.length === 0) {
-    // Só você curtiu — mas esse caso já tratado acima
-    return { username: "você", total };
+    return { usernames: ["você"], total, fotos: [] };
   }
 
   // Ordena por mais recente
@@ -1719,25 +1851,49 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
 
   // Filtrar amigos (sem você)
   const amigosQueCurtiram = likersExibicao.filter(l => amigosUid.includes(l.uid));
+  const outrosQueCurtiram = likersExibicao.filter(l => !amigosUid.includes(l.uid));
 
-  let uidEscolhido;
-
-  if (amigosQueCurtiram.length > 0) {
-    // amigo mais recente
-    uidEscolhido = amigosQueCurtiram[0].uid;
-  } else {
-    // qualquer pessoa mais recente
-    uidEscolhido = likersExibicao[0].uid;
+  // 👉 SELECIONA ATÉ 2 PESSOAS (priorizando amigos)
+  const pessoasParaMostrar = [];
+  
+  // Adiciona até 2 amigos primeiro
+  for (let i = 0; i < Math.min(2, amigosQueCurtiram.length); i++) {
+    pessoasParaMostrar.push(amigosQueCurtiram[i]);
+  }
+  
+  // Se não tiver 2 amigos, completa com outros
+  if (pessoasParaMostrar.length < 2) {
+    for (let i = 0; i < Math.min(2 - pessoasParaMostrar.length, outrosQueCurtiram.length); i++) {
+      pessoasParaMostrar.push(outrosQueCurtiram[i]);
+    }
   }
 
-  // Busca o usuário escolhido
-  const userData = await buscarDadosUsuarioPorUid(uidEscolhido);
-  const username =
-    userData?.username ||
-    userData?.displayname ||
-    "usuário";
+  // 👉 BUSCA OS USERNAMES E FOTOS DAS 2 PESSOAS
+  const usernames = [];
+  const fotos = [];
 
-  return { username, total };
+  for (let i = 0; i < pessoasParaMostrar.length; i++) {
+    const uid = pessoasParaMostrar[i].uid;
+    
+    // Busca dados do usuário
+    const userData = await buscarDadosUsuarioPorUid(uid);
+    const username = userData?.username || userData?.displayname || "usuário";
+    usernames.push(username);
+    
+    // Busca foto
+    let userphoto = '';
+    try {
+      const photoRef = doc(db, "users", uid, "user-infos", "user-media");
+      const photoSnap = await getDoc(photoRef);
+      if (photoSnap.exists()) {
+        userphoto = photoSnap.data().userphoto || '';
+      }
+    } catch {}
+    
+    fotos.push(userphoto || './src/icon/default.jpg');
+  }
+
+  return { usernames, total, fotos };
 }
 
 
@@ -2566,8 +2722,7 @@ function configurarEventListeners() {
             buscarDadosUsuarioPorUid(postData.creatorid).then(userData => {
               if (userData) {
                 const avatar = avisoEl.querySelector('.avatar');
-                const nome = avisoEl.querySelector('.user-name-link');
-                const username = avisoEl.querySelector('.post-username');
+                const username = avisoEl.querySelector('.user-name-link');
                 if (avatar) avatar.src = userData.userphoto || './src/icon/default.jpg';
                 if (nome) {
                   nome.textContent = userData.displayname || userData.username || postData.creatorid;
@@ -2764,7 +2919,6 @@ function adicionarEstilosCSS() {
 
     /* Estilos para imagens nos posts */
     .post-image {
-      margin: 12px 0;
       border-radius: 8px;
       overflow: hidden;
       max-height: 400px;
@@ -2797,7 +2951,6 @@ function adicionarEstilosCSS() {
     }
           /* Estilos para imagens nos posts */
     .post-image {
-      margin: 12px 0;
       border-radius: 8px;
       overflow: hidden;
       max-height: 400px;
@@ -3618,17 +3771,3 @@ function configurarLimiteRepeticoes() {
     });
   });
 }
-
-
-const scrollContainer = document.scrollingElement || document.documentElement;
-
-scrollContainer.addEventListener("scroll", () => {
-  const scrollTop = scrollContainer.scrollTop;
-  const visibleHeight = scrollContainer.clientHeight;
-  const pageHeight = scrollContainer.scrollHeight;
-
-  if (scrollTop + visibleHeight >= pageHeight - 400 && !loading) {
-    loading = true;
-    loadMorePosts();
-  }
-});

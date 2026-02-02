@@ -72,13 +72,6 @@
       gap: 10px;
     }
 
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #4A90E2;
-    }
 
     .user-meta strong {
       font-size: 16px;
@@ -495,7 +488,7 @@
             </a>
             <div class="floating-menu" id="floatingMenu">
                 <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
-                <a href="invites.html"><i class="fa-solid fa-user-plus"></i> Convites</a>
+                
                 <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
                 <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
                 <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
@@ -666,7 +659,7 @@
   </div>
 </div>
 
-  <main class="welcome-container">
+  <main class="welcome-container" >
     <div class="main-content">
     <section class="welcome-box">
       <div class="user-welcome">
@@ -744,7 +737,11 @@
         <button class="feed-option-button" data-filter="sentimento">Sentimentos</button>
       </div>
       </div>
-      <div id="feed"></div>
+     <!-- <button id="p1">Firebase</button>
+      <button id="p2">ActivityPub</button> -->
+<div id="feed"></div>
+
+<div id="feed2" style="display: none;"></div>
     
       <div class="hidden-container">
         <div class="hidden-header">
@@ -755,7 +752,7 @@
                 <canvas id="particleCanvas"></canvas>
               </div>
               <small class="bullet">•</small>
-              <small class="post-date-hidden">Há muito tempo</small>
+              <small class="post-date-hidden">há muito tempo</small>
             </div>
           </div>
         </div>
@@ -1409,5 +1406,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 </script> 
+
 </body>
 </html>

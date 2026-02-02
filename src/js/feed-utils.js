@@ -90,12 +90,12 @@ export function formatarDataRelativa(data) {
     const meses = Math.floor(dias / 30);
     const anos = Math.floor(dias / 365);
     if (minutos < 1) return 'Agora mesmo';
-    else if (minutos < 60) return `Há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
-    else if (horas < 24) return `Há ${horas} hora${horas !== 1 ? 's' : ''}`;
-    else if (dias < 7) return `Há ${dias} dia${dias !== 1 ? 's' : ''}`;
-    else if (semanas < 4) return `Há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
-    else if (meses < 12) return `Há ${meses} mês${meses !== 1 ? 'es' : ''}`;
-    else return `Há    ${anos} ano${anos !== 1 ? 's' : ''}`;
+    else if (minutos < 60) return `há ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+    else if (horas < 24) return `há ${horas} hora${horas !== 1 ? 's' : ''}`;
+    else if (dias < 7) return `há ${dias} dia${dias !== 1 ? 's' : ''}`;
+    else if (semanas < 4) return `há ${semanas} semana${semanas !== 1 ? 's' : ''}`;
+    else if (meses < 12) return `há ${meses} mês${meses !== 1 ? 'es' : ''}`;
+    else return `há    ${anos} ano${anos !== 1 ? 's' : ''}`;
   } catch (error) {
     return 'Data inválida';
   }
