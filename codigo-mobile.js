@@ -2608,7 +2608,27 @@ function atualizarGostosDoUsuario(userid) {
 function calcularIdade(timestampNascimento) {
   if (!timestampNascimento) return "Não informada";
   
-  const dataNascimento = new Date(timestampNascimento);
+  let dataNascimento;
+  
+  // Verifica se é um Timestamp do Firebase
+  if (timestampNascimento.toDate) {
+    dataNascimento = timestampNascimento.toDate();
+  } 
+  // Se for um objeto com seconds (Firestore Timestamp serializado)
+  else if (timestampNascimento.seconds) {
+    dataNascimento = new Date(timestampNascimento.seconds * 1000);
+  }
+  // Se for número ou string
+  else {
+    dataNascimento = new Date(timestampNascimento);
+  }
+  
+  // Valida se a data é válida
+  if (isNaN(dataNascimento.getTime())) {
+    console.error('Data de nascimento inválida:', timestampNascimento);
+    return "Não informada";
+  }
+  
   const hoje = new Date();
   
   let idade = hoje.getFullYear() - dataNascimento.getFullYear();
@@ -2639,6 +2659,7 @@ function atualizarSobre(userData) {
   if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
   if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
 }
+
 
 
 
