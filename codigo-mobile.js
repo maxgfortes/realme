@@ -2605,8 +2605,25 @@ function atualizarGostosDoUsuario(userid) {
   });
 }
 
+function calcularIdade(timestampNascimento) {
+  if (!timestampNascimento) return "Não informada";
+  
+  const dataNascimento = new Date(timestampNascimento);
+  const hoje = new Date();
+  
+  let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+  const mesAtual = hoje.getMonth();
+  const mesNascimento = dataNascimento.getMonth();
+  
+  // Ajusta se ainda não fez aniversário este ano
+  if (mesAtual < mesNascimento || 
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())) {
+    idade--;
+  }
+  
+  return `${idade} anos`;
+}
 
-// ATUALIZAÇÃO DA TAB SOBRE (gênero, localização, estado civil)
 function atualizarSobre(userData) {
   const generoEl = document.getElementById('generoUsuario');
   const localizacaoEl = document.getElementById('localizacaoUsuario');
@@ -2614,13 +2631,15 @@ function atualizarSobre(userData) {
   const idadeEl = document.getElementById('idadeUsuario');
   const areaUsuario = document.getElementById('areaUsuario');
   const nomeRealUsuario = document.getElementById('nomeRealUsuario');
+  
   if (generoEl) generoEl.textContent = userData.gender || "Não informado";
   if (localizacaoEl) localizacaoEl.textContent = userData.location || "Não informada";
   if (estadoCivilEl) estadoCivilEl.textContent = userData.maritalStatus || "Não informado";
-  if (idadeEl) idadeEl.textContent = userData.age || "Não informada";
+  if (idadeEl) idadeEl.textContent = calcularIdade(userData.nascimento);
   if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
   if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
 }
+
 
 
 // CÓDIGO PARA ADICIONAR EM codigo-mobile.js
