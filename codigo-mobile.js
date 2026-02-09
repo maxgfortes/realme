@@ -2606,44 +2606,24 @@ function atualizarGostosDoUsuario(userid) {
 }
 
 function calcularIdade(timestampNascimento) {
-  if (!timestampNascimento) return "Não informada";
-  
-  let dataNascimento;
-  
-  // Verifica se é um Timestamp do Firebase
-  if (timestampNascimento.toDate) {
-    dataNascimento = timestampNascimento.toDate();
-  } 
-  // Se for um objeto com seconds (Firestore Timestamp serializado)
-  else if (timestampNascimento.seconds) {
-    dataNascimento = new Date(timestampNascimento.seconds * 1000);
-  }
-  // Se for número ou string
-  else {
-    dataNascimento = new Date(timestampNascimento);
-  }
-  
-  // Valida se a data é válida
-  if (isNaN(dataNascimento.getTime())) {
-    console.error('Data de nascimento inválida:', timestampNascimento);
-    return "Não informada";
-  }
-  
-  const hoje = new Date();
-  
-  let idade = hoje.getFullYear() - dataNascimento.getFullYear();
-  const mesAtual = hoje.getMonth();
-  const mesNascimento = dataNascimento.getMonth();
-  
-  // Ajusta se ainda não fez aniversário este ano
-  if (mesAtual < mesNascimento || 
-      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())) {
+  if (!timestampNascimento) return null;
+
+  const nascimento = timestampNascimento.toDate(); 
+  const agora = new Date();
+
+  let idade = agora.getFullYear() - nascimento.getFullYear();
+  const mes = agora.getMonth() - nascimento.getMonth();
+
+  // Ainda não fez aniversário esse ano
+  if (mes < 0 || (mes === 0 && agora.getDate() < nascimento.getDate())) {
     idade--;
   }
-  
-  return `${idade} anos`;
+
+  return idade;
 }
 
+
+// ATUALIZAÇÃO DA TAB SOBRE (gênero, localização, estado civil)
 function atualizarSobre(userData) {
   const generoEl = document.getElementById('generoUsuario');
   const localizacaoEl = document.getElementById('localizacaoUsuario');
@@ -2651,13 +2631,16 @@ function atualizarSobre(userData) {
   const idadeEl = document.getElementById('idadeUsuario');
   const areaUsuario = document.getElementById('areaUsuario');
   const nomeRealUsuario = document.getElementById('nomeRealUsuario');
-  
+
   if (generoEl) generoEl.textContent = userData.gender || "Não informado";
   if (localizacaoEl) localizacaoEl.textContent = userData.location || "Não informada";
   if (estadoCivilEl) estadoCivilEl.textContent = userData.maritalStatus || "Não informado";
-  if (idadeEl) idadeEl.textContent = calcularIdade(userData.nascimento);
   if (areaUsuario) areaUsuario.textContent = userData.area || "Não informada";
   if (nomeRealUsuario) nomeRealUsuario.textContent = userData.name || "Não informado";
+  if (idadeEl) {
+    const idade = calcularIdade(userData.nascimento);
+    idadeEl.textContent = idade ? `${idade} anos` : "Não informada";
+  }
 }
 
 
