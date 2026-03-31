@@ -186,7 +186,8 @@ body {
   border-radius: 18px;
   font-size: 16px !important;
   line-height: 1.5;
-  word-break: break-word;
+   
+word-break: normal;
   position: relative;
   margin-bottom: 6px;
   animation: fadeInMsg 0.3s;
@@ -546,7 +547,9 @@ body {
     border-radius: 2.8vh;
     margin: 1px 0;
     max-width: 100%;
-    word-break: break-word;
+    min-width: 50px;
+     
+word-break: normal;
     padding-top: 0px !important;
     font-size: 17px;
 }

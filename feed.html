@@ -18,11 +18,9 @@
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/base.css" />
-  <link rel="stylesheet" href="./src/styles/components.css" />
   <link rel="stylesheet" href="./src/styles/menu-bottom.css" />
-  <link rel="stylesheet" href="./src/styles/navbars.css" />
+  <link rel="stylesheet" href="./src/styles/layout.css" />
   <link rel="stylesheet" href="./src/styles/root.css" />
-  <link rel="stylesheet" href="./src/styles/layout.css">
   <link rel="stylesheet" href="./src/styles/feed-mobile.css">
   <link rel="stylesheet" href="./src/styles/report.css">
   <link rel="stylesheet" href="./src/styles/bubble.css">
@@ -252,7 +250,7 @@
         <i class="fa-solid fa-plus"></i>
       </button>
       <div class="logo-mobile" id="feed-toggle">RealMe</div>
-      <a href="#" class="top-btn2">
+      <a href="nt.html" class="top-btn2">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
       </a>
   </div>
@@ -280,7 +278,7 @@
       <div class="user-welcome">
         <img src="./src/img/default.jpg" alt="Avatar" loading="lazy" decoding="async">
         <div class="user-container">
-          <h1><span id="greeting">Olá</span> <span class="username" id="username">usuario</span></h1>
+          <h1><span id="greeting"></span> <span class="username" id="username"></span></h1>
             <div class="create-new-post">
               <button class="np-btn" id="openPostLayer">
                 Como foi o seu dia?
@@ -443,7 +441,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="./src/js/config.js"></script>
 <script type="module" src="./src/js/feed.js"></script>
 <script type="module" src="./src/js/pfp-navbar.js"></script>
-<script type="module" src="./src/js/search.js"></script>
 <script type="module" src="./src/js/global-messages.js"></script>
 <script  src="./src/js/popup.js"></script>
 <script>
@@ -601,121 +598,13 @@ function animate() {
 animate();
 </script>
 
-<script>
-// FADE IN ao entrar
-document.addEventListener("DOMContentLoaded", () => {
-    document.body.classList.add("fade-in");
-});
-
-// FADE OUT ao clicar num link interno
-document.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", e => {
-
-        // só para links do mesmo site
-        const sameSite = link.hostname === location.hostname;
-
-        if (sameSite) {
-            e.preventDefault();
-
-            document.body.classList.remove("fade-in");
-            document.body.classList.add("fade-out");
-
-            setTimeout(() => {
-                window.location.href = link.href;
-            }, 200); // igual ao tempo do CSS!
-        }
-    });
-});
-</script>
-
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "f850c21b-122e-4ae7-b262-5cc3c101f7ab",
-        safari_web_id: "web.onesignal.auto.08e72fe8-7d9e-49e9-8aad-204d649fdf9c",
-        notifyButton: { enable: false }, // desabilitado pois pedimos via código
-      });
-    });
-  </script>
-
 
 <script src="./src/js/more.js"></script>
 <script src="./src/js/loading.js"></script>
 <script type="module" src="./src/js/notification.js"></script>
 <script  type="module" src="./src/js/nt-notifications.js"></script>
-<script src="./src/js/theme-switcher.js"></script>
+<script type="module" src="./src/js/nt-badge.js"></script>
 <script>
-const btn = document.getElementById("feed-toggle");
-const box = document.getElementById("feed-box");
-
-btn.addEventListener("click", () => {
-  box.classList.toggle("hidden");
-});
-
-let ultimoScroll = 0;
-
-window.addEventListener("scroll", () => {
-  const scrollAtual = window.scrollY;
-  const barra = document.getElementById("navbar-bottom");
-  
-  if (scrollAtual > ultimoScroll && scrollAtual > 100) {
-    // Rolando para BAIXO - esconde a barra
-    barra.classList.add("hidden-nav");
-  } else {
-    // Rolando para CIMA - mostra a barra
-    barra.classList.remove("hidden-nav");
-  }
-  
-  ultimoScroll = scrollAtual;
-});
-
-
-
-
-
-
-
-
-
-
-// Aguarda o DOM carregar completamente
-document.addEventListener("DOMContentLoaded", () => {
-  
-  // Toggle do feed
-  const btn = document.getElementById("feed-toggle");
-  const box = document.getElementById("feed-box");
-
-  btn.addEventListener("click", () => {
-    box.classList.toggle("hidden");
-  });
-
-  // Esconder/mostrar navbar ao rolar
-  const navbar = document.getElementById("navbar-bottom");
-  let ultimoScroll = 0;
-
-  window.addEventListener("scroll", () => {
-    const scrollAtual = window.scrollY;
-    
-    console.log("Rolou! Scroll:", scrollAtual);
-    
-    if (scrollAtual > ultimoScroll && scrollAtual > 100) {
-      console.log("🔽 Descendo - esconde navbar");
-      navbar.classList.add("navbar-hidden");
-    } else {
-      console.log("🔼 Subindo - mostra navbar");
-      navbar.classList.remove("navbar-hidden");
-    }
-    
-    ultimoScroll = scrollAtual;
-  });
-  
-});
-
-</script>
-
- <script>
   
 // ============================================
 // TOGGLE SUPER SIMPLES

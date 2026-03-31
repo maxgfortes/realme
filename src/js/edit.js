@@ -432,7 +432,7 @@ saveBtn.addEventListener('click', async () => {
   saveBtn.disabled = true;
   showToast('Salvando…', 'loading');
  
-  let pfpUrl    = currentData.media?.pfp    || currentData.media?.userphoto   || null;
+  let pfpUrl    = currentData.media?.userphoto || currentData.media?.pfp || null;
   let bannerUrl = currentData.media?.banner || currentData.media?.headerphoto || null;
  
   // Captura o que vai mudar antes dos uploads
@@ -494,7 +494,7 @@ saveBtn.addEventListener('click', async () => {
       musicTheme:   inMusica.value.trim(),
       profileColor: inCor.value,
     };
-    if (pfpUrl)    mediaPayload.pfp = pfpUrl;
+    if (pfpUrl)    mediaPayload.userphoto = pfpUrl;
     if (bannerUrl) mediaPayload.banner = bannerUrl;
     await setDoc(doc(db, `users/${uid}/user-infos/user-media`), mediaPayload, { merge: true });
  

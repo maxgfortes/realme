@@ -883,6 +883,7 @@ textarea#postText:focus {
   color: #333;
   transition: all 0.3s ease;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: none;
 }
 
 .modal-close:hover {
@@ -1292,8 +1293,8 @@ textarea#postText:focus {
   .btn-like.liked svg,
 .btn-like.liked i,
 .btn-like.liked {
-    color: #dc3545 !important;
-    fill: #dc3545 !important;
+    color: red !important;
+    fill: red !important;
 }
 
   

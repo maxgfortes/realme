@@ -21,6 +21,9 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import { registerPushNotifications, listenForegroundMessages } from "./notifications-push.js";
+
+
 import { 
   toggleSalvarPost, 
   verificarSeEstaSalvo 
@@ -713,7 +716,7 @@ function renderizarBubble(bubbleData, feed) {
     </div>
     <div class="bubble-content">
       <div class="bubble-text">
-        <p>${formatarHashtags(bubbleData.content || 'Conteúdo não disponível')}</p>
+        <p>${formatarHashtags(bubbleData.content || '')}</p>
       </div>
       <div class="more-bubble">
         ${bubbleData.musicUrl && bubbleData.musicUrl.trim() !== "" ? `
@@ -744,7 +747,7 @@ function renderizarBubble(bubbleData, feed) {
       
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
-        nome.textContent = userData.displayname || userData.username || bubbleData.creatorid;
+        nome.textContent = userData.username || bubbleData.creatorid;
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
         }
@@ -856,7 +859,7 @@ function renderPost(postData, feed) {
       </div>
     </div>
     <div class="post-content">
-      <div class="post-text">${formatarHashtags(postData.content || 'Conteúdo não disponível')}</div>
+      <div class="post-text">${formatarHashtags(postData.content || '')}</div>
       ${
         (postData.img && postData.img.trim() !== "")
           ? `
@@ -3050,7 +3053,22 @@ function carregarFotoPerfil() {
       navPic.src = defaultPic;
       localStorage.removeItem('user_photo_cache');
     }
+  
   });
 }
 
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
+
+
+
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    try {
+      await registerPushNotifications(user.uid); 
+      listenForegroundMessages();
+    } catch(e) {
+      console.warn("[FCM] Falha ao registrar notificações:", e);
+    }
+  }
+});

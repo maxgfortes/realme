@@ -394,7 +394,7 @@ body {
     padding-bottom: 40px;
     width: 100%;
     border: 1px solid #222;
-    border-radius: 12px;
+    border-radius: 0px;
     background-color: rgba(18, 18, 18, 0.60);
 }
 

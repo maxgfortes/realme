@@ -118,7 +118,7 @@
 
 
     .like-bubble.liked i {
-  color: #ff5a5f;
+  color: red;
   animation: heartBeat 0.5s ease;
 }
 
@@ -364,7 +364,7 @@ canvas {
 }
 
     .like-bubble.liked i {
-  color: #ff5a5f;
+  color: red;
   animation: heartBeat 0.5s ease;
 }
 

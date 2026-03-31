@@ -374,6 +374,8 @@
       fill:  #fff;
     }
 
+
+
     .navbar-bottom-area{
       display: flex;
       justify-content: space-around;
@@ -395,6 +397,7 @@
     }
 
 
+
     .profile-mini {
       width: 28px;
       height: 28px;
@@ -407,5 +410,45 @@
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
 }
+
+.update-dot {
+  position: relative;
+}
+
+.update-dot::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+
+  border: 2px solid var(--bg-primary); /* deixa bonito tipo app */
+}
+
+
+.update-dot-nt {
+  position: relative;
+}
+
+.update-dot-nt::after {
+  content: "";
+  position: absolute;
+  bottom: 14px;
+  right: 8px;
+
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+
+  border: 2px solid var(--bg-primary); /* deixa bonito tipo app */
+}
+
     }
     
