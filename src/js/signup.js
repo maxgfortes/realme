@@ -1,3 +1,5 @@
+
+// ================= FIREBASE =================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -18,9 +20,6 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* ================= FIREBASE ================= */
-
-// =====================================================
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -31,13 +30,11 @@ const firebaseConfig = {
   measurementId: "G-D96BEW6RC3"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* ================= UI ================= */
-
 function showError(msg) {
   const el = document.querySelector(".error-message");
   if (el) {
@@ -78,9 +75,8 @@ function showLoading(show, loadingText = "Processando...") {
 }
 
 /* ================= VALIDAÇÕES ================= */
-
 const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-const validarUsername = u => /^[a-zA-Z0-9_]{3,20}$/.test(u);
+const validarUsername = u => /^[a-z0-9_]{3,20}$/.test(u);
 const validarSenha = s => s.length >= 6;
 const validarNascimento = d => {
   const n = new Date(d);
@@ -89,7 +85,6 @@ const validarNascimento = d => {
 };
 
 /* ================= CADASTRO ================= */
-
 async function criarContaSegura(event) {
   event.preventDefault();
   hideMessages();
@@ -103,37 +98,36 @@ async function criarContaSegura(event) {
   const genero = document.getElementById("genero")?.value;
 
   if (!nome || !sobrenome || !username || !email || !senha || !nascimento || !genero) {
-    showError("Preencha todos os campos.");
-    return;
+    return showError("Preencha todos os campos.");
   }
 
   if (!validarEmail(email)) return showError("Email inválido.");
-  if (!validarUsername(username)) return showError("Username inválido.");
+  if (!validarUsername(username)) return showError("Username inválido (3-20 caracteres, só letras, números e _).");
   if (!validarSenha(senha)) return showError("Senha mínima: 6 caracteres.");
-  if (!validarNascimento(nascimento)) return showError("Você precisa ter 13+ anos.");
+  if (!validarNascimento(nascimento)) return showError("Você precisa ter pelo menos 13 anos.");
 
   showLoading(true, "Criando conta...");
 
   try {
-    // Username único
+    // Verifica se username já existe
     const usernameRef = doc(db, "usernames", username);
     if ((await getDoc(usernameRef)).exists()) {
-      showLoading(false);
-      return showError("Nome de usuário já está em uso.");
+      throw new Error("Nome de usuário já está em uso.");
     }
 
-    // Auth
+    // Cria usuário no Authentication
     const cred = await createUserWithEmailAndPassword(auth, email, senha);
     const user = cred.user;
 
     await updateProfile(user, { displayName: nome });
 
-    // Firestore
+    // Salva username
     await setDoc(usernameRef, {
       uid: user.uid,
       createdAt: serverTimestamp()
     });
 
+    // Salva dados do usuário
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       username,
@@ -142,27 +136,28 @@ async function criarContaSegura(event) {
       surname: sobrenome,
       gender: genero,
       birthDate: Timestamp.fromDate(new Date(nascimento)),
-
       emailVerified: user.emailVerified,
       provider: "password",
-
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       lastLogin: serverTimestamp()
     });
 
-    setTimeout(() => (window.location.href = "feed.html"), 800);
+    showSuccess("Conta criada com sucesso! Redirecionando...");
+    setTimeout(() => {
+      window.location.href = "feed.html";
+    }, 1200);
 
   } catch (err) {
-    console.error(err);
+    console.error("ERRO NO CADASTRO:", err);
+
     let msg = "Erro ao criar conta.";
-    if (err.code === 'auth/email-already-in-use') {
-      msg = "Este email já está cadastrado.";
-    } else if (err.code === 'auth/weak-password') {
-      msg = "A senha deve ter pelo menos 6 caracteres.";
-    } else if (err.code === 'auth/invalid-email') {
-      msg = "Email inválido.";
-    }
+    if (err.message.includes("já está em uso")) msg = err.message;
+    else if (err.code === 'auth/email-already-in-use') msg = "Este email já está cadastrado.";
+    else if (err.code === 'auth/weak-password') msg = "A senha deve ter pelo menos 6 caracteres.";
+    else if (err.code === 'auth/invalid-email') msg = "Email inválido.";
+    else if (err.code === 'permission-denied') msg = "Erro de permissão no Firestore. Verifique as Security Rules.";
+
     showError(msg);
   } finally {
     showLoading(false);
@@ -170,7 +165,6 @@ async function criarContaSegura(event) {
 }
 
 /* ================= LOGIN ================= */
-
 async function loginUser(event) {
   event.preventDefault();
   hideMessages();
@@ -184,34 +178,22 @@ async function loginUser(event) {
   showLoading(true, "Entrando...");
 
   try {
-    console.info('Login: tentativa de autenticação para', email);
     await setPersistence(auth, browserLocalPersistence);
-    console.info('Login: persistência definida (browserLocalPersistence)');
     const cred = await signInWithEmailAndPassword(auth, email, senha);
 
-    console.info('Login: usuário autenticado', cred.user && cred.user.uid);
-
-    try {
-      await updateDoc(doc(db, "users", cred.user.uid), {
-        lastLogin: serverTimestamp()
-      });
-      console.info('Login: lastLogin atualizado no Firestore para', cred.user.uid);
-    } catch (updateErr) {
-      console.error('Login: falha ao atualizar lastLogin no Firestore', updateErr);
-    }
+    // Atualiza último login
+    await updateDoc(doc(db, "users", cred.user.uid), {
+      lastLogin: serverTimestamp()
+    });
 
     window.location.href = "feed.html";
+
   } catch (err) {
     console.error(err);
     let msg = "Email ou senha incorretos.";
-    if (err && err.code) {
-      if (err.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
-      else if (err.code === 'auth/wrong-password') msg = 'Senha incorreta.';
-      else if (err.code === 'auth/invalid-email') msg = 'Email inválido.';
-      else if (err.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente novamente mais tarde.';
-    } else if (err && err.message) {
-      msg = err.message;
-    }
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') msg = 'Email ou senha incorretos.';
+    else if (err.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente novamente mais tarde.';
+
     showError(msg);
   } finally {
     showLoading(false);
@@ -219,7 +201,6 @@ async function loginUser(event) {
 }
 
 /* ================= VALIDAÇÃO AO VIVO ================= */
-
 function configurarValidacoes() {
   const u = document.getElementById("usuario");
   if (u) {
@@ -231,35 +212,27 @@ function configurarValidacoes() {
 }
 
 /* ================= INIT ================= */
-
 document.addEventListener("DOMContentLoaded", () => {
 
-    onAuthStateChanged(auth, async (user) => {
+  // Impede redirect automático durante o cadastro
+  onAuthStateChanged(auth, (user) => {
     if (user) {
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          window.location.href = "feed.html";
-        } else {
-          window.location.href = "feed.html";
-        }
-      } catch {
+      const path = window.location.pathname;
+      if (!path.includes('register.html') && !path.includes('login.html')) {
         window.location.href = "feed.html";
       }
     }
   });
-  
+
   configurarValidacoes();
 
   const path = window.location.pathname;
+
   if (path.includes('register.html')) {
-    document
-      .querySelector(".form-section form")
-      ?.addEventListener("submit", criarContaSegura);
-  } else if (path.includes('login.html')) {
-    document
-      .querySelector(".form-section form")
-      ?.addEventListener("submit", loginUser);
+    document.querySelector(".form-section form")?.addEventListener("submit", criarContaSegura);
+  } 
+  else if (path.includes('login.html')) {
+    document.querySelector(".form-section form")?.addEventListener("submit", loginUser);
   }
 });
 
