@@ -752,6 +752,7 @@ select {
             font-weight: bold;
             color: #fff;
             text-decoration: none;
+            pointer-events: none;
         }
 
 

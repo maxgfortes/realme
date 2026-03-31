@@ -442,29 +442,29 @@ function carregarFotoPerfil() {
   });
 }
 </script>
-<script type="module">    
+<script type="module">
 // ===============================
-//  acharAmigos.js
-//  Busca usuários semelhantes no Firestore por pontos de similaridade
+//  acharAmigos.js  —  v3 (pré-carregamento instantâneo)
+//
+//  Estratégia:
+//  1. Na abertura da página, exibe IMEDIATAMENTE o cache do localStorage
+//  2. Em paralelo, busca todos os usuários no Firestore com Promise.all
+//     (todas as leituras de uma vez, sem loop sequencial)
+//  3. Salva o resultado no localStorage para a próxima visita
+//  4. Clique em "Buscar" filtra apenas o array em memória — zero Firestore
 // ===============================
 
-// Função para detectar mobile e redirecionar corretamente
 function getProfileUrl(userId) {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   return isMobile ? `profile.html?userid=${userId}` : `PF.html?userid=${userId}`;
 }
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  getDoc
+  getFirestore, collection, getDocs, doc, getDoc, query, limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
-  getAuth,
-  onAuthStateChanged
+  getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -477,321 +477,286 @@ const firebaseConfig = {
   measurementId: "G-D96BEW6RC3"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db   = getFirestore(app);
 const auth = getAuth(app);
 
-let currentUserId = null;
-onAuthStateChanged(auth, (user) => {
-  if (user) currentUserId = user.uid;
-});
+// ─── Estado global ────────────────────────────────────────────────────────────
+let currentUserId  = null;
+let todosUsuarios  = [];          // array completo em memória, já montado
+let preloadPronto  = false;       // true quando o Firestore terminou
+let preloadPromise = null;        // promise do preload para aguardar se necessário
 
-const btnBuscar = document.querySelector('.search-btn');
+// ─── Elementos ────────────────────────────────────────────────────────────────
+const btnBuscar      = document.querySelector('.search-btn');
 const switchIgualAMim = document.getElementById('igualAMim');
-const filtrosInputs = document.querySelectorAll('.filtros input, .filtros select');
-const cardsWrapper = document.getElementById('cardsWrapper');
-const friendsList = document.querySelector('.friends-list'); // grid view
+const filtrosInputs  = document.querySelectorAll('.filtros input, .filtros select');
+const cardsWrapper   = document.getElementById('cardsWrapper');
+const friendsList    = document.querySelector('.friends-list');
 
+// ─── Utilitários ──────────────────────────────────────────────────────────────
 function normalizar(str) {
   return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-if (btnBuscar) btnBuscar.addEventListener('click', buscarUsuariosSemelhantes);
-if (switchIgualAMim) switchIgualAMim.addEventListener('change', alternarIgualAMim);
-
-async function alternarIgualAMim() {
-  if (switchIgualAMim.checked) {
-    filtrosInputs.forEach(el => {
-      el.disabled = true;
-      el.classList.add('cinza');
-    });
-    await preencherComDadosDoUsuarioAtual();
-  } else {
-    filtrosInputs.forEach(el => {
-      el.disabled = false;
-      el.classList.remove('cinza');
-      el.value = '';
-    });
-  }
+function truncar(str, max = 14) {
+  str = str || '';
+  return str.length > max ? str.substring(0, max) + '…' : str;
 }
 
-async function preencherComDadosDoUsuarioAtual() {
-  if (!currentUserId) return;
-  const userRef = doc(db, "users", currentUserId);
-  const userSnap = await getDoc(userRef);
-  const mediaRef = doc(db, "users", currentUserId, "user-infos", "user-media");
-  const aboutRef = doc(db, "users", currentUserId, "user-infos", "about");
-  const likesRef = doc(db, "users", currentUserId, "user-infos", "likes");
+// ─── Cache localStorage ───────────────────────────────────────────────────────
+const CACHE_KEY     = 'rm_usuarios_v2';
+const CACHE_TTL_MS  = 10 * 60 * 1000; // 10 minutos
+
+function salvarCache(usuarios) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      ts: Date.now(),
+      data: usuarios.slice(0, 60)
+    }));
+  } catch (_) {}
+}
+
+function lerCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null; // expirado
+    return parsed.data;
+  } catch (_) { return null; }
+}
+
+// ─── Montar perfil de um doc ──────────────────────────────────────────────────
+async function montarUsuario(docSnap) {
+  const userId   = docSnap.id;
+  const userData = docSnap.data();
+
+  // Todas as 3 subcoleções em paralelo
   const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
-    getDoc(mediaRef), getDoc(aboutRef), getDoc(likesRef)
+    getDoc(doc(db, "users", userId, "user-infos", "user-media")),
+    getDoc(doc(db, "users", userId, "user-infos", "about")),
+    getDoc(doc(db, "users", userId, "user-infos", "likes")),
   ]);
-  const userData = userSnap.exists() ? userSnap.data() : {};
+
   const media = mediaSnap.exists() ? mediaSnap.data() : {};
   const about = aboutSnap.exists() ? aboutSnap.data() : {};
   const likes = likesSnap.exists() ? likesSnap.data() : {};
 
-  filtrosInputs.forEach(input => {
-    const label = input.previousElementSibling?.textContent?.toLowerCase() || '';
-    if (label.includes('estilo')) input.value = about.styles || '';
-    if (label.includes('personalidade')) input.value = about.personality || '';
-    if (label.includes('medo')) input.value = about.fears || '';
-    if (label.includes('sonho')) input.value = about.dreams || '';
-    if (label.includes('musica')) input.value = likes.music || '';
-    if (label.includes('personagem')) input.value = likes.characters || '';
-    if (label.includes('hobbies')) input.value = likes.hobbies || '';
-    if (label.includes('local')) input.value = userData.location || userData.localizacao || '';
-    if (label.includes('genero')) input.value = userData.gender || '';
-    if (label.includes('estado civil')) input.value = userData.maritalStatus || '';
-    if (label.includes('mbti')) input.value = userData.MBTI || userData.mbti || '';
-    if (input.classList.contains('age-input')) {
-      if (userData.nascimento) {
-        const nasc = new Date(userData.nascimento);
-        const hoje = new Date();
-        const idade = hoje.getFullYear() - nasc.getFullYear();
-        input.value = idade;
-      }
-    }
-  });
+  const banner = (media.banner?.trim())
+    ? media.banner
+    : (media.headerphoto?.trim() ? media.headerphoto : './src/img/bg.jpg');
+
+  const userphoto = (media.pfp?.trim())
+    ? media.pfp
+    : (media.userphoto?.trim() ? media.userphoto : './src/img/default.jpg');
+
+  let idade = null;
+  const nasc = userData.nascimento || about.nascimento;
+  if (nasc) {
+    idade = new Date().getFullYear() - new Date(nasc).getFullYear();
+  }
+
+  return {
+    id:          userId,
+    displayname: userData.displayname || userData.username || 'Usuário',
+    username:    userData.username || '',
+    userphoto,
+    banner,
+    idade,
+    // campos para similaridade (mantidos em memória, não aparecem na UI)
+    _perfil: { ...userData, ...media, ...about, ...likes }
+  };
 }
 
-function mostrarLoading() {
-  if (cardsWrapper) {
-    cardsWrapper.innerHTML = `
-      <div class="loading-spinner">
-        <div class="spinner-center">
-          <div class="spinner"></div>
-          <p>Carregando pessoas...</p>
-        </div>
-      </div>
-    `;
-  }
-  if (friendsList) {
-    friendsList.innerHTML = `
-      <div class="loading-spinner">
-        <div class="spinner-center">
-          <div class="spinner"></div>
-          <p>Carregando pessoas...</p>
-        </div>
-      </div>
-    `;
-  }
-}
+// ─── Pré-carregamento em background ───────────────────────────────────────────
+// Roda assim que o usuário loga — sem esperar nenhum clique
+async function iniciarPreload(uid) {
+  const snapshot = await getDocs(query(collection(db, 'users'), limit(150)));
 
-function removerLoading() {
-  if (cardsWrapper) {
-    const spinner = cardsWrapper.querySelector('.loading-spinner');
-    if (spinner) spinner.remove();
-  }
-  if (friendsList) {
-    const spinner = friendsList.querySelector('.loading-spinner');
-    if (spinner) spinner.remove();
+  // Processa TODOS os usuários em paralelo (não em série)
+  const resultados = await Promise.all(
+    snapshot.docs
+      .filter(d => d.id !== uid)
+      .map(d => montarUsuario(d).catch(() => null))
+  );
+
+  todosUsuarios = resultados.filter(Boolean);
+  preloadPronto = true;
+  salvarCache(todosUsuarios);
+
+  // Atualiza a tela silenciosamente se ainda estiver mostrando cache
+  const filtros = coletarFiltros();
+  const temFiltro = Object.values(filtros).some(v => v);
+  if (!temFiltro) {
+    // sem filtros: mostra todos ordenados por score padrão (aleatório justo)
+    renderizarAmbos(todosUsuarios.slice(0, 40));
   }
 }
 
-let cacheUltimosUsuarios = [];
+// ─── Auth → dispara preload imediatamente ─────────────────────────────────────
+onAuthStateChanged(auth, (user) => {
+  if (!user) return;
+  currentUserId = user.uid;
+  preloadPromise = iniciarPreload(user.uid);
+});
+
+// ─── "Buscar" filtra só o array em memória — sem tocar no Firestore ───────────
+async function buscarUsuariosSemelhantes() {
+  // fecha sidebar
+  document.querySelector('.option-bar')?.classList.remove('open');
+  document.querySelector('.sidebar-overlay')?.classList.remove('show');
+
+  // Se o preload ainda não terminou, espera — mas mostra loading leve
+  if (!preloadPronto) {
+    mostrarLoadingLeve();
+    await preloadPromise;
+  }
+
+  const filtros  = coletarFiltros();
+  const temFiltro = Object.values(filtros).some(v => v);
+
+  let resultados;
+  if (!temFiltro) {
+    // sem filtros: mostra todos (ordem do preload)
+    resultados = todosUsuarios.slice(0, 40);
+  } else {
+    resultados = todosUsuarios
+      .map(u => ({ ...u, score: calcularSimilaridadeCampos(u._perfil, filtros, u.idade) }))
+      .filter(u => u.score > 0)
+      .sort((a, b) => b.score - a.score);
+  }
+
+  renderizarAmbos(resultados);
+}
+
+// ─── Renderização ─────────────────────────────────────────────────────────────
+function renderizarAmbos(lista) {
+  renderizarResultados(lista);
+  renderizarGrid(lista);
+}
 
 function renderizarResultados(resultados) {
   if (!cardsWrapper) return;
   cardsWrapper.innerHTML = '';
   if (!resultados.length) {
-    cardsWrapper.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+    cardsWrapper.innerHTML = '<div class="error-area"><p>Nenhum usuário parecido encontrado</p></div>';
     return;
   }
-
-  // Remove duplicados pelo id
-  const vistos = new Set();
-  const resultadosUnicos = resultados.filter(u => {
-    if (vistos.has(u.id)) return false;
-    vistos.add(u.id);
-    return true;
-  });
-
-  resultadosUnicos.forEach(u => {
+  const frag = document.createDocumentFragment();
+  deduplicar(resultados).forEach(u => {
     const card = document.createElement('div');
     card.className = 'friend-card';
     card.innerHTML = `
       <div class="card-content">
-        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" onerror="this.src='./src/img/default.jpg'">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='./src/img/default.jpg'">
         <div class="card-info">
-          <div class="card-username">${u.username}</div>
+          <div class="card-username">${truncar(u.username)}</div>
         </div>
-        <a href="${getProfileUrl(u.id)}" class="view-profile-btn">
-          <p>Ver Perfil</p>
-        </a>
-        <p class="similarity">Compatibilidade: ${(u.score * 100).toFixed(0)}%</p>
-      </div>
-    `;
-    cardsWrapper.appendChild(card);
-
-    // Truncar nomes longos
-    const profileName = card.querySelector('.card-name');
-    if (profileName && profileName.textContent.length > 10) {
-      profileName.textContent = profileName.textContent.substring(0,10) + '...';
-    }
-    const profileUsername = card.querySelector('.card-username');
-    if (profileUsername && profileUsername.textContent.length > 10) {
-      profileUsername.textContent = profileUsername.textContent.substring(0,10) + '...';
-    }
+        <a href="${getProfileUrl(u.id)}" class="view-profile-btn"><p>Ver Perfil</p></a>
+        ${u.score > 0 ? `<p class="similarity">Compatibilidade: ${(u.score * 100).toFixed(0)}%</p>` : ''}
+      </div>`;
+    frag.appendChild(card);
   });
-
-  // Salva no cache
-  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
-  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+  cardsWrapper.appendChild(frag);
 }
 
 function renderizarGrid(resultados) {
   if (!friendsList) return;
   friendsList.innerHTML = '';
   if (!resultados.length) {
-    friendsList.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+    friendsList.innerHTML = '<div class="error-area"><p>Nenhum usuário parecido encontrado</p></div>';
     return;
   }
-
-  // Remove duplicados pelo id
-  const vistos = new Set();
-  const resultadosUnicos = resultados.filter(u => {
-    if (vistos.has(u.id)) return false;
-    vistos.add(u.id);
-    return true;
-  });
-
-  resultadosUnicos.forEach(u => {
+  const frag = document.createDocumentFragment();
+  deduplicar(resultados).forEach(u => {
     const userEl = document.createElement('a');
     userEl.className = 'user';
     userEl.href = getProfileUrl(u.id);
     userEl.setAttribute('data-username', u.username);
     userEl.innerHTML = `
       <div class="card-media">
-       <img src="${u.banner}" class="card-banner" onerror="this.src='./src/img/bg.jpg'">
-       <img src="${u.userphoto}" alt="${u.displayname}" class="card-image">
+        <img src="${u.banner}" class="card-banner" loading="lazy" onerror="this.src='./src/img/bg.jpg'">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='./src/img/default.jpg'">
       </div>
       <div class="user-name">
         <div class="card-info">
-          <div class="profile-username">
-          <p>${u.username}</p>
-        </div>
-        <div style="font-size:12px;color:#4e8cff; display: none">Compatibilidade: ${(u.score * 100).toFixed(0)}%</div>
+          <div class="profile-username"><p>${truncar(u.username)}</p></div>
         </div>
         <button class="follow-btn">Seguir</button>
-      </div>
-    `;
-    friendsList.appendChild(userEl);
+      </div>`;
+    frag.appendChild(userEl);
   });
-
-  // Salva no cache
-  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
-  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+  friendsList.appendChild(frag);
 }
 
-// Exibe cache ao carregar a página
+function deduplicar(lista) {
+  const vistos = new Set();
+  return lista.filter(u => {
+    if (vistos.has(u.id)) return false;
+    vistos.add(u.id);
+    return true;
+  });
+}
+
+// ─── Loading leve (só aparece se o usuário clicar antes do preload terminar) ──
+function mostrarLoadingLeve() {
+  const html = `<div class="loading-spinner"><div class="spinner-center"><div class="spinner"></div><p>Quase lá...</p></div></div>`;
+  if (cardsWrapper && !cardsWrapper.querySelector('.friend-card')) cardsWrapper.innerHTML = html;
+  if (friendsList  && !friendsList.querySelector('.user'))        friendsList.innerHTML  = html;
+}
+
+// ─── Exibe cache imediatamente ao abrir a página ──────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  const cache = localStorage.getItem('ultimosUsuarios');
-  if (cache) {
-    const usuarios = JSON.parse(cache);
-    renderizarResultados(usuarios);
-    renderizarGrid(usuarios);
+  const cache = lerCache();
+  if (cache && cache.length) {
+    // Mostra instantaneamente sem nenhuma requisição
+    renderizarAmbos(cache);
+    // Marca como dados do cache para não confundir com resultado de busca
+    todosUsuarios = cache; // usa cache como fallback até o preload terminar
   }
-  console.log('Sistema de amigos inicializado!');
 });
 
-async function buscarUsuariosSemelhantes() {
+// ─── Eventos ──────────────────────────────────────────────────────────────────
+if (btnBuscar) btnBuscar.addEventListener('click', buscarUsuariosSemelhantes);
+if (switchIgualAMim) switchIgualAMim.addEventListener('change', alternarIgualAMim);
 
-  // FECHA OS FILTROS
-  const optionBar = document.querySelector('.option-bar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  if (optionBar && overlay) {
-    optionBar.classList.remove('open');
-    overlay.classList.remove('show');
+async function alternarIgualAMim() {
+  if (switchIgualAMim.checked) {
+    filtrosInputs.forEach(el => { el.disabled = true; el.classList.add('cinza'); });
+    await preencherComDadosDoUsuarioAtual();
+  } else {
+    filtrosInputs.forEach(el => { el.disabled = false; el.classList.remove('cinza'); el.value = ''; });
   }
+}
 
-  mostrarLoading();
+async function preencherComDadosDoUsuarioAtual() {
+  if (!currentUserId) return;
+  const [userSnap, mediaSnap, aboutSnap, likesSnap] = await Promise.all([
+    getDoc(doc(db, "users", currentUserId)),
+    getDoc(doc(db, "users", currentUserId, "user-infos", "user-media")),
+    getDoc(doc(db, "users", currentUserId, "user-infos", "about")),
+    getDoc(doc(db, "users", currentUserId, "user-infos", "likes")),
+  ]);
+  const userData = userSnap.exists()  ? userSnap.data()  : {};
+  const media    = mediaSnap.exists() ? mediaSnap.data() : {};
+  const about    = aboutSnap.exists() ? aboutSnap.data() : {};
+  const likes    = likesSnap.exists() ? likesSnap.data() : {};
 
-  const filtros = coletarFiltros();
-  const usersRef = collection(db, 'users');
-  const snapshot = await getDocs(usersRef);
-  const resultados = [];
-
-  for (const docSnap of snapshot.docs) {
-    const userId = docSnap.id;
-    if (userId === currentUserId) continue;
-
-    const userData = docSnap.data();
-
-    // 🔥 pega user-media (AQUI ESTÁ O BANNER)
-    const mediaRef = doc(db, "users", userId, "user-infos", "user-media");
-    const aboutRef = doc(db, "users", userId, "user-infos", "about");
-    const likesRef = doc(db, "users", userId, "user-infos", "likes");
-
-    const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
-      getDoc(mediaRef),
-      getDoc(aboutRef),
-      getDoc(likesRef)
-    ]);
-
-    const media = mediaSnap.exists() ? mediaSnap.data() : {};
-    const about = aboutSnap.exists() ? aboutSnap.data() : {};
-    const likes = likesSnap.exists() ? likesSnap.data() : {};
-
-    // ✅ Lê banner e foto DIRETO de `media`, antes de qualquer spread
-    // Igual ao profiles.js: tenta media.banner primeiro, depois media.headerphoto
-    const bannerFinal = (media.banner && String(media.banner).trim() !== '')
-      ? media.banner
-      : (media.headerphoto && String(media.headerphoto).trim() !== '')
-        ? media.headerphoto
-        : './src/img/default-banner.jpg';
-
-    const fotoPerfil = (media.pfp && String(media.pfp).trim() !== '')
-      ? media.pfp
-      : (media.userphoto && String(media.userphoto).trim() !== '')
-        ? media.userphoto
-        : './src/img/default.jpg';
-
-    // junta tudo só para calcular score (banner/foto já foram salvos acima)
-    const perfil = {
-      ...userData,
-      ...media,
-      ...about,
-      ...likes
-    };
-
-    // idade
-    let idade = null;
-    if (perfil.nascimento) {
-      const nasc = new Date(perfil.nascimento);
-      const hoje = new Date();
-      idade = hoje.getFullYear() - nasc.getFullYear();
-    }
-
-    // score
-    const score = calcularSimilaridadeCampos(perfil, filtros, idade);
-
-    if (score > 0) {
-
-      resultados.push({
-        id: userId,
-        displayname: perfil.displayname || perfil.username || 'Usuário',
-        username: perfil.username || '',
-        userphoto: fotoPerfil,
-        banner: bannerFinal,
-        score
-      });
-
-      resultados.sort((a, b) => b.score - a.score);
-      renderizarResultados(resultados);
-      renderizarGrid(resultados);
-    }
-  }
-
-  removerLoading();
-
-  resultados.sort((a, b) => b.score - a.score);
-  renderizarResultados(resultados);
-  renderizarGrid(resultados);
-
-  if (!resultados.length) {
-    if (cardsWrapper) cardsWrapper.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
-    if (friendsList) friendsList.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
-  }
+  filtrosInputs.forEach(input => {
+    const label = input.previousElementSibling?.textContent?.toLowerCase() || '';
+    if (label.includes('estilo'))       input.value = about.styles      || '';
+    if (label.includes('personalidade'))input.value = about.personality || '';
+    if (label.includes('medo'))         input.value = about.fears       || '';
+    if (label.includes('sonho'))        input.value = about.dreams      || '';
+    if (label.includes('musica'))       input.value = likes.music       || '';
+    if (label.includes('personagem'))   input.value = likes.characters  || '';
+    if (label.includes('hobbies'))      input.value = likes.hobbies     || '';
+    if (label.includes('local'))        input.value = userData.location || userData.localizacao || '';
+    if (label.includes('genero'))       input.value = userData.gender   || '';
+    if (label.includes('estado civil')) input.value = userData.maritalStatus || '';
+    if (label.includes('mbti'))         input.value = userData.MBTI     || userData.mbti || '';
+  });
 }
 
 function coletarFiltros() {

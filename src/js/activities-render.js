@@ -34,28 +34,106 @@ function esperarAuth() {
 
 const DUAS_SEMANAS_MS = 14 * 24 * 60 * 60 * 1000;
 const GROUPING_WINDOW = 6 * 60 * 60 * 1000;
-const DEFAULT_PHOTO   = './src/icon/default.jpg';
+const DEFAULT_PHOTO   = '../src/img/default.jpg';
 
-// ─── Cache de usuários ────────────────────────────────────────────────────────
-const userCache = {};
-async function resolveUser(uid) {
-  if (userCache[uid]) return userCache[uid];
+// ─── Cache de atividades no localStorage ─────────────────────────────────────
+const ACTIVITIES_CACHE_KEY = 'xact_cache_v1';
+const ACTIVITIES_CACHE_TTL = 3 * 60 * 1000; // 3 minutos — revalida em background
+
+function lerCacheAtividades(uid) {
   try {
-    const snap = await getDoc(doc(db, 'users', uid));
-    let data = { username: uid, nome: uid, photo: DEFAULT_PHOTO };
+    const raw = localStorage.getItem(`${ACTIVITIES_CACHE_KEY}_${uid}`);
+    if (!raw) return null;
+    const { timestamp, html } = JSON.parse(raw);
+    if (!html || !timestamp) return null;
+    return { html, timestamp, stale: Date.now() - timestamp > ACTIVITIES_CACHE_TTL };
+  } catch (_) {
+    return null;
+  }
+}
+
+function salvarCacheAtividades(uid, html) {
+  try {
+    localStorage.setItem(
+      `${ACTIVITIES_CACHE_KEY}_${uid}`,
+      JSON.stringify({ timestamp: Date.now(), html })
+    );
+  } catch (_) {
+    // localStorage cheio — ignora silenciosamente
+  }
+}
+
+function limparCacheAtividades(uid) {
+  try { localStorage.removeItem(`${ACTIVITIES_CACHE_KEY}_${uid}`); } catch (_) {}
+}
+
+// ─── Cache de usuários com refresh de foto em background ──────────────────────
+// Estrutura: { username, nome, photo, photoFetchedAt }
+// photoFetchedAt = timestamp da última busca da foto no Firestore
+const PHOTO_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+const userCache = {};
+
+async function fetchPhotoFromFirestore(uid) {
+  try {
+    const mediaSnap = await getDoc(doc(db, `users/${uid}/user-infos/user-media`));
+    if (mediaSnap.exists()) {
+      return mediaSnap.data().userphoto || mediaSnap.data().pfp || DEFAULT_PHOTO;
+    }
+  } catch (_) {}
+  return DEFAULT_PHOTO;
+}
+
+// Atualiza as <img> do DOM que pertencem a esse uid, se a foto mudou
+function patchAvatarsNoDom(uid, novaFoto) {
+  document.querySelectorAll(`img[data-uid="${uid}"]`).forEach(img => {
+    if (img.src !== novaFoto && novaFoto !== DEFAULT_PHOTO) {
+      img.src = novaFoto;
+    }
+  });
+}
+
+// Busca foto em background e atualiza cache + DOM sem bloquear render
+async function refreshPhotoBackground(uid) {
+  const novaFoto = await fetchPhotoFromFirestore(uid);
+  if (userCache[uid]) {
+    const mudou = userCache[uid].photo !== novaFoto;
+    userCache[uid].photo          = novaFoto;
+    userCache[uid].photoFetchedAt = Date.now();
+    if (mudou) patchAvatarsNoDom(uid, novaFoto);
+  }
+}
+
+async function resolveUser(uid) {
+  const cached = userCache[uid];
+
+  // Cache completo e foto ainda fresca → retorna direto
+  if (cached) {
+    const fotoVelha = Date.now() - (cached.photoFetchedAt || 0) > PHOTO_CACHE_TTL;
+    if (fotoVelha) {
+      // Dispara refresh em background sem bloquear
+      refreshPhotoBackground(uid);
+    }
+    return cached;
+  }
+
+  // Primeira vez: busca dados básicos e foto em paralelo
+  try {
+    const [snap, foto] = await Promise.all([
+      getDoc(doc(db, 'users', uid)),
+      fetchPhotoFromFirestore(uid)
+    ]);
+
+    const data = { username: uid, nome: uid, photo: foto, photoFetchedAt: Date.now() };
     if (snap.exists()) {
       const d = snap.data();
       data.username = d.username || uid;
       data.nome     = d.displayName || d.displayname || d.nome || d.name || d.username || uid;
     }
-    try {
-      const mediaSnap = await getDoc(doc(db, `users/${uid}/user-infos/user-media`));
-      if (mediaSnap.exists()) data.photo = mediaSnap.data().pfp || mediaSnap.data().userphoto || DEFAULT_PHOTO;
-    } catch (_) {}
+
     userCache[uid] = data;
     return data;
   } catch (_) {
-    return { username: uid, nome: uid, photo: DEFAULT_PHOTO };
+    return { username: uid, nome: uid, photo: DEFAULT_PHOTO, photoFetchedAt: Date.now() };
   }
 }
 
@@ -227,7 +305,7 @@ function agrupar(atividades) {
  * Uma atividade de amigo de 3 dias atrás ainda pode superar
  * um desconhecido de 1 dia atrás, mas nunca supera algo de horas atrás.
  */
-function calcularRanking(grupos, amigosSet) {
+function calcularRanking(grupos, amigosSet, currentUid) {
   const agora = Date.now();
 
   return grupos.map(grupo => {
@@ -237,9 +315,10 @@ function calcularRanking(grupos, amigosSet) {
     // Score base: decai com o tempo (0 a 1, 1 = agora, 0 ≈ 2 semanas)
     const baseScore = Math.max(0, 1 - ageMs / DUAS_SEMANAS_MS);
 
-    // Boost de amigo
-    const isAmigo    = grupo.items.some(i => amigosSet.has(i.actorUid));
-    const friendBoost = isAmigo ? 0.40 : 0;
+    // Boost de amigo — suas próprias atividades recebem o mesmo boost
+    const isSeu   = currentUid && grupo.items.some(i => i.actorUid === currentUid);
+    const isAmigo = grupo.items.some(i => amigosSet.has(i.actorUid));
+    const friendBoost = (isAmigo || isSeu) ? 0.40 : 0;
 
     // Boost de tipo big
     const typeBoost = isBig(grupo.tipo) ? 0.15 : 0;
@@ -250,7 +329,7 @@ function calcularRanking(grupos, amigosSet) {
 
     const score = baseScore * (1 + friendBoost + typeBoost) + redescoberta;
 
-    return { ...grupo, _score: score, _isAmigo: isAmigo };
+    return { ...grupo, _score: score, _isAmigo: isAmigo, _isSeu: isSeu };
   });
 }
 
@@ -268,15 +347,20 @@ function injetarCSS() {
 }
 
 // ─── Monta bloco de avatares (1 ou 2 fotos) ──────────────────────────────────
+// fotos: array de { src, uid } — uid permite patch posterior sem re-render
 function avatarsHtml(fotos) {
+  function imgTag({ src, uid } = {}) {
+    const u = uid ? `data-uid="${uid}"` : '';
+    return `<img src="${src || DEFAULT_PHOTO}" ${u} onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy">`;
+  }
   if (fotos.length >= 2) {
     return `<div class="act-avatars duo">
-      <img src="${fotos[0]}" onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy">
-      <img src="${fotos[1]}" onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy">
+      ${imgTag(fotos[0])}
+      ${imgTag(fotos[1])}
     </div>`;
   }
   return `<div class="act-avatars single">
-    <img src="${fotos[0] || DEFAULT_PHOTO}" onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy">
+    ${imgTag(fotos[0] || { src: DEFAULT_PHOTO })}
   </div>`;
 }
 
@@ -290,9 +374,15 @@ function renderBigCard(grupo, currentUid) {
   // Para new_friendship pega foto do ator + foto do target; demais pega fotos dos atores únicos
   let fotos;
   if (tipo === 'new_friendship' && items[0].targetPhoto) {
-    fotos = [items[0].authorPhoto || DEFAULT_PHOTO, items[0].targetPhoto].filter(Boolean);
+    fotos = [
+      { src: items[0].authorPhoto || DEFAULT_PHOTO, uid: items[0].actorUid },
+      { src: items[0].targetPhoto,                  uid: items[0].targetUid }
+    ].filter(f => f.src);
   } else {
-    fotos = [...new Map(items.map(i => [i.actorUid, i.authorPhoto])).values()].filter(Boolean).slice(0, 2);
+    fotos = [...new Map(items.map(i => [i.actorUid, i])).values()]
+      .map(i => ({ src: i.authorPhoto || DEFAULT_PHOTO, uid: i.actorUid }))
+      .filter(f => f.src)
+      .slice(0, 2);
   }
 
   const badgeHtml = _isAmigo ? `<span class="act-friend-badge">amigo</span>` : '';
@@ -319,8 +409,11 @@ function renderSmallCard(grupo, currentUid) {
   const texto  = gerarTexto(tipo, items, ultimoMs);
   const foto   = items[0].authorPhoto || DEFAULT_PHOTO;
 
-  const fotos = [...new Map(items.map(i => [i.actorUid, i.authorPhoto])).values()].filter(Boolean).slice(0, 2);
-  if (!fotos.length) fotos.push(foto);
+  const fotos = [...new Map(items.map(i => [i.actorUid, i])).values()]
+    .map(i => ({ src: i.authorPhoto || DEFAULT_PHOTO, uid: i.actorUid }))
+    .filter(f => f.src)
+    .slice(0, 2);
+  if (!fotos.length) fotos.push({ src: items[0].authorPhoto || DEFAULT_PHOTO, uid: items[0].actorUid });
 
   const badgeHtml = _isAmigo ? `<span class="act-friend-badge">amigo</span>` : '';
 
@@ -458,13 +551,75 @@ function ativarSwipeDelete(container, currentUid) {
   });
 }
 
-// ─── Função principal ─────────────────────────────────────────────────────────
+// ─── Busca e monta o HTML das atividades (lógica pura, sem tocar no DOM) ──────
+async function fetchEMontarHtml(uid) {
+  const duasSemanasAtras = Timestamp.fromMillis(Date.now() - DUAS_SEMANAS_MS);
+
+  const [snap, amigosSet] = await Promise.all([
+    getDocs(query(
+      collection(db, 'activities'),
+      where('createdAt', '>=', duasSemanasAtras),
+      where('visible', '==', true),
+      orderBy('createdAt', 'desc'),
+      limit(150)
+    )),
+    buscarAmigos(uid)
+  ]);
+
+  let atividades = snap.docs.map(d => ({ activityId: d.id, ...d.data() }));
+
+  // Enriquece autor
+  atividades = await Promise.all(atividades.map(async act => {
+    if (!act.authorUsername && act.actorUid) {
+      const u = await resolveUser(act.actorUid);
+      return { ...act, authorUsername: u.username, authorNome: u.nome, authorPhoto: act.authorPhoto || u.photo };
+    }
+    return act;
+  }));
+
+  // Varrer /newusers
+  try {
+    const nuSnap = await getDocs(query(
+      collection(db, 'newusers'),
+      where('createat', '>=', duasSemanasAtras),
+      orderBy('createat', 'desc'),
+      limit(30)
+    ));
+    for (const d of nuSnap.docs) {
+      const newUid = d.id;
+      if (atividades.some(a => a.type === 'new_user' && a.actorUid === newUid)) continue;
+      const u = await resolveUser(newUid);
+      atividades.push({
+        activityId: `_newuser_${newUid}`, type: 'new_user', actorUid: newUid,
+        authorUsername: u.username, authorNome: u.nome, authorPhoto: u.photo,
+        createdAt: d.data().createat, visible: true
+      });
+    }
+  } catch (e) {
+    console.warn('[activities-render] Erro ao varrer newusers:', e);
+  }
+
+  atividades.sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+
+  const grupos = agrupar(atividades);
+  if (!grupos.length) return null;
+
+  const gruposRankeados = calcularRanking(grupos, amigosSet, uid)
+    .sort((a, b) => b._score - a._score);
+
+  return `
+    <div class="xact-list">${montarLayout(gruposRankeados, uid)}</div>
+    <div class="end-feed">
+    <h3>As atividades acabaram...</h3>
+    <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
+    </div>`;
+}
+
+// ─── Função principal — cache-first, revalida em background ──────────────────
 async function carregarAtividades() {
   injetarCSS();
   const container = document.getElementById('activities-section');
   if (!container) return;
-
-  container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
 
   const user = await esperarAuth();
   if (!user) {
@@ -472,83 +627,70 @@ async function carregarAtividades() {
     return;
   }
 
+  const uid    = user.uid;
+  const cached = lerCacheAtividades(uid);
+
+  // ── 1. Mostra cache instantaneamente (se existir) ──────────────────────────
+  if (cached) {
+    container.innerHTML = cached.html;
+    ativarSwipeDelete(container, uid);
+
+    // Cache ainda fresco → não revalida agora
+    if (!cached.stale) return;
+
+    // Cache stale → revalida em background sem travar a tela
+    fetchEMontarHtml(uid).then(html => {
+      if (!html) return;
+      salvarCacheAtividades(uid, html);
+      // Atualiza o DOM só se o usuário ainda não fez scroll (UX menos intrusivo)
+      if (container.scrollTop < 80) {
+        container.innerHTML = html;
+        ativarSwipeDelete(container, uid);
+      }
+    }).catch(err => console.warn('[activities-render] Revalidação em background falhou:', err));
+
+    return;
+  }
+
+  // ── 2. Sem cache → mostra spinner e espera o fetch ─────────────────────────
+  container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
+
   try {
-    const duasSemanasAtras = Timestamp.fromMillis(Date.now() - DUAS_SEMANAS_MS);
+    const html = await fetchEMontarHtml(uid);
 
-    // Busca atividades e amigos em paralelo
-    const [snap, amigosSet] = await Promise.all([
-      getDocs(query(
-        collection(db, 'activities'),
-        where('createdAt', '>=', duasSemanasAtras),
-        where('visible', '==', true),
-        orderBy('createdAt', 'desc'),
-        limit(150)
-      )),
-      buscarAmigos(user.uid)
-    ]);
-
-    let atividades = snap.docs.map(d => ({ activityId: d.id, ...d.data() }));
-
-    // Enriquece autor
-    atividades = await Promise.all(atividades.map(async act => {
-      if (!act.authorUsername && act.actorUid) {
-        const u = await resolveUser(act.actorUid);
-        return { ...act, authorUsername: u.username, authorNome: u.nome, authorPhoto: act.authorPhoto || u.photo };
-      }
-      return act;
-    }));
-
-    // Varrer /newusers
-    try {
-      const nuSnap = await getDocs(query(
-        collection(db, 'newusers'),
-        where('createat', '>=', duasSemanasAtras),
-        orderBy('createat', 'desc'),
-        limit(30)
-      ));
-      for (const d of nuSnap.docs) {
-        const uid = d.id;
-        if (atividades.some(a => a.type === 'new_user' && a.actorUid === uid)) continue;
-        const u = await resolveUser(uid);
-        atividades.push({
-          activityId: `_newuser_${uid}`, type: 'new_user', actorUid: uid,
-          authorUsername: u.username, authorNome: u.nome, authorPhoto: u.photo,
-          createdAt: d.data().createat, visible: true
-        });
-      }
-    } catch (e) {
-      console.warn('[activities-render] Erro ao varrer newusers:', e);
-    }
-
-    // Ordena cronologicamente antes de agrupar
-    atividades.sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-
-    // Agrupa
-    const grupos = agrupar(atividades);
-
-    if (!grupos.length) {
+    if (!html) {
       container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`;
       return;
     }
 
-    // Aplica ranking com peso de amizade + redescoberta
-    const gruposRankeados = calcularRanking(grupos, amigosSet)
-      .sort((a, b) => b._score - a._score);
-
-    container.innerHTML = `
-    <div class="xact-list">${montarLayout(gruposRankeados, user.uid)}</div>
-    <div class="end-feed">
-    <h3>As atividades acabaram...</h3>
-    <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
-    </div>`;
-
-    // Ativa swipe-to-delete
-    ativarSwipeDelete(container, user.uid);
+    salvarCacheAtividades(uid, html);
+    container.innerHTML = html;
+    ativarSwipeDelete(container, uid);
 
   } catch (err) {
     console.error('[activities-render] Erro:', err);
     container.innerHTML = `<p class="xact-empty">Não foi possível carregar as atividades.</p>`;
   }
 }
+
+// Expõe função para forçar refresh (ex: após criar um post)
+window.recarregarAtividades = async function () {
+  const container = document.getElementById('activities-section');
+  const user = auth.currentUser;
+  if (!container || !user) return;
+
+  limparCacheAtividades(user.uid);
+  container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
+
+  try {
+    const html = await fetchEMontarHtml(user.uid);
+    if (!html) { container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`; return; }
+    salvarCacheAtividades(user.uid, html);
+    container.innerHTML = html;
+    ativarSwipeDelete(container, user.uid);
+  } catch (err) {
+    console.error('[activities-render] Erro ao recarregar:', err);
+  }
+};
 
 document.addEventListener('DOMContentLoaded', carregarAtividades);
