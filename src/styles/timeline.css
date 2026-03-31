@@ -1,0 +1,205 @@
+.profile-feed {
+    position: fixed;
+    background-color: var(--bg-primary);
+    height: 100%;
+    width: 100%;
+    z-index: 99999;
+    opacity: 1;
+    display: none;
+}
+
+.profile-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    background-color: var(--bg-primary);
+    border-bottom: 0.1px solid var(--border-primary);
+    height: 60px;
+    padding: 0 6px;
+    z-index: 99999999;
+}
+
+.center-timeline {
+    text-align: center;
+    width: 100%;
+}
+
+.feed-subtitle {
+    font-weight: bold;
+}
+
+.top-timeline {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.top-timeline svg {
+    fill: currentColor;
+    height: 20px;
+    width: 20px;
+}
+
+.top-timeline button {
+    width: 40px;
+    background-color: transparent;
+    color: currentColor;
+    border: none;
+    padding-top: 8px;
+}
+
+.profile-feed-posts {
+    height: 100%;
+    width: 100%;
+    padding: 30px 0 100px 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.card-test {
+    background-color: red;
+    height: 100px;
+    width: 100%;
+}
+
+
+
+.post-card {
+  background: var(--bg-card) ;
+  backdrop-filter: blur(none);
+  border-radius: 12px !important;
+  margin-bottom: 0px !important;
+  box-shadow: none !important;
+  padding: 14px 14px 14px 14px !important;
+  border-left: none;
+  border: none !important;
+  background: transparent !important;
+  border-bottom: 0px solid var(--border-primary) !important;
+  border-radius: 0px !important;
+}
+
+.search-box-mobile {
+  right: 10px !important; 
+  top: 10px !important;
+  width: 300px !important;
+  margin: 12px !important;
+  max-width: 300px !important;
+  padding: 6px 12px !important;
+  border-radius: 10px !important;
+  border: 1px solid #444 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #dbdbdb;
+  font-size: 14px;
+  outline: none;
+}
+
+
+
+/* Header do post */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px !important;
+  padding: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #373737;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.user-meta span {
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+.post-options i {
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Imagem postada */
+.post-image {
+  margin: 0px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 500px;
+}
+
+.post-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 0.1px solid #373737;
+}
+
+/* Texto do post */
+.post-text {
+  font-size: 17px;
+  color: #fff  !important;
+  margin: 0 0 0 0;
+  padding: 0 8px 8px 12px;
+}
+
+/* Ações: curtir, comentar, salvar, banir */
+.post-actions {
+  display: flex;
+  gap: 0px;
+  flex-direction: row !important; /* padrão, pode omitir */
+  flex: none !important;
+}
+
+
+.post-actions button {
+  background: none;
+  border: none;
+  color: #dbdbdb;
+  font-size: 16px;
+  display: flex;
+  cursor: pointer;
+  transition: color 0.3s;
+  flex: none !important;
+}
+
+.btn-comment p {
+    display: none;
+}
+
+.post-actions button:hover {
+  color: var(--primary-color);
+}
+
+.post-actions button span {
+  font-size: 14px;
+  color: #bbb;
+  font-weight: bold;
+}
+
+.post-actions button i {
+  font-size: 22px;
+}

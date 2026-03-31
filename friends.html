@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+<meta name="theme-color" content="#0f0f0f"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
+  <link rel="stylesheet" href="./src/styles/amigos.css" />
+  <link rel="stylesheet" href="./src/styles/navbar-bottom.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo_area">
+      <div class="logo">RealMe</div>
+    </div>
+    <div class="search-area">
+  <div class="search-box">
+    <button><i class="fas fa-search"></i></button>
+    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
+  </div>
+    </div>
+    <div class="last-update-area">
+      <div class="last-update">
+        <p>Novidades!</p>
+      </div>
+    </div>
+    <div class="marquee-container">
+      <div class="marquee"></div>
+    </div>
+  </nav>
+
+  <div class="friends-container">
+        <div class="friends-header">
+          <div class="title-page"><p>Pessoas parecidas com você</p></div>
+          <button class="filter-btn" id="filterBtn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg></button>
+        </div>
+        <!-- VIEW GRID (Original) -->
+        <div class="grid-view active" id="gridView">
+            <div class="friends-list">
+                <a class="user" href="#" data-username="afliccoess">
+                    <img src="https://lastfm.freetls.fastly.net/i/u/avatar170s/3c04e79db06c605e5de3897555a9a34e.png" alt="Vini demarco">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>Vini demarco</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> afliccoess</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="vampirinhaz7">
+                    <img src="https://cdn.pfps.gg/pfps/1869-goth-egirl-27.png" alt="Mari">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>𖤍𖤌𖤍 Mari Saverio</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> vampirinhaz7</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="maxgfortes">
+                    <img src="https://i.pinimg.com/736x/d6/fc/2a/d6fc2ab598fdc5ffee863bd5835746c8.jpg" alt="Max">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>maxgfortes</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> maxgfortes</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="maxine">
+                    <img src="https://i.pinimg.com/736x/0e/10/35/0e1035c960796eccbc18608793cfa3e9.jpg" alt="Maxine">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>⋆˚｡⋆୨✧୧˚ 𝑴𝒂𝒙𝒊𝒏𝒆 ˚୨✧୧⋆｡˚⋆</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> maxine</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="davix">
+                    <img src="https://i.pinimg.com/736x/12/d3/dd/12d3dd5ac7a32f43cf867161cb95774f.jpg" alt="David">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>warrsex</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> davix</p>
+                        </div>
+                    </div>
+                </a>
+                <a class="user" href="#" data-username="haspkey">
+                    <img src="https://i.postimg.cc/CK3qy1w5/image.png" alt="Haspkey">
+                    <div class="user-name">
+                        <div class="profile-name">
+                            <p>haspkey</p>
+                        </div>
+                        <div class="profile-username">
+                            <p> haspkey</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+    </div>
+
+<aside class="option-bar">
+  <h1>Preferencias</h1>
+  <div class="options-header">
+    <div class="opt-left">
+          <button class="close-btn" id="closeOptionsBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+    </button>
+    </div>
+    <div class="opt-center">Filtros e opções</div>
+    <div class="opt-right">
+    </div>
+  </div>
+  <div class="options">
+      <!-- Checkbox “Igual a mim” -->
+  <div class="filtros">
+    <div class="estilo">
+      <p>Estilo</p>
+      <input class="estilo" type="text" placeholder="gotico, alternativo, sk8 archive...">
+    </div>
+
+    <div class="estilo">
+      <p>Personalidade</p>
+      <input class="estilo" type="text" placeholder="extrovertido, introvertido...">
+    </div>
+
+    <div class="estilo">
+      <p>Medos</p>
+      <input class="estilo" type="text" placeholder="Medo de Acabar Sozinho...">
+    </div>
+
+    <div class="estilo">
+      <p>Sonhos e Desejos</p>
+      <input class="estilo" type="text" placeholder="Conexão real, Amor, Dinheiro...">
+    </div>
+
+    <div class="estilo">
+      <p>Musicas</p>
+      <input class="estilo" type="text" placeholder="Rock, Grunge, Pop, Alt, Indie...">
+    </div>
+
+    <div class="estilo">
+      <p>Personagens</p>
+      <input class="estilo" type="text" placeholder="Jesse Pinkman, Cassie, Marla...">
+    </div>
+
+    <div class="estilo">
+      <p>localização</p>
+      <input class="estilo" type="text" placeholder="São Paulo, Porto Alegre...">
+    </div>
+
+    <div class="estilo">
+      <p>Hobbies</p>
+      <input class="estilo" type="text" placeholder="Esportes, Pintura, Musica...">
+    </div>
+
+  </div>
+  <div class="search-btn-area">
+    <div class="opt-bottom">
+            <div class="lm">
+        <p>Igual a mim</p>
+        <label class="switch">
+          <input type="checkbox" id="igualAMim">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <button class="search-btn" type="submit" form="search-form">Buscar</button>
+  </div>
+</div>
+
+  <!-- Botão fixo -->
+  </div>
+</aside>
+<div class="sidebar-overlay"></div>
+</div>
+
+
+<div class="navbar-bottom">
+    <div class="navbar-bottom-area">
+      <a href="feed.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 511 511.832"><path fill-rule="nonzero" d="M43.084 468.748h116.942V364.721c0-25.882 10.609-49.45 27.679-66.528l.082-.081c17.077-17.07 40.645-27.679 66.527-27.679 25.844 0 49.412 10.617 66.519 27.687l.082.081c17.092 17.151 27.686 40.697 27.686 66.52v104.027h119.315V253.009L255.846 51.151 43.084 253.768v214.98zm138.484 43.084H29.337c-8.09 0-15.428-3.3-20.732-8.605C3.3 497.923 0 490.585 0 482.495V244.611c.059-5.681 2.298-11.346 6.733-15.568L241.038 5.915c8.236-7.846 21.284-7.927 29.616 0l232.514 221.323c4.782 3.957 7.832 9.931 7.832 16.614v238.643c0 7.964-3.316 15.391-8.642 20.717-5.253 5.253-12.591 8.62-20.695 8.62H327.059c-11.891 0-21.542-9.651-21.542-21.542V364.721c0-14.109-5.739-26.913-14.978-36.145l-.081-.081c-9.231-9.238-22.036-14.978-36.144-14.978-14.087 0-26.913 5.762-36.189 15.015-9.253 9.276-15.014 22.102-15.014 36.189V490.29c0 11.891-9.652 21.542-21.543 21.542z"/></svg>
+      </a>
+      <a href="friends.html" class="active-bar">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      </a>
+      <a href="direct.html">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 506 511.682"><path fill-rule="nonzero" d="M76.022 432.762c-14.224-17.624-28.477-36.009-40.468-55.504-13.738-22.329-24.838-46.442-30.326-73.172-14.057-68.387.935-136.064 36.561-190.148C77.414 59.833 133.687 19.322 202.118 5.235c68.394-14.071 136.056.928 190.14 36.547 54.105 35.632 94.638 91.912 108.71 160.35 7.003 34.067 6.445 67.452-.116 99.01-7.018 33.734-20.937 65.408-39.78 93.639-25.671 38.445-58.723 65.581-98.51 82.009-39.837 16.45-86.054 21.88-138.014 16.979l-9.714-.928c-19.966-1.928-27.528-2.653-33.487-1.094-4.343 1.181-9.932 3.69-18.842 7.677l-8.381 3.734c-20.756 9.229-36.009 10.44-47.878 6.14-15.499-5.618-22.503-17.566-25.765-33.023-1.624-7.706-2.139-15.739-2.675-24.221-.399-6.445-.841-13.231-1.784-19.292zm47.972-127.857l61.768-98.785c10.976-16.573 33.719-20.177 49.357-7.924l52.024 40.917c4.785 3.734 11.469 3.886 16.363.319l66.038-46.413c9.678-7.032 21.873 4.698 15.297 14.681l-62.355 97.785c-10.977 16.566-33.719 20.176-49.357 7.917l-52.024-40.918c-4.785-3.734-11.462-3.893-16.363-.319l-65.509 47.37c-9.671 7.032-21.872-4.64-15.239-14.63zM74.761 353.16c11.976 19.473 26.273 37.597 40.323 54.902a22.782 22.782 0 014.785 9.693c2.501 10.962 3.175 21.532 3.799 31.428.384 6.104.754 11.919 1.493 16.232 2.226-.775 5.633-2.16 10.462-4.299l8.177-3.596c11.23-5.031 18.284-8.192 25.679-10.164h.094c13.688-3.646 23.49-2.711 49.581-.188l9.716.928c44.484 4.197 83.43-.196 116.25-13.746 31.246-12.905 57.36-34.444 77.833-65.103 15.616-23.395 27.144-49.596 32.936-77.457 5.336-25.686 5.8-52.822.116-80.48-11.52-56.026-44.673-102.084-88.919-131.221-44.274-29.158-99.72-41.432-155.79-29.891-56.012 11.528-102.07 44.674-131.199 88.912-29.166 44.282-41.433 99.728-29.906 155.798 4.205 20.495 13.246 39.852 24.57 58.252z"/></svg>
+      </a>
+      <a href="explore.html">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
+      </a>
+      <a href="profile.html">
+        <img src="./src/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+      </a>
+    </div>
+  </div>
+
+
+  
+<div class="pc-alert">
+  <div class="logo-area">
+    <div class="pc-alert-logo">RealMe</div>
+  </div>
+  <div class="pc-alert-title">Indisponivel em PCs</div>
+  <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
+</div>
+
+
+
+<script>
+        // Dados dos usuários
+        const users = [
+
+        ];
+
+        class FriendsCarousel {
+            constructor() {
+                this.currentIndex = 0;
+                this.users = users;
+                this.cardsWrapper = document.getElementById('cardsWrapper');
+                this.indicators = document.getElementById('indicators');
+                this.isTransitioning = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.createCards();
+                this.createIndicators();
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            createCards() {
+                this.cardsWrapper.innerHTML = '';
+                this.users.forEach((user, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'friend-card';
+                    card.innerHTML = `
+                        <div class="card-content">
+                            <div class="card-media">
+                              <img src="${user.image}" alt="${user.name}" class="card-banner">
+                              <img src="${user.image}" alt="${user.name}" class="card-image">
+                            </div>
+                            <div class="card-info">
+                                <div class="card-name">${user.name}</div>
+                                <div class="card-username">${user.username}</div>
+                            </div>
+                            <a href="${user.profile}" class="view-profile-btn"><p>Ver Perfil</p>
+                            </a>
+                        </div>
+                    `;
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.view-profile-btn')) {
+                            this.goToSlide(index);
+                        }
+                    });
+                    this.cardsWrapper.appendChild(card);
+                });
+            }
+
+            createIndicators() {
+                this.indicators.innerHTML = '';
+                this.users.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    if (index === 0) indicator.classList.add('active');
+                    indicator.addEventListener('click', () => {
+                        this.goToSlide(index);
+                    });
+                    this.indicators.appendChild(indicator);
+                });
+            }
+
+            updateDisplay() {
+                const cards = this.cardsWrapper.children;
+                const totalCards = cards.length;
+
+                Array.from(cards).forEach(card => {
+                    card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
+                });
+
+                Array.from(cards).forEach((card, index) => {
+                    const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
+                    switch (relativePos) {
+                        case 0: card.classList.add('center'); break;
+                        case 1: card.classList.add('right'); break;
+                        case -1: card.classList.add('left'); break;
+                        case 2: card.classList.add('far-right'); break;
+                        case -2: card.classList.add('far-left'); break;
+                        default: card.classList.add('hidden'); break;
+                    }
+                });
+
+                // Corrige as bolinhas para sempre mostrar todas e ativar a correta
+                const indicatorElements = this.indicators.children;
+                Array.from(indicatorElements).forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            // Corrige o cálculo para sempre ser infinito
+            getRelativePosition(cardIndex, currentIndex, totalCards) {
+                let diff = cardIndex - currentIndex;
+                // Mantém o carrossel infinito sem pular bolinhas
+                if (diff > totalCards / 2) {
+                    diff -= totalCards;
+                } else if (diff < -totalCards / 2) {
+                    diff += totalCards;
+                }
+                return diff;
+            }
+
+            goToSlide(index) {
+                if (this.isTransitioning || index === this.currentIndex) return;
+                this.isTransitioning = true;
+                this.currentIndex = index;
+                this.updateDisplay();
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, 400);
+            }
+
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.users.length;
+                this.updateDisplay();
+            }
+
+            prev() {
+                this.currentIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
+                this.updateDisplay();
+            }
+
+            bindEvents() {
+                document.getElementById('nextBtn').addEventListener('click', () => this.next());
+                document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+                document.addEventListener('keydown', (e) => {
+                    if (document.getElementById('carouselView').classList.contains('active')) {
+                        if (e.key === 'ArrowRight') this.next();
+                        if (e.key === 'ArrowLeft') this.prev();
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Sistema de amigos inicializado!');
+
+            // Botão de filtros para mobile
+            const filterBtn = document.getElementById('filterBtn');
+            const optionBar = document.querySelector('.option-bar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const closeOptionsBtn = document.getElementById('closeOptionsBtn');
+
+            if (filterBtn && optionBar && overlay) {
+                filterBtn.addEventListener('click', () => {
+                    optionBar.classList.add('open');
+                    overlay.classList.add('show');
+                });
+
+                overlay.addEventListener('click', () => {
+                    optionBar.classList.remove('open');
+                    overlay.classList.remove('show');
+                });
+            }
+
+            if (closeOptionsBtn) {
+                closeOptionsBtn.addEventListener('click', () => {
+                    optionBar.classList.remove('open');
+                    overlay.classList.remove('show');
+                });
+            }
+
+            // Redirecionar perfis para mobile ou desktop
+            const userLinks = document.querySelectorAll('.user');
+            userLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const username = link.getAttribute('data-username');
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    const url = isMobile ? `profile.html?username=${username}` : `PF.html?username=${username}`;
+                    window.location.href = url;
+                });
+            });
+
+            // Imagens padrão em caso de erro
+            const userImages = document.querySelectorAll('.user img');
+            userImages.forEach(img => {
+                img.onerror = function() {
+                    this.src = './src/img/default.jpg';
+                };
+            });
+        });
+
+function carregarFotoPerfil() {
+  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userId = user.uid; // Obtém o ID do usuário logado
+      try {
+        // Busca a URL da foto de perfil no Firestore
+        const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
+        const userMediaSnap = await getDoc(userMediaRef);
+
+        if (userMediaSnap.exists()) {
+          const userPhoto = userMediaSnap.data().userphoto || './src/img/default.jpg';
+          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+        } else {
+          console.warn('Foto de perfil não encontrada. Usando a padrão.');
+          navPic.src = './src/img/default.jpg';
+        }
+        // Registrar token de push do usuário (se possível)
+        try { if (userId) registerForPushNotifications(userId); } catch(e) { console.warn('Falha ao registrar push:', e); }
+      } catch (error) {
+        console.error('Erro ao carregar a foto de perfil:', error);
+        navPic.src = './src/img/default.jpg'; // Usa a foto padrão em caso de erro
+      }
+    } else {
+      console.warn('Usuário não autenticado.');
+      navPic.src = './src/img/default.jpg'; // Usa a foto padrão se não estiver logado
+    }
+  });
+}
+</script>
+<script type="module">    
+// ===============================
+//  acharAmigos.js
+//  Busca usuários semelhantes no Firestore por pontos de similaridade
+// ===============================
+
+// Função para detectar mobile e redirecionar corretamente
+function getProfileUrl(userId) {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return isMobile ? `profile.html?userid=${userId}` : `PF.html?userid=${userId}`;
+}
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUserId = null;
+onAuthStateChanged(auth, (user) => {
+  if (user) currentUserId = user.uid;
+});
+
+const btnBuscar = document.querySelector('.search-btn');
+const switchIgualAMim = document.getElementById('igualAMim');
+const filtrosInputs = document.querySelectorAll('.filtros input, .filtros select');
+const cardsWrapper = document.getElementById('cardsWrapper');
+const friendsList = document.querySelector('.friends-list'); // grid view
+
+function normalizar(str) {
+  return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+if (btnBuscar) btnBuscar.addEventListener('click', buscarUsuariosSemelhantes);
+if (switchIgualAMim) switchIgualAMim.addEventListener('change', alternarIgualAMim);
+
+async function alternarIgualAMim() {
+  if (switchIgualAMim.checked) {
+    filtrosInputs.forEach(el => {
+      el.disabled = true;
+      el.classList.add('cinza');
+    });
+    await preencherComDadosDoUsuarioAtual();
+  } else {
+    filtrosInputs.forEach(el => {
+      el.disabled = false;
+      el.classList.remove('cinza');
+      el.value = '';
+    });
+  }
+}
+
+async function preencherComDadosDoUsuarioAtual() {
+  if (!currentUserId) return;
+  const userRef = doc(db, "users", currentUserId);
+  const userSnap = await getDoc(userRef);
+  const mediaRef = doc(db, "users", currentUserId, "user-infos", "user-media");
+  const aboutRef = doc(db, "users", currentUserId, "user-infos", "about");
+  const likesRef = doc(db, "users", currentUserId, "user-infos", "likes");
+  const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
+    getDoc(mediaRef), getDoc(aboutRef), getDoc(likesRef)
+  ]);
+  const userData = userSnap.exists() ? userSnap.data() : {};
+  const media = mediaSnap.exists() ? mediaSnap.data() : {};
+  const about = aboutSnap.exists() ? aboutSnap.data() : {};
+  const likes = likesSnap.exists() ? likesSnap.data() : {};
+
+  filtrosInputs.forEach(input => {
+    const label = input.previousElementSibling?.textContent?.toLowerCase() || '';
+    if (label.includes('estilo')) input.value = about.styles || '';
+    if (label.includes('personalidade')) input.value = about.personality || '';
+    if (label.includes('medo')) input.value = about.fears || '';
+    if (label.includes('sonho')) input.value = about.dreams || '';
+    if (label.includes('musica')) input.value = likes.music || '';
+    if (label.includes('personagem')) input.value = likes.characters || '';
+    if (label.includes('hobbies')) input.value = likes.hobbies || '';
+    if (label.includes('local')) input.value = userData.location || userData.localizacao || '';
+    if (label.includes('genero')) input.value = userData.gender || '';
+    if (label.includes('estado civil')) input.value = userData.maritalStatus || '';
+    if (label.includes('mbti')) input.value = userData.MBTI || userData.mbti || '';
+    if (input.classList.contains('age-input')) {
+      if (userData.nascimento) {
+        const nasc = new Date(userData.nascimento);
+        const hoje = new Date();
+        const idade = hoje.getFullYear() - nasc.getFullYear();
+        input.value = idade;
+      }
+    }
+  });
+}
+
+function mostrarLoading() {
+  if (cardsWrapper) {
+    cardsWrapper.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner-center">
+          <div class="spinner"></div>
+          <p>Carregando pessoas...</p>
+        </div>
+      </div>
+    `;
+  }
+  if (friendsList) {
+    friendsList.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner-center">
+          <div class="spinner"></div>
+          <p>Carregando pessoas...</p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function removerLoading() {
+  if (cardsWrapper) {
+    const spinner = cardsWrapper.querySelector('.loading-spinner');
+    if (spinner) spinner.remove();
+  }
+  if (friendsList) {
+    const spinner = friendsList.querySelector('.loading-spinner');
+    if (spinner) spinner.remove();
+  }
+}
+
+let cacheUltimosUsuarios = [];
+
+function renderizarResultados(resultados) {
+  if (!cardsWrapper) return;
+  cardsWrapper.innerHTML = '';
+  if (!resultados.length) {
+    cardsWrapper.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+    return;
+  }
+
+  // Remove duplicados pelo id
+  const vistos = new Set();
+  const resultadosUnicos = resultados.filter(u => {
+    if (vistos.has(u.id)) return false;
+    vistos.add(u.id);
+    return true;
+  });
+
+  resultadosUnicos.forEach(u => {
+    const card = document.createElement('div');
+    card.className = 'friend-card';
+    card.innerHTML = `
+      <div class="card-content">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" onerror="this.src='./src/img/default.jpg'">
+        <div class="card-info">
+          <div class="card-username">${u.username}</div>
+        </div>
+        <a href="${getProfileUrl(u.id)}" class="view-profile-btn">
+          <p>Ver Perfil</p>
+        </a>
+        <p class="similarity">Compatibilidade: ${(u.score * 100).toFixed(0)}%</p>
+      </div>
+    `;
+    cardsWrapper.appendChild(card);
+
+    // Truncar nomes longos
+    const profileName = card.querySelector('.card-name');
+    if (profileName && profileName.textContent.length > 10) {
+      profileName.textContent = profileName.textContent.substring(0,10) + '...';
+    }
+    const profileUsername = card.querySelector('.card-username');
+    if (profileUsername && profileUsername.textContent.length > 10) {
+      profileUsername.textContent = profileUsername.textContent.substring(0,10) + '...';
+    }
+  });
+
+  // Salva no cache
+  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
+  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+}
+
+function renderizarGrid(resultados) {
+  if (!friendsList) return;
+  friendsList.innerHTML = '';
+  if (!resultados.length) {
+    friendsList.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+    return;
+  }
+
+  // Remove duplicados pelo id
+  const vistos = new Set();
+  const resultadosUnicos = resultados.filter(u => {
+    if (vistos.has(u.id)) return false;
+    vistos.add(u.id);
+    return true;
+  });
+
+  resultadosUnicos.forEach(u => {
+    const userEl = document.createElement('a');
+    userEl.className = 'user';
+    userEl.href = getProfileUrl(u.id);
+    userEl.setAttribute('data-username', u.username);
+    userEl.innerHTML = `
+      <div class="card-media">
+       <img src="${u.banner}" class="card-banner" onerror="this.src='./src/img/bg.jpg'">
+       <img src="${u.userphoto}" alt="${u.displayname}" class="card-image">
+      </div>
+      <div class="user-name">
+        <div class="card-info">
+          <div class="profile-username">
+          <p>${u.username}</p>
+        </div>
+        <div style="font-size:12px;color:#4e8cff; display: none">Compatibilidade: ${(u.score * 100).toFixed(0)}%</div>
+        </div>
+        <button class="follow-btn">Seguir</button>
+      </div>
+    `;
+    friendsList.appendChild(userEl);
+  });
+
+  // Salva no cache
+  cacheUltimosUsuarios = resultadosUnicos.slice(0, 20);
+  localStorage.setItem('ultimosUsuarios', JSON.stringify(cacheUltimosUsuarios));
+}
+
+// Exibe cache ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+  const cache = localStorage.getItem('ultimosUsuarios');
+  if (cache) {
+    const usuarios = JSON.parse(cache);
+    renderizarResultados(usuarios);
+    renderizarGrid(usuarios);
+  }
+  console.log('Sistema de amigos inicializado!');
+});
+
+async function buscarUsuariosSemelhantes() {
+
+  // FECHA OS FILTROS
+  const optionBar = document.querySelector('.option-bar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  if (optionBar && overlay) {
+    optionBar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  mostrarLoading();
+
+  const filtros = coletarFiltros();
+  const usersRef = collection(db, 'users');
+  const snapshot = await getDocs(usersRef);
+  const resultados = [];
+
+  for (const docSnap of snapshot.docs) {
+    const userId = docSnap.id;
+    if (userId === currentUserId) continue;
+
+    const userData = docSnap.data();
+
+    // 🔥 pega user-media (AQUI ESTÁ O BANNER)
+    const mediaRef = doc(db, "users", userId, "user-infos", "user-media");
+    const aboutRef = doc(db, "users", userId, "user-infos", "about");
+    const likesRef = doc(db, "users", userId, "user-infos", "likes");
+
+    const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
+      getDoc(mediaRef),
+      getDoc(aboutRef),
+      getDoc(likesRef)
+    ]);
+
+    const media = mediaSnap.exists() ? mediaSnap.data() : {};
+    const about = aboutSnap.exists() ? aboutSnap.data() : {};
+    const likes = likesSnap.exists() ? likesSnap.data() : {};
+
+    // ✅ Lê banner e foto DIRETO de `media`, antes de qualquer spread
+    // Igual ao profiles.js: tenta media.banner primeiro, depois media.headerphoto
+    const bannerFinal = (media.banner && String(media.banner).trim() !== '')
+      ? media.banner
+      : (media.headerphoto && String(media.headerphoto).trim() !== '')
+        ? media.headerphoto
+        : './src/img/default-banner.jpg';
+
+    const fotoPerfil = (media.pfp && String(media.pfp).trim() !== '')
+      ? media.pfp
+      : (media.userphoto && String(media.userphoto).trim() !== '')
+        ? media.userphoto
+        : './src/img/default.jpg';
+
+    // junta tudo só para calcular score (banner/foto já foram salvos acima)
+    const perfil = {
+      ...userData,
+      ...media,
+      ...about,
+      ...likes
+    };
+
+    // idade
+    let idade = null;
+    if (perfil.nascimento) {
+      const nasc = new Date(perfil.nascimento);
+      const hoje = new Date();
+      idade = hoje.getFullYear() - nasc.getFullYear();
+    }
+
+    // score
+    const score = calcularSimilaridadeCampos(perfil, filtros, idade);
+
+    if (score > 0) {
+
+      resultados.push({
+        id: userId,
+        displayname: perfil.displayname || perfil.username || 'Usuário',
+        username: perfil.username || '',
+        userphoto: fotoPerfil,
+        banner: bannerFinal,
+        score
+      });
+
+      resultados.sort((a, b) => b.score - a.score);
+      renderizarResultados(resultados);
+      renderizarGrid(resultados);
+    }
+  }
+
+  removerLoading();
+
+  resultados.sort((a, b) => b.score - a.score);
+  renderizarResultados(resultados);
+  renderizarGrid(resultados);
+
+  if (!resultados.length) {
+    if (cardsWrapper) cardsWrapper.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+    if (friendsList) friendsList.innerHTML = '<div class="error-area"> <p>Nenhum usuário parecido encontrado</p> </div>';
+  }
+}
+
+function coletarFiltros() {
+  const filtros = {};
+  filtrosInputs.forEach(el => {
+    const label = el.previousElementSibling?.textContent?.trim().toLowerCase() || el.id;
+    filtros[label] = el.value.trim().toLowerCase();
+  });
+  filtros['idade-minima'] = document.getElementById('idade-min')?.value || '';
+  filtros['idade-maxima'] = document.getElementById('idade-max')?.value || '';
+  return filtros;
+}
+
+function calcularSimilaridadeCampos(perfil, filtros, idade) {
+  let score = 0;
+  let campos = 0;
+
+  // Permite múltiplos termos separados por vírgula ou espaço
+  function termosFiltro(valor) {
+    if (!valor) return [];
+    return valor.split(',').map(t => t.trim()).filter(Boolean).flatMap(t => t.split(' ')).filter(Boolean);
+  }
+
+  // Estilo
+  if (filtros['estilo']) {
+    const termos = termosFiltro(filtros['estilo']);
+    const campo = normalizar(perfil.styles || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Personalidade
+  if (filtros['personalidade']) {
+    const termos = termosFiltro(filtros['personalidade']);
+    const campo = normalizar(perfil.personality || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Medos
+  if (filtros['medos']) {
+    const termos = termosFiltro(filtros['medos']);
+    const campo = normalizar(perfil.fears || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Sonhos
+  if (filtros['sonhos e desejos']) {
+    const termos = termosFiltro(filtros['sonhos e desejos']);
+    const campo = normalizar(perfil.dreams || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Musicas
+  if (filtros['musicas']) {
+    const termos = termosFiltro(filtros['musicas']);
+    const campo = normalizar(perfil.music || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Personagens
+  if (filtros['personagens']) {
+    const termos = termosFiltro(filtros['personagens']);
+    const campo = normalizar(perfil.characters || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Hobbies
+  if (filtros['hobbies']) {
+    const termos = termosFiltro(filtros['hobbies']);
+    const campo = normalizar(perfil.hobbies || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Localização
+  if (filtros['localização']) {
+    const termos = termosFiltro(filtros['localização']);
+    const campo = normalizar(perfil.location || perfil.localizacao || '');
+    if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
+    campos++;
+  }
+  // Genero
+  if (filtros['genero']) {
+    const termos = termosFiltro(filtros['genero']);
+    const campo = normalizar(perfil.gender || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // Estado Civil
+  if (filtros['estado civil']) {
+    const termos = termosFiltro(filtros['estado civil']);
+    const campo = normalizar(perfil.maritalStatus || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // MBTI
+  if (filtros['mbti']) {
+    const termos = termosFiltro(filtros['mbti']);
+    const campo = normalizar(perfil.MBTI || perfil.mbti || '');
+    if (termos.some(t => campo === normalizar(t))) score += 2;
+    campos++;
+  }
+  // Idade
+  if (filtros['idade-minima'] || filtros['idade-maxima']) {
+    const min = parseInt(filtros['idade-minima']) || 0;
+    const max = parseInt(filtros['idade-maxima']) || 200;
+    if (idade !== null && idade >= min && idade <= max) score += 2;
+    campos++;
+  }
+
+  // Busca por palavras-chave em todos os textos do usuário
+  const palavrasFiltro = Object.values(filtros)
+    .filter(Boolean)
+    .flatMap(termosFiltro)
+    .map(normalizar);
+
+  const textoUsuario = [
+    perfil.bio || '',
+    perfil.displayname || '',
+    perfil.username || '',
+    perfil.name || '',
+    perfil.surname || '',
+    perfil.music || '',
+    perfil.hobbies || '',
+    perfil.characters || '',
+    perfil.dreams || '',
+    perfil.fears || '',
+    perfil.location || '',
+    perfil.localizacao || '',
+    perfil.tags || '',
+    perfil.books || '',
+    perfil.foods || '',
+    perfil.games || '',
+    perfil.movies || '',
+    perfil.overview || '',
+    perfil.others || ''
+  ].join(' ').toLowerCase();
+
+  palavrasFiltro.forEach(palavra => {
+    if (textoUsuario.includes(palavra)) score += 1;
+  });
+
+  return campos ? score / campos : 0;
+}
+
+// Carrossel dinâmico
+class FriendsCarousel {
+    constructor() {
+        this.currentIndex = 0;
+        this.users = [];
+        this.cardsWrapper = document.getElementById('cardsWrapper');
+        this.indicators = document.getElementById('indicators');
+        this.isTransitioning = false;
+    }
+
+    setUsers(newUsers) {
+        // Remove duplicados pelo profile (url) ou username
+        const vistos = new Set();
+        this.users = newUsers.filter(u => {
+            const key = u.profile || u.username;
+            if (vistos.has(key)) return false;
+            vistos.add(key);
+            return true;
+        });
+        this.currentIndex = 0;
+        this.createCards();
+        this.createIndicators();
+        this.updateDisplay();
+    }
+
+    createCards() {
+        this.cardsWrapper.innerHTML = '';
+        this.users.forEach((user, index) => {
+            const card = document.createElement('div');
+            card.className = 'friend-card';
+            card.innerHTML = `
+                <div class="card-content">
+                    <img src="${user.image}" alt="${user.name}" class="card-image">
+                    <div class="card-info">
+                        <div class="card-username">${user.username}</div>
+                    </div>
+                    <a href="${user.profile}" class="view-profile-btn"><p>Ver Perfil</p>
+                    </a>
+                </div>
+            `;
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.view-profile-btn')) {
+                    this.goToSlide(index);
+                }
+            });
+            this.cardsWrapper.appendChild(card);
+        });
+    }
+
+    createIndicators() {
+        this.indicators.innerHTML = '';
+        this.users.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => {
+                this.goToSlide(index);
+            });
+            this.indicators.appendChild(indicator);
+        });
+    }
+
+    updateDisplay() {
+        const cards = this.cardsWrapper.children;
+        const totalCards = cards.length;
+
+        Array.from(cards).forEach(card => {
+            card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
+        });
+
+        Array.from(cards).forEach((card, index) => {
+            const relativePos = this.getRelativePosition(index, this.currentIndex, totalCards);
+            switch (relativePos) {
+                case 0: card.classList.add('center'); break;
+                case 1: card.classList.add('right'); break;
+                case -1: card.classList.add('left'); break;
+                case 2: card.classList.add('far-right'); break;
+                case -2: card.classList.add('far-left'); break;
+                default: card.classList.add('hidden'); break;
+            }
+        });
+
+        // Corrige as bolinhas para sempre mostrar todas e ativar a correta
+        const indicatorElements = this.indicators.children;
+        Array.from(indicatorElements).forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === this.currentIndex);
+        });
+    }
+
+    getRelativePosition(cardIndex, currentIndex, totalCards) {
+        let diff = cardIndex - currentIndex;
+        if (diff > totalCards / 2) {
+            diff -= totalCards;
+        } else if (diff < -totalCards / 2) {
+            diff += totalCards;
+        }
+        return diff;
+    }
+
+    goToSlide(index) {
+        if (this.isTransitioning || index === this.currentIndex) return;
+        this.isTransitioning = true;
+        this.currentIndex = index;
+        this.updateDisplay();
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, 400);
+    }
+
+    next() {
+        this.currentIndex = (this.currentIndex + 1) % this.users.length;
+        this.updateDisplay();
+    }
+
+    prev() {
+        this.currentIndex = (this.currentIndex - 1 + this.users.length) % this.users.length;
+        this.updateDisplay();
+    }
+
+    bindEvents() {
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        
+    }
+}
+
+// Spinner CSS
+const style = document.createElement('style');
+style.innerHTML = `
+`;
+document.head.appendChild(style);
+
+async function atualizarMarqueeUltimoUsuario() {
+  const lastUpdateRef = doc(db, "lastupdate", "latestUser");
+  const docSnap = await getDoc(lastUpdateRef);
+  const marquee = document.querySelector(".marquee");
+  if (!marquee) return;
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const nomeUsuario = data.username || "Usuário";
+    marquee.textContent = `${nomeUsuario} acabou de entrar no RealMe!`;
+  } else {
+    marquee.textContent = "Bem-vindo ao RealMe!";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
+
+
+function carregarFotoPerfil() {
+  const navPic = document.getElementById('nav-pic');
+  const defaultPic = './src/img/default.jpg';
+
+  // --- PASSO 1: CARREGAMENTO IMEDIATO (CACHE) ---
+  // Tenta pegar a URL que salvamos na última vez que ele entrou
+  const cachedPhoto = localStorage.getItem('user_photo_cache');
+  if (cachedPhoto) {
+    navPic.src = cachedPhoto;
+  }
+
+  // --- PASSO 2: VALIDAÇÃO EM SEGUNDO PLANO ---
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userId = user.uid;
+      try {
+        const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
+        const userMediaSnap = await getDoc(userMediaRef);
+
+        if (userMediaSnap.exists()) {
+          const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+
+          // Se a foto do banco for diferente da foto que está no cache agora
+          if (userPhoto !== cachedPhoto) {
+            navPic.src = userPhoto; // Atualiza a imagem na tela
+            localStorage.setItem('user_photo_cache', userPhoto); // Atualiza o cache para a próxima vez
+          }
+        } else {
+          navPic.src = defaultPic;
+          localStorage.removeItem('user_photo_cache');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar foto:', error);
+        if (!cachedPhoto) navPic.src = defaultPic;
+      }
+    } else {
+      // Se não está logado, limpa o cache e volta pra padrão
+      navPic.src = defaultPic;
+      localStorage.removeItem('user_photo_cache');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
+
+</script>
+
+<script type="module" src="./src/js/global-messages.js"></script>
+</body>
+</html>

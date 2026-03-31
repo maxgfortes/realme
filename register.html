@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#1F1F1F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="./src/styles/register.css" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+
+    <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<body>
+
+  <div class="main">
+    <div class="form-section">
+      <div class="container">
+        <h1>Bem vindo ao <span class="logo">Profile's</span></h1>
+        <form>
+      <div class="inputer">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+      </div>
+      <div class="inputer">
+        <label for="sobrenome">Sobrenome</label>
+        <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required />
+      </div>
+       <div class="inputer">
+        <label for="usuario">Nome de Usuário</label>
+        <input type="text" id="usuario" name="usuario" placeholder="Escolha um nome de usuário" required />
+      </div>
+       <div class="inputer">
+        <label for="email">E-mail</label>
+        <input type="text" id="email" name="email" placeholder="meunome@email.com" required />
+      </div>
+       <div class="inputer">
+        <label for="genero">Gênero</label>
+        <select id="genero" name="genero" required>
+          <option value="" disabled selected>Selecione o gênero</option>
+          <option value="masculino">Masculino</option>
+          <option value="feminino">Feminino</option>
+          <option value="outro">Outro</option>
+          <option value="prefiro_nao_dizer">Prefiro não dizer</option>
+        </select>
+      </div>
+       <div class="inputer">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
+      </div>
+      <div class="form-group">
+        <label for="nascimento">Data de Nascimento</label>
+        <input type="date" id="nascimento" name="nascimento" required />
+      </div>
+      <button type="submit">Criar Conta</button>
+    </form>
+        <div class="link">
+          <p class="login-pc">já tem uma conta? <a id="entrarBtn">Entrar</a></p>
+          <p class="login-mobile">já tem uma conta? <a href="login.html">Entrar</a></p>
+        </div>
+        <div class="user-contract">
+          <p>Ao se inscrever, você concorda com nossos <a href="#">Termos</a>, <a href="#">Política de Dados</a> e <a href="profile.html">Política de Cookies</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="module" src="./src/js/signup.js"></script>
+</html>
+

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <link rel="stylesheet" href="./src/styles/root.css" />
+      <!-- Título do preview -->
+  <meta property="og:title" content="RealMe">
+
+  <!-- Descrição -->
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+
+  <!-- URL principal -->
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+
+  <!-- Imagem de destaque -->
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+
+  <!-- Tipo de conteúdo -->
+  <meta property="og:type" content="website">
+
+  <!-- Para Twitter -->
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      background-image: url(./src/bg/bg.jpg);
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      color: #dbdbdb;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    nav {
+      background: #1C1C1C;
+      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
+      border-bottom: 1px solid #121212;
+      display: flex;
+      align-items: center;
+      padding: 0px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      height: 60px;
+    }
+
+    .navarea {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .loginarea {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 30px;
+      color: #707070;
+      padding: 10px;
+    }
+
+    .logo_area{
+      padding: 0px;
+      padding-right: 35px;
+      padding-left: 20px;
+    }
+
+    input[type="emaillog"],
+    input[type="passwordlog"],
+
+    select {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+      color: #ddd;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
+    input[type="emaillog"]:focus,
+    input[type="passwordlog"]:focus,
+    select:focus {
+      border-color: #0084ff;
+      box-shadow: 0 0 5px #0084ff;
+      background: #1a1a1a;
+      color: #fff;
+    } 
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    @keyframes glow {
+  0% {
+    border-color: #333;
+    box-shadow: none;
+    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+    color: #ddd;
+  }
+  50% {
+    border-color: #0084ff;
+    box-shadow: 0 0 5px #0084ff;
+    background: #1a1a1a;
+    color: #fff;
+  }
+  100% {
+    border-color: #333;
+    box-shadow: none;
+    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
+    color: #ddd;
+  }
+}
+
+    button {
+      display: inline-block;
+      background-color: #4A90E2;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      border-top: 1px solid #63a9fa;
+      transition: background-color 0.3s;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    .main {
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+
+    .welcome-container-pc {
+      padding: 40px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      padding-top: 60px;
+    }
+
+    .welcome-interactions-pc {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logo-main-pc {
+      font-size: 48px;
+      padding: 20px 18px;
+      text-align: center;
+      font-weight: 300;
+    }
+
+    .logo-main-pc span {
+      font-weight: bold;
+      background-color: #4a90e2;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-subtitle-pc {
+      padding: 0 18px;
+      text-align: center;
+      color: #888;
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .profiles-preview-pc {
+      padding: 30px 0;
+      margin: 0 auto;
+    }
+
+    .profiles-preview-pc img{
+
+        width: 600px;
+        height: 100%;
+    }
+
+    .welcome-container {
+      padding: 40px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .logo-main {
+      font-size: 48px;
+      padding: 20px 18px;
+      text-align: center;
+      font-weight: 300;
+    }
+
+    .logo-main span {
+      font-weight: bold;
+      background-color: #4a90e2;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-subtitle {
+      padding: 0 18px;
+      text-align: center;
+      color: #888;
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .welcome-btns {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 42px 12px 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .welcome-btns a {
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      border: none;
+      padding: 16px 32px;
+      color: #fff;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 20px #4a91e280;
+    }
+
+    .welcome-btns a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 30px #4a90e280;
+    }
+
+    .criar-conta {
+      min-width: 180px;
+    }
+
+    .entrar {
+      background: transparent !important;
+      border: 2px solid;
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      box-shadow: none !important;
+    }
+
+    .see-profile {
+      display: none;
+      justify-content: center;
+      padding: 20px 12px;
+    }
+
+    .see-profile.active {
+      display: flex;
+    }
+
+    .see-profile a {
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      padding: 16px 32px;
+      color: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 400px;
+      font-size: 1.2rem;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .profiles-preview {
+      padding: 30px 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .profiles-preview img {
+      width: 100%;
+      border-radius: 16px;
+    }
+
+    .features-section {
+      padding: 60px 28px;
+      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .features-header h2 {
+      font-size: 36px;
+      margin-bottom: 16px;
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(26, 26, 26, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 30px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: #4a90e280;
+    }
+
+    .feature-icon {
+      font-size: 40px;
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #f8f9f9;
+    }
+
+    .feature-card p {
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .faq-container {
+      padding: 60px 88px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+    }
+
+    .faq-header h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 40px;
+      color: #f8f9f9;
+    }
+
+    .faq-item {
+      background: rgba(26, 26, 26, 0.6);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+    .faq-question:hover {
+      background: rgba(40, 40, 40, 0.6);
+    }
+
+    .faq-question h3 {
+      font-size: 18px;
+      color: #f8f9f9;
+      font-weight: 600;
+    }
+
+    .faq-icon {
+      font-size: 20px;
+      color: #888;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-answer-content {
+      padding: 20px 20px 20px;
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+    }
+
+    .footer {
+      padding: 40px 18px;
+      text-align: center;
+      border-top: 1px solid #1a1a1a;
+      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+    }
+
+    .footer p {
+      color: #888;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .logo-main {
+        font-size: 36px;
+      }
+
+      body {
+        background-image: none;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .faq-container {
+        padding: 40px;
+      }
+
+      .welcome-subtitle {
+        font-size: 16px;
+      }
+
+      .welcome-container{
+        display: block;
+      }
+
+      .welcome-container-pc {
+        display: none;
+      }
+
+      .welcome-btns a {
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+
+      .features-header h2 {
+        font-size: 28px;
+      }
+
+      .faq-header h1 {
+        font-size: 28px;
+      }
+    }
+
+    .user-info {
+      text-align: center;
+      padding: 20px;
+      background: rgba(26, 26, 26, 0.6);
+      border-radius: 12px;
+      margin: 20px auto;
+      max-width: 400px;
+      display: none;
+    }
+
+    .user-info.active {
+      display: block;
+    }
+
+    .user-info p {
+      color: #f8f9f9;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .user-info span {
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="navarea">
+      <div class="logo">RealMe</div>
+    </div>
+  </nav>
+  <div class="main">
+    <div class="welcome-container-pc">
+      <div class="profiles-preview-pc">
+        <img src="./src/img/conections.png" alt="Preview do RealMe">
+      </div>
+      <div class="welcome-interactions-pc">
+        <div class="welcome-header-pc">
+        <div class="logo-main-pc">Bem vindo ao <span>RealMe</span></div>
+      </div>
+      <div class="welcome-subtitle-pc">
+        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
+      </div>
+
+      <div id="userInfo" class="user-info">
+        <p>Olá, <strong id="userName"></strong>!</p>
+        <span>Você já tem uma conta</span>
+      </div>
+
+      <div class="welcome-btns" id="authButtons">
+        <a href="register.html" class="criar-conta">Criar Conta</a>
+        <a href="login.html" class="entrar">Entrar</a>
+      </div>
+
+      <div class="see-profile" id="profileButton">
+        <a href="#" id="profileLink">Entrar</a>
+      </div>
+      </div>
+    </div>
+    <div class="welcome-container">
+      <div class="welcome-header">
+        <div class="logo-main">Bem vindo ao <span>RealMe</span></div>
+      </div>
+      <div class="welcome-subtitle">
+        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
+      </div>
+
+      <div id="userInfo" class="user-info">
+        <p>Olá, <strong id="userName"></strong>!</p>
+        <span>Você já tem uma conta</span>
+      </div>
+
+      <div class="welcome-btns" id="authButtons">
+        <a href="register.html" class="criar-conta">Criar Conta</a>
+        <a href="login.html" class="entrar">Entrar</a>
+      </div>
+
+      <div class="see-profile" id="profileButton">
+        <a href="#" id="profileLink">Ver meu perfil</a>
+      </div>
+
+      <div class="profiles-preview">
+        <img src="./src/img/conections.png" alt="Preview do Profile's">
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <div class="features-header">
+        <h2>Por que usar o RealMe?</h2>
+        <p style="color: #888; max-width: 600px; margin: 0 auto;">Tudo que você precisa para criar um perfil incrível em um só lugar</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-paint-brush"></i></div>
+          <h3>Totalmente Personalizável</h3>
+          <p>Escolha cores, fontes, imagens e crie um perfil único que representa você</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-user-group"></i></div>
+          <h3>Facil de Fazer Amizades</h3>
+          <p>Faça amizades por gostos, personalidade, estilo, sonhos e muito mais facilmente usando a função Achar Amigos</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3>100% Responsivo</h3>
+          <p>Seu perfil fica perfeito em qualquer dispositivo, do celular ao desktop</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>Fácil de Usar</h3>
+          <p>Interface intuitiva que permite criar e editar seu perfil em minutos</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Seguro e Confiável</h3>
+          <p>Seus dados estão protegidos com Firebase e autenticação segura</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+          <h3>Rápido e Leve</h3>
+          <p>Carregamento instantâneo e performance otimizada para a melhor experiência</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-container">
+      <div class="faq-header">
+        <h1>Perguntas Frequentes</h1>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>O que é o RealMe?</h3>
+          <i class="fas fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            O RealMe é uma plataforma moderna de match de amizades e relacionamentos que conecta pessoas com interesses semelhantes, facilitando novas conexões e amizades.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>É gratuito?</h3>
+          <i class="fas fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            Sim! O ReealMe é 100% gratuito. Você pode criar sua conta, achar amigos e personalizar seu perfil sem pagar nada.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Como compartilho meu perfil?</h3>
+          <i class="fas fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            Seu perfil tem uma URL única no formato: pfmobile.html?u=seuusername. Você pode compartilhar esse link em qualquer lugar - Instagram, TikTok, Twitter, WhatsApp e mais!
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Posso mudar meu email depois?</h3>
+          <i class="fas fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            No momento, o email não pode ser alterado após a criação da conta. Escolha com cuidado! Em futuras atualizações, essa funcionalidade será adicionada.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Meus dados estão seguros?</h3>
+          <i class="fas fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            Sim! Usamos Firebase, uma plataforma do Google, para autenticação e armazenamento. Suas senhas são criptografadas e seus dados são protegidos com as melhores práticas de segurança.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Copyright 2025 RealMe - Todos os direitos reservados. Criado por maxgfortes</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          
+          document.getElementById('userName').textContent = userData.username || 'Usuário';
+          document.getElementById('userInfo').classList.add('active');
+          document.getElementById('authButtons').style.display = 'none';
+          document.getElementById('profileButton').classList.add('active');
+          document.getElementById('profileLink').href = `feed.html`;
+        }
+      }
+    });
+
+    // FAQ Toggle
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        const wasActive = item.classList.contains('active');
+        
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        
+        if (!wasActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

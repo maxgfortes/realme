@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile's</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="./src/styles/base.css">
+  <link rel="stylesheet" href="./src/styles/edit.css">
+  <link rel="stylesheet" href="./src/styles/navbar-bottom.css">
+  <link rel="stylesheet" href="./src/styles/root.css" />
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#020202">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+
+  <!-- Social preview -->
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<body>
+
+  <!-- Navbar Top -->
+  <nav class="navbar-top">
+    <div class="top-left">
+      <button onclick="window.history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+          <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+        </svg>
+      </button>
+    </div>   
+    <h2 id="headername">Editar perfil</h2>
+    <div class="top-right">
+      <a id="open-settings-btn">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95">
+          <g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <div class="page-container">
+    <div class="media-area"> 
+      <div class="pfp-container">
+        <div class="pfp-area">
+          <img src="./src/img/default.jpg" alt="pfp" class="pfp">
+        </div>
+      </div>
+      <div class="banner-container">
+        <div class="banner-area">
+          <img src="./src/img/bg.jpg" alt="banner" class="banner">
+        </div>
+      </div>
+    </div>
+
+    <div class="major-container">
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Nome</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Nome de usuario</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Pronomes</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Bio</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Genero</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Localização</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Status de relacionamento</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input">
+          </div>
+        </div>
+      </div>
+      <div class="label-container">
+        <div class="label-left">
+          <div class="label-title">Musica</div>
+        </div>
+        <div class="label-rigth">
+          <div class="label-input-area">
+            <input type="text" class="label-input" placeholder="Cole uma URL do youtube">
+          </div>
+        </div>
+      </div>
+      <div class="label-container color">
+        <div class="label-left">
+          <div class="label-title">Cor de perfil</div>
+        </div>
+        <div class="label-rigth color">
+          <div class="label-input-area">
+            <input type="color" value="#474747" class="label-input color">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="major-container link" id="links-container">
+
+      <!-- Título clicável com seta -->
+      <div class="config-title" id="links-toggle">
+        Links
+      </div>
+
+      <div class="links-list">
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fa-brands fa-instagram"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>instagram.com/</span>
+              <input type="text" class="label-input" data-link="instagram" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fa-brands fa-x-twitter"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>x.com/</span>
+              <input type="text" class="label-input" data-link="x" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-spotify"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>open.spotify.com/user/</span>
+              <input type="text" class="label-input" data-link="spotify" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-tiktok"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>tiktok.com/@</span>
+              <input type="text" class="label-input" data-link="tiktok" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-pinterest"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>pinterest.com/</span>
+              <input type="text" class="label-input" data-link="pinterest" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fa-brands fa-reddit-alien"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>reddit.com/user/</span>
+              <input type="text" class="label-input" data-link="reddit" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-facebook"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>facebook.com/</span>
+              <input type="text" class="label-input" data-link="facebook" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-youtube"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>youtube.com/@</span>
+              <input type="text" class="label-input" data-link="youtube" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-discord"></i></div>
+          </div>
+          <div class="label-rigth">
+            <div class="label-input-area">
+              <span>@</span>
+              <input type="text" class="label-input" data-link="discord" placeholder="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="label-left link">
+            <div class="label-title"><i class="fab fa-playstation"></i></div>
+          </div>
+          <div class="label-rigth last">
+            <div class="label-input-area last">
+              <span>@</span>
+              <input type="text" class="label-input" data-link="playstation" placeholder="username">
+            </div>
+          </div>
+        </div>
+      </div><!-- .links-list -->
+
+    </div><!-- #links-container -->
+
+    <div class="save-area">
+      <button class="save-btn">Salvar</button>
+    </div>
+  </div><!-- .page-container -->
+
+  
+<div class="pc-alert">
+  <div class="logo-area">
+    <div class="pc-alert-logo">RealMe</div>
+  </div>
+  <div class="pc-alert-title">Indisponivel em PCs</div>
+  <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
+</div>
+
+
+
+  <script type="module" src="./src/js/edit.js"></script> 
+</body>
+</html>
