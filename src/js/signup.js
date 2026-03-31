@@ -143,7 +143,6 @@ async function criarContaSegura(event) {
       lastLogin: serverTimestamp()
     });
 
-    showSuccess("Conta criada com sucesso! Redirecionando...");
     setTimeout(() => {
       window.location.href = "feed.html";
     }, 1200);
