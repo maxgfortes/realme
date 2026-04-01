@@ -1605,3 +1605,90 @@ onAuthStateChanged(auth, async user => {
     mostrarErro('Faça login para acessar esta página.');
   }
 });
+
+
+// ============================================================
+// BOTÃO DE NOTIFICAÇÕES NO MENU LATERAL
+// ============================================================
+(async function iniciarBotaoNotificacoes() {
+  const btn   = document.getElementById('btn-toggle-notif');
+  const label = document.getElementById('notif-menu-label');
+  if (!btn || !label) return;
+
+  const VAPID_KEY = "BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg";
+
+  // Atualiza o texto do botão conforme o estado atual
+  function atualizarLabel() {
+    const perm = Notification.permission;
+    if (perm === 'granted') {
+      label.textContent = 'Notificações ativadas';
+    } else if (perm === 'denied') {
+      label.textContent = 'Notificações bloqueadas';
+    } else {
+      label.textContent = 'Ativar Notificações';
+    }
+  }
+
+  atualizarLabel();
+
+  btn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    // Se bloqueado pelo navegador, não tem como pedir via JS — orienta o usuário
+    if (Notification.permission === 'denied') {
+      return;
+    }
+
+    // Se já está ativo, informa
+    if (Notification.permission === 'granted') {
+      return;
+    }
+
+    // Pede permissão
+    try {
+      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getMessaging, getToken }  = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js");
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+        authDomain: "ifriendmatch.firebaseapp.com",
+        projectId: "ifriendmatch",
+        storageBucket: "ifriendmatch.appspot.com",
+        messagingSenderId: "306331636603",
+        appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+      };
+
+      const app      = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+      const db       = getFirestore(app);
+      const auth     = getAuth(app);
+      const messaging = getMessaging(app);
+
+      const swReg     = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const permission = await Notification.requestPermission();
+
+      atualizarLabel();
+
+      if (permission !== 'granted') return;
+
+      const token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: swReg,
+      });
+
+      if (!token) return;
+
+      const user = auth.currentUser;
+      if (user) {
+        await setDoc(doc(db, 'users', user.uid), 
+          { fcmToken: token, fcmUpdatedAt: new Date() }, 
+          { merge: true }
+        );
+        console.log('[FCM] Token salvo via menu do perfil:', token);
+      }
+    } catch (err) {
+      console.error('[FCM] Erro ao ativar pelo menu:', err);
+    }
+  });
+})();
