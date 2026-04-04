@@ -67,17 +67,56 @@ function limparCacheAtividades(uid) {
   try { localStorage.removeItem(`${ACTIVITIES_CACHE_KEY}_${uid}`); } catch (_) {}
 }
 
-// ─── Cache de usuários com refresh de foto em background ──────────────────────
+// ─── Cache de fotos de perfil (memória + localStorage) ───────────────────────
+const PHOTO_LS_KEY = 'xact_photo_cache_v1';
+const PHOTO_LS_TTL = 30 * 60 * 1000; // 30 minutos no localStorage
+
+function carregarPhotoCacheLS() {
+  try {
+    const raw = localStorage.getItem(PHOTO_LS_KEY);
+    if (!raw) return {};
+    const data = JSON.parse(raw);
+    const agora = Date.now();
+    // Remove entradas expiradas
+    Object.keys(data).forEach(uid => {
+      if (agora - data[uid].t > PHOTO_LS_TTL) delete data[uid];
+    });
+    return data;
+  } catch (_) { return {}; }
+}
+
+function salvarPhotoCacheLS(uid, photoUrl) {
+  try {
+    const data = carregarPhotoCacheLS();
+    data[uid] = { url: photoUrl, t: Date.now() };
+    localStorage.setItem(PHOTO_LS_KEY, JSON.stringify(data));
+  } catch (_) {}
+}
+
+// Pré-carrega o cache do localStorage na inicialização
+const _photoCacheLS = carregarPhotoCacheLS();
+
+
 // Estrutura: { username, nome, photo, photoFetchedAt }
 // photoFetchedAt = timestamp da última busca da foto no Firestore
 const PHOTO_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 const userCache = {};
 
 async function fetchPhotoFromFirestore(uid) {
+  // 1. Verifica cache do localStorage primeiro
+  const lsCached = _photoCacheLS[uid];
+  if (lsCached && Date.now() - lsCached.t < PHOTO_LS_TTL) {
+    return lsCached.url || DEFAULT_PHOTO;
+  }
+
+  // 2. Busca no Firestore — campo userphoto em /users/{uid}/user-infos/user-media
   try {
     const mediaSnap = await getDoc(doc(db, `users/${uid}/user-infos/user-media`));
     if (mediaSnap.exists()) {
-      return mediaSnap.data().userphoto || mediaSnap.data().pfp || DEFAULT_PHOTO;
+      const url = mediaSnap.data().userphoto || DEFAULT_PHOTO;
+      salvarPhotoCacheLS(uid, url);
+      _photoCacheLS[uid] = { url, t: Date.now() };
+      return url;
     }
   } catch (_) {}
   return DEFAULT_PHOTO;
@@ -371,13 +410,20 @@ function renderBigCard(grupo, currentUid) {
   const isDono = items.some(i => i.actorUid === currentUid);
   const texto  = gerarTexto(tipo, items, ultimoMs);
 
-  // Para new_friendship pega foto do ator + foto do target; demais pega fotos dos atores únicos
+  // Para new_friendship pega foto do ator + foto do target — ambas via cache de perfil
   let fotos;
-  if (tipo === 'new_friendship' && items[0].targetPhoto) {
+  if (tipo === 'new_friendship') {
     fotos = [
       { src: items[0].authorPhoto || DEFAULT_PHOTO, uid: items[0].actorUid },
-      { src: items[0].targetPhoto,                  uid: items[0].targetUid }
-    ].filter(f => f.src);
+      { src: DEFAULT_PHOTO,                          uid: items[0].targetUid }
+    ].filter(f => f.uid);
+    // Atualiza foto do target a partir do cache (pode já estar resolvida)
+    if (items[0].targetUid && userCache[items[0].targetUid]) {
+      fotos[1].src = userCache[items[0].targetUid].photo || DEFAULT_PHOTO;
+    } else if (items[0].targetUid) {
+      // Resolve em background e faz patch no DOM via data-uid
+      resolveUser(items[0].targetUid);
+    }
   } else {
     fotos = [...new Map(items.map(i => [i.actorUid, i])).values()]
       .map(i => ({ src: i.authorPhoto || DEFAULT_PHOTO, uid: i.actorUid }))
@@ -407,13 +453,12 @@ function renderSmallCard(grupo, currentUid) {
   const ids    = items.map(i => i.activityId).join(',');
   const isDono = items.some(i => i.actorUid === currentUid);
   const texto  = gerarTexto(tipo, items, ultimoMs);
-  const foto   = items[0].authorPhoto || DEFAULT_PHOTO;
 
   const fotos = [...new Map(items.map(i => [i.actorUid, i])).values()]
     .map(i => ({ src: i.authorPhoto || DEFAULT_PHOTO, uid: i.actorUid }))
     .filter(f => f.src)
     .slice(0, 2);
-  if (!fotos.length) fotos.push({ src: items[0].authorPhoto || DEFAULT_PHOTO, uid: items[0].actorUid });
+  if (!fotos.length) fotos.push({ src: DEFAULT_PHOTO, uid: items[0].actorUid });
 
   const badgeHtml = _isAmigo ? `<span class="act-friend-badge">amigo</span>` : '';
 
@@ -568,11 +613,16 @@ async function fetchEMontarHtml(uid) {
 
   let atividades = snap.docs.map(d => ({ activityId: d.id, ...d.data() }));
 
-  // Enriquece autor
+  // Enriquece autor — foto sempre vem do perfil (/users/{uid}/user-infos/user-media), nunca da atividade
   atividades = await Promise.all(atividades.map(async act => {
-    if (!act.authorUsername && act.actorUid) {
+    if (act.actorUid) {
       const u = await resolveUser(act.actorUid);
-      return { ...act, authorUsername: u.username, authorNome: u.nome, authorPhoto: act.authorPhoto || u.photo };
+      return {
+        ...act,
+        authorUsername: act.authorUsername || u.username,
+        authorNome:     act.authorNome     || u.nome,
+        authorPhoto:    u.photo  // sempre sobrescreve com a foto do perfil
+      };
     }
     return act;
   }));
@@ -599,16 +649,26 @@ async function fetchEMontarHtml(uid) {
     console.warn('[activities-render] Erro ao varrer newusers:', e);
   }
 
+  // ── Filtra: exibe apenas atividades de amigos e do próprio usuário ───────────
+  atividades = atividades.filter(act =>
+    act.actorUid === uid || amigosSet.has(act.actorUid)
+  );
+
+  // ── Ordena cronologicamente (mais recente primeiro) — sem algoritmo ──────────
   atividades.sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
 
   const grupos = agrupar(atividades);
   if (!grupos.length) return null;
 
-  const gruposRankeados = calcularRanking(grupos, amigosSet, uid)
-    .sort((a, b) => b._score - a._score);
+  // Mantém a ordem cronológica do agrupamento — sem calcularRanking
+  const gruposOrdenados = grupos.map(grupo => ({
+    ...grupo,
+    _isAmigo: grupo.items.some(i => amigosSet.has(i.actorUid)),
+    _isSeu:   grupo.items.some(i => i.actorUid === uid)
+  }));
 
   return `
-    <div class="xact-list">${montarLayout(gruposRankeados, uid)}</div>
+    <div class="xact-list">${montarLayout(gruposOrdenados, uid)}</div>
     <div class="end-feed">
     <h3>As atividades acabaram...</h3>
     <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>

@@ -20,7 +20,6 @@ import {
 
 /* ================= FIREBASE ================= */
 
-// =====================================================
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -31,10 +30,14 @@ const firebaseConfig = {
   measurementId: "G-D96BEW6RC3"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+/* ================= FLAG DE CADASTRO ================= */
+
+// Impede que o onAuthStateChanged redirecione durante o cadastro
+let cadastrandoAgora = false;
 
 /* ================= UI ================= */
 
@@ -64,7 +67,8 @@ function hideMessages() {
 }
 
 function showLoading(show, loadingText = "Processando...") {
-  const btn = document.querySelector('.form-section button[type="submit"]');
+  // FIX: seletor corrigido — o botão não está dentro de .form-section
+  const btn = document.querySelector('button[type="submit"]');
   if (btn) {
     if (show) {
       btn.dataset.originalText = btn.textContent;
@@ -112,6 +116,8 @@ async function criarContaSegura(event) {
   if (!validarSenha(senha)) return showError("Senha mínima: 6 caracteres.");
   if (!validarNascimento(nascimento)) return showError("Você precisa ter 13+ anos.");
 
+  // FIX: ativa a flag antes de criar o usuário no Firebase
+  cadastrandoAgora = true;
   showLoading(true, "Criando conta...");
 
   try {
@@ -119,6 +125,7 @@ async function criarContaSegura(event) {
     const usernameRef = doc(db, "usernames", username);
     if ((await getDoc(usernameRef)).exists()) {
       showLoading(false);
+      cadastrandoAgora = false;
       return showError("Nome de usuário já está em uso.");
     }
 
@@ -142,19 +149,18 @@ async function criarContaSegura(event) {
       surname: sobrenome,
       gender: genero,
       birthDate: Timestamp.fromDate(new Date(nascimento)),
-
       emailVerified: user.emailVerified,
       provider: "password",
-
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       lastLogin: serverTimestamp()
     });
 
-    setTimeout(() => (window.location.href = "feed.html"), 800);
+    window.location.href = "feed.html";
 
   } catch (err) {
     console.error(err);
+    cadastrandoAgora = false; // FIX: reseta a flag se der erro
     let msg = "Erro ao criar conta.";
     if (err.code === 'auth/email-already-in-use') {
       msg = "Este email já está cadastrado.";
@@ -184,18 +190,13 @@ async function loginUser(event) {
   showLoading(true, "Entrando...");
 
   try {
-    console.info('Login: tentativa de autenticação para', email);
     await setPersistence(auth, browserLocalPersistence);
-    console.info('Login: persistência definida (browserLocalPersistence)');
     const cred = await signInWithEmailAndPassword(auth, email, senha);
-
-    console.info('Login: usuário autenticado', cred.user && cred.user.uid);
 
     try {
       await updateDoc(doc(db, "users", cred.user.uid), {
         lastLogin: serverTimestamp()
       });
-      console.info('Login: lastLogin atualizado no Firestore para', cred.user.uid);
     } catch (updateErr) {
       console.error('Login: falha ao atualizar lastLogin no Firestore', updateErr);
     }
@@ -234,40 +235,25 @@ function configurarValidacoes() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          window.location.href = "feed.html";
-        } else {
-          window.location.href = "feed.html";
-        }
-      } catch {
-        window.location.href = "feed.html";
-      }
+  // FIX: só redireciona se não estiver no meio de um cadastro
+  onAuthStateChanged(auth, async (user) => {
+    if (user && !cadastrandoAgora) {
+      window.location.href = "feed.html";
     }
   });
-  
+
   configurarValidacoes();
 
   const path = window.location.pathname;
-  if (path.includes('register.html')) {
+
+  if (path.includes('register.html') || path.endsWith('/') || path === '') {
+    // FIX: seletor corrigido — usa "form" direto, sem .form-section
     document
-      .querySelector(".form-section form")
+      .querySelector("form")
       ?.addEventListener("submit", criarContaSegura);
   } else if (path.includes('login.html')) {
     document
-      .querySelector(".form-section form")
+      .querySelector("form")
       ?.addEventListener("submit", loginUser);
   }
 });
-
-
-
-
-
-
-
-
-

@@ -859,7 +859,7 @@ function renderPost(postData, feed) {
       </div>
     </div>
     <div class="post-content">
-      <div class="post-text">${formatarHashtags(postData.content || '')}</div>
+    <div class="post-text">${formatarHashtags(postData.content || '')}</div>
       ${
         (postData.img && postData.img.trim() !== "")
           ? `
@@ -879,7 +879,6 @@ function renderPost(postData, feed) {
           `
           : ''
       }
-
       <div class="post-actions">
         <div class="post-actions-left">
           <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -1430,7 +1429,7 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
   // Renderiza as fotos de perfil
   let fotosHTML = '';
   if (info.fotos && info.fotos.length > 0) {
-    fotosHTML = '<div style="display: flex; margin-right: 4px;">';
+    fotosHTML = '<div style="display: flex; margin-right: 0px;">';
     info.fotos.forEach((foto, index) => {
       fotosHTML += `
         <img 
@@ -1441,7 +1440,7 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
             height: 20px; 
             border-radius: 50%; 
             object-fit: cover;
-            ${index > 0 ? 'margin-left: -8px;' : ''}
+            ${index > 0 ? 'margin-left: 0px;' : ''}
           "
         />
       `;

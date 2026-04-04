@@ -13,81 +13,169 @@
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="./src/styles/register.css" />
   <link rel="stylesheet" href="./src/styles/root.css" />
+  <link rel="stylesheet" href="./src/styles/base.css"/>
   <meta name="screen-orientation" content="portrait">
   <meta name="x5-orientation" content="portrait">
-
-    <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
-
-  <!-- Descrição -->
   <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-
-  <!-- URL principal -->
   <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-
-  <!-- Imagem de destaque -->
   <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
-
-  <!-- Tipo de conteúdo -->
   <meta property="og:type" content="website">
-
-  <!-- Para Twitter -->
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
 </head>
 <body>
 
-  <div class="main">
-    <div class="form-section">
-      <div class="container">
-        <h1>Bem vindo ao <span class="logo">RealMe</span></h1>
-        <form>
-      <div class="inputer">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+  <form>
+    <div class="step1">
+      <div class="create-area">
+      <div class="info-area1">
+        <div class="logo-area"><p>Criar conta no <span>RealMe</span></p></div>
+        <div class="page-title">Crie sua conta no RealMe e se conecte com seus amigos proximos</div>
       </div>
-      <div class="inputer">
-        <label for="sobrenome">Sobrenome</label>
-        <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required />
-      </div>
-       <div class="inputer">
-        <label for="usuario">Nome de Usuário</label>
-        <input type="text" id="usuario" name="usuario" placeholder="Escolha um nome de usuário" required />
-      </div>
-       <div class="inputer">
-        <label for="email">E-mail</label>
-        <input type="text" id="email" name="email" placeholder="meunome@email.com" required />
-      </div>
-       <div class="inputer">
-        <label for="genero">Gênero</label>
-        <select id="genero" name="genero" required>
-          <option value="" disabled selected>Selecione o gênero</option>
-          <option value="masculino">Masculino</option>
-          <option value="feminino">Feminino</option>
-          <option value="outro">Outro</option>
-          <option value="prefiro_nao_dizer">Prefiro não dizer</option>
-        </select>
-      </div>
-       <div class="inputer">
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
-      </div>
-      <div class="form-group">
-        <label for="nascimento">Data de Nascimento</label>
-        <input type="date" id="nascimento" name="nascimento" required />
-      </div>
-      <button type="submit">Criar Conta</button>
-    </form>
-        <div class="link">
-          <p class="login-pc">já tem uma conta? <a id="entrarBtn">Entrar</a></p>
-          <p class="login-mobile">já tem uma conta? <a href="login.html">Entrar</a></p>
+        <div class="inputs-area">
+          <div class="input">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" placeholder="meunome@email.com" required />
+          </div>
+          <div class="input">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" />
+          </div>
         </div>
-        <div class="user-contract">
-          <p>Ao se inscrever, você concorda com nossos <a href="#">Termos</a>, <a href="#">Política de Dados</a> e <a href="profile.html">Política de Cookies</a>.</p>
+        <div class="btn-area">
+          <button type="button" id="continuar-btn" class="continuar-btn">Continuar</button>
         </div>
+      </div>
+      <div class="more">
+        <div class="alert1">Já tem uma conta? <a href="./login.html">Entrar</a></div>
       </div>
     </div>
-  </div>
+
+    <div class="step2">
+      <div class="nav-top">
+        <button type="button" id="voltar-btn" class="voltar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+          Voltar
+        </button>
+      </div>
+      <div class="info-area2">
+        <div class="logo-area"><span>RealMe</span></div>
+        <div class="page-title">Quase lá, finalize sua conta para entrar</div>
+      </div>
+      <div class="inputs-area">
+        <div class="input">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+        </div>
+        <div class="input">
+          <label for="sobrenome">Sobrenome</label>
+          <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required />
+        </div>
+        <div class="input">
+          <label for="usuario">Username</label>
+          <input type="text" id="usuario" name="usuario" placeholder="Escolha um nome de usuário" required />
+        </div>
+        <div class="input">
+          <label for="genero">Gênero</label>
+          <div class="select-wrapper">
+            <select id="genero" name="genero" required>
+              <option value="" disabled selected>Selecione o gênero</option>
+              <option value="masculino">Masculino</option>
+              <option value="feminino">Feminino</option>
+              <option value="prefiro_nao_dizer">Prefiro não dizer</option>
+            </select>
+          </div>
+        </div>
+        <div class="input">
+          <label for="nascimento">Data de Nascimento</label>
+          <input type="date" id="nascimento" name="nascimento" required />
+        </div>
+      </div>
+      <div class="btn-area">
+        <button class="criar-btn" type="submit">Criar Conta</button>
+      </div>
+    </div>
+  </form>
+
 </body>
 <script type="module" src="./src/js/signup.js"></script>
-</html>
+ <style>
+  .field-error {
+    color: #ff4d4d;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    display: none;
+  }
+  .input input.invalid {
+    border-color: #ff4d4d !important;
+    outline-color: #ff4d4d !important;
+  }
+</style>
+ <script>
+  function showError(inputEl, errorEl, msg) {
+    inputEl.classList.add('invalid');
+    errorEl.textContent = msg;
+    errorEl.style.display = 'block';
+  }
 
+  function clearError(inputEl, errorEl) {
+    inputEl.classList.remove('invalid');
+    errorEl.style.display = 'none';
+  }
+
+  const emailInput = document.getElementById('email');
+  const senhaInput = document.getElementById('senha');
+
+  const emailError = document.createElement('span');
+  emailError.className = 'field-error';
+  emailInput.parentNode.appendChild(emailError);
+
+  const senhaError = document.createElement('span');
+  senhaError.className = 'field-error';
+  senhaInput.parentNode.appendChild(senhaError);
+
+  emailInput.addEventListener('input', () => clearError(emailInput, emailError));
+  senhaInput.addEventListener('input', () => clearError(senhaInput, senhaError));
+
+  document.getElementById('continuar-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const email = emailInput.value.trim();
+    const senha = senhaInput.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    let hasError = false;
+
+    if (!email) {
+      showError(emailInput, emailError, 'O e-mail é obrigatório.');
+      hasError = true;
+    } else if (!emailRegex.test(email)) {
+      showError(emailInput, emailError, 'Digite um e-mail válido.');
+      hasError = true;
+    } else {
+      clearError(emailInput, emailError);
+    }
+
+    if (!senha) {
+      showError(senhaInput, senhaError, 'A senha é obrigatória.');
+      hasError = true;
+    } else if (senha.length < 6) {
+      showError(senhaInput, senhaError, 'A senha deve ter pelo menos 6 caracteres.');
+      hasError = true;
+    } else {
+      clearError(senhaInput, senhaError);
+    }
+
+    if (!hasError) {
+      document.querySelector('.step1').classList.add('hidden');
+      document.querySelector('.step2').classList.add('visible');
+    }
+  });
+
+  document.getElementById('voltar-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.step1').classList.remove('hidden');
+    document.querySelector('.step2').classList.remove('visible');
+  });
+ </script>
+</html>

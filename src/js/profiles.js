@@ -625,6 +625,27 @@ function setupViewMoreModal() {
       modal.style.transform  = 'translateY(0)';
     }
   }
+
+
+  const btnEdit   = document.getElementById('open-edit');
+const btnCancel = document.getElementById('cancel-edit');
+const viewMode  = document.querySelector('.view-mode');
+const editMode  = document.querySelector('.edit-mode');
+
+// começa com edit-mode escondido
+editMode.classList.add('hidden');
+
+// clicou no lápis → mostra edição
+btnEdit.addEventListener('click', () => {
+  viewMode.classList.add('hidden');
+  editMode.classList.remove('hidden');
+});
+
+// clicou no X → volta pro view
+btnCancel.addEventListener('click', () => {
+  editMode.classList.add('hidden');
+  viewMode.classList.remove('hidden');
+});
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -739,7 +760,7 @@ function renderReposts() {
   c.innerHTML = `
     <div class="about-box" style="text-align:center;padding:40px 20px;">
       <div class="icon-area" style="margin-bottom:16px;">
-        <i class="fa-solid fa-repeat" style="font-size:40px;color:#444;"></i>
+        <i class="fa-solid fa-calendar" style="font-size:40px;color:#444;"></i>
       </div>
       <h3 style="color:#666;margin-bottom:8px;">Nenhum repost ainda</h3>
       <p style="color:#444;font-size:14px;">Quando ${quem} um repost, ele aparecerá aqui.</p>
@@ -1238,14 +1259,12 @@ async function configurarBotoes(targetUid) {
         } else {
           await seguir(currentUserId, targetUid);
           isF = true;
- 
-          // ✅ Verifica amizade mútua — se o alvo também me segue, dispara atividade
+de
           try {
             const mutuoSnap = await getDoc(
               doc(db, 'users', currentUserId, 'followers', targetUid)
             );
             if (mutuoSnap.exists()) {
-              // Pega username do alvo para o texto da atividade
               const targetData = await getUserData(targetUid);
               const targetUsername = targetData.username || targetUid;
               triggerNovaAmizade(targetUid, targetUsername).catch(console.warn);
@@ -1534,8 +1553,6 @@ window.fecharModal = () => {
 // ═══════════════════════════════════════════════════════════
 lsClean();
 
-// Inicializa o modal "Ver mais" assim que o DOM estiver pronto,
-// garantindo que o listener seja registrado DEPOIS do módulo carregar.
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', setupViewMoreModal);
 } else {
@@ -1556,7 +1573,6 @@ onAuthStateChanged(auth, async user => {
     configurarTabs(uid);
     setupNudge();
     setupStickyMenu();
-    // Re-registra o modal após configurarBotoes (que pode clonar elementos próximos)
     setupViewMoreModal();
     if (user) monitorarNudges();
     await atualizarMarquee();
@@ -1617,7 +1633,7 @@ onAuthStateChanged(auth, async user => {
 
   const VAPID_KEY = "BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg";
 
-  // Atualiza o texto do botão conforme o estado atual
+
   function atualizarLabel() {
     const perm = Notification.permission;
     if (perm === 'granted') {
@@ -1634,17 +1650,14 @@ onAuthStateChanged(auth, async user => {
   btn.addEventListener('click', async (e) => {
     e.preventDefault();
 
-    // Se bloqueado pelo navegador, não tem como pedir via JS — orienta o usuário
     if (Notification.permission === 'denied') {
       return;
     }
 
-    // Se já está ativo, informa
     if (Notification.permission === 'granted') {
       return;
     }
 
-    // Pede permissão
     try {
       const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
       const { getMessaging, getToken }  = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js");

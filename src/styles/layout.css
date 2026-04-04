@@ -168,12 +168,7 @@
   align-self: center;
 }
 
-.post-image img {
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  border-radius: 8px;
-}
+
 
 /* Texto do post */
 .post-text {
@@ -834,21 +829,20 @@ textarea#postText:focus {
 .modal-overlay {
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.459) !important;
+  background: var(--bg-modal) !important;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   padding: 0px;
   box-sizing: border-box;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   position: relative;
   max-width: 90%;
   max-height: 90%;
-  animation: zoomIn 0.3s ease-out;
 }
 
 @keyframes zoomIn {
@@ -1433,7 +1427,7 @@ textarea#postText:focus {
   }
 
   .post-footer-infos {
-  padding: 4px 0 10px 0;
+  padding: 4px 14px 10px 14pc;
   font-size: 15.5px;
   display: flex ;
   justify-content: space-between;

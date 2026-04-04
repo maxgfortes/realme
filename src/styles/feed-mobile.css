@@ -20,7 +20,6 @@ body {
   overflow-x: hidden; /* Evita scroll horizontal */
   overflow-y: hidden;
   touch-action: none;
-  padding-top: env(safe-area-inset-top, 60px);
 }
 
 
@@ -251,9 +250,6 @@ body.modal-open {
   color: #cacaca;
   font-size: 14px;
 }
-
-
-
 
 
 
@@ -524,7 +520,7 @@ body.modal-open {
   border-radius: 12px !important;
   margin-bottom: 0px !important;
   box-shadow: none !important;
-  padding: 14px 14px 14px 14px !important;
+  padding: 14px 14px 44px 14px !important;
   border-left: none;
   border: none !important;
   background: transparent !important;
@@ -565,8 +561,8 @@ body.modal-open {
 }
 
 .avatar {
-  width: 50px !important;
-  height: 50px !important;
+  width: 46px !important;
+  height: 46px !important;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #373737;
@@ -1463,10 +1459,17 @@ textarea#postText:focus {
     color: #cacaca !important;
     cursor: pointer;
     padding: 0px;
-    margin-bottom: 4vh;
-    margin-right: 1vh;
     background-color: transparent!important;
     border: none !important;
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  .more-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
     /* Navbar Top */

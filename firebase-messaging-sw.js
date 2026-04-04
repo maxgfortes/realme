@@ -18,7 +18,6 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ─── Notificações em BACKGROUND (app fechado / minimizado) ──
 messaging.onBackgroundMessage((payload) => {
   console.log("[SW] Mensagem em background recebida:", payload);
 
