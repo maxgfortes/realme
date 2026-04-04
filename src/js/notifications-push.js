@@ -63,7 +63,7 @@ function mostrarModalPermissao() {
     overlay.id = "fcm-perm-modal";
     overlay.style.cssText = `
       position: fixed; inset: 0;
-      background: rgba(0,0,0,.65);
+      background: var(--bg-modal);
       z-index: 999999;
       display: flex;
       align-items: flex-end;
@@ -80,7 +80,7 @@ function mostrarModalPermissao() {
         @keyframes fcmSlideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
       </style>
       <div style="
-        background: #1c1c1e;
+        background: #1b1b1b;
         border-radius: 20px 20px 0 0;
         padding: 28px 24px 36px;
         width: 100%;
@@ -96,7 +96,7 @@ function mostrarModalPermissao() {
           display: flex; align-items: center; justify-content: center;
           margin: 0 auto 16px;
           font-size: 28px;
-        ">🔔</div>
+        "><i class="fa-solid fa-bell"></i></div>
 
         <div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">
           Ativar notificações

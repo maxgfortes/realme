@@ -57,16 +57,16 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 
-const feed = document.getElementById('feed');
-const loadMoreBtn = document.getElementById('load-more-btn');
-const postInput = document.querySelector('.post-box input[type="text"]');
-const postButton = document.querySelector('.post-button');
-
-
 // ConfiguraÃ§Ãµes
 const POSTS_LIMIT = 10;
 let loading = false;
 let hasMorePosts = true;
+
+// Referências ao DOM — preenchidas no DOMContentLoaded para evitar null
+let feed = null;
+let loadMoreBtn = null;
+let postInput = null;
+let postButton = null;
 
 // Lista de domÃ­nios maliciosos conhecidos
 const DOMINIOS_MALICIOSOS = [
@@ -187,47 +187,27 @@ function iniciarSincronizacaoBackground() {
   if (cacheCheckTimer) clearInterval(cacheCheckTimer);
   
   cacheCheckTimer = setInterval(async () => {
-    
     try {
-      // Buscar apenas os 5 posts mais recentes para verificar se há novidades
+      const usuarioLogado = auth.currentUser;
+      if (!usuarioLogado) return;
+
+      // Buscar apenas o post mais recente para checar se há novidades
       const q = query(
         collection(db, 'posts'),
         orderBy('create', 'desc'),
-        limit(5)
+        limit(1)
       );
       
       const snapshot = await getDocs(q);
-      const postsRecentes = snapshot.docs.map(doc => ({
-        ...doc.data(),
-        postid: doc.id,
-        tipo: 'post'
-      }));
-      
-      // Comparar com cache e atualizar se houver mudanças
+      if (snapshot.empty) return;
+
+      const postMaisRecente = snapshot.docs[0];
       const cacheAtual = getPostsCache() || [];
-      const postsNoCache = cacheAtual.filter(p => p.tipo === 'post');
-      
-      if (postsRecentes.length > 0 && postsNoCache.length > 0) {
-        const novoPostId = postsRecentes[0].postid;
-        const ultimoPostEmCacheId = postsNoCache[0].postid;
-        
-        if (novoPostId !== ultimoPostEmCacheId) {
-          // Buscar todos os posts novos e atualizar cache
-          const todosOsPostsQuery = query(
-            collection(db, 'posts'),
-            orderBy('create', 'desc'),
-            limit(CACHE_CONFIG.MAX_CACHED_POSTS)
-          );
-          
-          const todosCacheSnapshot = await getDocs(todosOsPostsQuery);
-          const todosOsPosts = todosCacheSnapshot.docs.map(doc => ({
-            ...doc.data(),
-            postid: doc.id,
-            tipo: 'post'
-          }));
-          
-          setPostsCache(todosOsPosts);
-        }
+      const ultimoEmCache = cacheAtual.find(p => p.tipo === 'post');
+
+      // Só invalida o cache se houver post novo — a próxima loadPosts() irá buscar e reclassificar
+      if (ultimoEmCache && postMaisRecente.id !== ultimoEmCache.postid) {
+        limparCacheFeed();
       }
     } catch (e) {
       console.warn('Erro ao sincronizar background:', e);
@@ -904,6 +884,9 @@ function renderPost(postData, feed) {
       </div>
       <div class="post-footer-infos">
         <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
+        ${postData._feedTipo === 'amigoDosAmigos' && postData._sugeridoPor
+          ? `<p class="post-sugerido-por"><i class="fas fa-user-friends"></i> Sugerido por <strong>@${postData._sugeridoPor}</strong></p>`
+          : ''}
       </div>
     </div>
   `;
@@ -1033,47 +1016,140 @@ function renderPost(postData, feed) {
   }).catch(() => {});
 }
 
+// ===================
+// BUSCAR AMIGOS E AMIGOS DOS AMIGOS
+// ===================
+async function buscarAmigos(uid) {
+  try {
+    const amigosSnap = await getDocs(collection(db, `users/${uid}/friends`));
+    return amigosSnap.docs.map(d => d.id);
+  } catch (e) {
+    console.warn('Erro ao buscar amigos:', e);
+    return [];
+  }
+}
+
+async function buscarAmigosDosAmigos(uid, amigosUids) {
+  const amigosDosAmigos = new Map(); // uid -> sugeridoPor (username do amigo)
+  try {
+    const promises = amigosUids.slice(0, 20).map(async amigoUid => {
+      try {
+        const snap = await getDocs(collection(db, `users/${amigoUid}/friends`));
+        const userData = await buscarUsuarioCached(amigoUid);
+        const usernameAmigo = userData?.username || amigoUid;
+        snap.docs.forEach(d => {
+          const idAmigoDosAmigos = d.id;
+          // Excluir o próprio usuário e amigos diretos
+          if (idAmigoDosAmigos !== uid && !amigosUids.includes(idAmigoDosAmigos)) {
+            if (!amigosDosAmigos.has(idAmigoDosAmigos)) {
+              amigosDosAmigos.set(idAmigoDosAmigos, usernameAmigo);
+            }
+          }
+        });
+      } catch {}
+    });
+    await Promise.all(promises);
+  } catch (e) {
+    console.warn('Erro ao buscar amigos dos amigos:', e);
+  }
+  return amigosDosAmigos; // Map<uid, sugeridoPorUsername>
+}
+
+// Converte timestamp Firestore ou Date em segundos numéricos
+function toSeconds(ts) {
+  if (!ts) return 0;
+  if (typeof ts === 'object' && ts.seconds) return ts.seconds;
+  return new Date(ts).getTime() / 1000;
+}
+
+// Ordena array de posts por data decrescente (cronológico)
+function ordenarCronologico(posts) {
+  return posts.sort((a, b) => toSeconds(b.create) - toSeconds(a.create));
+}
+
+// ===================
+// MONTAR FEED COM PROPORÇÕES 60/30/10
+// ===================
+async function montarFeedProporcional(uid, todosOsPosts, amigosUids, amigosDosAmigosMap) {
+  const postsAmigos = [];
+  const postsAmigosDosAmigos = [];
+  const postsDescoberta = [];
+
+  for (const post of todosOsPosts) {
+    if (!post || post.visible === false) continue;
+    const criadorId = post.creatorid;
+    if (criadorId === uid) {
+      // Posts do próprio usuário entram como amigos
+      postsAmigos.push({ ...post, _feedTipo: 'amigo' });
+    } else if (amigosUids.includes(criadorId)) {
+      postsAmigos.push({ ...post, _feedTipo: 'amigo' });
+    } else if (amigosDosAmigosMap.has(criadorId)) {
+      postsAmigosDosAmigos.push({
+        ...post,
+        _feedTipo: 'amigoDosAmigos',
+        _sugeridoPor: amigosDosAmigosMap.get(criadorId)
+      });
+    } else {
+      postsDescoberta.push({ ...post, _feedTipo: 'descoberta' });
+    }
+  }
+
+  // Ordena cada grupo cronologicamente
+  ordenarCronologico(postsAmigos);
+  ordenarCronologico(postsAmigosDosAmigos);
+  ordenarCronologico(postsDescoberta);
+
+  // Intercala respeitando ~60/30/10 por janela de 10 posts
+  // Para cada 10 posts: 6 amigos, 3 amigos dos amigos, 1 descoberta
+  const resultado = [];
+  let iA = 0, iAA = 0, iD = 0;
+  const total = todosOsPosts.filter(p => p && p.visible !== false).length;
+
+  while (resultado.length < total) {
+    const lote = [];
+
+    // 6 de amigos
+    for (let i = 0; i < 6 && iA < postsAmigos.length; i++, iA++) {
+      lote.push(postsAmigos[iA]);
+    }
+    // 3 de amigos dos amigos
+    for (let i = 0; i < 3 && iAA < postsAmigosDosAmigos.length; i++, iAA++) {
+      lote.push(postsAmigosDosAmigos[iAA]);
+    }
+    // 1 de descoberta
+    for (let i = 0; i < 1 && iD < postsDescoberta.length; i++, iD++) {
+      lote.push(postsDescoberta[iD]);
+    }
+
+    // Se o lote ficou vazio, todos os grupos acabaram
+    if (lote.length === 0) break;
+
+    // Dentro de cada lote de 10, ordena cronologicamente (mantém feed cronológico)
+    ordenarCronologico(lote);
+    resultado.push(...lote);
+  }
+
+  return resultado;
+}
+
 async function loadPosts() {
   if (loading || !hasMorePosts) return;
   loading = true;
-  
-  // ESTRATÉGIA CACHE-FIRST: Render desde cache primero
+
   const isFirstLoad = !feed || feed.children.length === 0;
-  
+
+  // CACHE-FIRST: renderiza do cache enquanto busca dados frescos
   if (isFirstLoad) {
-      
-    // Tentar carregar do cache imediatamente
     const postsEmCache = getPostsCache();
     const bubblesEmCache = getBubblesCache();
-    
+
     if (postsEmCache || bubblesEmCache) {
-          
       allItems = [];
-      
-      if (bubblesEmCache) {
-        bubblesEmCache.forEach(bubble => {
-          allItems.push(bubble);
-        });
-      }
-      
-      if (postsEmCache) {
-        postsEmCache.forEach(post => {
-          allItems.push(post);
-        });
-      }
-      
-      // Ordenar itens
-      allItems.sort((a, b) => {
-        let dataA = a.create;
-        let dataB = b.create;
-        if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
-        else dataA = new Date(dataA).getTime() / 1000;
-        if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
-        else dataB = new Date(dataB).getTime() / 1000;
-        return dataB - dataA;
-      });
-      
-      // Renderizar do cache imediatamente
+      if (bubblesEmCache) bubblesEmCache.forEach(b => allItems.push(b));
+      if (postsEmCache) postsEmCache.forEach(p => allItems.push(p));
+
+      ordenarCronologico(allItems);
+
       for (const item of allItems) {
         if (item.tipo === 'bubble') {
           renderizarBubble(item, feed);
@@ -1081,12 +1157,10 @@ async function loadPosts() {
           renderPost(item, feed);
         }
       }
-        } else {
-      // NÃO há cache - feed fica vazio enquanto carrega
     }
   }
-  
-  // Indicador de carregamento para scroll infinito (só mostra após primeira carga)
+
+  // Indicador de carregamento para scroll infinito
   let loadingIndicator = document.getElementById('scroll-loading-indicator');
   if (!isFirstLoad && !loadingIndicator) {
     loadingIndicator = document.createElement('div');
@@ -1095,36 +1169,40 @@ async function loadPosts() {
     loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando mais...';
     feed.appendChild(loadingIndicator);
   }
-  
+
   if (loadMoreBtn) {
     loadMoreBtn.disabled = true;
-    loadMoreBtn.textContent = isFirstLoad ? "Carregando..." : "Carregando mais...";
+    loadMoreBtn.textContent = isFirstLoad ? 'Carregando...' : 'Carregando mais...';
   }
 
   try {
-      
-    // PRIMEIRA CARGA: carrega bubbles do servidor
+    const usuarioLogado = auth.currentUser;
+    if (!usuarioLogado) {
+      loading = false;
+      return;
+    }
+    const uid = usuarioLogado.uid;
+
+    // Buscar amigos e amigos dos amigos apenas na primeira carga
+    let amigosUids = [];
+    let amigosDosAmigosMap = new Map();
     if (!lastPostSnapshot) {
-      const bubbles = await carregarBubbles();
-          
-      // Salvar bubbles em cache
-      setBubblesCache(bubbles);
-      
-      // Se não foi primeira carga via cache, adicionar bubbles
-      if (isFirstLoad && (!getBubblesCache() || allItems.length === 0)) {
-        bubbles.forEach(bubble => {
-          allItems.push(bubble);
-        });
-      }
+      amigosUids = await buscarAmigos(uid);
+      amigosDosAmigosMap = await buscarAmigosDosAmigos(uid, amigosUids);
     }
 
-    // Busca lote de posts ordenados por data
+    // Bubbles: apenas na primeira carga
+    if (!lastPostSnapshot) {
+      const bubbles = await carregarBubbles();
+      setBubblesCache(bubbles);
+    }
+
+    // Busca lote de posts
     let postsQuery = query(
       collection(db, 'posts'),
       orderBy('create', 'desc'),
       limit(POSTS_LIMIT)
     );
-    
     if (lastPostSnapshot) {
       postsQuery = query(
         collection(db, 'posts'),
@@ -1133,15 +1211,12 @@ async function loadPosts() {
         limit(POSTS_LIMIT)
       );
     }
-    
+
     const postsSnapshot = await getDocs(postsQuery);
 
     if (postsSnapshot.empty) {
       hasMorePosts = false;
-      if (loadMoreBtn) {
-        loadMoreBtn.textContent = "Não há mais posts";
-        loadMoreBtn.disabled = true;
-      }
+      if (loadMoreBtn) { loadMoreBtn.textContent = 'Não há mais posts'; loadMoreBtn.disabled = true; }
       if (loadingIndicator) loadingIndicator.remove();
       loading = false;
       return;
@@ -1149,58 +1224,32 @@ async function loadPosts() {
 
     lastPostSnapshot = postsSnapshot.docs[postsSnapshot.docs.length - 1];
 
-    // Coleta posts do servidor
-    const postsParaAdicionar = [];
-    for (const postDoc of postsSnapshot.docs) {
-      const postData = postDoc.data();
-      postsParaAdicionar.push({
-        ...postData,
-        postid: postDoc.id
-      });
-    }
+    const postsRaw = postsSnapshot.docs.map(d => ({ ...d.data(), postid: d.id, tipo: 'post' }));
 
-    // Ordenar por segurança
-    postsParaAdicionar.sort((a, b) => {
-      let dataA = a.create;
-      let dataB = b.create;
-      if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
-      else dataA = new Date(dataA).getTime() / 1000;
-      if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
-      else dataB = new Date(dataB).getTime() / 1000;
-      return dataB - dataA;
-    });
-
-    // PRIMEIRA CARGA: renderiza tudo
     if (isFirstLoad) {
-          
-      // Limpar allItems e recarregar com dados do servidor
-      allItems = [];
-
-      // Reusar bubbles já carregados (evita segunda query ao Firestore)
-      const bubblesAtuais = await carregarBubbles();
+      // Buscar bubbles para misturar
+      const bubblesAtuais = getBubblesCache() || await carregarBubbles();
       setBubblesCache(bubblesAtuais);
-      bubblesAtuais.forEach(bubble => allItems.push(bubble));
-      
-      // Salvar todos os posts em cache
-      postsParaAdicionar.forEach(post => {
-        allItems.push({ ...post, tipo: 'post' });
-      });
-      setPostsCache(postsParaAdicionar);
-      
-      // Ordenar final
-      allItems.sort((a, b) => {
-        let dataA = a.create;
-        let dataB = b.create;
-        if (typeof dataA === 'object' && dataA.seconds) dataA = dataA.seconds;
-        else dataA = new Date(dataA).getTime() / 1000;
-        if (typeof dataB === 'object' && dataB.seconds) dataB = dataB.seconds;
-        else dataB = new Date(dataB).getTime() / 1000;
-        return dataB - dataA;
-      });
-      
-      // Limpar feed e renderizar de novo (garante dados atualizados)
+
+      // Aplicar proporções 60/30/10 nos posts
+      const postsProporcional = await montarFeedProporcional(uid, postsRaw, amigosUids, amigosDosAmigosMap);
+
+      // Salvar em cache
+      setPostsCache(postsProporcional);
+
+      // Montar allItems: bubbles + posts ordenados
+      allItems = [];
+      bubblesAtuais.forEach(b => allItems.push(b));
+      postsProporcional.forEach(p => allItems.push(p));
+
+      // Reordena mantendo a ordem proporcional mas com bubbles no topo por data
+      // Bubbles ficam no topo cronológico, posts seguem a ordem proporcional
+      const bubblesSorted = allItems.filter(i => i.tipo === 'bubble');
+      ordenarCronologico(bubblesSorted);
+      const postsSorted = allItems.filter(i => i.tipo !== 'bubble');
+      allItems = [...bubblesSorted, ...postsSorted];
+
       feed.innerHTML = '';
-      
       for (const item of allItems) {
         if (item.tipo === 'bubble') {
           renderizarBubble(item, feed);
@@ -1208,52 +1257,42 @@ async function loadPosts() {
           renderPost(item, feed);
         }
       }
-          
-      // Configurar auto-pause e limites de vídeo após renderização completa
+
       configurarAutoPauseVideos();
       configurarLimiteRepeticoes();
-      
-      // Iniciar sincronização em background
       iniciarSincronizacaoBackground();
-    } 
-    // SCROLL INFINITO: adiciona apenas os novos posts
-    else {
-          
-      // Salvar novos posts em cache (append)
+    } else {
+      // SCROLL INFINITO — busca amigos novamente para classificar os novos posts
+      amigosUids = await buscarAmigos(uid);
+      amigosDosAmigosMap = await buscarAmigosDosAmigos(uid, amigosUids);
+      const postsProporcional = await montarFeedProporcional(uid, postsRaw, amigosUids, amigosDosAmigosMap);
+
       const cacheAtual = getPostsCache() || [];
-      const postsComCache = [...cacheAtual, ...postsParaAdicionar];
-      setPostsCache(postsComCache);
-      
-      for (const post of postsParaAdicionar) {
+      setPostsCache([...cacheAtual, ...postsProporcional]);
+
+      for (const post of postsProporcional) {
         renderPost(post, feed);
       }
-      // Re-registrar vídeos novos no IntersectionObserver
       configurarAutoPauseVideos();
       configurarLimiteRepeticoes();
-        }
+    }
 
     if (postsSnapshot.size < POSTS_LIMIT) {
       hasMorePosts = false;
-      if (loadMoreBtn) {
-        loadMoreBtn.textContent = "Não há mais posts";
-        loadMoreBtn.disabled = true;
-      }
+      if (loadMoreBtn) { loadMoreBtn.textContent = 'Não há mais posts'; loadMoreBtn.disabled = true; }
     } else {
-      if (loadMoreBtn) {
-        loadMoreBtn.textContent = "Carregar mais";
-        loadMoreBtn.disabled = false;
-      }
+      if (loadMoreBtn) { loadMoreBtn.textContent = 'Carregar mais'; loadMoreBtn.disabled = false; }
     }
-    
+
     if (loadingIndicator) loadingIndicator.remove();
-    } catch (error) {
-    console.error("❌ Erro ao carregar posts:", error);
-    if (loadMoreBtn) {
-      loadMoreBtn.textContent = "Erro ao carregar";
-    }
-    const loadingIndicator = document.getElementById('scroll-loading-indicator');
-    if (loadingIndicator) loadingIndicator.remove();
+
+  } catch (error) {
+    console.error('❌ Erro ao carregar posts:', error);
+    if (loadMoreBtn) loadMoreBtn.textContent = 'Erro ao carregar';
+    const ind = document.getElementById('scroll-loading-indicator');
+    if (ind) ind.remove();
   }
+
   loading = false;
 }
 
@@ -2915,6 +2954,15 @@ function removerBarra(bar) {
 // ===================
 
 window.addEventListener("DOMContentLoaded", async () => {
+  // Inicializar referências ao DOM com segurança
+  feed       = document.getElementById('feed');
+  loadMoreBtn = document.getElementById('load-more-btn');
+  postInput  = document.querySelector('.post-box input[type="text"]');
+  postButton = document.querySelector('.post-button');
+
+  // Carrega foto de perfil imediatamente (não depende de auth)
+  carregarFotoPerfil();
+
   const user = await verificarLogin();
   if (!user) {
     console.error('❌ Usuário não autenticado');
@@ -3056,7 +3104,7 @@ function carregarFotoPerfil() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
+// carregarFotoPerfil já é chamada dentro do DOMContentLoaded principal acima
 
 
 
