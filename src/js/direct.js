@@ -369,7 +369,7 @@ function renderizarMensagens(mensagens) {
       const footer = document.createElement("div");
       footer.className = "dm-msg-footer";
       const ts    = m.timestamp ? (m.timestamp.toDate ? m.timestamp.toDate() : new Date(m.timestamp.seconds * 1000)) : new Date();
-      const visto = m.read ? `<span class="dm-visto">• visto</span>` : `<span class="dm-enviado">• enviado</span>`;
+      const visto = m.read ? `•<span class="dm-visto"> visto</span>` : `•<span class="dm-enviado"> enviado</span>`;
       footer.innerHTML = `<span>${formatarTempoRelativo(ts)}</span>${visto}`;
       bloco.appendChild(footer);
     }

@@ -1679,13 +1679,32 @@ function setCache(key, value) {
 async function buscarUsuarioCached(uid) {
   const key = `user_cache_${uid}`;
 
-  const cache = getCache(key);
-  if (cache) return cache;
+  // Verifica se tem cache (mesmo que expirado — stale)
+  let stale = null;
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      stale = parsed.value;
+      const expirado = Date.now() - parsed.time > CACHE_USER_TIME;
 
+      if (!expirado) {
+        // Cache válido — retorna direto
+        return stale;
+      }
+
+      // Cache expirado — retorna o stale imediatamente e atualiza em background
+      buscarDadosUsuarioPorUid(uid).then(dados => {
+        if (dados) setCache(key, dados);
+      }).catch(() => {});
+
+      return stale;
+    }
+  } catch {}
+
+  // Sem cache nenhum — busca e aguarda
   const dados = await buscarDadosUsuarioPorUid(uid);
-
   if (dados) setCache(key, dados);
-
   return dados;
 }
 
@@ -1716,10 +1735,8 @@ async function atualizarGreeting() {
 
   updateUI({ saudacao, nome, userData, user, cachedPhoto });
 
-  // Atualização em background
-  if (!userData.displayname) {
-    atualizarDados(uid, cacheKey, photoKey);
-  }
+  // Sempre atualiza em background para garantir dados frescos
+  atualizarDados(uid, cacheKey, photoKey);
 }
 
 // ==============================

@@ -27,7 +27,6 @@ body {
   align-items: center;
   justify-content: space-between;
   background: transparent;
-  border-bottom: 0.1px solid var(--navbar-border, #222) !important;
   border: none !important;
   padding: 12px 16px;
   color: #fff;
@@ -35,6 +34,7 @@ body {
   top: 0;
   z-index: 100;
   z-index: 999999;
+  background-color: #0f0f0f;
 }
 
 .dm-back-btn,
@@ -78,6 +78,8 @@ body {
   height: 100vh;
   overflow: hidden;
   display: block;
+  background-color: #0f0f0f;
+    position: fixed;
 }
 
 .dm-users-list,
@@ -119,20 +121,56 @@ body {
 .dm-container.show-chat ~ .navbar-bottom { display: none !important; }
 
 /* ── Search box ──────────────────────────────────────────────────────────── */
+
+
+.dm-bottom-options {
+  display: flex;
+  padding: 0 18px;
+  gap: 18px;
+  width: 100%;
+  align-items: center;
+}
+
+.new-msg {
+  height: 46px;
+  aspect-ratio: 1/1;
+  display: none;
+}
+
+
+.new-msg button {
+  background-color: #27272788;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 0.1px solid #333;
+  border-top: 0.1px solid #333;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  font-size: 19px;
+  color: #ddd;
+}
+
+
+
 .dm-search-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0px 18px 12px 18px;
+  width: 100%;
   background: none;
 }
 
 #dmSearchInput {
   width: 100%;
   padding: 12px 18px;
-  border-radius: 16px;
-  background: #272727;
+  border-radius: 9999px;
+  background: #27272788;
   border: none;
+  border-bottom: 0.1px solid #333;
+  border-top: 0.1px solid #333;
   color: #fff;
   font-size: 1em;
   outline: none;
@@ -143,8 +181,8 @@ body {
 /* ── Título lista ────────────────────────────────────────────────────────── */
 .title {
   display: flex;
-  padding: 8px 16px;
-  font-size: 18px;
+  padding: 16px 16px;
+  font-size: 26px;
   font-weight: bold;
   color: #eee;
 }
@@ -155,8 +193,9 @@ body {
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 18px 18px;
+  padding: 0 18px;
   background: none;
+  min-height: 94px;
   border: none;
   width: 100%;
   color: #fff;
@@ -170,7 +209,6 @@ body {
   height: 58px;
   border-radius: 50%;
   object-fit: cover;
-  border: 0.1px solid #333;
   flex-shrink: 0;
 }
 
@@ -180,6 +218,9 @@ body {
   gap: 3px;
   flex: 1;
   min-width: 0;
+  height: 100%;
+  padding: 26px 0;
+  border-bottom: 0.1px solid #222;
 }
 
 .dm-user-row {
@@ -226,10 +267,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background-color: var(--bg-primary, #111) !important;
-  backdrop-filter: blur(20px);
-  position: sticky;
-  flex-shrink: 0;
+  background: #0F0F0F;
   z-index: 99999999;
 }
 
@@ -264,8 +302,6 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 200;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: auto;
   /* smooth only for programmatic scroll, not finger — handled by JS */
 }
 
@@ -312,7 +348,7 @@ body {
 }
 
 /* Meus */
-.meu { background: #4A90E2; color: white; align-self: flex-end; }
+.meu { background: #3199ff; color: white; align-self: flex-end; }
 
 /* ── iMessage tail on last sent bubble ──────────────────────────────────── */
 .meu-bloco .dm-msg-bubble:last-of-type.meu {
@@ -326,7 +362,7 @@ body {
   right: -8px;
   width: 16px;
   height: 16px;
-  background: #4A90E2;
+  background: #3199ff;
   border-bottom-left-radius: 14px;
   clip-path: polygon(0 0, 0% 100%, 100% 100%);
   pointer-events: none;
@@ -387,7 +423,7 @@ body {
   cursor: pointer;
   transition: filter 0.15s;
   /* Space for reaction chip above */
-  margin-top: 16px;
+  margin-top: 2px;
 }
 
 
@@ -459,13 +495,14 @@ body {
 
 /* ── Reply bar (área de input) ───────────────────────────────────────────── */
 .dm-reply-bar {
-  border-top: 1px solid #1d1d1d;
   padding: 14px 14px 44px 14px;
   flex-shrink: 0;
-  background-color: #252525c9;
-  backdrop-filter: blur(12px);
-  border-radius: 14px;
-  margin: 4px;
+  background: #272727cc;
+  border-bottom: 0.1px solid #333;
+  backdrop-filter: blur(6px);
+  border-top: 0.1px solid #333;
+  border-radius: 26px;
+  margin-bottom: 8px;
 }
 
 .reply-bar-inner {
@@ -477,7 +514,7 @@ body {
 .reply-bar-line {
   width: 3px;
   height: 32px;
-  background: #4A90E2;
+  background: #3199ff;
   border-radius: 3px;
   flex-shrink: 0;
   display: none;
@@ -560,19 +597,19 @@ body {
   justify-content: flex-end;
 }
 
-.dm-visto   { color: #666; font-weight: bold; }
+.dm-visto   { color: #3199ff ; font-weight: bold; }
 .dm-enviado { color: #666; font-weight: bold;}
 
 /* ── Reações (chip style) ─────────────────────────────────────────────────── */
 
 .dm-reaction-chip {
-  background:#4A90E2;
+  background:#3199ff;
   border-radius: 20px;
   padding: 7px;
   font-size: 13px;
   cursor: pointer;
   transition: background 0.15s;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 2px solid var(--bg-primary);
 }
 
 .dm-reaction-chip:active { background: rgba(255,255,255,0.2); }
@@ -683,7 +720,7 @@ body {
 }
 
 .gif-picker-header button {
-  background: #4A90E2;
+  background: #3199ff;
   border: none;
   border-radius: 12px;
   padding: 10px 14px;
@@ -756,15 +793,48 @@ body {
 .dm-send-area {
   display: flex;
   flex-direction: column;
-  padding: 8px 8px 22px;
+  padding: 26px 22px;
   gap: 0;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 300;
-  /* Glass so messages are visible passing underneath */
   pointer-events: none;
+}
+
+.dm-send-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  background: linear-gradient(
+    0deg,
+    rgb(15, 15, 15) 0%,
+    rgba(15,15,15,0.6) 40%,
+    rgba(15,15,15,0.25) 70%,
+    rgba(15,15,15,0) 100%
+  );
+
+  mask-image: linear-gradient(
+    to top,
+    black 0%,
+    rgba(0,0,0,.8) 30%,
+    rgba(0,0,0,.4) 65%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to top,
+    black 0%,
+    rgba(0,0,0,.8) 30%,
+    rgba(0,0,0,.4) 65%,
+    transparent 100%
+  );
 }
 
 .dm-send-area > * {
@@ -775,15 +845,20 @@ body {
   flex: 1;
   padding: 0px 4px;
   display: flex;
-  border-radius: 50px;
+  border-radius: 9999px;
   align-items: center;
+  background: #27272788;
+  border-bottom: 0.1px solid #333;
+  border-top: 0.1px solid #333;
   min-height: 50px;
 }
 
 @supports (backdrop-filter: blur(10px)) {
   .input-area {
-    backdrop-filter: blur(12px);
-    background-color: #252525a6;
+    backdrop-filter: blur(6px);
+  background: #27272788;
+  border-bottom: 0.1px solid #333;
+  border-top: 0.1px solid #333;
   }
 
   .dm-context-menu {
@@ -813,8 +888,8 @@ body {
 }
 
 #dmSendBtn {
-  background-color: #4A90E2;
-  border: 1px solid #4A90E2;
+  background-color: #3199ff;
+  border: 1px solid #3199ff;
   padding: 0px 18px !important;
   height: 42px;
   align-items: center;

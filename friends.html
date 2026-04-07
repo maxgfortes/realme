@@ -16,40 +16,28 @@
   <link rel="stylesheet" href="./src/styles/navbar-bottom.css" />
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
-    <div class="logo_area">
-      <div class="logo">RealMe</div>
-    </div>
-    <div class="search-area">
-  <div class="search-box">
-    <button><i class="fas fa-search"></i></button>
-    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off" />
-  </div>
-    </div>
-    <div class="last-update-area">
-      <div class="last-update">
-        <p>Novidades!</p>
-      </div>
-    </div>
-    <div class="marquee-container">
-      <div class="marquee"></div>
-    </div>
-  </nav>
 
   <div class="friends-container">
-        <div class="friends-header">
-          <div class="title-page"><p>Pessoas parecidas com você</p></div>
-          <button class="filter-btn" id="filterBtn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg></button>
-        </div>
-        <!-- VIEW GRID (Original) -->
-        <div class="grid-view active" id="gridView">
-            <div class="friends-list">
-            </div>
-        </div>
-
-
+    <div class="friends-header">
+      <div class="title-page"><p>Pessoas parecidas com você</p></div>
+      <button class="filter-btn" id="filterBtn"><svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 510.784"><path fill-rule="nonzero" d="M217.587 0c60.082 0 114.478 24.36 153.849 63.73 39.371 39.371 63.731 93.782 63.731 153.857 0 52.338-18.484 100.353-49.276 137.893l119.914 119.387c8.228 8.183 8.264 21.495.081 29.722s-21.495 8.264-29.722.081l-119.93-119.395c-37.641 31.166-85.957 49.892-138.647 49.892-60.075 0-114.486-24.36-153.857-63.731C24.36 332.065 0 277.669 0 217.587 0 157.512 24.36 103.101 63.73 63.73 103.101 24.36 157.512 0 217.587 0zm124.046 93.533c-31.737-31.737-75.605-51.379-124.046-51.379-48.448 0-92.317 19.642-124.054 51.379-31.737 31.737-51.379 75.606-51.379 124.054 0 48.441 19.642 92.309 51.379 124.046 31.737 31.737 75.606 51.379 124.054 51.379 48.441 0 92.309-19.642 124.046-51.379 31.737-31.737 51.379-75.605 51.379-124.046 0-48.448-19.642-92.317-51.379-124.054z"/></svg></button>
     </div>
+    <div class="grid-view active" id="gridView">
+      <div class="alert-area hidden">
+          <div class="alert-box">
+            <div class="icon-area">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 580 536" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448"/><path d="M192,28c58.9,0,106.7,47.7,106.7,106.7S250.9,241.3,192,241.3S85.3,193.6,85.3,134.7S133.1,28,192,28z"/><path d="M560,448v-42.7c0-48.6-32.9-91.1-80-103.2"/><path d="M392,60 a92,92 0 0 1 0,184"/></svg></div>
+            <div class="alert-title">Encontre pessoas como você</div>
+            <div class="alert-sub">Faça uma busca rapida para encontrar pessoas com gostos semelhantes ao seu.</div>
+            <div class="alert-btn">
+              <button id="start-filter-btn">Encontar pessoas</button>
+            </div>
+          </div>
+        </div>
+      <div class="friends-list">
+      </div>
+    </div>
+  </div>
 
 <aside class="option-bar">
   <h1>Preferencias</h1>
@@ -64,7 +52,6 @@
     </div>
   </div>
   <div class="options">
-      <!-- Checkbox “Igual a mim” -->
   <div class="filtros">
     <div class="estilo">
       <p>Estilo</p>
@@ -76,7 +63,7 @@
       <input class="estilo" type="text" placeholder="extrovertido, introvertido...">
     </div>
 
-    <div class="estilo">
+    <div class="estilo hidden">
       <p>Medos</p>
       <input class="estilo" type="text" placeholder="Medo de Acabar Sozinho...">
     </div>
@@ -120,9 +107,7 @@
     <button class="search-btn" type="submit" form="search-form">Buscar</button>
   </div>
 </div>
-
-  <!-- Botão fixo -->
-  </div>
+</div>
 </aside>
 <div class="sidebar-overlay"></div>
 </div>
@@ -157,8 +142,6 @@
   <div class="pc-alert-title">Indisponivel em PCs</div>
   <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
 </div>
-
-
 
 <script>
         // Dados dos usuários
@@ -566,6 +549,9 @@ async function buscarUsuariosSemelhantes() {
 
 // ─── Renderização ─────────────────────────────────────────────────────────────
 function renderizarAmbos(lista) {
+  // Quando há resultados para mostrar, esconde o alert-area
+  const alertArea = document.querySelector('.alert-area');
+  if (alertArea) alertArea.classList.add('hidden');
   renderizarResultados(lista);
   renderizarGrid(lista);
 }
@@ -642,12 +628,28 @@ function mostrarLoadingLeve() {
 
 // ─── Exibe cache imediatamente ao abrir a página ──────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const alertArea = document.querySelector('.alert-area');
+  const optionBar = document.querySelector('.option-bar');
+  const overlay   = document.querySelector('.sidebar-overlay');
+  const startBtn  = document.getElementById('start-filter-btn');
+
   const cache = lerCache();
   if (cache && cache.length) {
-    // Mostra instantaneamente sem nenhuma requisição
+    // Tem cache: esconde o alert e mostra os resultados imediatamente
+    if (alertArea) alertArea.classList.add('hidden');
     renderizarAmbos(cache);
-    // Marca como dados do cache para não confundir com resultado de busca
-    todosUsuarios = cache; // usa cache como fallback até o preload terminar
+    todosUsuarios = cache;
+  } else {
+    // Sem cache: mostra o alert-area
+    if (alertArea) alertArea.classList.remove('hidden');
+  }
+
+  // Botão "Encontrar pessoas" abre o modal de filtros
+  if (startBtn && optionBar && overlay) {
+    startBtn.addEventListener('click', () => {
+      optionBar.classList.add('open');
+      overlay.classList.add('show');
+    });
   }
 });
 
@@ -1031,5 +1033,6 @@ document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 </script>
 
 <script type="module" src="./src/js/global-messages.js"></script>
+<script type="module" src="./src/js/auth-verification.js"></script>
 </body>
 </html>

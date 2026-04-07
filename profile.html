@@ -587,6 +587,29 @@
     </div>
   </div>
 
+  <div class="wall-send-overlay" id="wall-modal">
+    <div class="wall-modal">
+      <div class="modal-wall-grab">
+        <div class="graber"></div>
+      </div>
+    <div class="user-header">
+      <div class="pfp-modal-wall">
+        <img src="./src/img/default.jpg" alt="">
+      </div>
+      <div class="user-info-modal-wall">
+        <div class="username-modal-wall">username</div>
+      </div>
+    </div>
+    <div class="input-modal-wall">
+      <textarea name="wall-input" id="wall-input" class="wall-modal-input" placeholder="Escreva algo para maxgfortes..."></textarea>
+    </div>
+    <div class="modal-wall-btns">
+      <button class="send-wall-btn">Enviar</button>
+      <button class="cancel-wall-btn">Cancelar</button>
+    </div>
+    </div>
+  </div>
+
   <div class="share-p-overlay">
     <div class="share-p-modal">
       <div class="share-p-header">
@@ -669,7 +692,7 @@
           <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
         </svg>
       </button>
-      <h2 id="headername">usuario</h2>
+      <h2 id="headername">usuario</h2><span class="verificado"><i class="fas fa-check-circle"></i></span>
     </div>
     <div class="top-right">
       <a id="open-settings-btn">
@@ -695,7 +718,6 @@
         <div class="profile-info-block">
           <div class="name-line">
             <h2 class="profile-name" id="displayname">username</h2>
-            <span class="verificado"><i class="fas fa-check-circle"></i></span>
             <div class="handle" id="username"></div>
           </div>
           <div class="profile-stats">
@@ -738,7 +760,7 @@
 
       <div class="actions-btn">
         <!--perfil dos outros-->
-        <button class="action-btn pf">Adicionar Amigo</button>
+        <button class="action-btn pf">Seguir</button>
         <!--seu perfil-->
         <button class="action-btn mypf">Editar</button>
         <button class="action-btn share">Compartilhar perfil</button>
@@ -774,12 +796,74 @@
 
         <!-- Tab 2: Gostos — esvaziada, conteúdo no modal -->
         <div class="tab gostos-tab">
-          <div class="about-box" style="text-align:center;padding:30px;">
-      <div class="icon-area"><div class="icon-place">
-        <i class="fa-solid fa-repeat" style="font-size:38px;color:#fff;"></i></div></div>
-      <h3 style="color:#fff;margin-bottom:12px;">Nenhum repost ainda</h3>
-      <p style="color:#555;">Este usuário ainda não fez nenhum repost</p>
-    </div>
+        <div class="send-wall">
+          <div class="pfp-send-wall" id="pfp-user">
+            <img src="./src/img/default.jpg" alt="foto de perfil">
+          </div>
+          <div class="input-send-wall">Escreva algo para maxgfortes</div>
+        </div>
+        <div class="wall-feed" id="wall-feed">
+          <div class="wall-card">
+            <div class="wall-card-header">
+              <div class="wall-card-left-header">
+                <div class="wall-card-pfp">
+                  <img src="./src/img/default.jpg" alt="">
+                </div>
+                <div class="wall-card-infos">
+                  <div class="wall-card-username">maxgfortes</div>
+                  <div class="wall-card-date">há 3 dias</div>
+                </div>
+              </div>
+              <div class="wall-card-right-header">
+                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
+              </div>
+            </div>
+            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
+              esse texto é um texto de teste para ver como o layout do mural fica.
+              posts de texto de ate 180 caracteres no mural são permitidos.
+            </div>
+          </div>
+          <div class="wall-card">
+            <div class="wall-card-header">
+              <div class="wall-card-left-header">
+                <div class="wall-card-pfp">
+                  <img src="./src/img/default.jpg" alt="">
+                </div>
+                <div class="wall-card-infos">
+                  <div class="wall-card-username">maxgfortes</div>
+                  <div class="wall-card-date">há 3 dias</div>
+                </div>
+              </div>
+              <div class="wall-card-right-header">
+                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
+              </div>
+            </div>
+            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
+              esse texto é um texto de teste para ver como o layout do mural fica.
+              posts de texto de ate 180 caracteres no mural são permitidos.
+            </div>
+          </div>
+          <div class="wall-card">
+            <div class="wall-card-header">
+              <div class="wall-card-left-header">
+                <div class="wall-card-pfp">
+                  <img src="./src/img/default.jpg" alt="">
+                </div>
+                <div class="wall-card-infos">
+                  <div class="wall-card-username">maxgfortes</div>
+                  <div class="wall-card-date">há 3 dias</div>
+                </div>
+              </div>
+              <div class="wall-card-right-header">
+                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
+              </div>
+            </div>
+            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
+              esse texto é um texto de teste para ver como o layout do mural fica.
+              posts de texto de ate 180 caracteres no mural são permitidos.
+            </div>
+          </div>
+        </div>
         </div>
 
         <!-- Tab 3: Links -->
@@ -1386,5 +1470,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module" src="./src/js/profiles.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="./src/js/edit-view.js"></script>
+<script type="module" src="./src/js/auth-verification.js"></script>
 </body>
 </html>

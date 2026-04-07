@@ -170,8 +170,8 @@ html, body {
 
 .title-page {
   text-align: center;
-  color: #fafafa;
-  font-size: 24px;
+  color: #ffff;
+  font-size: 26px;
   font-weight: bold;
 }
 
@@ -179,7 +179,6 @@ html, body {
 
 .filtros{
   overflow-y: auto;
-  max-height: 350px;
   background-color: transparent;
 }
 
@@ -234,6 +233,9 @@ input.estilo::placeholder {
 
 .estilo {
   padding: 10px;
+}
+.estilo.hidden {
+    display: none;
 }
 
 .estilo p {
@@ -526,10 +528,12 @@ select {
         .grid-view {
             display: none;
             overflow-y: auto;
+            background-color: var(--bg-primary);
         }
 
         .grid-view.active {
             display: block;
+            background-color: var(--bg-primary);
         }
 
         .friends-list {
@@ -537,7 +541,9 @@ select {
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px;
             padding: 20px;
+            z-index: 999;
         }
+
 
         .user {
             border: 1px solid #333;
@@ -914,6 +920,7 @@ select {
     .grid-view {
         width: 100%;
         height: 100%;
+        background-color: var(--bg-primary);
     }
 
 
@@ -1039,7 +1046,7 @@ input.estilo {
     }
 
     .filtros {
-        max-height: 80vh;
+        height: 100%;
         overflow-x: auto;
         padding: 10px;
     }
@@ -1110,18 +1117,18 @@ input.estilo {
 }
 
 .title-page {
-    color: var(--text-tertiary);
+    color: #fff;
     display: flex;
     align-items: center;
     text-align: left;
-    font-size: 20px;
+    font-size: 1.35rem;
     padding: 12px 6px;
 }
 
 .filter-btn {
     background: none;
     border: none;
-    color: #ccc;
+    color: #eee;
     font-size: 16px;
     cursor: pointer;
     transition: color 0.3s;
@@ -1252,25 +1259,84 @@ nav {
 
 .search-btn-area {
     padding: 12px;
+    padding-bottom: 32px;
     display: flex;
 }
 
 
 
-
-.carousel-cards-wrapper {
-  overflow: hidden;
-  touch-action: pan-y; /* permite vertical, bloqueia horizontal */
-}
-
-.carousel-card {
-  touch-action: none; /* impede que o card puxe o layout */
-  -webkit-user-drag: none;
-}
-
-
 }
 
 
 
 
+.alert-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: fixed;
+}
+
+.alert-area.hidden {
+    display: none;
+}
+
+.alert-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.alert-title {
+    font-size: 1.3rem;
+    color: #fff;
+    font-weight: bold;
+    padding: 22px 0 12px 0;
+}
+
+.alert-sub {
+    color: #aaa;
+    padding-bottom: 12px;
+}
+
+.alert-btn {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 12px;
+}
+
+.alert-btn button {
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--primary-btn);
+    border: none;
+    border-radius: 14px;
+}
+
+.icon-area {
+    height: 100px;
+    width: 100px;
+    aspect-ratio: 1/1;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-area svg {
+    height: 50px;
+    width: 50px;
+    fill: none
+}

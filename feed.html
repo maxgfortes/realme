@@ -596,9 +596,7 @@ function animate() {
 animate();
 </script>
 
-
-<script src="./src/js/more.js"></script>
-<script src="./src/js/loading.js"></script>
+<script type="module" src="./src/js/auth-verification.js"></script>
 <script type="module" src="./src/js/notification.js"></script>
 <script  type="module" src="./src/js/nt-notifications.js"></script>
 <script type="module" src="./src/js/nt-badge.js"></script>
@@ -714,41 +712,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 </script>
-
-<!-- MODAL DE POST VIA POST-MODAL.JS -->
-<div id="postModal" class="post-modal-overlay" style="display:none;">
-  <div style="background: rgb(20,20,20); border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; color: #ccc; border: 1px solid #333; max-height: 80vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-      <h3 style="margin: 0; font-size: 20px;">Criar Post</h3>
-      <button onclick="window.fecharPostModal()" style="background: none; border: none; color: #ccc; font-size: 24px; cursor: pointer;">&times;</button>
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-      <textarea id="postModalText" placeholder="Escreva algo..." style="width: 100%; height: 120px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #ccc; padding: 12px; font-size: 14px; font-family: Arial, sans-serif; resize: none;"></textarea>
-      <small style="color: #888; font-size: 12px;">Máximo 500 caracteres</small>
-    </div>
-    
-    <div style="margin-bottom: 15px;">
-      <input id="postModalImg" type="file" accept="image/*,video/*" style="display: none;" />
-      <div id="postImageContainer" style="position: relative; width: 100%; aspect-ratio: 16/9; background: #2a2a2a; border: 2px dashed #444; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.borderColor='#4A90E2'; this.style.background='#2f2f2f'" onmouseout="if(!document.getElementById('postModalImgPreview').src) { this.style.borderColor='#444'; this.style.background='#2a2a2a' }">
-        <div id="postImagePlaceholder" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
-          <i class="fas fa-image" style="font-size: 48px; color: #666; display: block; margin-bottom: 10px;"></i>
-          <p style="margin: 0; color: #999; font-size: 14px;">Clique para adicionar imagem/GIF/vídeo</p>
-        </div>
-        <img id="postModalImgPreview" src="" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
-        <video id="postModalVideoPreview" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" controls></video>
-        <button id="postModalRemoveImg" style="display: none; position: absolute; top: 10px; right: 10px; background: rgba(220, 53, 69, 0.9); border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; z-index: 10;">
-          <i class="fas fa-trash"></i> Remover
-        </button>
-      </div>
-    </div>
-    
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-      <button onclick="window.fecharPostModal()" style="background: #6c757d; border: none; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancelar</button>
-      <button onclick="window.enviarPostModal()" style="background: #007bff; border: none; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">Publicar</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
