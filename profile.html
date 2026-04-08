@@ -436,6 +436,7 @@
 
 
 
+
   <div class="more-overlay">
     <div class="more-info-modal">
       <div class="header-area">
@@ -443,15 +444,23 @@
           <div class="graber"></div>
         </div>
         <div class="header-libs">
-          <div class="btn-edit-header">
-            <button class="btn-edit-area btn-cancel hidden" id="cancel-edit"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="more-info-header"><p>Sobre <span id="username-modal"></span></p></div>
-          <div class="btn-edit-header">
-            <button class=" btn-edit-area btn-edit" id="open-edit"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button class=" btn-edit-area save-edit hidden" id="save-view-mode"><i class="fa-solid fa-check"></i></button>
-          </div>
-        </div>
+    <div class="btn-edit-header">
+      <button class="btn-edit-area" id="cancel-edit" style="display: none;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="more-info-header">
+      <p>Sobre <span id="username-modal"></span></p>
+    </div>
+    <div class="btn-edit-header">
+      <button class="btn-edit-area btn-edit" id="open-edit">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </button>
+      <button class="btn-edit-area" id="save-view-mode" style="display: none;">
+        <i class="fa-solid fa-check"></i>
+      </button>
+    </div>
+  </div>
       </div>
         <div class="scroll-content">
         <div class="view-mode">
@@ -463,9 +472,9 @@
           <div class="infos-box">
             <div class="info-label modal-info-nome">Nome: <span></span></div>
             <div class="info-label modal-info-genero">Gênero: <span></span></div>
-            <div class="info-label modal-info-aniversario">Aniversário: <span></span></div>
+            <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
             <div class="info-label modal-info-estado-civil">Status Civil: <span></span></div>
-            <div class="info-label modal-info-entrou">Entrou em: <span></span></div>
+            <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
             <div class="info-label modal-info-buscando">Buscando por: <span></span></div>
             <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
           </div>
@@ -527,9 +536,9 @@
           <div class="infos-box">
             <div class="info-label modal-info-nome">Nome: <span></span></div>
             <div class="info-label modal-info-genero">Gênero: <span></span></div>
-            <div class="info-label modal-info-aniversario">Aniversário: <span></span></div>
+            <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
             <div class="info-label modal-info-estado-civil">Status Civil: <span></span></div>
-            <div class="info-label modal-info-entrou">Entrou em: <span></span></div>
+            <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
             <div class="info-label modal-info-buscando">Buscando por:</div>
             <textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea>
             <div class="info-label modal-info-localizacao">Mora em: <span></span></div>

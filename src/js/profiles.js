@@ -496,14 +496,14 @@ function renderMidia(media) {
   }
 }
 
-// Modal "Ver mais sobre" — preenche dados
 function renderModal(d) {
   if (!d) return;
-  const set = (cls, val, fb='Não informado') => {
-    const n = $q(`.${cls} span`); if (n) n.textContent = val || fb;
+  const set = (cls, val, fb = 'Não informado') => {
+    const n = $q(`.${cls} span`);
+    if (n) n.textContent = val || fb;
   };
   const unEl = $('username-modal');
-  if (unEl) unEl.textContent = '' + (d.username || '');
+  if (unEl) unEl.textContent = d.username || '';
 
   set('modal-info-nome',         d.name || d.displayName || d.displayname);
   set('modal-info-genero',       traduzirGenero(d.gender || d.about?.gender));
@@ -521,132 +521,302 @@ function renderModal(d) {
   set('modal-info-hobbies',      d.likes?.hobbies,     'Ainda não há nada por aqui...');
   set('modal-info-games',        d.likes?.games,       'Ainda não há nada por aqui...');
   set('modal-info-others',       d.likes?.others,      'Ainda não há nada por aqui...');
+const enteredEl = document.getElementById('modal-entered-at');
+  if (enteredEl) {
+    const timestamp = d.createdAt || d.criadoem;   // prioriza createdAt, fallback para criadoem
+
+    if (timestamp) {
+      enteredEl.textContent = formatRelativeTime(timestamp);
+    } else {
+      enteredEl.textContent = 'Data desconhecida';
+    }
+  }
+// ==================== ANIVERSÁRIO ====================
+const birthdayEl = document.getElementById('modal-birthday');
+if (birthdayEl) {
+  const birthValue = d.birthDate || d.nascimento || d.birthday || d.aniversario;
+
+  if (birthValue) {
+    birthdayEl.textContent = formatBirthday(birthValue);
+  } else {
+    birthdayEl.textContent = 'Não informado';
+  }
+}
 }
 
-// ═══════════════════════════════════════════════════════════
-// MODAL "VER MAIS SOBRE" — listeners de abrir/fechar
-// Centralizado aqui para evitar conflito com o DOMContentLoaded
-// do HTML (que roda antes do módulo e perde a referência quando
-// o JS recria partes do DOM).
-// ═══════════════════════════════════════════════════════════
-function setupViewMoreModal() {
-  const overlay  = $q('.more-overlay');
-  const modal    = $q('.more-info-modal');
-  const openBtn  = $q('.view-more');
-  const dragArea = $q('.header-area');
 
-  if (!overlay || !modal || !openBtn) return;
+// ====================== SETUP MODAL "VER MAIS SOBRE" - FINAL ======================
+function setupViewMoreModal() {
+  const overlay     = $q('.more-overlay');
+  const modal       = $q('.more-info-modal');
+  const viewMoreBtn = $q('.view-more');
+  const dragArea    = $q('.header-area');
+  const viewMode    = $q('.view-mode');
+  const editMode    = $q('.edit-mode');
+
+  if (!overlay || !modal || !viewMode || !editMode) return;
+
+  let isEditing = false;
+
+  window._refreshEditBtn = function () {
+    const btnEdit = $('open-edit');
+    const btnCancel = $('cancel-edit');
+    const btnSave = $('save-view-mode');
+
+    if (btnEdit) btnEdit.style.display = (typeof isOwnProfile !== 'undefined' && isOwnProfile) ? 'flex' : 'none';
+    if (btnCancel) btnCancel.style.display = 'none';
+    if (btnSave) btnSave.style.display = 'none';
+
+    viewMode.style.display = 'block';
+    editMode.style.display = 'none';
+    isEditing = false;
+  };
 
   function openMoreModal() {
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      window._refreshEditBtn();
+      attachButtonListeners();
+    }, 100);
   }
 
   function closeMoreModal() {
-    modal.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
-    modal.style.transform  = 'translateY(100%)';
-    overlay.style.opacity  = '0';
+    modal.style.transition = 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+    modal.style.transform = 'translateY(100%)';
+    overlay.style.opacity = '0';
+
     setTimeout(() => {
       overlay.classList.remove('active');
-      modal.style.transform  = '';
+      modal.style.transform = '';
       modal.style.transition = '';
-      overlay.style.opacity  = '';
+      overlay.style.opacity = '';
       document.body.style.overflow = '';
-    }, 400);
+    }, 450);
   }
 
-  // Remove listeners antigos clonando o botão
-  const newOpenBtn = openBtn.cloneNode(true);
-  openBtn.parentNode?.replaceChild(newOpenBtn, openBtn);
-  newOpenBtn.addEventListener('click', openMoreModal);
+  function attachButtonListeners() {
+    const btnEdit = $('open-edit');
+    const btnCancel = $('cancel-edit');
+    const btnSave = $('save-view-mode');
 
-  // Fecha ao clicar no fundo escuro
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeMoreModal();
-  });
-
-  if (!dragArea) return;
-
-  // Drag to close — touch
-  let _dragStartY = 0, _dragCurY = 0, _dragging = false;
-
-  dragArea.addEventListener('touchstart', (e) => {
-    _dragStartY = e.touches[0].clientY;
-    _dragging = true;
-    modal.style.transition = 'none';
-  }, { passive: true });
-
-  dragArea.addEventListener('touchmove', (e) => {
-    if (!_dragging) return;
-    _dragCurY = e.touches[0].clientY;
-    const diff = _dragCurY - _dragStartY;
-    if (diff > 0) modal.style.transform = `translateY(${diff}px)`;
-  }, { passive: true });
-
-  dragArea.addEventListener('touchend', () => {
-    if (!_dragging) return;
-    _dragging = false;
-    const diff = _dragCurY - _dragStartY;
-    if (diff > 80) {
-      closeMoreModal();
-    } else {
-      modal.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-      modal.style.transform  = 'translateY(0)';
+    if (btnEdit) {
+      btnEdit.replaceWith(btnEdit.cloneNode(true));
+      $('open-edit').addEventListener('click', () => {
+        if (typeof isOwnProfile !== 'undefined' && isOwnProfile) entrarModoEdit();
+      });
     }
-  });
 
-  // Drag to close — mouse
-  let _mouseStart = 0, _mouseDragging = false;
+    if (btnCancel) {
+      btnCancel.replaceWith(btnCancel.cloneNode(true));
+      $('cancel-edit').addEventListener('click', () => {
+        console.log('Cancelar clicado');
+        entrarModoView();
+      });
+    }
 
-  dragArea.addEventListener('mousedown', (e) => {
-    _mouseStart = e.clientY;
-    _mouseDragging = true;
-    modal.style.transition = 'none';
-    document.addEventListener('mousemove', _onMouseMove);
-    document.addEventListener('mouseup',   _onMouseUp);
-  });
+    if (btnSave) {
+      btnSave.replaceWith(btnSave.cloneNode(true));
+      $('save-view-mode').addEventListener('click', async () => {
+        console.log('Salvar clicado');
+        // ... (seu código de salvar permanece igual)
+        if (!currentUserId || !isOwnProfile) return;
 
-  function _onMouseMove(e) {
-    if (!_mouseDragging) return;
-    const diff = e.clientY - _mouseStart;
-    if (diff > 0) modal.style.transform = `translateY(${diff}px)`;
-  }
+        const saveBtn = $('save-view-mode');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-  function _onMouseUp(e) {
-    if (!_mouseDragging) return;
-    _mouseDragging = false;
-    document.removeEventListener('mousemove', _onMouseMove);
-    document.removeEventListener('mouseup',   _onMouseUp);
-    const diff = e.clientY - _mouseStart;
-    if (diff > 80) {
-      closeMoreModal();
-    } else {
-      modal.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-      modal.style.transform  = 'translateY(0)';
+        try {
+          const getVal = (cls) => editMode.querySelector('.' + cls + ' .edit-input')?.value.trim() || '';
+
+          await Promise.all([
+            updateDoc(doc(db, `users/${currentUserId}/user-infos/about`), {
+              searching: getVal('modal-info-buscando'),
+              overview: getVal('modal-info-overview'),
+              style: getVal('modal-info-style'),
+              personality: getVal('modal-info-personality'),
+            }),
+            updateDoc(doc(db, `users/${currentUserId}/user-infos/likes`), {
+              music: getVal('modal-info-music'),
+              movies: getVal('modal-info-movies'),
+              books: getVal('modal-info-books'),
+              characters: getVal('modal-info-characters'),
+              foods: getVal('modal-info-foods'),
+              hobbies: getVal('modal-info-hobbies'),
+              games: getVal('modal-info-games'),
+              others: getVal('modal-info-others'),
+            })
+          ]);
+
+          entrarModoView();
+        } catch (e) {
+          console.error(e);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        }
+      });
     }
   }
 
+  function entrarModoEdit() {
+    isEditing = true;
+    viewMode.style.display = 'none';
+    editMode.style.display = 'block';
+    $('open-edit').style.display = 'none';
+    $('cancel-edit').style.display = 'flex';
+    $('save-view-mode').style.display = 'flex';
+    preencherInputsEdicao();
+  }
 
-  const btnEdit   = document.getElementById('open-edit');
-const btnCancel = document.getElementById('cancel-edit');
-const viewMode  = document.querySelector('.view-mode');
-const editMode  = document.querySelector('.edit-mode');
+  function entrarModoView() {
+    isEditing = false;
+    viewMode.style.display = 'block';
+    editMode.style.display = 'none';
+    $('open-edit').style.display = (typeof isOwnProfile !== 'undefined' && isOwnProfile) ? 'flex' : 'none';
+    $('cancel-edit').style.display = 'none';
+    $('save-view-mode').style.display = 'none';
+  }
 
-// começa com edit-mode escondido
-editMode.classList.add('hidden');
+  function preencherInputsEdicao() {
+    const d = currentProfileData || {};
+    const a = d.about || {};
+    const l = d.likes || {};
 
-// clicou no lápis → mostra edição
-btnEdit.addEventListener('click', () => {
-  viewMode.classList.add('hidden');
-  editMode.classList.remove('hidden');
-});
+    const set = (cls, val) => {
+      const el = editMode.querySelector('.' + cls + ' .edit-input');
+      if (el) el.value = val || '';
+    };
 
-// clicou no X → volta pro view
-btnCancel.addEventListener('click', () => {
-  editMode.classList.add('hidden');
-  viewMode.classList.remove('hidden');
-});
+    set('modal-info-buscando', a.searching);
+    set('modal-info-overview', a.overview);
+    set('modal-info-style', a.style);
+    set('modal-info-personality', a.personality);
+    set('modal-info-music', l.music);
+    set('modal-info-movies', l.movies);
+    set('modal-info-books', l.books);
+    set('modal-info-characters', l.characters);
+    set('modal-info-foods', l.foods);
+    set('modal-info-hobbies', l.hobbies);
+    set('modal-info-games', l.games);
+    set('modal-info-others', l.others);
+  }
+
+  // Eventos principais
+  if (viewMoreBtn) viewMoreBtn.addEventListener('click', openMoreModal);
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeMoreModal(); });
+
+  // Drag corrigido
+  if (dragArea) {
+    let startY = 0, curY = 0, dragging = false;
+
+    dragArea.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      dragging = true;
+      modal.style.transition = 'none';
+    }, { passive: true });
+
+    dragArea.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      curY = e.touches[0].clientY;
+      const diff = curY - startY;
+      if (diff > 0) modal.style.transform = `translateY(${diff}px)`;
+    }, { passive: true });
+
+    dragArea.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (curY - startY > 120) closeMoreModal();
+      else {
+        modal.style.transition = 'transform 0.35s cubic-bezier(0.32,0.72,0,1)';
+        modal.style.transform = 'translateY(0)';
+      }
+    });
+  }
+
+  setTimeout(window._refreshEditBtn, 800);
 }
+
+
+
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return 'Data desconhecida';
+
+  // Converte Timestamp do Firebase para Date
+  let date;
+  if (timestamp.toDate) {
+    date = timestamp.toDate();
+  } else if (timestamp.seconds) {
+    date = new Date(timestamp.seconds * 1000);
+  } else {
+    date = new Date(timestamp);
+  }
+
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+
+  if (diffSec < 60) return 'Agora';
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `há ${diffMin} ${diffMin === 1 ? 'minuto' : 'minutos'}`;
+
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `há ${diffHour} ${diffHour === 1 ? 'hora' : 'horas'}`;
+
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay < 7) return `há ${diffDay} ${diffDay === 1 ? 'dia' : 'dias'}`;
+
+  const diffWeek = Math.floor(diffDay / 7);
+  if (diffWeek < 5) return `há ${diffWeek} ${diffWeek === 1 ? 'semana' : 'semanas'}`;
+
+  const diffMonth = Math.floor(diffDay / 30.44);
+  if (diffMonth < 12) return `há ${diffMonth} ${diffMonth === 1 ? 'mês' : 'meses'}`;
+
+  const diffYear = Math.floor(diffMonth / 12);
+  return `há ${diffYear} ${diffYear === 1 ? 'ano' : 'anos'}`;
+} 
+
+
+// Formata aniversário - versão melhorada (suporta Timestamp do Firebase)
+function formatBirthday(birthValue) {
+  if (!birthValue) return 'Não informado';
+
+  let date;
+
+  try {
+    if (birthValue.toDate) {
+      // Timestamp do Firebase (o mais comum)
+      date = birthValue.toDate();
+    } 
+    else if (birthValue.seconds) {
+      // Objeto com .seconds
+      date = new Date(birthValue.seconds * 1000);
+    } 
+    else if (typeof birthValue === 'string') {
+      date = new Date(birthValue);
+    } 
+    else {
+      date = new Date(birthValue);
+    }
+
+    if (isNaN(date.getTime())) {
+      console.warn('Data de aniversário inválida:', birthValue);
+      return 'Data inválida';
+    }
+
+    const dia = date.getDate();
+    const mes = date.toLocaleString('pt-BR', { month: 'long' });
+
+    return `${dia} de ${mes.charAt(0).toUpperCase() + mes.slice(1)}`;
+
+  } catch (error) {
+    console.error('Erro ao formatar aniversário:', error, birthValue);
+    return 'Data inválida';
+  }
+}
+
 
 // ═══════════════════════════════════════════════════════════
 // EDIÇÃO INLINE DO "VER MAIS SOBRE" (só dono)
@@ -1553,11 +1723,9 @@ window.fecharModal = () => {
 // ═══════════════════════════════════════════════════════════
 lsClean();
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', setupViewMoreModal);
-} else {
+document.addEventListener('DOMContentLoaded', () => {
   setupViewMoreModal();
-}
+});
 
 
 onAuthStateChanged(auth, async user => {
@@ -1573,12 +1741,13 @@ onAuthStateChanged(auth, async user => {
     configurarTabs(uid);
     setupNudge();
     setupStickyMenu();
-    setupViewMoreModal();
+    if (typeof window._refreshEditBtn === 'function') window._refreshEditBtn();
     if (user) monitorarNudges();
     await atualizarMarquee();
     if (currentProfileData) aplicarBordaNeon(currentProfileData);
     if (currentProfileData?.media?.profileColor) renderMidia(currentProfileData.media);
     renderReposts();
+    
   }
 
   if (usernameURL) {
@@ -1600,6 +1769,11 @@ onAuthStateChanged(auth, async user => {
       setupListeners(uid);
     }
     await boot(uid);
+
+// Força atualização do botão de editar após carregar tudo
+if (typeof window._refreshEditBtn === 'function') {
+  window._refreshEditBtn();
+}
 
   } else if (useridURL) {
     profileUserId = useridURL;
