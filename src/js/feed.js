@@ -231,6 +231,18 @@ function formatarHashtags(texto) {
   return texto.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
 }
 
+function formatarMentions(text) { 
+  const mentionRegex = /@([a-z0-9._]+)/g;
+  return texto.replace(mentionRegex, (match, username) => {
+     return `<a href="profile?u=${username}" class="mention">${username}</a>`;
+    });
+}
+
+function formatarTexto(text) {
+  let texto = formatarHashtags(text);
+  texto = formatarMentions(texto);
+}
+
 // ===================
 // DETECTAR LINKS MALICIOSOS
 // ===================
@@ -839,7 +851,7 @@ function renderPost(postData, feed) {
       </div>
     </div>
     <div class="post-content">
-    <div class="post-text">${formatarHashtags(postData.content || '')}</div>
+    <div class="post-text">${formatarTexto(postData.content || '')}</div>
       ${
         (postData.img && postData.img.trim() !== "")
           ? `
