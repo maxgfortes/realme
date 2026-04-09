@@ -231,7 +231,7 @@ function formatarHashtags(texto) {
   return texto.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
 }
 
-function formatarMentions(text) { 
+function formatarMentions(texto) { 
   const mentionRegex = /@([a-z0-9._]+)/g;
   return texto.replace(mentionRegex, (match, username) => {
      return `<a href="profile?u=${username}" class="mention">@${username}</a>`;
