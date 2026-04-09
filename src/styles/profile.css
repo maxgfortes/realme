@@ -921,7 +921,7 @@
 
     .profile-pic {
       width: 120px;
-      height: 120px;
+      aspect-ratio: 1/1;
       border-radius: 12px;
       object-fit: cover;
       flex-shrink: 0;
@@ -1301,16 +1301,6 @@ background: #fff;
 .profile-menu-area {
   padding: 0;
   transition: all 0.3s ease;
-}
-
-.profile-menu-area.sticky {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
-  z-index: 9998;
-  background: var(--bg-primary);
-  backdrop-filter: blur(20px);
 }
 
 /* Placeholder quando menu fica fixo */
@@ -2263,7 +2253,7 @@ background: #fff;
 }
 
 .verificado i {
-  font-size: 16px;
+  font-size: 13px;
   color: var(--verified-blue);
 }
 
@@ -2882,10 +2872,9 @@ background: #fff;
       color: #999;
     }
 
-    /* Profile Banner */
 .pf-banner-area {
   overflow: hidden;
-  max-height: 152px; /* altura máxima que o banner pode ter */
+  padding: 1vh 0.9vh;
   opacity: 1;
   transition: max-height 0.5s ease, opacity 0.4s ease;
 }
@@ -2896,10 +2885,9 @@ background: #fff;
 }
 
 .profile-banner {
-  margin: 1vh 0.6vh;
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: none;
-  height: 140px; /* altura fixa do banner */
+  height: 130px; 
   background-size: cover;
   background-position: center;
 }
@@ -2928,19 +2916,33 @@ background: #fff;
       gap: 10px;
     }
 
-    .pfp {
-      top: 0vh;
-    }
+.pfp-border {
+  width: 89px;
+  height: 89px;
+  padding: 0.1px;            
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
 
-    .profile-pic {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 0.1px solid #bdbdbd;
-      background-size: cover;
-    }
+.pfp-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;     
+  filter: blur(2px);
+  transform: scale(1.2);   
+  z-index: 0;
+}
+
+.profile-pic {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
 
     .profile-info-block {
       padding: 8px 0 0 12px;
@@ -3198,16 +3200,7 @@ background: #fff;
   transition: all 0.3s ease;
 }
 
-.profile-menu-area.sticky {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
-  z-index: 9998;
-  background: var(--navbar-bg);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
+
 
 /* Placeholder quando menu fica fixo */
 .menu-placeholder {
@@ -3905,8 +3898,6 @@ background: #fff;
 .edit-input:focus {
   outline: none;
 }
-.view-mode {
-}
 }
 
 
@@ -3944,13 +3935,7 @@ background: #fff;
 
 
 
-.send-scrap {
-  display: flex;
-  border-bottom: 0.1px solid var(--border-primary);
-  min-height: 80px;
-  max-height: 120px;
-  width: 100%;
-}
+
 
 .msg-area {
   display: flex;
@@ -3984,10 +3969,9 @@ background: #fff;
 
 
 .send-wall {
-  padding: 10px 12px;
+  padding: 10px 18px;
   height: 80px;
   display: flex;
-  gap: 8px;
 }
 
 .pfp-send-wall {
@@ -4026,24 +4010,29 @@ background: #fff;
   color: #cdcdcd;
   display: none;
 }
-
-
 .wall-send-overlay {
   position: fixed;
+  inset: 0;
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   z-index: 999999;
+
   background: var(--bg-modal);
+
   opacity: 0;
   pointer-events: none;
-  transition: color 1s ease;
+
+  transition: opacity .25s ease;
+
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .wall-send-overlay.active {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .wall-modal {
@@ -4053,16 +4042,23 @@ background: #fff;
   gap: 16px;
   width: 100%;
   height: 53vh;
-  border-radius: 22px 22px 0 0 ;
-  padding: 12px 16px 26px 12px;
+
+  border-radius: 22px 22px 0 0;
+
+  padding: 12px 16px calc(26px + env(safe-area-inset-bottom)) 12px;
+
+  transform: translateY(100%);
+  transition: transform .38s cubic-bezier(.16,1,.3,1);
+}
+
+.wall-send-overlay.active .wall-modal {
+  transform: translateY(0);
 }
 
 .user-header {
   display: flex;
   gap: 12px;
-  /* padding: 16px 18px; */
 }
-
 
 .pfp-modal-wall {
   height: 64px;
@@ -4072,7 +4068,6 @@ background: #fff;
 .pfp-modal-wall img {
   width: 100%;
   height: 100%;
-  aspect-ratio: 1/1;
   border-radius: 50%;
 }
 
@@ -4091,7 +4086,6 @@ background: #fff;
 .input-modal-wall {
   height: 100%;
 }
-
 
 .wall-modal-input {
   background-color: #2e3135;
@@ -4143,6 +4137,7 @@ background: #fff;
   justify-content: center;
 }
 
+/* feed */
 
 .wall-feed {
   display: flex;
@@ -4159,7 +4154,7 @@ background: #fff;
 .wall-card-header {
   width: 100%;
   display: flex;
-  padding: 12px;
+  padding: 16px;
 }
 
 .wall-card-left-header {
@@ -4191,7 +4186,6 @@ background: #fff;
 .wall-card-pfp img {
   width: 100%;
   height: 100%;
-  aspect-ratio: 1/1;
   border-radius: 50%;
   border: 0.1px solid #222;
 }
@@ -4214,11 +4208,28 @@ background: #fff;
   color: #ccc;
 }
 
-
 .wall-card-text {
   font-size: 1rem;
-  padding: 0 16px 6px 16px;
+  padding: 0 16px 6px 18px;
   color: #ddd;
 }
 
 
+.music {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px) scale(.98);
+  filter: blur(4px);
+  pointer-events: none;
+  transition: 
+    opacity .25s ease,
+    transform .25s cubic-bezier(.2,.8,.2,1),
+    filter .25s ease;
+}
+
+.music.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+  pointer-events: auto;
+}

@@ -12,15 +12,12 @@
   <link rel="stylesheet" href="./src/styles/layout.css">
   <link rel="stylesheet" href="./src/styles/navbar-bottom.css">
   <link rel="stylesheet" href="./src/styles/root.css" />
-  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
-  <!-- Para o notch/barra de status -->
-<meta name="theme-color" content="#0f0f0f"/>
+  <link rel="icon" href="./src/img/icon.png" type="image/png" />
+  <meta name="theme-color" content="#0f0f0f"/>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="screen-orientation" content="portrait">
   <meta name="x5-orientation" content="portrait">
-
-    <!-- Social preview -->
   <meta property="og:title" content="RealMe">
   <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
   <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
@@ -29,159 +26,6 @@
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
 
   <style>
-    /* Modal de Idiomas */
-    .language-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0f0f0fcc;
-      z-index: 1000000;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .language-modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .language-content {
-      background: #1a1a1a;
-      width: 100%;
-      max-width: 500px;
-      border-radius: 20px 20px 0 0;
-      padding: 0;
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      max-height: 70vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .language-modal.active .language-content {
-      transform: translateY(0);
-    }
-
-    .language-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid #2a2a2a;
-    }
-
-    .language-header h3 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: #f8f9f9;
-    }
-
-    .close-language-modal {
-      background: none;
-      border: none;
-      color: #888;
-      cursor: pointer;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: all 0.2s ease;
-      visibility: hidden;
-    }
-
-    .close-language-modal:hover {
-      background: #2a2a2a;
-      color: #f8f9f9;
-    }
-
-    .close-language-modal svg {
-      width: 24px;
-      height: 24px;
-    }
-
-    .language-options {
-      overflow-y: auto;
-      padding: 12px 0;
-    }
-
-    .language-option {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 24px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      position: relative;
-    }
-
-    .language-option:hover {
-      background: #2a2a2a;
-    }
-
-    .language-option.selected {
-      background: #2a2a2a;
-    }
-
-    .language-flag {
-      font-size: 32px;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #2a2a2a;
-      border-radius: 12px;
-    }
-
-    .language-info {
-      flex: 1;
-    }
-
-    .language-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #f8f9f9;
-      margin-bottom: 4px;
-    }
-
-    .language-native {
-      font-size: 14px;
-      color: #888;
-    }
-
-    .language-check {
-      width: 24px;
-      height: 24px;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .language-option.selected .language-check {
-      opacity: 1;
-    }
-
-    .language-check svg {
-      width: 100%;
-      height: 100%;
-      stroke: #4A90E2;
-    }
-
-    /* Animação de entrada */
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to   { transform: translateY(0);    }
-    }
-
-    /* Modal "Ver mais" — escondido por padrão */
     .more-overlay {
       position: fixed;
       inset: 0;
@@ -206,8 +50,6 @@
     .more-overlay.active .more-info-modal {
       transform: translateY(0);
     }
-
-    /* Fade topo e base do scroll */
     .scroll-fade-top,
     .scroll-fade-bottom {
       position: sticky;
@@ -229,7 +71,6 @@
       background: linear-gradient(to top, #212327 0%, transparent 100%);
       margin-top: -52px;
     }
-
     
 .more-overlay {
   position: fixed;
@@ -250,110 +91,11 @@
   border-radius: 32px 32px 0 0;
   padding: 0 22px;
 }
-
-
-    
-
-    /* Responsividade */
-    @media (min-width: 768px) {
-      .language-content {
-        border-radius: 20px;
-        max-height: 600px;
-        margin-bottom: 40px;
-      }
-    }
-
-
-        * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background-image: url('./src/img/bg.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed;
-      min-height: 100vh;
-      min-width: 100vw;
-      overflow-y: auto;
-      overflow-x: hidden;
-      color: var(--text-primary);
-      user-select: none !important;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-.page-content-pc-container {
-  padding: 80px 38px 18px 250px;
-  width: 100vw;
-  height: 100vh;
-}
-
-
-.page-pc-area {
-    overflow: auto;
-    position: relative;
-    height: 100%;
-    overflow-x: hidden;
-    width: 100%;
-    border: 1px solid #222;
-    border-radius: 12px;
-    background-color: rgba(18, 18, 18, 0.60);
-}
-
-
-    @media (max-width: 900px) {
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      background-color: var(--bg-primary) !important;
-      background-image: none;
-      min-height: 100vh;
-      min-width: 100vw;
-      overflow-y: auto;
-      overflow-x: hidden;
-      color: var(--text-primary);
-      user-select: none !important;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    .page-content-pc-container {
-      padding: 0;
-    }
-  
-
-    .page-pc-area {
-    overflow: auto;
-    position: relative;
-    height: 100%;
-    overflow-x: hidden;
-    width: 100%;
-    border: none;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-    
-    }
-
 </style>
 </head>
 <body>
 
 
-  
 <div class="pc-alert">
   <div class="logo-area">
     <div class="pc-alert-logo">RealMe</div>
@@ -361,57 +103,6 @@
   <div class="pc-alert-title">Indisponivel em PCs</div>
   <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
 </div>
-
-
-
-    <!-- Navbar -->
-   <div class="nav-top-pc">
-    <div class="logo_area">
-      <div class="logo">RealMe</div>
-    </div>
-<div class="search-area-pc">
-  <div class="search-box-pc">
-    <button><i class="fas fa-search"></i></button>
-    <input type="text" id="searchInput" placeholder="Buscar" autocomplete="off"  />
-  </div>
-</div>
-
-    <div class="last-update-area">
-      <div class="last-update">
-        <p>Novidades!</p>
-      </div>
-    </div>
-    <div class="marquee-container">
-      <div class="marquee">jjj kkkk lllgdtr trcrsgh wawvcf</div>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <a href="feed.html"><i class="fas fa-home"></i> Início</a>
-    <a href="acharamigos.html"><i class="fas fa-user-friends"></i> Achar Amigos</a>
-    <a href="direct.html"><i class="fas fa-comments"></i> Mensagens</a>
-    <a href="nt.html">
-      <i class="fas fa-bell"></i> Notificações
-      <span class="notification-badge" style="display: none;">0</span>
-    </a>
-    <a href="explore.html"><i class="fa-solid fa-compass"></i> Atividades</a>
-    <a href="#" id="linkPerfilSidebar"><i class="fas fa-user"></i> Perfil</a>
-    <!-- Menu Mais com submenu flutuante -->
-        <div class="more-menu" id="moreMenu">
-            <a href="#" class="more-toggle" id="moreToggle">
-                <i class="fa-solid fa-bars"></i>
-                Mais
-            </a>
-            <div class="floating-menu" id="floatingMenu">
-                <a href="config.html"><i class="fas fa-cog"></i> Configurações</a>
-                
-                <a href="como-usar.html"><i class="fa-solid fa-book-open"></i> Como Usar</a>
-                <a href="sobre.html"><i class="fas fa-question-circle"></i> Sobre</a>
-                <a href="#" id="btnSair"><i class="fas fa-sign-out-alt"></i> Sair</a>
-            </div>
-        </div>
-  </aside>
 
   <div class="navbar-bottom">
     <div class="navbar-bottom-area">
@@ -432,10 +123,6 @@
       </a>
     </div>
   </div>
-
-
-
-
 
   <div class="more-overlay">
     <div class="more-info-modal">
@@ -596,7 +283,8 @@
     </div>
   </div>
 
-  <div class="wall-send-overlay" id="wall-modal">
+
+   <div class="wall-send-overlay" id="wall-modal">
     <div class="wall-modal">
       <div class="modal-wall-grab">
         <div class="graber"></div>
@@ -613,30 +301,12 @@
       <textarea name="wall-input" id="wall-input" class="wall-modal-input" placeholder="Escreva algo para maxgfortes..."></textarea>
     </div>
     <div class="modal-wall-btns">
-      <button class="send-wall-btn">Enviar</button>
-      <button class="cancel-wall-btn">Cancelar</button>
+      <button class="send-wall-btn" id="enviarWall">Enviar</button>
+      <button class="cancel-wall-btn" id="cancelarWall">Cancelar</button>
     </div>
     </div>
   </div>
 
-  <div class="share-p-overlay">
-    <div class="share-p-modal">
-      <div class="share-p-header">
-        <div class="share-p-title">Compartilhar meu perfil</div>
-      </div>
-      <div class="share-area">
-              <div class="copy-area">
-        <div class="copy-btn-area">
-          <button class="copy-btn"></button>
-        </div>
-        <div class="share-text">Copiar URL do perfil</div>
-      </div>
-      <div class="username-complete">https://socialrealme.com/profile.html?u=maxgfortes</div>
-      </div>
-    </div>
-  </div> 
-
-  <!-- Menu Overlay -->
   <div class="menu-overlay" id="menuOverlay">
     <div class="side-menu">
       <div class="menu-header">
@@ -686,14 +356,13 @@
         <a href="login.html" class="menu-item-link login">
           <span>Entrar</span>
         </a>
-        <a href="#" class="menu-item-link logoff">
+        <a href="register.html" class="menu-item-link logoff">
           <span>Sair</span>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Navbar Top -->
   <nav class="navbar-top">
     <div class="top-left">
       <button onclick="window.history.back()">
@@ -722,7 +391,9 @@
     <div class="profile-header">
       <div class="full-header">
         <div class="pfp">
-          <img src="./src/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
+          <div class="pfp-border">
+            <img src="./src/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
+          </div>
         </div>
         <div class="profile-info-block">
           <div class="name-line">
@@ -800,82 +471,18 @@
     <!-- Profile Body -->
     <div class="profile-body">
       <div class="tabs-container">
-        <div class="tab visao-tab">  <div id="muralPosts"></div></div>
-
-
-        <!-- Tab 2: Gostos — esvaziada, conteúdo no modal -->
-        <div class="tab gostos-tab">
+        <div class="tab visao-tab"> <div id="muralPosts"></div>
+      </div>
+      <div class="tab gostos-tab">
         <div class="send-wall">
           <div class="pfp-send-wall" id="pfp-user">
             <img src="./src/img/default.jpg" alt="foto de perfil">
           </div>
-          <div class="input-send-wall">Escreva algo para maxgfortes</div>
+          <div class="input-send-wall">Escreva algo...</div>
         </div>
         <div class="wall-feed" id="wall-feed">
-          <div class="wall-card">
-            <div class="wall-card-header">
-              <div class="wall-card-left-header">
-                <div class="wall-card-pfp">
-                  <img src="./src/img/default.jpg" alt="">
-                </div>
-                <div class="wall-card-infos">
-                  <div class="wall-card-username">maxgfortes</div>
-                  <div class="wall-card-date">há 3 dias</div>
-                </div>
-              </div>
-              <div class="wall-card-right-header">
-                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
-              </div>
-            </div>
-            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
-              esse texto é um texto de teste para ver como o layout do mural fica.
-              posts de texto de ate 180 caracteres no mural são permitidos.
-            </div>
-          </div>
-          <div class="wall-card">
-            <div class="wall-card-header">
-              <div class="wall-card-left-header">
-                <div class="wall-card-pfp">
-                  <img src="./src/img/default.jpg" alt="">
-                </div>
-                <div class="wall-card-infos">
-                  <div class="wall-card-username">maxgfortes</div>
-                  <div class="wall-card-date">há 3 dias</div>
-                </div>
-              </div>
-              <div class="wall-card-right-header">
-                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
-              </div>
-            </div>
-            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
-              esse texto é um texto de teste para ver como o layout do mural fica.
-              posts de texto de ate 180 caracteres no mural são permitidos.
-            </div>
-          </div>
-          <div class="wall-card">
-            <div class="wall-card-header">
-              <div class="wall-card-left-header">
-                <div class="wall-card-pfp">
-                  <img src="./src/img/default.jpg" alt="">
-                </div>
-                <div class="wall-card-infos">
-                  <div class="wall-card-username">maxgfortes</div>
-                  <div class="wall-card-date">há 3 dias</div>
-                </div>
-              </div>
-              <div class="wall-card-right-header">
-                <button class="card-options"><i class="fa-solid fa-ellipsis"></i></button>
-              </div>
-            </div>
-            <div class="wall-card-text">Testando os comentarios e posts no mural de amigos.
-              esse texto é um texto de teste para ver como o layout do mural fica.
-              posts de texto de ate 180 caracteres no mural são permitidos.
-            </div>
-          </div>
         </div>
-        </div>
-
-        <!-- Tab 3: Links -->
+      </div>
         <div class="tab links-tab">
           <div class="about-container"></div>
         </div>
@@ -883,287 +490,10 @@
     </div>
  </div>
 
+
   </div>
   </div>
   </div>
-
-
-  <div class="profile-feed">
-    <div class="profile-feed-header">
-      <div class="top-timeline">
-        <button id="close-pf-feed">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
-        </button>
-      </div>
-      <div class="center-timeline">
-        <div class="feed-title">posts</div>
-        <div class="feed-subtitle">maxgfortes</div>
-      </div>
-      <div class="top-timeline">
-      </div>
-    </div>
-    <div class="profile-feed-posts">
-      <div class="scroll-area">
-        <div class="profile-feed-posts">
-      
-
-
-          <div class="post-card">
-          <div class="post-header">
-      <div class="user-info">
-        <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/img/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">username</strong>
-          <small class="post-date-mobile">há 6 horas</small>
-        </div>
-      </div>
-      <div class="left-space-options">
-        <div class="more-options">
-          <button class="more-options-button">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="post-content">
-      <div class="post-text">Texto</div>
-            <div class="post-image">
-              <img src="./src/img/icon.png" loading="lazy" decoding="async" onclick="abrirModalImagem('${postData.img}')" style="width:100%;height:auto;display:block;">
-            </div>
-      <div class="post-actions">
-        <div class="post-actions-left">
-          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
-              <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
-            </svg> <span>0</span>
-          </button>
-          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
-            <span>0</span>
-          </button>
-          <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg width="252" height="253" viewBox="0 0 252 253"  xmlns="http://www.w3.org/2000/svg"><path d="M207.821 9.02051C228.731 3.33416 247.898 22.5349 242.175 43.4346L192.671 224.216C186.201 247.842 154.655 252.357 141.818 231.494L100.558 164.439L97.285 159.121L101.649 154.656L167.753 87.0137L165.087 84.2861L99.2411 151.665L94.6532 156.358L89.1542 152.777L20.7343 108.225C0.472592 95.0309 5.33388 64.0873 28.6649 57.7422L207.821 9.02051Z" stroke="#D9D9D9" stroke-width="20"/></svg>
-            <p>Compartilhar</p>
-          </button>
-          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> <p>Denunciar</p>
-          </button>
-        </div>
-        <div class="post-actions-rigth">
-          <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
-            <p>Salvar</p>
-          </button>
-        </div>
-      </div>
-      <div class="post-footer-infos">
-        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-      </div>
-    </div>
-          </div>
-
-
-
-
-
-
-
-
-
-          <div class="post-card">
-          <div class="post-header">
-      <div class="user-info">
-        <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/img/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">username</strong>
-          <small class="post-date-mobile">há 6 horas</small>
-        </div>
-      </div>
-      <div class="left-space-options">
-        <div class="more-options">
-          <button class="more-options-button">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="post-content">
-      <div class="post-text">Texto</div>
-            <div class="post-image">
-              <img src="./src/img/icon.png" loading="lazy" decoding="async" onclick="abrirModalImagem('${postData.img}')" style="width:100%;height:auto;display:block;">
-            </div>
-      <div class="post-actions">
-        <div class="post-actions-left">
-          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
-              <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
-            </svg> <span>0</span>
-          </button>
-          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
-            <span>0</span>
-          </button>
-          <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg width="252" height="253" viewBox="0 0 252 253"  xmlns="http://www.w3.org/2000/svg"><path d="M207.821 9.02051C228.731 3.33416 247.898 22.5349 242.175 43.4346L192.671 224.216C186.201 247.842 154.655 252.357 141.818 231.494L100.558 164.439L97.285 159.121L101.649 154.656L167.753 87.0137L165.087 84.2861L99.2411 151.665L94.6532 156.358L89.1542 152.777L20.7343 108.225C0.472592 95.0309 5.33388 64.0873 28.6649 57.7422L207.821 9.02051Z" stroke="#D9D9D9" stroke-width="20"/></svg>
-            <p>Compartilhar</p>
-          </button>
-          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> <p>Denunciar</p>
-          </button>
-        </div>
-        <div class="post-actions-rigth">
-          <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
-            <p>Salvar</p>
-          </button>
-        </div>
-      </div>
-      <div class="post-footer-infos">
-        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-      </div>
-    </div>
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-          <div class="post-card">
-          <div class="post-header">
-      <div class="user-info">
-        <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/img/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">username</strong>
-          <small class="post-date-mobile">há 6 horas</small>
-        </div>
-      </div>
-      <div class="left-space-options">
-        <div class="more-options">
-          <button class="more-options-button">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="post-content">
-      <div class="post-text">Texto</div>
-            <div class="post-image">
-              <img src="./src/img/icon.png" loading="lazy" decoding="async" onclick="abrirModalImagem('${postData.img}')" style="width:100%;height:auto;display:block;">
-            </div>
-      <div class="post-actions">
-        <div class="post-actions-left">
-          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
-              <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
-            </svg> <span>0</span>
-          </button>
-          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
-            <span>0</span>
-          </button>
-          <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg width="252" height="253" viewBox="0 0 252 253"  xmlns="http://www.w3.org/2000/svg"><path d="M207.821 9.02051C228.731 3.33416 247.898 22.5349 242.175 43.4346L192.671 224.216C186.201 247.842 154.655 252.357 141.818 231.494L100.558 164.439L97.285 159.121L101.649 154.656L167.753 87.0137L165.087 84.2861L99.2411 151.665L94.6532 156.358L89.1542 152.777L20.7343 108.225C0.472592 95.0309 5.33388 64.0873 28.6649 57.7422L207.821 9.02051Z" stroke="#D9D9D9" stroke-width="20"/></svg>
-            <p>Compartilhar</p>
-          </button>
-          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> <p>Denunciar</p>
-          </button>
-        </div>
-        <div class="post-actions-rigth">
-          <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
-            <p>Salvar</p>
-          </button>
-        </div>
-      </div>
-      <div class="post-footer-infos">
-        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-      </div>
-    </div>
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div class="post-card">
-          <div class="post-header">
-      <div class="user-info">
-        <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/img/default.jpg'" />
-        <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">username</strong>
-          <small class="post-date-mobile">há 6 horas</small>
-        </div>
-      </div>
-      <div class="left-space-options">
-        <div class="more-options">
-          <button class="more-options-button">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="post-content">
-      <div class="post-text">Texto</div>
-            <div class="post-image">
-              <img src="./src/img/icon.png" loading="lazy" decoding="async" onclick="abrirModalImagem('${postData.img}')" style="width:100%;height:auto;display:block;">
-            </div>
-      <div class="post-actions">
-        <div class="post-actions-left">
-          <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549">
-              <path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/>
-            </svg> <span>0</span>
-          </button>
-          <button class="btn-comment" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><title>instagram-comment</title><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg> <p>Comentar</p>
-            <span>0</span>
-          </button>
-          <button class="btn-share" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <svg width="252" height="253" viewBox="0 0 252 253"  xmlns="http://www.w3.org/2000/svg"><path d="M207.821 9.02051C228.731 3.33416 247.898 22.5349 242.175 43.4346L192.671 224.216C186.201 247.842 154.655 252.357 141.818 231.494L100.558 164.439L97.285 159.121L101.649 154.656L167.753 87.0137L165.087 84.2861L99.2411 151.665L94.6532 156.358L89.1542 152.777L20.7343 108.225C0.472592 95.0309 5.33388 64.0873 28.6649 57.7422L207.821 9.02051Z" stroke="#D9D9D9" stroke-width="20"/></svg>
-            <p>Compartilhar</p>
-          </button>
-          <button class="btn-report" data-username="${postData.creatorid}" data-id="${postData.postid}">
-            <i class="fas fa-flag"></i> <p>Denunciar</p>
-          </button>
-        </div>
-        <div class="post-actions-rigth">
-          <button class="btn-save" data-post-id="${postData.postid}" data-post-owner="${postData.creatorid}">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 459 511.87"><path fill-rule="nonzero" d="M32.256 0h394.488c8.895 0 16.963 3.629 22.795 9.462C455.371 15.294 459 23.394 459 32.256v455.929c0 13.074-10.611 23.685-23.686 23.685-7.022 0-13.341-3.07-17.683-7.93L230.124 330.422 39.692 505.576c-9.599 8.838-24.56 8.214-33.398-1.385a23.513 23.513 0 01-6.237-16.006L0 32.256C0 23.459 3.629 15.391 9.461 9.55l.089-.088C15.415 3.621 23.467 0 32.256 0zm379.373 47.371H47.371v386.914l166.746-153.364c8.992-8.198 22.933-8.319 32.013.089l165.499 153.146V47.371z"/></svg>
-            <p>Salvar</p>
-          </button>
-        </div>
-      </div>
-      <div class="post-footer-infos">
-        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
-      </div>
-    </div>
-          </div>
-
-
 
 
         </div>
@@ -1196,6 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
 
   // Sticky Menu on Scroll
   const profileMenu = document.getElementById('profileMenu');
@@ -1325,67 +656,6 @@ document.addEventListener('DOMContentLoaded', () => {
     profileBody.style.cursor = 'default';
   });
 
-  // Modal de Idiomas
-  const languageModal = document.getElementById('languageModal');
-  const closeLanguageModal = document.getElementById('closeLanguageModal');
-  const languageOptions = document.querySelectorAll('.language-option');
-
-  // Abrir modal ao clicar no botão de idiomas
-  document.querySelectorAll('.menu-item-link').forEach(link => {
-    const span = link.querySelector('span');
-    if (span && (span.textContent.trim() === 'Idioma' || span.textContent.trim() === 'Language' || span.textContent.trim() === 'Язык' || span.textContent.trim() === '言語' || span.textContent.trim() === 'Idioma')) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        languageModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    }
-  });
-
-  // Fechar modal ao clicar no botão fechar
-  closeLanguageModal.addEventListener('click', () => {
-    languageModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  // Fechar modal ao clicar fora
-  languageModal.addEventListener('click', (e) => {
-    if (e.target === languageModal) {
-      languageModal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-
-  // Selecionar idioma
-  languageOptions.forEach(option => {
-    option.addEventListener('click', () => {
-      const selectedLang = option.dataset.lang;
-      
-      // Remover seleção anterior
-      languageOptions.forEach(opt => opt.classList.remove('selected'));
-      
-      // Adicionar seleção atual
-      option.classList.add('selected');
-      
-      // Chamar função de mudança de idioma (definida no profiles.js)
-      if (typeof window.changeLanguage === 'function') {
-        window.changeLanguage(selectedLang);
-      }
-      
-      // Fechar modal após 300ms
-      setTimeout(() => {
-        languageModal.classList.remove('active');
-        document.body.style.overflow = '';
-      }, 300);
-    });
-  });
-
-  // Carregar idioma salvo
-  const savedLanguage = localStorage.getItem('selectedLanguage') || 'pt';
-  languageOptions.forEach(option => {
-    if (option.dataset.lang === savedLanguage) option.classList.add('selected');
-  });
-
   // ===== MODAL "VER MAIS" =====
   const moreOverlay = document.querySelector('.more-overlay');
   const moreModal   = document.querySelector('.more-info-modal');
@@ -1474,11 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
       moreModal.style.transform  = 'translateY(0)';
     }
   }
-}); // DOMContentLoaded
+}); 
 </script>
 <script type="module" src="./src/js/profiles.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
-<script src="./src/js/edit-view.js"></script>
 <script type="module" src="./src/js/auth-verification.js"></script>
 </body>
 </html>

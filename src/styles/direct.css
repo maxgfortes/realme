@@ -169,8 +169,6 @@ body {
   border-radius: 9999px;
   background: #27272788;
   border: none;
-  border-bottom: 0.1px solid #333;
-  border-top: 0.1px solid #333;
   color: #fff;
   font-size: 1em;
   outline: none;
@@ -220,7 +218,6 @@ body {
   min-width: 0;
   height: 100%;
   padding: 26px 0;
-  border-bottom: 0.1px solid #222;
 }
 
 .dm-user-row {

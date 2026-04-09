@@ -1744,14 +1744,26 @@ async function atualizarGreeting() {
 // ==============================
 
 function getSaudacao() {
-  const h = new Date().getHours();
-  if (h < 12) return "Bom dia";
-  if (h < 18) return "Boa tarde";
+  const agora = new Date();
+  const h = agora.getHours();
+  const m = agora.getMinutes();
+
+  if (h >= 6 && (h < 12)) {
+    return "Bom dia";
+  }
+
+  if (
+    (h >= 13 && h < 18) ||
+    (h === 18 && m < 30)
+  ) {
+    return "Boa tarde";
+  }
+
   return "Boa noite";
 }
 
 function getNome(data) {
-  return data?.displayname || data?.name || data?.username || 'Usuário';
+  return data?.displayname || data?.name || data?.username || 'maxgfortes';
 }
 
 function updateUI({ saudacao, nome, userData, user, cachedPhoto }) {

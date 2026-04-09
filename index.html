@@ -45,97 +45,6 @@
       user-select: none;
     }
 
-    nav {
-      background: #1C1C1C;
-      background: linear-gradient(0deg, #141414 0%, #1F1F1F 100%);
-      border-bottom: 1px solid #121212;
-      display: flex;
-      align-items: center;
-      padding: 0px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-      height: 60px;
-    }
-
-    .navarea {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .loginarea {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo {
-      font-weight: bold;
-      font-size: 30px;
-      color: #707070;
-      padding: 10px;
-    }
-
-    .logo_area{
-      padding: 0px;
-      padding-right: 35px;
-      padding-left: 20px;
-    }
-
-    input[type="emaillog"],
-    input[type="passwordlog"],
-
-    select {
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-      color: #ddd;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-    }
-
-    input[type="emaillog"]:focus,
-    input[type="passwordlog"]:focus,
-    select:focus {
-      border-color: #0084ff;
-      box-shadow: 0 0 5px #0084ff;
-      background: #1a1a1a;
-      color: #fff;
-    } 
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    @keyframes glow {
-  0% {
-    border-color: #333;
-    box-shadow: none;
-    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-    color: #ddd;
-  }
-  50% {
-    border-color: #0084ff;
-    box-shadow: 0 0 5px #0084ff;
-    background: #1a1a1a;
-    color: #fff;
-  }
-  100% {
-    border-color: #333;
-    box-shadow: none;
-    background: linear-gradient(337deg, rgba(19, 19, 19, 1) 0%, rgba(26, 26, 26, 1) 100%);
-    color: #ddd;
-  }
-}
 
     button {
       display: inline-block;
@@ -144,7 +53,6 @@
       padding: 12px 24px;
       border-radius: 8px;
       text-decoration: none;
-      border-top: 1px solid #63a9fa;
       transition: background-color 0.3s;
       border: none;
     }
@@ -161,12 +69,14 @@
 
     .welcome-container-pc {
       padding: 40px 28px;
-      max-width: 1200px;
+      max-width: 100%;
       margin: 0 auto;
       display: flex;
       height: 100vh;
       align-items: center;
       padding-top: 60px;
+background: #0F0F0F;
+background: linear-gradient(0deg, rgba(15, 15, 15, 1) 50%, rgba(28, 28, 28, 1) 100%);
     }
 
     .welcome-interactions-pc {
@@ -218,15 +128,16 @@
     }
 
     .logo-main {
-      font-size: 48px;
+      font-size: 30px;
       padding: 20px 18px;
       text-align: center;
       font-weight: 300;
+      color: #aaa;
     }
 
     .logo-main span {
       font-weight: bold;
-      background-color: #4a90e2;
+      background-color: #fff;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -247,13 +158,11 @@
       justify-content: center;
       align-items: center;
       padding: 42px 12px 24px;
-      gap: 16px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .welcome-btns a {
-      background: #63cbff;
-background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      background: #4A90E2;
       border: none;
       padding: 16px 32px;
       color: #fff;
@@ -263,24 +172,17 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
       text-decoration: none;
       font-weight: 600;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 4px 20px #4a91e280;
+      width: 100%;
     }
 
-    .welcome-btns a:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 30px #4a90e280;
-    }
 
-    .criar-conta {
-      min-width: 180px;
-    }
 
     .entrar {
       background: transparent !important;
       border: 2px solid;
-      background: #63cbff;
-background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      background-color: #4A90E2;
       box-shadow: none !important;
+      width: 100%;
     }
 
     .see-profile {
@@ -294,8 +196,7 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     }
 
     .see-profile a {
-      background: #63cbff;
-background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      background-color: #4A90E2;
       padding: 16px 32px;
       color: #fff;
       border-radius: 14px;
@@ -331,11 +232,7 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     .features-header h2 {
       font-size: 36px;
       margin-bottom: 16px;
-      background: #63cbff;
-background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #fff;
     }
 
     .features-grid {
@@ -349,16 +246,11 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     .feature-card {
       background: rgba(26, 26, 26, 0.6);
       backdrop-filter: blur(10px);
-      border: 1px solid #2a2a2a;
       border-radius: 16px;
       padding: 30px;
       transition: transform 0.3s ease, border-color 0.3s ease;
     }
 
-    .feature-card:hover {
-      transform: translateY(-5px);
-      border-color: #4a90e280;
-    }
 
     .feature-icon {
       font-size: 40px;
@@ -382,9 +274,9 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     }
 
     .faq-container {
-      padding: 60px 88px;
+      padding: 28px;
       margin: 0 auto;
-      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+      max-width: 800px;
     }
 
     .faq-header h1 {
@@ -395,8 +287,7 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     }
 
     .faq-item {
-      background: rgba(26, 26, 26, 0.6);
-      border: 1px solid #2a2a2a;
+      background: #202020;
       border-radius: 12px;
       margin-bottom: 16px;
       overflow: hidden;
@@ -411,9 +302,6 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
       transition: background 0.3s ease;
     }
 
-    .faq-question:hover {
-      background: rgba(40, 40, 40, 0.6);
-    }
 
     .faq-question h3 {
       font-size: 18px;
@@ -449,9 +337,9 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
 
     .footer {
       padding: 40px 18px;
+      padding-bottom: 60px;
       text-align: center;
       border-top: 1px solid #1a1a1a;
-      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
     }
 
     .footer p {
@@ -460,21 +348,10 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     }
 
     @media (max-width: 768px) {
-      .logo-main {
-        font-size: 36px;
-      }
-
       body {
         background-image: none;
       }
 
-      nav {
-        display: none;
-      }
-
-      .faq-container {
-        padding: 40px;
-      }
 
       .welcome-subtitle {
         font-size: 16px;
@@ -505,7 +382,6 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     .user-info {
       text-align: center;
       padding: 20px;
-      background: rgba(26, 26, 26, 0.6);
       border-radius: 12px;
       margin: 20px auto;
       max-width: 400px;
@@ -526,14 +402,54 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
       color: #888;
       font-size: 14px;
     }
+
+    .download {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .download-info {
+      height: 30%;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .download-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .download-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px 0;
+      color: #aaa;
+    }
+
+    .download-video {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 60%;
+      padding: 16px;
+    }
+
+    .download-video img {
+      height: 100%;
+      aspect-ratio: 1/2;
+      border-radius: 12px;
+      border: 0.1px solid #333;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="navarea">
-      <div class="logo">RealMe</div>
-    </div>
-  </nav>
   <div class="main">
     <div class="welcome-container-pc">
       <div class="profiles-preview-pc">
@@ -544,9 +460,31 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
         <div class="logo-main-pc">Bem vindo ao <span>RealMe</span></div>
       </div>
       <div class="welcome-subtitle-pc">
-        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
+        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com seus amigos</p>
       </div>
 
+      <div id="userInfo" class="user-info">
+        <p>Olá, <strong id="userName"></strong>!</p>
+        <span>Você já tem uma conta</span>
+      </div>
+
+      <div class="welcome-btns" id="authButtons">
+        <a href="register.html" class="criar-conta">Criar Conta</a>
+        <a href="login.html" class="entrar">Entrar</a>
+      </div>
+ 
+      <div class="see-profile" id="profileButton">
+        <a href="#" id="profileLink">Entrar</a>
+      </div>
+      </div>
+    </div>
+    <div class="welcome-container">
+      <div class="welcome-header">
+        <div class="logo-main">Bem vindo ao <span>RealMe</span></div>
+      </div>
+      <div class="welcome-subtitle">
+        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
+      </div>
       <div id="userInfo" class="user-info">
         <p>Olá, <strong id="userName"></strong>!</p>
         <span>Você já tem uma conta</span>
@@ -560,36 +498,24 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
       <div class="see-profile" id="profileButton">
         <a href="#" id="profileLink">Entrar</a>
       </div>
-      </div>
-    </div>
-    <div class="welcome-container">
-      <div class="welcome-header">
-        <div class="logo-main">Bem vindo ao <span>RealMe</span></div>
-      </div>
-      <div class="welcome-subtitle">
-        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
-      </div>
-
-      <div id="userInfo" class="user-info">
-        <p>Olá, <strong id="userName"></strong>!</p>
-        <span>Você já tem uma conta</span>
-      </div>
-
-      <div class="welcome-btns" id="authButtons">
-        <a href="register.html" class="criar-conta">Criar Conta</a>
-        <a href="login.html" class="entrar">Entrar</a>
-      </div>
-
-      <div class="see-profile" id="profileButton">
-        <a href="#" id="profileLink">Ver meu perfil</a>
-      </div>
 
       <div class="profiles-preview">
         <img src="./src/img/conections.png" alt="Preview do RealMe">
       </div>
     </div>
 
-    <!-- Features Section -->
+    
+    <div class="download">
+      <div class="download-info">
+        <div class="download-title">Baixe o App do RealMe</div>
+        <div class="download-sub">Baixe o App do RealMe para IOS e Android e desfrute da experiencia completa do RealMe</div>
+      </div>
+      <div class="download-video">
+        <img src="./src/img/launchiphone11.png" alt="">
+      </div>
+    </div>
+
+
     <div class="features-section">
       <div class="features-header">
         <h2>Por que usar o RealMe?</h2>
@@ -628,8 +554,6 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
         </div>
       </div>
     </div>
-
-    <!-- FAQ Section -->
     <div class="faq-container">
       <div class="faq-header">
         <h1>Perguntas Frequentes</h1>
@@ -697,7 +621,7 @@ background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226,
     </div>
 
     <div class="footer">
-      <p>Copyright 2025 RealMe - Todos os direitos reservados. Criado por maxgfortes</p>
+      <p>Copyright 2026 RealMe - Todos os direitos reservados. Criado por maxgfortes</p>
     </div>
   </div>
 

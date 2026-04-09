@@ -85,16 +85,17 @@ nav {
 .user-welcome {
     background-color: rgba(0, 255, 255, 0);
     display: flex;
+    align-items: center;
 }
 
 .user-welcome img {
-    width: 100px !important;         /* largura fixa */
-    height: 100px !important;        /* altura igual = quadrado */
+    width: 76px !important;         /* largura fixa */
+    height: 76px !important;        /* altura igual = quadrado */
     object-fit: cover;    /* cobre toda a área, mesmo que corte */
-    border-end-end-radius: 12px;   /* opcional: cantos arredondados */
-    border-top-left-radius: 12px;   /* opcional: cantos arredondados */
-    border-radius: 12px;
+    border-radius: 12px !important;
 }
+
+
 
 .post-area {
   display: none;
@@ -415,15 +416,16 @@ body.modal-open {
 
 
 .user-welcome h1 {
-  font-size: 24px;
-  margin-bottom: 0px;
-  padding: 0 0 0 0;
+  font-size: 20px;
+  margin: 0;
+  padding: 0 0 6px 4px ;
   word-wrap: break-word; /* força quebra */
   display: flex;
   align-self: center;
   overflow-wrap: break-word; /* versão moderna */
   font-weight: 600;
   width: 100%;
+  color: #aaa;
 }
 
 .user-container {
@@ -433,6 +435,8 @@ body.modal-open {
   padding: 12px 10px;
   width: 100%;
 }
+
+
 
 .create-new-post {
   display: flex;
@@ -453,11 +457,11 @@ body.modal-open {
 }
 
 .user-welcome h1 span {
-  color: #ffffff;
+  color: #eee;
 }
 
 .user-welcome h1 .username {
-  color: #cacaca;
+  color: #aaa;
   padding-left: 8px;
 }
 

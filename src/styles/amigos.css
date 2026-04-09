@@ -228,7 +228,6 @@ input.estilo:focus {
 
 input.estilo::placeholder {
   color: #888;
-  font-style: italic;
 }
 
 .estilo {
