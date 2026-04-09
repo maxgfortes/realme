@@ -229,7 +229,7 @@
   padding: 14px 14px;
   margin: 16px;
   font-size: 17px;
-  background: var(--profile-bg, var(--bg-primary, var(--bg-section)));
+  background: transparent;
   border-radius: 16px;
 }
 
@@ -2175,7 +2175,7 @@ background: #fff;
   padding: 14px 14px;
   margin: 16px;
   font-size: 17px;
-  background: var(--profile-bg, var(--bg-primary, var(--bg-section)));
+  background: transparent;
   border-radius: 16px;
 }
 
@@ -2919,7 +2919,7 @@ background: #fff;
 .pfp-border {
   width: 89px;
   height: 89px;
-  padding: 0.1px;            
+  padding: 0.5px;            
   border-radius: 50%;
   position: relative;
   overflow: hidden;
@@ -4232,4 +4232,21 @@ background: #fff;
   transform: translateY(0) scale(1);
   filter: blur(0);
   pointer-events: auto;
+}
+
+.bg-pf {
+  background-image: url('https://i.pinimg.com/736x/39/88/9c/39889c626fc968408ee33f86ef5c9e32.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  display: none;
+}
+
+.bg-pf2 {
+  background-color: var(--bg-modal);
+  width: 100%;
+  height: 100%;
 }

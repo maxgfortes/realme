@@ -225,7 +225,7 @@ function pararSincronizacaoBackground() {
 
 
 // ===================
-// DETECTAR E FORMATAR HASHTAGS
+// DETECTAR E FORMATAR HASHTAGS E MENÇÕES
 // ===================
 function formatarHashtags(texto) {
   return texto.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
@@ -277,7 +277,9 @@ function detectarLinksMaliciosos(texto) {
 // ===================
 function verificarLogin() {
   return new Promise((resolve) => {
-    onAuthStateChanged(auth, (user) => {
+    // unsubscribe imediato após primeiro evento — evita múltiplos disparos
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
       if (!user) {
         setTimeout(() => {
           window.location.href = 'login.html';
@@ -286,7 +288,6 @@ function verificarLogin() {
       } else {
         resolve(user);
       }
-      // NÃO chamar loadPosts() aqui - deixar para DOMContentLoaded
     });
   });
 }
@@ -313,6 +314,18 @@ async function buscarDadosUsuarioPorUid(uid) {
     }
     const userData = docSnap.data();
 
+    // Tenta buscar username/displayname de subcollection user-infos/user-data como fallback
+    let extraData = {};
+    try {
+      const extraRef = doc(db, "users", uid, "user-infos", "user-data");
+      const extraSnap = await getDoc(extraRef);
+      if (extraSnap.exists()) {
+        extraData = extraSnap.data();
+      }
+    } catch (e) {
+      // subcollection opcional — ignora erro
+    }
+
     // Busca userphoto
     let userphoto = '';
     try {
@@ -327,14 +340,13 @@ async function buscarDadosUsuarioPorUid(uid) {
 
     const resultado = {
       userphoto,
-      username: userData.username || '',
-      displayname: userData.displayname || '',
-      name: userData.name || '',  // 🆕 Adiciona campo name para fallback
-      verified: userData.verified || false
+      // Prioriza dado do doc raiz, depois subcollection, depois uid como último recurso
+      username: userData.username || extraData.username || '',
+      displayname: userData.displayname || extraData.displayname || '',
+      name: userData.name || extraData.name || '',
+      verified: userData.verified || extraData.verified || false
     };
-    
 
-    
     return resultado;
   } catch (error) {
     console.error("❌ Erro ao buscar dados do usuário:", error);
@@ -701,7 +713,7 @@ function renderizarBubble(bubbleData, feed) {
         <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
              onerror="this.src='./src/img/default.jpg'" />
         <div class="user-meta-bubble">
-          <strong class="user-name-link" data-username="${bubbleData.creatorid}"></strong>
+          <strong class="user-name-link" data-username="${bubbleData.creatorid}">...</strong>
           <small class="bullet">•</small>
           <small class="post-date-bubble">${formatarDataRelativa(bubbleData.create)}</small>
         </div>
@@ -740,7 +752,7 @@ function renderizarBubble(bubbleData, feed) {
       
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
-        nome.textContent = userData.username || bubbleData.creatorid;
+        nome.textContent = userData.username || userData.displayname || userData.name || bubbleData.creatorid;
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
         }
@@ -839,7 +851,7 @@ function renderPost(postData, feed) {
         <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
              onerror="this.src='./src/img/default.jpg'" />
         <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}"></strong>
+          <strong class="user-name-link" data-username="${postData.creatorid}">...</strong>
           <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
         </div>
       </div>
@@ -857,17 +869,7 @@ function renderPost(postData, feed) {
         (postData.img && postData.img.trim() !== "")
           ? `
             <div class="post-image">
-              <img src="${postData.img}" loading="lazy" decoding="async" onclick="abrirModalImagem('${postData.img}')" style="width:100%;height:auto;display:block;">
-            </div>
-          `
-          : (postData.urlVideo && postData.urlVideo.trim() !== "")
-          ? `
-            <div class="post-video">
-              <video src="${postData.urlVideo}"
-                     muted
-                     playsinline
-                     controls
-                     preload="metadata"></video>
+              <img src="${postData.img}" loading="lazy" decoding="async" style="width:100%;height:auto;display:block;">
             </div>
           `
           : ''
@@ -896,7 +898,7 @@ function renderPost(postData, feed) {
         </div>
       </div>
       <div class="post-footer-infos">
-        <p class="post-liked-by"><strong class="liked-by-username"></strong></p>
+        <p class="post-liked-by" style="min-height:28px;visibility:hidden;"></p>
         ${postData._feedTipo === 'amigoDosAmigos' && postData._sugeridoPor
           ? `<p class="post-sugerido-por"><i class="fas fa-user-friends"></i> Sugerido por <strong>@${postData._sugeridoPor}</strong></p>`
           : ''}
@@ -914,12 +916,9 @@ function renderPost(postData, feed) {
       if (!footer) return;
 
       if (info.total === 0) {
-        footer.style.display = "none";
+        // Mantém o espaço reservado mas invisível — sem layout shift
+        footer.style.visibility = "hidden";
       } else {
-        footer.style.display = "flex";
-        footer.style.alignItems = "center";
-        footer.style.gap = "8px";
-
         // Renderiza as fotos de perfil
         let fotosHTML = '';
         if (info.fotos && info.fotos.length > 0) {
@@ -942,7 +941,6 @@ function renderPost(postData, feed) {
           fotosHTML += '</div>';
         }
 
-        // Monta o texto
         let textoHTML = '<span>Curtido por ';
         
         if (info.usernames.length === 1) {
@@ -957,7 +955,12 @@ function renderPost(postData, feed) {
         
         textoHTML += '</span>';
 
+        footer.style.display = "flex";
+        footer.style.alignItems = "center";
+        footer.style.gap = "8px";
         footer.innerHTML = fotosHTML + textoHTML;
+        // Revela sem mudar altura — o espaço já estava reservado
+        footer.style.visibility = "visible";
       }
     });
   }
@@ -989,7 +992,7 @@ function renderPost(postData, feed) {
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
         // Mostra apenas o username no topo
-        nome.textContent = userData.username || postData.creatorid;
+        nome.textContent = userData.username || userData.displayname || userData.name || postData.creatorid;
         // Adiciona ícone de verificado se o usuário for verificado
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 2px; font-size: 0.8em; color: #4A90E2;"></i>`;
@@ -1189,14 +1192,18 @@ async function loadPosts() {
   }
 
   try {
-    const usuarioLogado = auth.currentUser;
+    // auth.currentUser pode ser null logo após inicialização — aguarda resolução segura
+    let usuarioLogado = auth.currentUser;
+    if (!usuarioLogado) {
+      usuarioLogado = await new Promise((resolve) => {
+        const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
+      });
+    }
     if (!usuarioLogado) {
       loading = false;
       return;
     }
     const uid = usuarioLogado.uid;
-
-    // Buscar amigos e amigos dos amigos apenas na primeira carga
     let amigosUids = [];
     let amigosDosAmigosMap = new Map();
     if (!lastPostSnapshot) {
@@ -1271,8 +1278,6 @@ async function loadPosts() {
         }
       }
 
-      configurarAutoPauseVideos();
-      configurarLimiteRepeticoes();
       iniciarSincronizacaoBackground();
     } else {
       // SCROLL INFINITO — busca amigos novamente para classificar os novos posts
@@ -1286,8 +1291,6 @@ async function loadPosts() {
       for (const post of postsProporcional) {
         renderPost(post, feed);
       }
-      configurarAutoPauseVideos();
-      configurarLimiteRepeticoes();
     }
 
     if (postsSnapshot.size < POSTS_LIMIT) {
@@ -1359,7 +1362,6 @@ async function sendPost() {
       content: texto,
       img: urlImagem,
       imgDeleteUrl: deleteUrlImagem,
-      urlVideo: '',
       likes: 0,
       saves: 0,
       comentarios: 0,
@@ -1470,13 +1472,9 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
   const info = await gerarTextoCurtidoPor(postId, usuarioLogado.uid);
 
   if (info.total === 0) {
-    footer.style.display = "none";
+    footer.style.visibility = "hidden";
     return;
   }
-
-  footer.style.display = "flex";
-  footer.style.alignItems = "center";
-  footer.style.gap = "8px";
 
   // Renderiza as fotos de perfil
   let fotosHTML = '';
@@ -1500,7 +1498,6 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
     fotosHTML += '</div>';
   }
 
-  // Monta o texto
   let textoHTML = '<span>Curtido por ';
   
   if (info.usernames.length === 1) {
@@ -1515,7 +1512,11 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
   
   textoHTML += '</span>';
 
+  footer.style.display = "flex";
+  footer.style.alignItems = "center";
+  footer.style.gap = "8px";
   footer.innerHTML = fotosHTML + textoHTML;
+  footer.style.visibility = "visible";
 }
 
 
@@ -1651,7 +1652,7 @@ function obterFotoPerfil(userData, usuarioLogado) {
 // SISTEMA DE CACHE GLOBAL
 // ==============================
 
-const CACHE_USER_TIME = 1000 * 60 * 10; // 10 minutos
+const CACHE_USER_TIME = 1000 * 60 * 30; // 30 minutos
 
 function getCache(key) {
   try {
@@ -1660,15 +1661,22 @@ function getCache(key) {
 
     const data = JSON.parse(raw);
 
-    // expirou
-    if (Date.now() - data.time > CACHE_USER_TIME) {
-      localStorage.removeItem(key);
-      return null;
-    }
-
-    return data.value;
+    // Expirou mas NÃO apaga — mantém o stale disponível enquanto
+    // a revalidação em background ainda não terminou (evita username sumindo)
+    return data.value || null;
   } catch {
     return null;
+  }
+}
+
+function isCacheExpirado(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return true;
+    const data = JSON.parse(raw);
+    return Date.now() - data.time > CACHE_USER_TIME;
+  } catch {
+    return true;
   }
 }
 
@@ -1692,28 +1700,23 @@ function setCache(key, value) {
 async function buscarUsuarioCached(uid) {
   const key = `user_cache_${uid}`;
 
-  // Verifica se tem cache (mesmo que expirado — stale)
   let stale = null;
   try {
     const raw = localStorage.getItem(key);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      stale = parsed.value;
-      const expirado = Date.now() - parsed.time > CACHE_USER_TIME;
+      stale = JSON.parse(raw).value;
+    }
+  } catch {}
 
-      if (!expirado) {
-        // Cache válido — retorna direto
-        return stale;
-      }
-
-      // Cache expirado — retorna o stale imediatamente e atualiza em background
+  if (stale) {
+    if (isCacheExpirado(key)) {
+      // Revalida em background mas mantém o stale visível até terminar
       buscarDadosUsuarioPorUid(uid).then(dados => {
         if (dados) setCache(key, dados);
       }).catch(() => {});
-
-      return stale;
     }
-  } catch {}
+    return stale;
+  }
 
   // Sem cache nenhum — busca e aguarda
   const dados = await buscarDadosUsuarioPorUid(uid);
@@ -1723,33 +1726,37 @@ async function buscarUsuarioCached(uid) {
 
 //Saudação
 
-async function atualizarGreeting() {
-  const user = auth.currentUser;
+async function atualizarGreeting(userParam) {
+  const user = userParam || auth.currentUser;
   if (!user) return;
 
   const uid = user.uid;
-
-  // Cache
   const cacheKey = `user_cache_${uid}`;
   const photoKey = `user_photo_${uid}`;
 
+  // Saudação imediata
+  const saudacao = getSaudacao();
+  const greetingEl = document.getElementById('greeting');
+  if (greetingEl) greetingEl.textContent = saudacao;
+
+  // Pega stale do cache se existir (mesmo expirado)
   let userData = getCache(cacheKey);
   const cachedPhoto = getCache(photoKey);
 
-  if (!userData) {
-    userData = { displayname: '', userphoto: cachedPhoto || null };
+  if (userData) {
+    // Mostra imediatamente com o stale
+    updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
+    // Se expirado, revalida em background e atualiza a UI quando chegar
+    if (isCacheExpirado(cacheKey)) {
+      atualizarDados(uid, cacheKey, photoKey);
+    }
+  } else {
+    // Sem cache: busca e aguarda antes de mostrar
+    userData = await buscarDadosUsuarioPorUid(uid);
+    if (userData) setCache(cacheKey, userData);
+    updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
+    atualizarDados(uid, cacheKey, photoKey);
   }
-
-  // Saudação
-  const saudacao = getSaudacao();
-
-  // Nome
-  const nome = getNome(userData);
-
-  updateUI({ saudacao, nome, userData, user, cachedPhoto });
-
-  // Sempre atualiza em background para garantir dados frescos
-  atualizarDados(uid, cacheKey, photoKey);
 }
 
 // ==============================
@@ -1897,21 +1904,14 @@ function configurarPostLayer() {
   });
 
   // Botão "+" na navbar-top
-  const topBtn = document.querySelector('.navbar-top .top-btn');
+  const topBtn = document.getElementById('openPostLayerNav');
   if (topBtn) topBtn.addEventListener('click', () => abrirLayer('post'));
 
   // Botão "Como foi o seu dia?" / "Criar post"
   const npBtn = document.getElementById('openPostLayer');
   if (npBtn) npBtn.addEventListener('click', () => abrirLayer('post'));
 
-  // Input de texto antigo (.post-box input) — clicar também abre
-  const postBoxInput = document.querySelector('.post-box input');
-  if (postBoxInput) {
-    postBoxInput.addEventListener('focus', () => {
-      postBoxInput.blur();
-      abrirLayer('post');
-    });
-  }
+
 
   // Sidebar "Criar"
   const sidebarCriar = document.querySelector('.sidebar .postmodal');
@@ -2198,29 +2198,6 @@ function criarInputImagem() {
     fileInput.click();
   });
 }
-
-function criarInputVideo() {
-  const postArea = document.querySelector('.post-area');
-  const fileBtn = document.querySelector('.file-button');
-
-  if (!postArea || !fileBtn) return;
-
-  fileBtn.addEventListener('click', () => {
-    let videoInputContainer = document.querySelector('.video-input-container');
-
-    if (!videoInputContainer) {
-      videoInputContainer = document.createElement('div');
-      videoInputContainer.className = 'video-input-container';
-      videoInputContainer.innerHTML = `
-        <input type="url" class="video-url-input" placeholder="Cole a URL do vídeo (opcional)">
-      `;
-      postArea.parentNode.insertBefore(videoInputContainer, postArea.nextSibling.nextSibling);
-    } else {
-      videoInputContainer.classList.toggle('aberta');
-    }
-  });
-}
-
 
 
 // ===================
@@ -2652,17 +2629,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// ===================
-// LISTENER PARA VÍDEOS (PLAY/PAUSE AO CLICAR)
-// ===================
-document.addEventListener("click", (e) => {
-  const video = e.target.closest("video");
-  if (video) {
-    if (video.paused) video.play();
-    else video.pause();
-  }
-});
-
 
 // ===================
 // ATUALIZAR DATAS AUTOMATICAMENTE
@@ -2692,7 +2658,6 @@ function atualizarDatasAutomaticamente() {
 // ===================
 let currentPostType = 'post';
 let postImageFile = null;
-let storyImageFile = null;
 
 function inicializarSistemaTipoPost() {
   // Contador de caracteres (igual ao original)
@@ -2761,20 +2726,6 @@ function handlePostImageUpload(file) {
   reader.readAsDataURL(file);
 }
 
-function handleStoryImageUpload(file) {
-  if (!file || !file.type.startsWith('image/')) {
-    return;
-  }
-
-  storyImageFile = file;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const preview = document.querySelector('.image-preview-story');
-    preview.querySelector('img').src = e.target.result;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
 
 function limparInputsPost() {
   document.querySelectorAll('.np-text-input').forEach(input => {
@@ -2788,12 +2739,9 @@ function limparInputsPost() {
   });
 
   postImageFile  = null;
-  storyImageFile = null;
 
   const previewPost  = document.querySelector('.image-preview-post');
-  const previewStory = document.querySelector('.image-preview-story');
   if (previewPost)  previewPost.style.display  = 'none';
-  if (previewStory) previewStory.style.display = 'none';
 
   const postFileArea = document.getElementById('post-file-input');
   if (postFileArea) postFileArea.style.display = '';
@@ -2813,8 +2761,6 @@ async function enviarPublicacao() {
     await enviarPost(usuarioLogado, texto, postImageFile);
   } else if (currentPostType === 'bubble') {
     await enviarBubble(usuarioLogado, texto);
-  } else if (currentPostType === 'story') {
-    await enviarStory(usuarioLogado, storyImageFile);
   }
 }
 
@@ -2858,7 +2804,6 @@ async function enviarPost(user, texto, imageFile) {
       content:      texto,
       img:          urlImagem,
       imgDeleteUrl: deleteUrlImagem,
-      urlVideo:     '',
       likes:        0,
       saves:        0,
       comentarios:  0,
@@ -3002,17 +2947,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   postInput  = document.querySelector('.post-box input[type="text"]');
   postButton = document.querySelector('.post-button');
 
-  // Carrega foto de perfil imediatamente (não depende de auth)
-  carregarFotoPerfil();
+  // Carrega foto do cache imediatamente (sem esperar auth)
+  carregarFotoPerfil(null);
 
   const user = await verificarLogin();
   if (!user) {
     console.error('❌ Usuário não autenticado');
     return;
   }
+
+  // Atualiza foto com o user já resolvido (sem segundo listener de auth)
+  carregarFotoPerfil(user);
+
   criarInputImagem();
-  criarInputVideo();
-  await atualizarGreeting();
+  await atualizarGreeting(user);
   configurarLinks();
   configurarPostLayer();
   inicializarSistemaTipoPost();
@@ -3025,73 +2973,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 
 
-window.abrirModalImagem = function(imagemUrl) {
-  const modal = document.createElement('div');
-  modal.className = 'image-modal';
-  modal.innerHTML = `
-    <div class="modal-overlay" onclick="fecharModal()">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="fecharModal()">
-          <i class="fas fa-times"></i>
-        </button>
-        <img src="${imagemUrl}" alt="Imagem ampliada" class="modal-image">
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  document.body.style.overflow = 'hidden';
-};
-window.fecharModal = function() {
-  const modal = document.querySelector('.image-modal');
-  if (modal) {
-    modal.remove();
-    document.body.style.overflow = 'auto';
-  }
-};
-
-
-function configurarAutoPauseVideos() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const video = entry.target;
-
-      if (entry.isIntersecting) {
-        // Entrou na tela → toca
-        if (video.paused) video.play();
-      } else {
-        // Saiu da tela → pausa
-        if (!video.paused) video.pause();
-      }
-    });
-  }, { threshold: 0.4 }); 
-  // threshold 0.4 = precisa 40% do vídeo aparecer para tocar
-
-  // Pegar todos os vídeos do feed
-  const videos = document.querySelectorAll('.post-video video');
-  videos.forEach(video => observer.observe(video));
-}
-
-
-function configurarLimiteRepeticoes() {
-  const videos = document.querySelectorAll('.post-video video');
-
-  videos.forEach(video => {
-    let contagem = 0;
-
-    // remover loop automático
-    video.loop = false;
-
-    video.addEventListener("ended", () => {
-      contagem++;
-
-      if (contagem < 2) {
-        video.play(); // toca de novo
-      } else {
-        video.pause(); // pausa após 2 loops
-      }
-    });
-  });
-}
 
 // ==============================
 // CLEANUP QUANDO PÁGINA É DEIXADA
@@ -3105,45 +2986,45 @@ window.addEventListener('pagehide', () => {
 });
 
 
-function carregarFotoPerfil() {
+function carregarFotoPerfil(user) {
   const navPic = document.getElementById('nav-pic');
   const defaultPic = './src/icon/default.jpg';
 
   // Carregamento imediato do cache
   const cachedPhoto = localStorage.getItem('user_photo_cache');
-  if (cachedPhoto) {
+  if (cachedPhoto && navPic) {
     navPic.src = cachedPhoto;
   }
 
-  // Validação em segundo plano
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const userId = user.uid;
-      try {
-        const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
-        const userMediaSnap = await getDoc(userMediaRef);
+  // Validação em segundo plano — usa o user já resolvido pelo DOMContentLoaded
+  if (!user) {
+    if (navPic) navPic.src = defaultPic;
+    localStorage.removeItem('user_photo_cache');
+    return;
+  }
 
-        if (userMediaSnap.exists()) {
-          const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+  const userId = user.uid;
+  (async () => {
+    try {
+      const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
+      const userMediaSnap = await getDoc(userMediaRef);
 
-          if (userPhoto !== cachedPhoto) {
-            navPic.src = userPhoto;
-            localStorage.setItem('user_photo_cache', userPhoto);
-          }
-        } else {
-          navPic.src = defaultPic;
-          localStorage.removeItem('user_photo_cache');
+      if (userMediaSnap.exists()) {
+        const userPhoto = userMediaSnap.data().userphoto || defaultPic;
+
+        if (userPhoto !== cachedPhoto && navPic) {
+          navPic.src = userPhoto;
+          localStorage.setItem('user_photo_cache', userPhoto);
         }
-      } catch (error) {
-        console.error('Erro ao buscar foto:', error);
-        if (!cachedPhoto) navPic.src = defaultPic;
+      } else {
+        if (navPic) navPic.src = defaultPic;
+        localStorage.removeItem('user_photo_cache');
       }
-    } else {
-      navPic.src = defaultPic;
-      localStorage.removeItem('user_photo_cache');
+    } catch (error) {
+      console.error('Erro ao buscar foto:', error);
+      if (!cachedPhoto && navPic) navPic.src = defaultPic;
     }
-  
-  });
+  })();
 }
 
 // carregarFotoPerfil já é chamada dentro do DOMContentLoaded principal acima

@@ -180,9 +180,10 @@ body {
 .title {
   display: flex;
   padding: 16px 16px;
-  font-size: 26px;
+  font-size: 18px;
   font-weight: bold;
-  color: #eee;
+  color: #ddd;
+  display: none;
 }
 .title p { margin: 0; padding: 0; }
 

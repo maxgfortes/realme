@@ -5,46 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
-  <!-- Preconnect para recursos externos críticos -->
+  <link rel="icon" href="./src/img/icon.png" type="image/png" />
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="dns-prefetch" href="https://i.ibb.co" />
   <link rel="dns-prefetch" href="https://i.postimg.cc" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="theme-color" content="#0f0f0f"/>
-<meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f0f0f"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="./src/img/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/base.css" />
   <link rel="stylesheet" href="./src/styles/menu-bottom.css" />
   <link rel="stylesheet" href="./src/styles/layout.css" />
   <link rel="stylesheet" href="./src/styles/root.css" />
   <link rel="stylesheet" href="./src/styles/feed-mobile.css">
-  <link rel="stylesheet" href="./src/styles/report.css">
   <link rel="stylesheet" href="./src/styles/bubble.css">
-  <link rel="stylesheet" href="./src/styles/feeds-tab.css">
-  <link rel="stylesheet" href="./src/styles/storys.css">
   <link rel="stylesheet" href="./src/styles/navbar-bottom.css">
-    <!-- Título do preview -->
   <meta property="og:title" content="RealMe">
-
-  <!-- Descrição -->
   <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-
-  <!-- URL principal -->
   <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-
-  <!-- Imagem de destaque -->
   <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
-
-  <!-- Tipo de conteúdo -->
   <meta property="og:type" content="website">
-
-  <!-- Para Twitter -->
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
-
   <style>
     /* === ESTILOS DO POST === */
     .post-card {
@@ -156,12 +140,6 @@
 .menu-bottom-layer {
   display: none;
 }
-
-/* ===================
-   MELHORIAS VISUAIS PARA BOTÕES EXISTENTES
-   =================== */
-
-  /* Modal de post */
   .post-modal-overlay {
     position: fixed;
     top: 0; left: 0;
@@ -183,11 +161,9 @@
     z-index: 99998;
     background: transparent;
   }
-
   </style>
-  
 </head>
-<body  id="page-body">
+<body>
 
 
 <div class="pc-alert">
@@ -244,9 +220,9 @@
 </div>
 
 
-  <div class="navbar-top">
-      <button class="top-btn">
-        <i class="fa-solid fa-plus"></i>
+  <div class="navbar-top" id="navbar-top">
+      <button class="top-btn" id="openPostLayerNav">
+        <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"viewBox="0 0 512 512"xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Layer_x0020_1"><path fill="#cacaca" fill-rule="nonzero" d="M154.914 0l202.172 0c42.619,0 81.357,17.421 109.425,45.489l1.202 1.306c27.36,28.002 44.287,66.208 44.287,108.119l0 202.172c0,42.619 -17.421,81.357 -45.489,109.425 -28.068,28.068 -66.806,45.489 -109.425,45.489l-202.172 0c-42.545,0 -81.268,-17.443 -109.381,-45.533 -28.112,-28.024 -45.533,-66.762 -45.533,-109.381l0 -202.172c0,-42.523 17.421,-81.231 45.489,-109.336l0.089 -0.089c28.156,-28.09 66.842,-45.489 109.336,-45.489zm79.607 126.587c0,-11.857 9.621,-21.479 21.479,-21.479 11.858,0 21.479,9.622 21.479,21.479l0 107.934 107.934 0c11.857,0 21.479,9.621 21.479,21.479 0,11.858 -9.622,21.479 -21.479,21.479l-107.934 0 0 107.934c0,11.857 -9.621,21.479 -21.479,21.479 -11.858,0 -21.479,-9.622 -21.479,-21.479l0 -107.934 -107.934 0c-11.857,0 -21.479,-9.621 -21.479,-21.479 0,-11.858 9.622,-21.479 21.479,-21.479l107.934 0 0 -107.934zm122.565 -83.629l-202.172 0c-30.828,0 -58.815,12.573 -79.055,32.813l-0.088 0.088c-20.24,20.24 -32.813,48.227 -32.813,79.055l0 202.172c0,30.762 12.603,58.756 32.901,79.055l0 0.088c20.24,20.24 48.227,32.813 79.055,32.813l202.172 0c30.762,0 58.756,-12.603 79.055,-32.901 20.298,-20.299 32.901,-48.293 32.901,-79.055l0 -202.172c0,-30.312 -12.16,-57.878 -31.802,-78.029l-1.099 -1.026c-20.299,-20.298 -48.293,-32.901 -79.055,-32.901z"/></g></svg>
       </button>
       <div class="logo-mobile" id="feed-toggle">RealMe</div>
       <a href="nt.html" class="top-btn2">
@@ -286,11 +262,45 @@
         </div>
         </div>
     </section>
-    
+    <div class="feelings-stories">
+  
+  <div class="feeling-item">
+    <div class="feeling-text">maxgfortes está triste</div>
+    <img src="./src/img/default.jpg" alt="maxgfortes">
+  </div>
 
+  <div class="feeling-item">
+    <div class="feeling-text">ana está feliz</div>
+    <img src="./src/img/default.jpg" alt="ana">
+  </div>
 
-<div id="feed"></div>
+  <div class="feeling-item">
+    <div class="feeling-text">joão está cansado</div>
+    <img src="./src/img/default.jpg" alt="joão">
+  </div>
 
+  <div class="feeling-item">
+    <div class="feeling-text">maria está animada</div>
+    <img src="./src/img/default.jpg" alt="maria">
+  </div>
+
+    <div class="feeling-item">
+    <div class="feeling-text">ana está feliz</div>
+    <img src="./src/img/default.jpg" alt="ana">
+  </div>
+
+  <div class="feeling-item">
+    <div class="feeling-text">joão está cansado</div>
+    <img src="./src/img/default.jpg" alt="joão">
+  </div>
+
+  <div class="feeling-item">
+    <div class="feeling-text">maria está animada</div>
+    <img src="./src/img/default.jpg" alt="maria">
+  </div>
+
+</div>
+    <div id="feed"></div>
   </main>
 
   <div class="navbar-bottom">
@@ -396,85 +406,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 });
-
 </script>
-
-<script>
-  const navbarBottom = document.querySelector('.navbar-bottom');
-  let lastScrollY = window.scrollY; // Variável para armazenar a última posição Y
-
-  // A navbar deve estar visível por padrão (no topo da página)
-  navbarBottom.classList.remove('navbar-hidden');
-
-  function handleScroll() {
-    const currentScrollY = window.scrollY;
-
-    // Se a posição atual for menor que a última posição (rolando para CIMA)
-    if (currentScrollY < lastScrollY && currentScrollY > 0) {
-      // 1. ROLANDO PARA CIMA: MOSTRAR a navbar (remover a classe de esconder)
-      navbarBottom.classList.remove('navbar-hidden');
-    } 
-    // Se a posição atual for maior que a última (rolando para BAIXO)
-    else if (currentScrollY > lastScrollY && currentScrollY > 80) { // Verifica se desceu o suficiente (ex: 80px)
-      // 2. ROLANDO PARA BAIXO: ESCONDER a navbar (adicionar a classe de esconder)
-      navbarBottom.classList.add('navbar-hidden');
-    }
-    
-    // Atualiza a última posição de rolagem, mas somente se a rolagem for significativa
-    // (para evitar que a barra pisque ao tentar rolar "sem querer"
-    if (Math.abs(currentScrollY - lastScrollY) > 5) {
-      lastScrollY = currentScrollY;
-    }
-    
-    // 3. SEMPRE VISÍVEL NO TOPO: Se estiver no topo da página, ela deve aparecer.
-    if (currentScrollY <= 80) {
-      navbarBottom.classList.remove('navbar-hidden');
-    }
-  }
-
-  // Adiciona o listener de evento de rolagem
-  window.addEventListener('scroll', handleScroll);
-</script>
-
-<script src="./src/js/config.js"></script>
 <script type="module" src="./src/js/feed.js"></script>
 <script type="module" src="./src/js/pfp-navbar.js"></script>
-<script type="module" src="./src/js/global-messages.js"></script>
-<script  src="./src/js/popup.js"></script>
-<script>
-  // Função para animar o avião
-  function animarAviao() {
-    const aviao = document.createElement('img');
-    aviao.src = './src/posts/post4.png'; // coloque o caminho correto para seu PNG
-    aviao.style.position = 'fixed';
-    aviao.style.top = '40%'; // posição vertical do avião
-    aviao.style.left = '0';
-    aviao.style.width = '60px';
-    aviao.style.height = 'auto';
-    aviao.style.transform = 'translateX(0)';
-    aviao.style.transition = 'transform 3s linear';
-    aviao.style.zIndex = '10000';
-    aviao.style.pointerEvents = 'none';
-
-    document.body.appendChild(aviao);
-
-    // força registro do estilo inicial
-    requestAnimationFrame(() => {
-      aviao.style.transform = `translateX(${window.innerWidth + 100}px)`;
-    });
-
-    // remove após 3 segundos (tempo da animação)
-    setTimeout(() => {
-      aviao.remove();
-    }, 3000);
-  }
-
-  // Simula o envio do post, chama a animação
-  document.getElementById('btnEnviar').addEventListener('click', () => {
-    animarAviao();
-    alert('Post enviado com sucesso!');
-  });
-</script> 
+<script type="module" src="./src/js/auth-verification.js"></script>
+<script type="module" src="./src/js/notification.js"></script>
+<script type="module" src="./src/js/badge.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -487,9 +424,6 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.warn('firebase-messaging-sw.js não encontrado ou falha ao registrar:', err));
   });
 }
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     // Seleciona os elementos principais:
     const postLayer = document.getElementById('postLayer');
@@ -509,11 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
             postLayer.classList.remove('is-open');
         }
     }
-
-
-    // --- Adiciona os Event Listeners ---
-    
-    // 1. Ao clicar no botão de abertura
     if (openBtn) {
         openBtn.addEventListener('click', openPostLayer);
     }
@@ -522,196 +451,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeBtn) {
         closeBtn.addEventListener('click', closePostLayer);
     }
-
-    // Opcional: Fechar ao clicar fora do conteúdo (se desejar)
-    // postLayer.addEventListener('click', (event) => {
-    //     if (event.target === postLayer) {
-    //         closePostLayer();
-    //     }
-    // });
-});
-</script>
-<script>
-  const canvas = document.getElementById('particleCanvas');
-const ctx = canvas.getContext('2d');
-
-canvas.width = canvas.parentElement.offsetWidth;
-canvas.height = canvas.parentElement.offsetHeight;
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.speedX = (Math.random() - 0.5) * 0.3;
-    this.speedY = (Math.random() - 0.5) * 0.3;
-  }
-
-  update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-
-    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-  }
-
-draw() {
-  // Calcular distância das bordas
-  const distLeft = this.x;
-  const distRight = canvas.width - this.x;
-  const distTop = this.y;
-  const distBottom = canvas.height - this.y;
-  
-  // Pegar a menor distância
-  const minDist = Math.min(distLeft, distRight, distTop, distBottom);
-  
-  // Fade começa a 50px da borda
-  const fadeZone = 8;
-  let opacity = 0.5;
-  
-  if (minDist < fadeZone) {
-    opacity = 1 * (minDist / fadeZone); // fade proporcional
-  }
-  
-  ctx.beginPath();
-  ctx.arc(this.x, this.y, 1, 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-  ctx.fill();
-}
-}
-
-const particles = [];
-for (let i = 0; i < 100; i++) {
-  particles.push(new Particle());
-}
-
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  requestAnimationFrame(animate);
-}
-
-animate();
-</script>
-
-<script type="module" src="./src/js/auth-verification.js"></script>
-<script type="module" src="./src/js/notification.js"></script>
-<script  type="module" src="./src/js/nt-notifications.js"></script>
-<script type="module" src="./src/js/nt-badge.js"></script>
-<script>
-  
-// ============================================
-// TOGGLE SUPER SIMPLES
-// ============================================
-
-// ============================================
-// TOGGLE - SÓ UM ABERTO POR VEZ
-// ============================================
-
-document.addEventListener("DOMContentLoaded", () => {
-  
-  // FEED TOGGLE
-  const feedBtn = document.getElementById("feed-toggle");
-  const feedBox = document.getElementById("feed-box");
-  
-  if (feedBtn && feedBox) {
-    feedBtn.onclick = () => feedBox.classList.toggle("hidden");
-  }
-
-  // TIME TOGGLE
-  const timeBtn = document.getElementById("time-toggle");
-  const timeBox = document.getElementById("time-box");
-  
-  // VISI TOGGLE
-  const visiBtn = document.getElementById("visi-toggle");
-  const visiBox = document.getElementById("visi-box");
-
-  //PRIVACY TOGGLE
-  const pvBtn = document.getElementById("pv-toggle");
-  const pvBox = document.getElementById("pv-box");
-
-
-  // FUNÇÃO PARA FECHAR TODOS
-  function fecharTodos() {
-    if (timeBox) timeBox.classList.add("hidden-post-options");
-    if (visiBox) visiBox.classList.add("hidden-post-options");
-  }
-
-  // TIME - Fecha outros antes de abrir
-  if (timeBtn && timeBox) {
-    timeBtn.onclick = () => {
-      const estava_aberto = !timeBox.classList.contains("hidden-post-options");
-      fecharTodos(); // Fecha todos primeiro
-      if (!estava_aberto) {
-        timeBox.classList.remove("hidden-post-options"); // Abre só esse
-      }
-    };
-  }
-
-  // VISI - Fecha outros antes de abrir
-  if (visiBtn && visiBox) {
-    visiBtn.onclick = () => {
-      const estava_aberto = !visiBox.classList.contains("hidden-post-options");
-      fecharTodos(); // Fecha todos primeiro
-      if (!estava_aberto) {
-        visiBox.classList.remove("hidden-post-options"); // Abre só esse
-      }
-    };
-  }
-
-  // STORY TOGGLE
-  const storyBtn = document.querySelector(".friends-storys");
-  const storyBox = document.querySelector(".storys-overlay");
-  
-  if (storyBtn && storyBox) {
-    storyBtn.onclick = () => storyBox.classList.remove("hidden-story");
-    storyBox.onclick = (e) => {
-      if (e.target === storyBox) storyBox.classList.add("hidden-story");
-    };
-  }
-
-  // FECHAR MENUS AO CLICAR FORA
-  document.onclick = (e) => {
-    // Fecha feed se clicar fora
-    if (feedBox && !feedBox.contains(e.target) && !feedBtn.contains(e.target)) {
-      feedBox.classList.add("hidden");
-    }
-    
-    // Fecha time se clicar fora
-    if (timeBox && !timeBox.contains(e.target) && !timeBtn.contains(e.target)) {
-      timeBox.classList.add("hidden-post-options");
-    }
-
-    // Fecha visi se clicar fora
-    if (visiBox && !visiBox.contains(e.target) && !visiBtn.contains(e.target)) {
-      visiBox.classList.add("hidden-post-options");
-    }
-  };
-
-  // ESCONDER NAVBAR AO ROLAR
-  const navbar = document.querySelector(".navbar-top");
-  let lastScroll = 0;
-  
-  document.querySelector(".welcome-container")?.addEventListener("scroll", function() {
-    const currentScroll = this.scrollTop;
-    
-    if (currentScroll > lastScroll && currentScroll > 100) {
-      navbar?.classList.add("navbar-hidden");
-    } else {
-      navbar?.classList.remove("navbar-hidden");
-    }
-    
-    lastScroll = currentScroll;
-  });
-
 });
 
 
 
 
-</script>
+document.addEventListener('DOMContentLoaded', () => {
+  const navbar = document.querySelector('.navbar-top');
+  const container = document.querySelector('.welcome-container');
 
+  let lastY = 0;
+  let current = 0;
+
+  const START_HIDE_AT = 60;
+  const MAX = 100;
+
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  container.addEventListener('scroll', () => {
+    const y = container.scrollTop;
+    const delta = y - lastY;
+    if (y < START_HIDE_AT) {
+      current = 0;
+      navbar.classList.remove('hidden');
+      navbar.style.transform = 'translateY(0%)';
+      lastY = y;
+      return;
+    }
+
+    if (delta > 0) {
+      current = clamp(current + 18, 0, MAX);
+    }
+
+    if (delta < 0) {
+      current = clamp(current - 18, 0, MAX);
+    }
+
+    navbar.classList.add('hidden');
+    navbar.style.transform = `translateY(-${current}%)`;
+    if (current <= 0) {
+      navbar.classList.remove('hidden');
+    }
+    lastY = y;
+  }, { passive: true });
+});
+</script>
 </body>
 </html>

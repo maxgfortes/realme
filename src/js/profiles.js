@@ -362,7 +362,7 @@ function renderLinks(dados) {
   const c = $q('.links-tab .about-container'); if (!c) return;
   const redes = {
     instagram: { base:'https://instagram.com/',         icon:'fab fa-instagram', label:'Instagram' },
-    x:         { base:'https://x.com/',                 icon:'fab fa-twitter',   label:'X' },
+    x:         { base:'https://x.com/',                 icon:'fab fa-x-twitter',   label:'X' },
     tiktok:    { base:'https://tiktok.com/@',           icon:'fab fa-tiktok',    label:'TikTok' },
     youtube:   { base:'https://youtube.com/',           icon:'fab fa-youtube',   label:'YouTube' },
     github:    { base:'https://github.com/',            icon:'fab fa-github',    label:'GitHub' },
@@ -957,8 +957,15 @@ function criarPreview(postData, postId) {
     const txt = postData.content || '';
     el.innerHTML = `<div class="post-preview-text-container"><p class="post-preview-text">${txt.length > 80 ? txt.slice(0,80)+'…' : txt}</p></div>`;
   }
-  el.onclick = () => { const i = postsDoUsuario.findIndex(p => p.id === postId); abrirFeed(i); };
-  return el;
+el.onclick = () => {
+  const i = postsDoUsuario.findIndex(p => p.id === postId);
+
+  window.timelinePosts = postsDoUsuario;
+  window.timelineIndex = i;
+
+  abrirTimeline();
+};
+return el;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1029,6 +1036,72 @@ function initMusicPlayer(url) {
   });
 }
 
+
+// timeline -------------------------------------
+window.timelinePosts   // lista de posts
+window.timelineIndex   // post inicial clicado
+
+
+
+const overlay = document.getElementById('timeline-overlay');
+const container = document.getElementById('timeline-posts');
+const usernameEl = document.getElementById('timeline-username');
+
+
+function abrirTimeline() {
+  overlay.classList.add('active');
+
+
+  renderTimelineHeader();
+  renderTimelinePosts();
+
+  setTimeout(() => {
+    const el = document.querySelector(`[data-index="${window.timelineIndex}"]`);
+    if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
+  }, 50);
+}
+
+function fecharTimeline() {
+  overlay.classList.remove('active');
+}
+
+function renderTimelineHeader() {
+  const posts = window.timelinePosts || [];
+  if (!posts.length) return;
+
+  const first = posts[0];
+
+  usernameEl.textContent =
+    first.data.username ||
+    first.data.displayName ||
+    "Usuário";
+}
+
+function renderTimelinePosts() {
+  const posts = window.timelinePosts || [];
+
+  container.innerHTML = posts.map((post, i) => {
+    return `
+      <div class="timeline-post" data-index="${i}">
+        
+        ${post.data.img ? `
+          <img src="${post.data.img}" style="width:100%;border-radius:12px;">
+        ` : ""}
+
+        <div class="timeline-content">
+          <p>${post.data.content || ""}</p>
+        </div>
+
+      </div>
+    `;
+  }).join("");
+}
+
+
+document.querySelector('.timeline-btn button')
+  .addEventListener('click', fecharTimeline);
+
+  
 // ═══════════════════════════════════════════════════════════
 // WALL
 // FIX: cards do wall renderizados em paralelo, não um por um
@@ -1049,6 +1122,33 @@ async function iniciarWall() {
   const sendText  = $q('.input-send-wall');
 
   if (!modal || !wallFeed) return;
+
+// Verifica se é amigo (seguem um ao outro)
+let isAmigo = false;
+if (auth.currentUser && !isOwnProfile) {
+  const [meSegue, euSigo] = await Promise.all([
+    getDoc(doc(db, 'users', profileUserId, 'followers', auth.currentUser.uid)),
+    getDoc(doc(db, 'users', auth.currentUser.uid, 'followers', profileUserId)),
+  ]);
+  isAmigo = meSegue.exists() && euSigo.exists();
+}
+
+// Esconde ou mostra o botão de escrever no mural
+const sendWallContainer = $q('.send-wall'); // ajuste o seletor se necessário
+if (sendWallContainer) {
+  if (isOwnProfile || isAmigo) {
+    sendWallContainer.style.display = '';
+  } else {
+    sendWallContainer.style.display = 'none';
+    // Mostra aviso de "seja amigo"
+    const aviso = document.createElement('p');
+    aviso.className = 'wall-amizade-aviso';
+    aviso.style.cssText = 'color:#666;text-align:center;padding:16px;font-size:14px;';
+    const targetUsername = (await getUserData(profileUserId)).username || 'usuário';
+    aviso.textContent = `Seja amigo de ${targetUsername} para escrever em seu Mural`;
+    wallFeed.before(aviso);
+  }
+}
 
   // FIX: busca dados do wall em paralelo com os outros dados; usa memCache quando possível
   const [targetUser, targetPhoto, myUser, myPhoto] = await Promise.all([

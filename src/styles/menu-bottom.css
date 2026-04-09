@@ -2,9 +2,7 @@
     display: none;
 }
 
-@media (max-width: 768px) {
-    /* ========== OVERLAY ========== */
-    /* ========== CONTAINER PRINCIPAL ========== */
+@media (max-width: 900px) {
     .menu-bottom-layer {
         position: fixed;
         display: none;

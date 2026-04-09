@@ -343,14 +343,6 @@
 
 @media (max-width: 900px) {
 
-  .sidebar {
-    display: none;
-  }
-
-  .nav-top-pc {
-    display: none;
-  }
-
 .navbar-bottom {
       position: fixed !important;
       display: block;
@@ -404,11 +396,6 @@
       object-fit: cover;
       background-color: #333;
     }
-
-.navbar-top {
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-}
 
 .update-dot {
   position: relative;

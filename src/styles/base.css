@@ -6,7 +6,6 @@
 
     img {
   -webkit-user-drag: none;
-  user-drag: none;
   pointer-events: auto;
 }
 
@@ -141,3 +140,6 @@
         display: none;
     }
 }
+
+
+

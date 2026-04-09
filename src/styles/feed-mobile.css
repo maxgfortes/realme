@@ -67,6 +67,11 @@ nav {
   color: var(--primary-color);
 }
 
+.mention {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
 
 .welcome-box {
   background: var(--bg-card);
@@ -524,7 +529,7 @@ body.modal-open {
   border-radius: 12px !important;
   margin-bottom: 0px !important;
   box-shadow: none !important;
-  padding: 14px 14px 44px 14px !important;
+  padding: 14px 14px 14px 14px !important;
   border-left: none;
   border: none !important;
   background: transparent !important;
@@ -1499,6 +1504,10 @@ textarea#postText:focus {
   fill: currentColor; /* pega a cor do texto do link */
 }
 
+.navbar-top.hidden {
+  transform: translateY(-100%);
+}
+
 .top-btn {
   background-color:transparent;
   border: none;
@@ -1508,6 +1517,10 @@ textarea#postText:focus {
   font-size: 22px;
   color: #fff;
   margin-bottom: 4px;
+}
+
+.top-btn svg {
+  fill: #cacaca;
 }
 
 .top-btn2{
@@ -2513,9 +2526,46 @@ footer {
     }
 
 
-
-
-.mention {
-color: var(--primary-color);
+.feelings-stories {
+  width: 100%;
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  padding: 14px 16px;
+  scrollbar-width: none;
+  height: 160px;
+  align-items: center;
+  display: none;
 }
 
+.feelings-stories::-webkit-scrollbar {
+  display: none;
+}
+
+.feeling-item {
+  position: relative;
+  min-width: 70px;
+  display: flex;
+  justify-content: center;
+}
+
+.feeling-item img {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.feeling-text {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e1f22;
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  max-width: 100px;
+  border-radius: 999px;
+  border: 1px solid #2b2d31;
+}
