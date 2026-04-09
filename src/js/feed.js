@@ -1763,7 +1763,7 @@ function getSaudacao() {
 }
 
 function getNome(data) {
-  return data?.displayname || data?.name || data?.username || 'maxgfortes';
+  return data?.displayname || data?.name || data?.username || '';
 }
 
 function updateUI({ saudacao, nome, userData, user, cachedPhoto }) {
