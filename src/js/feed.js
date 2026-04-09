@@ -520,7 +520,7 @@ function renderListaComentarios(comentarios, container) {
     const nomeParaExibir = comentario.userData?.displayname || comentario.userData?.username || comentario.senderid;
     const usernameParaExibir = comentario.userData?.username ? `${comentario.userData.username}` : '';
     const fotoUsuario = comentario.userData?.userphoto || obterFotoPerfil(comentario.userData, null);
-    const conteudoFormatado = formatarHashtags(comentario.content);
+    const conteudoFormatado = formatarTexto(comentario.content);
     const isVerified = comentario.userData?.verified
       ? '<i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.85em; color: var(--verified-blue)"></i>'
       : '';
@@ -709,7 +709,7 @@ function renderizarBubble(bubbleData, feed) {
     </div>
     <div class="bubble-content">
       <div class="bubble-text">
-        <p>${formatarHashtags(bubbleData.content || '')}</p>
+        <p>${formatarTexto(bubbleData.content || '')}</p>
       </div>
       <div class="more-bubble">
         ${bubbleData.musicUrl && bubbleData.musicUrl.trim() !== "" ? `
