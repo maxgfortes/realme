@@ -1190,8 +1190,8 @@ async function loadPosts() {
 
     if (postsEmCache || bubblesEmCache) {
       allItems = [];
-      if (bubblesEmCache) bubblesEmCache.forEach(b => allItems.push(b));
       if (postsEmCache) postsEmCache.forEach(p => allItems.push(p));
+      if (bubblesEmCache) bubblesEmCache.forEach(b => allItems.push(b));
 
       ordenarCronologico(allItems);
 
@@ -1291,12 +1291,8 @@ async function loadPosts() {
       bubblesAtuais.forEach(b => allItems.push(b));
       postsProporcional.forEach(p => allItems.push(p));
 
-      // Reordena mantendo a ordem proporcional mas com bubbles no topo por data
-      // Bubbles ficam no topo cronológico, posts seguem a ordem proporcional
-      const bubblesSorted = allItems.filter(i => i.tipo === 'bubble');
-      ordenarCronologico(bubblesSorted);
-      const postsSorted = allItems.filter(i => i.tipo !== 'bubble');
-      allItems = [...bubblesSorted, ...postsSorted];
+      // Mistura bubbles e posts cronologicamente no feed
+      ordenarCronologico(allItems);
 
       feed.innerHTML = '';
       for (const item of allItems) {
