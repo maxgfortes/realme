@@ -1,8 +1,3 @@
-// ============================================================
-// activity-creator.js — Realme
-// Gera atividades no Firestore a cada ação importante do usuário.
-// ============================================================
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,

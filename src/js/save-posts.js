@@ -1,4 +1,3 @@
-// save-posts.js - Sistema de Salvar Posts (CORRIGIDO PARA USAR "saves")
 import { 
     initializeApp, 
     getApp, 

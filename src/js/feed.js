@@ -39,7 +39,6 @@ import {
 let lastPostSnapshot = null; 
 let allItems = []; 
 
-// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -56,23 +55,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-
-// ConfiguraÃ§Ãµes
 const POSTS_LIMIT = 10;
 let loading = false;
 let hasMorePosts = true;
 
-// Referências ao DOM — preenchidas no DOMContentLoaded para evitar null
 let feed = null;
 let loadMoreBtn = null;
 let postInput = null;
 let postButton = null;
-
-// Lista de domÃ­nios maliciosos conhecidos
-const DOMINIOS_MALICIOSOS = [
-  'bit.ly', 'tinyurl.com', 'goo.gl', 'ow.ly', 't.co',
-  'phishing-example.com', 'malware-site.net', 'scam-website.org'
-];
 
 // ==============================
 // SISTEMA DE CACHE FORTE DO FEED
@@ -244,33 +234,7 @@ function formatarTexto(text) {
   return texto;
 }
 
-// ===================
-// DETECTAR LINKS MALICIOSOS
-// ===================
-function detectarLinksMaliciosos(texto) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const urls = texto.match(urlRegex) || [];
-  for (const url of urls) {
-    try {
-      const urlObj = new URL(url);
-      const hostname = urlObj.hostname.toLowerCase();
-      if (DOMINIOS_MALICIOSOS.some(domain => hostname.includes(domain))) {
-        return { malicioso: true, url: url };
-      }
-      const padroesSuspeitos = [
-        /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/,
-        /[a-z0-9]{20,}\./,
-        /\.tk$|\.ml$|\.ga$|\.cf$/,
-      ];
-      if (padroesSuspeitos.some(pattern => pattern.test(hostname))) {
-        return { malicioso: true, url: url };
-      }
-    } catch (e) {
-      return { malicioso: true, url: url };
-    }
-  }
-  return { malicioso: false };
-}
+
 
 // ===================
 // VERIFICAR LOGIN COM AUTH
@@ -356,50 +320,37 @@ async function buscarDadosUsuarioPorUid(uid) {
 
 
 function configurarScrollInfinito() {
-  // Detecta scroll em qualquer elemento da página
   document.addEventListener('scroll', async (e) => {
     let scrollTop, windowHeight, documentHeight;
     const target = e.target;
     
-    // Para document/window/body
     if (target === document || target === document.documentElement || target === document.body) {
       scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       windowHeight = window.innerHeight;
       documentHeight = document.documentElement.scrollHeight;
     } 
-    // Para qualquer elemento com scroll (como welcome-container)
+
     else if (target.scrollHeight > target.clientHeight) {
       scrollTop = target.scrollTop;
       windowHeight = target.clientHeight;
       documentHeight = target.scrollHeight;
     } else {
-      return; // Não tem scroll, ignora
+      return;
     }
 
-    // Definir uma margem para carregar antes de chegar ao fim
-    const threshold = 300;
+    const threshold = 2200;
 
     if (scrollTop + windowHeight >= documentHeight - threshold) {
       
-      // Verifica qual DIV de feed está visível no momento
       const divFirebase = document.getElementById('feed');
-      const divMastodon = document.getElementById('feed2');
 
-      // Lógica para o Feed do Firebase (ID: feed)
       if (divFirebase && window.getComputedStyle(divFirebase).display !== 'none') {
         if (!loading && hasMorePosts) {
           await loadPosts();
         }
       }
-
-      // Lógica para o Feed do Mastodon (ID: feed2)
-      if (divMastodon && window.getComputedStyle(divMastodon).display !== 'none') {
-        if (!loadingMastodon) {
-          await carregarFeedMastodon(true); 
-        }
-      }
     }
-  }, true); // true = captura eventos de scroll de todos os elementos
+  }, true);
 }
 
 // ==============================
@@ -525,7 +476,7 @@ async function carregarComentarios(postId) {
 function renderListaComentarios(comentarios, container) {
   container.innerHTML = '';
   if (comentarios.length === 0) {
-    container.innerHTML = '<p class="no-comments">Nenhum comentario ainda.</p>';
+    container.innerHTML = '<p class="no-comments">Nenhum comentario ainda</p>';
     return;
   }
   comentarios.forEach(comentario => {
@@ -651,9 +602,7 @@ function formatarDataRelativa(data) {
 // ===================
 // CARREGAR POSTS NO FEED
 // ===================
-// ...existing code...
 
-// Função para verificar se o bubble ainda é válido (menos de 24h)
 function bubbleEstaValido(createTimestamp) {
   const agora = new Date();
   let dataCriacao;
@@ -668,13 +617,12 @@ function bubbleEstaValido(createTimestamp) {
   return diferencaHoras < 24;
 }
 
-// Função para carregar bubbles
 async function carregarBubbles() {
   try {
     const bubblesQuery = query(
       collection(db, 'bubbles'),
       orderBy('create', 'desc'),
-      limit(50) // Carrega os 50 mais recentes
+      limit(50) 
     );
     
     const bubblesSnapshot = await getDocs(bubblesQuery);
@@ -683,17 +631,13 @@ async function carregarBubbles() {
     for (const bubbleDoc of bubblesSnapshot.docs) {
       const bubbleData = bubbleDoc.data();
       
-      // Verifica se o bubble ainda é válido (menos de 24h)
       if (bubbleEstaValido(bubbleData.create)) {
         bubblesValidos.push({
           ...bubbleData,
           bubbleid: bubbleDoc.id,
           tipo: 'bubble'
         });
-      } else {
-        // Opcional: deletar bubbles expirados
-        // await deleteDoc(doc(db, 'bubbles', bubbleDoc.id));
-      }
+      } 
     }
     
     return bubblesValidos;
@@ -703,7 +647,6 @@ async function carregarBubbles() {
   }
 }
 
-// Função para renderizar um bubble no feed
 function renderizarBubble(bubbleData, feed) {
   const bubbleEl = document.createElement('div');
   bubbleEl.className = 'bubble-container';
@@ -743,8 +686,7 @@ function renderizarBubble(bubbleData, feed) {
   `;
   
   feed.appendChild(bubbleEl);
-  
-  // Buscar dados do usuário via cache
+
   buscarUsuarioCached(bubbleData.creatorid).then(userData => {
     if (userData) {
       const avatar = bubbleEl.querySelector('.avatar');
@@ -752,7 +694,7 @@ function renderizarBubble(bubbleData, feed) {
       
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
-        nome.textContent = userData.username || userData.displayname || userData.name || bubbleData.creatorid;
+        nome.textContent = userData.username || userData.displayname || userData.name || '';
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
         }
@@ -760,12 +702,10 @@ function renderizarBubble(bubbleData, feed) {
     }
   });
   
-  // Configurar botão de like
   const btnLike = bubbleEl.querySelector('.like-bubble');
   const usuarioLogado = auth.currentUser;
   
   if (btnLike && usuarioLogado) {
-    // Verificar se o usuário já curtiu
     const likerRef = doc(db, `bubbles/${bubbleData.bubbleid}/likers/${usuarioLogado.uid}`);
     getDoc(likerRef).then(likerSnap => {
       if (likerSnap.exists() && likerSnap.data().like === true) {
@@ -774,20 +714,17 @@ function renderizarBubble(bubbleData, feed) {
       }
     });
     
-    // Contar likes
     contarLikesBubble(bubbleData.bubbleid).then(totalLikes => {
       const span = btnLike.querySelector('.like-count');
       if (span) span.textContent = totalLikes;
     });
     
-    // Adicionar evento de clique
     btnLike.addEventListener('click', async () => {
       await toggleLikeBubble(bubbleData.bubbleid, btnLike);
     });
   }
 }
 
-// Função para contar likes de um bubble
 async function contarLikesBubble(bubbleId) {
   try {
     const likersQuery = query(
@@ -802,7 +739,6 @@ async function contarLikesBubble(bubbleId) {
   }
 }
 
-// Função para dar/remover like em um bubble
 async function toggleLikeBubble(bubbleId, btnElement) {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) {
@@ -839,6 +775,74 @@ async function toggleLikeBubble(bubbleId, btnElement) {
   }
 }
 
+
+function iconType(postData) {
+  if (postData.img && postData.img.trim() !== "") {
+    return `
+<svg width="340" height="340" viewBox="0 0 340 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_4_100)">
+<rect x="18.7275" y="114.119" width="214.8" height="166.2" transform="rotate(-4 18.7275 114.119)" fill="#D9D9D9"/>
+<rect x="18.7275" y="114.119" width="214.8" height="166.2" transform="rotate(-4 18.7275 114.119)" stroke="#4E4E4E" stroke-width="2.4"/>
+</g>
+<rect x="40.2495" y="129.455" width="174" height="132.6" transform="rotate(-4 40.2495 129.455)" fill="#676868"/>
+<g filter="url(#filter1_d_4_100)">
+<rect x="96.1274" y="75.7188" width="214.8" height="166.2" transform="rotate(-4 96.1274 75.7188)" fill="#D9D9D9"/>
+<rect x="96.1274" y="75.7188" width="214.8" height="166.2" transform="rotate(-4 96.1274 75.7188)" stroke="#4E4E4E" stroke-width="2.4"/>
+</g>
+<rect x="117.649" y="91.0548" width="174" height="132.6" transform="rotate(-4 117.649 91.0548)" fill="#B1B8C2"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M227.22 109.343C228.615 109.245 230.011 109.148 231.406 109.05C232.907 109.522 234.452 109.901 236.044 110.187C237.469 109.803 238.792 109.223 240.013 108.448C241.719 108.329 243.425 108.21 245.13 108.09C246.475 108.518 247.829 108.951 249.195 109.39C250.28 110.41 251.143 111.609 251.784 112.984C252.524 113.542 253.334 113.973 254.212 114.276C256.2 116.248 257.762 118.534 258.899 121.134C261.731 123.703 263.245 126.967 263.44 130.926C263.976 132.365 264.693 133.695 265.589 134.917C265.651 135.237 265.712 135.558 265.773 135.878C265.264 138.541 265.025 141.237 265.053 143.967C264.989 144.793 264.73 145.542 264.275 146.214C264.141 146.856 264.222 147.46 264.519 148.024C263.857 150.004 263.336 152.03 262.957 154.101C262.555 154.936 262.147 155.777 261.731 156.623C261.312 157.069 260.831 157.428 260.287 157.698C260.16 158.798 259.924 159.87 259.577 160.914C258.641 161.992 257.662 163.035 256.64 164.043C256.821 164.833 256.955 165.635 257.042 166.451C256.466 167.098 255.93 167.784 255.433 168.512C255.55 168.789 255.722 169.021 255.949 169.207C258.469 170.167 260.564 171.725 262.236 173.882C262.514 175.62 262.982 177.292 263.639 178.9C266.878 180.466 270.173 181.901 273.524 183.202C278.909 184.819 284.185 186.723 289.35 188.916C290.617 190.141 291.613 191.573 292.339 193.214C294.39 199.156 295.866 205.224 296.767 211.417C296.779 211.579 296.79 211.74 296.801 211.902C260.359 214.45 223.917 216.999 187.475 219.547C187.379 218.173 187.283 216.8 187.187 215.426C187.425 212.028 187.692 208.599 187.987 205.139C188.411 202.009 189.377 199.1 190.883 196.411C191.508 195.67 192.202 195.013 192.966 194.438C200.894 189.813 208.922 185.395 217.05 181.183C217.416 180.788 217.737 180.36 218.012 179.898C218.37 177.911 218.777 175.934 219.233 173.966C220.569 172.496 222.079 171.254 223.764 170.239C223.119 169.508 222.343 168.994 221.436 168.697C221.163 167.9 221.308 167.2 221.873 166.596C220.965 165.771 219.947 165.152 218.822 164.739C218.728 164.437 218.592 164.162 218.413 163.915C218.356 162.828 218.318 161.734 218.301 160.634C216.312 158.755 214.382 156.778 212.51 154.706C212.069 153.772 211.963 152.805 212.19 151.805C211.25 148.747 210.334 145.685 209.444 142.618C209.437 142.07 209.516 141.537 209.683 141.018C210.692 139.697 211.288 138.194 211.471 136.509C211.036 131.952 212.071 127.819 214.578 124.112C214.995 122.877 215.375 121.633 215.72 120.378C216.815 119.107 218.021 117.967 219.337 116.958C220.236 115.595 220.912 114.127 221.367 112.554C223.3 111.406 225.251 110.336 227.22 109.343Z" fill="#767D87"/>
+<defs>
+<filter id="filter0_d_4_100" x="15.0468" y="97.8543" width="233.232" height="188.14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2.4"/>
+<feGaussianBlur stdDeviation="1.2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4_100"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4_100" result="shape"/>
+</filter>
+<filter id="filter1_d_4_100" x="92.4467" y="59.4543" width="233.232" height="188.14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2.4"/>
+<feGaussianBlur stdDeviation="1.2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4_100"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4_100" result="shape"/>
+</filter>
+</defs>
+</svg>
+`;
+  } else {
+    return `
+<svg width="340" height="340" viewBox="0 0 340 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_4_124)">
+<path d="M65.96 230.28C58.8024 230.28 53 224.478 53 217.32L53 90.9601C53 83.8025 58.8024 78 65.96 78L274.94 78C282.098 78 287.9 83.8024 287.9 90.96L287.9 217.32C287.9 224.478 282.098 230.28 274.94 230.28H162.016C159.335 230.28 156.72 231.112 154.531 232.66L98.8916 272.024C98.5379 272.274 98.2075 272.556 97.9045 272.865C92.7975 278.083 84.0626 273.262 85.7558 266.16L92.8826 236.267C93.6108 233.213 91.295 230.28 88.1551 230.28H65.96Z" fill="#D9D9D9"/>
+<path d="M65.96 230.28C58.8024 230.28 53 224.478 53 217.32L53 90.9601C53 83.8025 58.8024 78 65.96 78L274.94 78C282.098 78 287.9 83.8024 287.9 90.96L287.9 217.32C287.9 224.478 282.098 230.28 274.94 230.28H162.016C159.335 230.28 156.72 231.112 154.531 232.66L98.8916 272.024C98.5379 272.274 98.2075 272.556 97.9045 272.865C92.7975 278.083 84.0626 273.262 85.7558 266.16L92.8826 236.267C93.6108 233.213 91.295 230.28 88.1551 230.28H65.96Z" stroke="#4E4E4E" stroke-width="3.24"/>
+</g>
+<rect x="80.5405" y="116.07" width="12.96" height="179.01" rx="1.62" transform="rotate(-90 80.5405 116.07)" fill="#B7B7B7"/>
+<rect x="80.5405" y="116.07" width="12.96" height="179.01" rx="1.62" transform="rotate(-90 80.5405 116.07)" fill="#B7B7B7"/>
+<rect x="80.5405" y="142.8" width="12.96" height="129.6" rx="1.62" transform="rotate(-90 80.5405 142.8)" fill="#B7B7B7"/>
+<rect x="80.5405" y="169.53" width="12.96" height="162.81" rx="1.62" transform="rotate(-90 80.5405 169.53)" fill="#B7B7B7"/>
+<rect x="80.5405" y="196.26" width="12.96" height="75.33" rx="1.62" transform="rotate(-90 80.5405 196.26)" fill="#B7B7B7"/>
+<defs>
+<filter id="filter0_d_4_124" x="48.1399" y="76.3801" width="244.62" height="206.789" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="3.24"/>
+<feGaussianBlur stdDeviation="1.62"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_4_124"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_4_124" result="shape"/>
+</filter>
+</defs>
+</svg>`;
+  }
+}
+
 function renderPost(postData, feed) {
   if (postData.visible === false) return;
 
@@ -851,11 +855,14 @@ function renderPost(postData, feed) {
         <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
              onerror="this.src='./src/img/default.jpg'" />
         <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}">...</strong>
+          <strong class="user-name-link" data-username="${postData.creatorid}"></strong>
           <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
         </div>
       </div>
       <div class="left-space-options">
+        <div class="post-icon">
+          ${iconType(postData)}
+        </div>
         <div class="more-options">
           <button class="more-options-button">
             <i class="fas fa-ellipsis-h"></i>
@@ -865,6 +872,7 @@ function renderPost(postData, feed) {
     </div>
     <div class="post-content">
     <div class="post-text">${formatarTexto(postData.content || '')}</div>
+    <div class="post-informations"><p> - <span>maxgfortes</span> estava com <span>davzx182</span> e <span>isareliquia<span></p></div>
       ${
         (postData.img && postData.img.trim() !== "")
           ? `
@@ -906,6 +914,27 @@ function renderPost(postData, feed) {
     </div>
   `;
   feed.appendChild(postEl);
+
+const postImgWrapper = postEl.querySelector('.post-image');
+if (postImgWrapper) {
+  postImgWrapper.addEventListener('dblclick', async (e) => {
+    e.preventDefault();
+
+    _animarCoracaoLike(postImgWrapper, e);
+
+    const usuarioLogado = auth.currentUser;
+    if (!usuarioLogado) return;
+
+    const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
+    const likerSnap = await getDoc(likerRef);
+    const jaCurtiu = likerSnap.exists() && likerSnap.data().like === true;
+
+    if (!jaCurtiu) {
+      const btnLike = postEl.querySelector('.btn-like');
+      if (btnLike) await toggleLikePost(usuarioLogado.uid, postData.postid, btnLike);
+    }
+  });
+}
 
   const usuarioLogado = auth.currentUser;
 
@@ -992,7 +1021,7 @@ function renderPost(postData, feed) {
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
         // Mostra apenas o username no topo
-        nome.textContent = userData.username || userData.displayname || userData.name || postData.creatorid;
+        nome.textContent = userData.username || userData.displayname || userData.name || '...';
         // Adiciona ícone de verificado se o usuário for verificado
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 2px; font-size: 0.8em; color: #4A90E2;"></i>`;
@@ -1700,6 +1729,22 @@ function setCache(key, value) {
 async function buscarUsuarioCached(uid) {
   const key = `user_cache_${uid}`;
 
+  // Para o próprio usuário logado, nunca usar cache stale — sempre busca do Firebase
+  const ehProprioUsuario = auth.currentUser && auth.currentUser.uid === uid;
+  if (ehProprioUsuario) {
+    // Tenta usar cache fresco (gravado por atualizarGreeting logo na inicialização)
+    if (!isCacheExpirado(key)) {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        try { return JSON.parse(raw).value; } catch {}
+      }
+    }
+    // Cache expirado ou ausente — busca direto do Firebase e atualiza
+    const dados = await buscarDadosUsuarioPorUid(uid);
+    if (dados) setCache(key, dados);
+    return dados;
+  }
+
   let stale = null;
   try {
     const raw = localStorage.getItem(key);
@@ -1734,29 +1779,25 @@ async function atualizarGreeting(userParam) {
   const cacheKey = `user_cache_${uid}`;
   const photoKey = `user_photo_${uid}`;
 
-  // Saudação imediata
+  // Saudação imediata enquanto busca os dados
   const saudacao = getSaudacao();
   const greetingEl = document.getElementById('greeting');
   if (greetingEl) greetingEl.textContent = saudacao;
 
-  // Pega stale do cache se existir (mesmo expirado)
-  let userData = getCache(cacheKey);
-  const cachedPhoto = getCache(photoKey);
+  // Invalida o cache do próprio usuário antes de buscar — garante dado fresco do Firebase
+  try { localStorage.removeItem(cacheKey); } catch {}
 
+  // Sempre busca direto do Firestore — garante que o nome aparece corretamente
+  const userData = await buscarDadosUsuarioPorUid(uid);
+
+  // Atualiza cache para uso futuro (posts, bubbles, etc.)
   if (userData) {
-    // Mostra imediatamente com o stale
-    updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
-    // Se expirado, revalida em background e atualiza a UI quando chegar
-    if (isCacheExpirado(cacheKey)) {
-      atualizarDados(uid, cacheKey, photoKey);
-    }
-  } else {
-    // Sem cache: busca e aguarda antes de mostrar
-    userData = await buscarDadosUsuarioPorUid(uid);
-    if (userData) setCache(cacheKey, userData);
-    updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
-    atualizarDados(uid, cacheKey, photoKey);
+    setCache(cacheKey, userData);
+    if (userData.userphoto) setCache(photoKey, userData.userphoto);
   }
+
+  const cachedPhoto = userData?.userphoto || getCache(photoKey);
+  updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
 }
 
 // ==============================
@@ -1783,7 +1824,7 @@ function getSaudacao() {
 }
 
 function getNome(data) {
-  return data?.displayname || data?.name || data?.username || '';
+  return data?.username || data?.displayname || data?.name || '';
 }
 
 function updateUI({ saudacao, nome, userData, user, cachedPhoto }) {
@@ -1806,51 +1847,6 @@ function updateUI({ saudacao, nome, userData, user, cachedPhoto }) {
   }
 }
 
-async function atualizarDados(uid, cacheKey, photoKey) {
-  try {
-    const dados = await buscarDadosUsuarioPorUid(uid);
-    if (!dados) return;
-
-    setCache(cacheKey, dados);
-
-    if (dados.userphoto) {
-      setCache(photoKey, dados.userphoto);
-    }
-
-    const usernameEl = document.getElementById('username');
-    if (usernameEl) usernameEl.textContent = getNome(dados);
-
-    const fotoEl = document.querySelector('.user-welcome img');
-    if (fotoEl && dados.userphoto) {
-      fotoEl.src = dados.userphoto;
-    }
-
-  } catch (e) {
-    console.warn('Erro ao atualizar usuário:', e);
-  }
-}
-
-// ===================
-// CONFIGURAR LINKS
-// ===================
-function configurarLinks() {
-  const usuarioLogado = auth.currentUser;
-  if (!usuarioLogado) return;
-  const urlPerfil = `profile.html?userid=${encodeURIComponent(usuarioLogado.uid)}`;
-  const linkSidebar = document.getElementById('linkPerfilSidebar');
-  const linkMobile = document.getElementById('linkPerfilMobile');
-  if (linkSidebar) linkSidebar.href = urlPerfil;
-  if (linkMobile) linkMobile.href = urlPerfil;
-  const btnsSair = document.querySelectorAll('#btnSair');
-  btnsSair.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      auth.signOut().then(() => {
-        window.location.href = 'index.html';
-      });
-    });
-  });
-}
 
 // ============================================================
 // SISTEMA DE ABERTURA DO POST LAYER
@@ -2866,7 +2862,7 @@ async function enviarBubble(user, texto) {
       musicUrl:  ''
     });
  
-    // ✅ ATIVIDADE — novo bubble
+
     triggerNovoBubble(bubbleId).catch(console.warn);
  
     avancarBarra(bar, 100); // pronto
@@ -2941,13 +2937,11 @@ function removerBarra(bar) {
 // ===================
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // Inicializar referências ao DOM com segurança
   feed       = document.getElementById('feed');
   loadMoreBtn = document.getElementById('load-more-btn');
   postInput  = document.querySelector('.post-box input[type="text"]');
   postButton = document.querySelector('.post-button');
 
-  // Carrega foto do cache imediatamente (sem esperar auth)
   carregarFotoPerfil(null);
 
   const user = await verificarLogin();
@@ -2956,12 +2950,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Atualiza foto com o user já resolvido (sem segundo listener de auth)
   carregarFotoPerfil(user);
-
   criarInputImagem();
   await atualizarGreeting(user);
-  configurarLinks();
   configurarPostLayer();
   inicializarSistemaTipoPost();
   configurarEventListeners();
@@ -2988,15 +2979,13 @@ window.addEventListener('pagehide', () => {
 
 function carregarFotoPerfil(user) {
   const navPic = document.getElementById('nav-pic');
-  const defaultPic = './src/icon/default.jpg';
+  const defaultPic = './src/img/default.jpg';
 
-  // Carregamento imediato do cache
   const cachedPhoto = localStorage.getItem('user_photo_cache');
   if (cachedPhoto && navPic) {
     navPic.src = cachedPhoto;
   }
 
-  // Validação em segundo plano — usa o user já resolvido pelo DOMContentLoaded
   if (!user) {
     if (navPic) navPic.src = defaultPic;
     localStorage.removeItem('user_photo_cache');
@@ -3026,11 +3015,6 @@ function carregarFotoPerfil(user) {
     }
   })();
 }
-
-// carregarFotoPerfil já é chamada dentro do DOMContentLoaded principal acima
-
-
-
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {

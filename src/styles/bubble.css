@@ -372,4 +372,5 @@ canvas {
 .like-count {
     color: #838383;
     padding: 4px 8px;
+    display: none;
 }

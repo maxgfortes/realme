@@ -18,7 +18,6 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* ================= FIREBASE ================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
@@ -34,25 +33,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ================= FLAG DE CADASTRO ================= */
 
-// Impede que o onAuthStateChanged redirecione durante o cadastro
 let cadastrandoAgora = false;
 
-/* ================= UI ================= */
 
 function showError(msg) {
   const el = document.querySelector(".error-message");
-  if (el) {
-    el.textContent = msg;
-    el.style.display = "block";
-  } else {
-    alert(msg);
-  }
-}
-
-function showSuccess(msg) {
-  const el = document.querySelector(".success-message");
   if (el) {
     el.textContent = msg;
     el.style.display = "block";
@@ -67,7 +53,6 @@ function hideMessages() {
 }
 
 function showLoading(show, loadingText = "Processando...") {
-  // FIX: seletor corrigido — o botão não está dentro de .form-section
   const btn = document.querySelector('button[type="submit"]');
   if (btn) {
     if (show) {
@@ -116,12 +101,10 @@ async function criarContaSegura(event) {
   if (!validarSenha(senha)) return showError("Senha mínima: 6 caracteres.");
   if (!validarNascimento(nascimento)) return showError("Você precisa ter 13+ anos.");
 
-  // FIX: ativa a flag antes de criar o usuário no Firebase
   cadastrandoAgora = true;
   showLoading(true, "Criando conta...");
 
   try {
-    // Username único
     const usernameRef = doc(db, "usernames", username);
     if ((await getDoc(usernameRef)).exists()) {
       showLoading(false);
@@ -129,13 +112,11 @@ async function criarContaSegura(event) {
       return showError("Nome de usuário já está em uso.");
     }
 
-    // Auth
     const cred = await createUserWithEmailAndPassword(auth, email, senha);
     const user = cred.user;
 
     await updateProfile(user, { displayName: nome });
 
-    // Firestore
     await setDoc(usernameRef, {
       uid: user.uid,
       createdAt: serverTimestamp()
@@ -160,7 +141,7 @@ async function criarContaSegura(event) {
 
   } catch (err) {
     console.error(err);
-    cadastrandoAgora = false; // FIX: reseta a flag se der erro
+    cadastrandoAgora = false; 
     let msg = "Erro ao criar conta.";
     if (err.code === 'auth/email-already-in-use') {
       msg = "Este email já está cadastrado.";
@@ -235,7 +216,6 @@ function configurarValidacoes() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // FIX: só redireciona se não estiver no meio de um cadastro
   onAuthStateChanged(auth, async (user) => {
     if (user && !cadastrandoAgora) {
       window.location.href = "feed.html";
@@ -247,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
 
   if (path.includes('register.html') || path.endsWith('/') || path === '') {
-    // FIX: seletor corrigido — usa "form" direto, sem .form-section
     document
       .querySelector("form")
       ?.addEventListener("submit", criarContaSegura);

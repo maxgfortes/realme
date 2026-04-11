@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
   <meta name="theme-color" content="#0f0f0f"/>
@@ -144,7 +144,6 @@
 </div>
 
 <script>
-        // Dados dos usuários
         const users = [
 
         ];
@@ -228,17 +227,14 @@
                     }
                 });
 
-                // Corrige as bolinhas para sempre mostrar todas e ativar a correta
                 const indicatorElements = this.indicators.children;
                 Array.from(indicatorElements).forEach((indicator, index) => {
                     indicator.classList.toggle('active', index === this.currentIndex);
                 });
             }
 
-            // Corrige o cálculo para sempre ser infinito
             getRelativePosition(cardIndex, currentIndex, totalCards) {
                 let diff = cardIndex - currentIndex;
-                // Mantém o carrossel infinito sem pular bolinhas
                 if (diff > totalCards / 2) {
                     diff -= totalCards;
                 } else if (diff < -totalCards / 2) {
@@ -280,9 +276,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Sistema de amigos inicializado!');
+            console.log('');
 
-            // Botão de filtros para mobile
             const filterBtn = document.getElementById('filterBtn');
             const optionBar = document.querySelector('.option-bar');
             const overlay = document.querySelector('.sidebar-overlay');
@@ -307,7 +302,6 @@
                 });
             }
 
-            // Redirecionar perfis para mobile ou desktop
             const userLinks = document.querySelectorAll('.user');
             userLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -319,7 +313,6 @@
                 });
             });
 
-            // Imagens padrão em caso de erro
             const userImages = document.querySelectorAll('.user img');
             userImages.forEach(img => {
                 img.onerror = function() {
@@ -329,47 +322,36 @@
         });
 
 function carregarFotoPerfil() {
-  const navPic = document.getElementById('nav-pic'); // Elemento da foto de perfil na navbar
+  const navPic = document.getElementById('nav-pic'); 
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const userId = user.uid; // Obtém o ID do usuário logado
+      const userId = user.uid; 
       try {
-        // Busca a URL da foto de perfil no Firestore
         const userMediaRef = doc(db, `users/${userId}/user-infos/user-media`);
         const userMediaSnap = await getDoc(userMediaRef);
 
         if (userMediaSnap.exists()) {
           const userPhoto = userMediaSnap.data().userphoto || './src/img/default.jpg';
-          navPic.src = userPhoto; // Atualiza a foto de perfil na navbar
+          navPic.src = userPhoto; 
         } else {
           console.warn('Foto de perfil não encontrada. Usando a padrão.');
           navPic.src = './src/img/default.jpg';
         }
-        // Registrar token de push do usuário (se possível)
+
         try { if (userId) registerForPushNotifications(userId); } catch(e) { console.warn('Falha ao registrar push:', e); }
       } catch (error) {
         console.error('Erro ao carregar a foto de perfil:', error);
-        navPic.src = './src/img/default.jpg'; // Usa a foto padrão em caso de erro
+        navPic.src = './src/img/default.jpg'; 
       }
     } else {
       console.warn('Usuário não autenticado.');
-      navPic.src = './src/img/default.jpg'; // Usa a foto padrão se não estiver logado
+      navPic.src = './src/img/default.jpg'; 
     }
   });
 }
 </script>
 <script type="module">
-// ===============================
-//  acharAmigos.js  —  v3 (pré-carregamento instantâneo)
-//
-//  Estratégia:
-//  1. Na abertura da página, exibe IMEDIATAMENTE o cache do localStorage
-//  2. Em paralelo, busca todos os usuários no Firestore com Promise.all
-//     (todas as leituras de uma vez, sem loop sequencial)
-//  3. Salva o resultado no localStorage para a próxima visita
-//  4. Clique em "Buscar" filtra apenas o array em memória — zero Firestore
-// ===============================
 
 function getProfileUrl(userId) {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -400,9 +382,9 @@ const auth = getAuth(app);
 
 // ─── Estado global ────────────────────────────────────────────────────────────
 let currentUserId  = null;
-let todosUsuarios  = [];          // array completo em memória, já montado
-let preloadPronto  = false;       // true quando o Firestore terminou
-let preloadPromise = null;        // promise do preload para aguardar se necessário
+let todosUsuarios  = [];          
+let preloadPronto  = false;       
+let preloadPromise = null;        
 
 // ─── Elementos ────────────────────────────────────────────────────────────────
 const btnBuscar      = document.querySelector('.search-btn');
@@ -423,7 +405,7 @@ function truncar(str, max = 14) {
 
 // ─── Cache localStorage ───────────────────────────────────────────────────────
 const CACHE_KEY     = 'rm_usuarios_v2';
-const CACHE_TTL_MS  = 10 * 60 * 1000; // 10 minutos
+const CACHE_TTL_MS  = 10 * 60 * 1000; 
 
 function salvarCache(usuarios) {
   try {
@@ -439,7 +421,7 @@ function lerCache() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null; // expirado
+    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null; 
     return parsed.data;
   } catch (_) { return null; }
 }
@@ -449,7 +431,6 @@ async function montarUsuario(docSnap) {
   const userId   = docSnap.id;
   const userData = docSnap.data();
 
-  // Todas as 3 subcoleções em paralelo
   const [mediaSnap, aboutSnap, likesSnap] = await Promise.all([
     getDoc(doc(db, "users", userId, "user-infos", "user-media")),
     getDoc(doc(db, "users", userId, "user-infos", "about")),
@@ -481,17 +462,14 @@ async function montarUsuario(docSnap) {
     userphoto,
     banner,
     idade,
-    // campos para similaridade (mantidos em memória, não aparecem na UI)
     _perfil: { ...userData, ...media, ...about, ...likes }
   };
 }
 
 // ─── Pré-carregamento em background ───────────────────────────────────────────
-// Roda assim que o usuário loga — sem esperar nenhum clique
 async function iniciarPreload(uid) {
   const snapshot = await getDocs(query(collection(db, 'users'), limit(150)));
 
-  // Processa TODOS os usuários em paralelo (não em série)
   const resultados = await Promise.all(
     snapshot.docs
       .filter(d => d.id !== uid)
@@ -502,29 +480,24 @@ async function iniciarPreload(uid) {
   preloadPronto = true;
   salvarCache(todosUsuarios);
 
-  // Atualiza a tela silenciosamente se ainda estiver mostrando cache
   const filtros = coletarFiltros();
   const temFiltro = Object.values(filtros).some(v => v);
   if (!temFiltro) {
-    // sem filtros: mostra todos ordenados por score padrão (aleatório justo)
     renderizarAmbos(todosUsuarios.slice(0, 40));
   }
 }
 
-// ─── Auth → dispara preload imediatamente ─────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
   if (!user) return;
   currentUserId = user.uid;
   preloadPromise = iniciarPreload(user.uid);
 });
 
-// ─── "Buscar" filtra só o array em memória — sem tocar no Firestore ───────────
+
 async function buscarUsuariosSemelhantes() {
-  // fecha sidebar
   document.querySelector('.option-bar')?.classList.remove('open');
   document.querySelector('.sidebar-overlay')?.classList.remove('show');
 
-  // Se o preload ainda não terminou, espera — mas mostra loading leve
   if (!preloadPronto) {
     mostrarLoadingLeve();
     await preloadPromise;
@@ -535,7 +508,6 @@ async function buscarUsuariosSemelhantes() {
 
   let resultados;
   if (!temFiltro) {
-    // sem filtros: mostra todos (ordem do preload)
     resultados = todosUsuarios.slice(0, 40);
   } else {
     resultados = todosUsuarios
@@ -547,9 +519,7 @@ async function buscarUsuariosSemelhantes() {
   renderizarAmbos(resultados);
 }
 
-// ─── Renderização ─────────────────────────────────────────────────────────────
 function renderizarAmbos(lista) {
-  // Quando há resultados para mostrar, esconde o alert-area
   const alertArea = document.querySelector('.alert-area');
   if (alertArea) alertArea.classList.add('hidden');
   renderizarResultados(lista);
@@ -635,16 +605,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const cache = lerCache();
   if (cache && cache.length) {
-    // Tem cache: esconde o alert e mostra os resultados imediatamente
     if (alertArea) alertArea.classList.add('hidden');
     renderizarAmbos(cache);
     todosUsuarios = cache;
   } else {
-    // Sem cache: mostra o alert-area
     if (alertArea) alertArea.classList.remove('hidden');
   }
 
-  // Botão "Encontrar pessoas" abre o modal de filtros
   if (startBtn && optionBar && overlay) {
     startBtn.addEventListener('click', () => {
       optionBar.classList.add('open');
@@ -710,90 +677,89 @@ function calcularSimilaridadeCampos(perfil, filtros, idade) {
   let score = 0;
   let campos = 0;
 
-  // Permite múltiplos termos separados por vírgula ou espaço
   function termosFiltro(valor) {
     if (!valor) return [];
     return valor.split(',').map(t => t.trim()).filter(Boolean).flatMap(t => t.split(' ')).filter(Boolean);
   }
 
-  // Estilo
+
   if (filtros['estilo']) {
     const termos = termosFiltro(filtros['estilo']);
     const campo = normalizar(perfil.styles || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Personalidade
+
   if (filtros['personalidade']) {
     const termos = termosFiltro(filtros['personalidade']);
     const campo = normalizar(perfil.personality || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Medos
+
   if (filtros['medos']) {
     const termos = termosFiltro(filtros['medos']);
     const campo = normalizar(perfil.fears || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Sonhos
+
   if (filtros['sonhos e desejos']) {
     const termos = termosFiltro(filtros['sonhos e desejos']);
     const campo = normalizar(perfil.dreams || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Musicas
+
   if (filtros['musicas']) {
     const termos = termosFiltro(filtros['musicas']);
     const campo = normalizar(perfil.music || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Personagens
+
   if (filtros['personagens']) {
     const termos = termosFiltro(filtros['personagens']);
     const campo = normalizar(perfil.characters || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Hobbies
+
   if (filtros['hobbies']) {
     const termos = termosFiltro(filtros['hobbies']);
     const campo = normalizar(perfil.hobbies || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Localização
+
   if (filtros['localização']) {
     const termos = termosFiltro(filtros['localização']);
     const campo = normalizar(perfil.location || perfil.localizacao || '');
     if (termos.some(t => campo.includes(normalizar(t)))) score += 2;
     campos++;
   }
-  // Genero
+
   if (filtros['genero']) {
     const termos = termosFiltro(filtros['genero']);
     const campo = normalizar(perfil.gender || '');
     if (termos.some(t => campo === normalizar(t))) score += 2;
     campos++;
   }
-  // Estado Civil
+
   if (filtros['estado civil']) {
     const termos = termosFiltro(filtros['estado civil']);
     const campo = normalizar(perfil.maritalStatus || '');
     if (termos.some(t => campo === normalizar(t))) score += 2;
     campos++;
   }
-  // MBTI
+
   if (filtros['mbti']) {
     const termos = termosFiltro(filtros['mbti']);
     const campo = normalizar(perfil.MBTI || perfil.mbti || '');
     if (termos.some(t => campo === normalizar(t))) score += 2;
     campos++;
   }
-  // Idade
+
   if (filtros['idade-minima'] || filtros['idade-maxima']) {
     const min = parseInt(filtros['idade-minima']) || 0;
     const max = parseInt(filtros['idade-maxima']) || 200;
@@ -801,7 +767,6 @@ function calcularSimilaridadeCampos(perfil, filtros, idade) {
     campos++;
   }
 
-  // Busca por palavras-chave em todos os textos do usuário
   const palavrasFiltro = Object.values(filtros)
     .filter(Boolean)
     .flatMap(termosFiltro)
@@ -836,7 +801,6 @@ function calcularSimilaridadeCampos(perfil, filtros, idade) {
   return campos ? score / campos : 0;
 }
 
-// Carrossel dinâmico
 class FriendsCarousel {
     constructor() {
         this.currentIndex = 0;
@@ -847,7 +811,6 @@ class FriendsCarousel {
     }
 
     setUsers(newUsers) {
-        // Remove duplicados pelo profile (url) ou username
         const vistos = new Set();
         this.users = newUsers.filter(u => {
             const key = u.profile || u.username;
@@ -918,7 +881,6 @@ class FriendsCarousel {
             }
         });
 
-        // Corrige as bolinhas para sempre mostrar todas e ativar a correta
         const indicatorElements = this.indicators.children;
         Array.from(indicatorElements).forEach((indicator, index) => {
             indicator.classList.toggle('active', index === this.currentIndex);
@@ -962,7 +924,6 @@ class FriendsCarousel {
     }
 }
 
-// Spinner CSS
 const style = document.createElement('style');
 style.innerHTML = `
 `;
@@ -989,14 +950,11 @@ function carregarFotoPerfil() {
   const navPic = document.getElementById('nav-pic');
   const defaultPic = './src/img/default.jpg';
 
-  // --- PASSO 1: CARREGAMENTO IMEDIATO (CACHE) ---
-  // Tenta pegar a URL que salvamos na última vez que ele entrou
   const cachedPhoto = localStorage.getItem('user_photo_cache');
   if (cachedPhoto) {
     navPic.src = cachedPhoto;
   }
 
-  // --- PASSO 2: VALIDAÇÃO EM SEGUNDO PLANO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const userId = user.uid;
@@ -1007,10 +965,9 @@ function carregarFotoPerfil() {
         if (userMediaSnap.exists()) {
           const userPhoto = userMediaSnap.data().userphoto || defaultPic;
 
-          // Se a foto do banco for diferente da foto que está no cache agora
           if (userPhoto !== cachedPhoto) {
-            navPic.src = userPhoto; // Atualiza a imagem na tela
-            localStorage.setItem('user_photo_cache', userPhoto); // Atualiza o cache para a próxima vez
+            navPic.src = userPhoto; 
+            localStorage.setItem('user_photo_cache', userPhoto);
           }
         } else {
           navPic.src = defaultPic;
@@ -1021,7 +978,6 @@ function carregarFotoPerfil() {
         if (!cachedPhoto) navPic.src = defaultPic;
       }
     } else {
-      // Se não está logado, limpa o cache e volta pra padrão
       navPic.src = defaultPic;
       localStorage.removeItem('user_photo_cache');
     }

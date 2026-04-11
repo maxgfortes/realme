@@ -684,6 +684,38 @@ body.modal-open {
       color: #aaa;
     }
 
+.left-space-options {
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 12px;
+}
+
+.post-icon {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-icon svg {
+  height: 40px;
+}
+.user-info {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+}
+
+.post-header {
+  padding-bottom: 12px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+}
+
+
 
 
 /* Nova coluna lateral */
@@ -1467,10 +1499,12 @@ textarea#postText:focus {
     font-size: 20px !important;
     color: #cacaca !important;
     cursor: pointer;
-    padding: 0px;
+    padding: 12px;
     background-color: transparent!important;
     border: none !important;
     display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100%;
     width: 100%;
   }
@@ -1546,7 +1580,7 @@ textarea#postText:focus {
 }
 
 .post-layer {
-  position: absolute;
+  position: fixed;
   background-color: var(--bg-primary);
   width: 100vw;
   display: flex;
@@ -1554,7 +1588,17 @@ textarea#postText:focus {
   height: 100vh;
   z-index: 999999999999 !important;
   justify-content: space-between;
+  transform: translateX(-100%); 
+  transition: transform 0.2s ease-out; 
 }
+
+
+.post-layer.active { 
+  transform: translateX(0);
+}
+
+
+
 
 .header-layer h1 {
   font-size: 3vh;
@@ -1600,7 +1644,7 @@ textarea#postText:focus {
 .content-area {
   width: 100%;
   position: fixed;
-  height: 92%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1694,7 +1738,7 @@ textarea#postText:focus {
 
 .post-options {
   display: flex;
-  padding-top: 12px;
+  padding: 12px 0;
 }
 
 
@@ -1869,29 +1913,6 @@ textarea#postText:focus {
   padding: 0.75rem;
 }
 
-
-/* Estilos base para cobrir a tela */
-.post-layer {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100vh;
-    /* 1. Estado Inicial: Escondido fora da tela (à direita) */
-    transform: translateX(-100%); 
-    
-    /* 2. Tempo e tipo da transição */
-    transition: transform 0.2s ease-out; 
-
-    /* Esconde o conteúdo para prevenir rolagem desnecessária */
-    overflow: hidden; 
-}
-
-/* Classe que será ativada pelo JavaScript para MOSTRAR a camada */
-.post-layer.is-open {
-    /* Move o elemento de volta para a posição inicial (visível) */
-    transform: translateX(0); 
-}
 
 #global-msg-popup {
   background-color: #020202 !important;
@@ -2451,18 +2472,6 @@ footer {
     animation: shimmer 1.4s ease-in-out infinite;
   }
 
-    /* Post layer — tela cheia em mobile, modal em desktop */
-    #postLayer {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9000;
-      background: var(--bg-primary);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    #postLayer.active { display: block; }
-
     /* Área de upload com drag & drop */
     .file-box.drag-over .file-input-area {
       border-color: #4A90E2 !important;
@@ -2529,13 +2538,12 @@ footer {
 .feelings-stories {
   width: 100%;
   display: flex;
-  gap: 22px;
+  gap: 12px;
   overflow-x: auto;
-  padding: 14px 16px;
+  padding: 6px 38px 36px 16px;
   scrollbar-width: none;
-  height: 160px;
-  align-items: center;
-  display: none;
+  height: 200px;
+  overflow-y: hidden;
 }
 
 .feelings-stories::-webkit-scrollbar {
@@ -2543,29 +2551,222 @@ footer {
 }
 
 .feeling-item {
-  position: relative;
-  min-width: 70px;
+  min-width: 100px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
 }
+
 
 .feeling-item img {
   width: 74px;
   height: 74px;
   border-radius: 50%;
   object-fit: cover;
+  background-color: #333;
 }
 
-.feeling-text {
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1e1f22;
-  color: white;
-  font-size: 11px;
-  padding: 4px 8px;
+
+.humor-note-border {
+  background: linear-gradient(170deg, rgba(58, 58, 64, 1) 0%, rgba(30, 31, 34, 1) 57%);
+  font-size: 13px;
+  border-radius: 14px;
+  padding: 1px;
+  max-height: 70px;
   max-width: 100px;
-  border-radius: 999px;
-  border: 1px solid #2b2d31;
+}
+
+.humor-note {
+  background-color: #1e1f22;
+  color: #ddd;
+  padding: 5px 10px;
+  border-radius: 14px;
+  height: 100%;
+  text-align: center;
+  line-height: 15px;
+  max-height: 67px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.humor-note.placeholder {
+  color: #666;
+}
+
+.user-img {
+  display: flex;
+  justify-content: center;
+}
+
+.note-username {
+  text-transform: lowercase;
+  padding: 4px;
+  font-size: 0.8rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+  width: 116px;
+  text-align: center;
+}
+
+.note-user-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 6px;
+}
+
+
+.feeling-create-overlay {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  z-index: 999999;
+  background: var(--bg-modal);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.feeling-create-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.feeling-create-modal {
+  background-color: #212327;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 60vh;
+  border-radius: 22px 22px 0 0;
+  padding: 12px 16px calc(26px + env(safe-area-inset-bottom)) 12px;
+  transform: translateY(100%);
+  transition: transform .38s cubic-bezier(.16,1,.3,1);
+}
+
+.feeling-create-overlay.active .feeling-create-modal {
+  transform: translateY(0);
+}
+
+.user-header {
+  display: flex;
+  gap: 12px;
+}
+
+.pfp-modal-feeling {
+  height: 64px;
+  aspect-ratio: 1/1;
+}
+
+.pfp-modal-feeling img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.user-info-modal-feeling {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.username-modal-feeling {
+  font-size: 1.02rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+
+
+.modal-feeling-btns {
+  height: 120px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.modal-feeling-btns button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 16px;
+}
+
+
+
+.send-feeling-btn {
+  background-color: var(--primary-btn);
+  color: #fff;
+}
+
+.cancel-feeling-btn {
+  background-color: transparent;
+  color: var(--primary-btn);
+}
+
+.modal-feeling-grab {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.feelings-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.feelings-grid {
+  display: grid;
+  width: 100%;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+}
+
+
+.feeling-btn {
+  background-color: #323438;
+  border: none;
+  font-size: 15px;
+  color: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.feeling-btn.selected {
+  background-color: rgb(87, 91, 95);
+}
+
+.post-informations {
+  font-size: 14.5px;
+  color: #ddd;
+  display: none;
+}
+
+.post-informations span{
+  font-weight: bold;
+  color: #fff;
 }

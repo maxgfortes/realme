@@ -329,50 +329,6 @@ function agrupar(atividades) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// ALGORITMO DE RANKING
-// ════════════════════════════════════════════════════════════════════════════
-/**
- * Calcula score de cada grupo para ordenação final.
- *
- * Base: score cronológico decrescente (mais recente = maior score).
- * Modificadores:
- *   +40%  se o ator for amigo do usuário atual
- *   +15%  se o tipo for "big" (mais relevante)
- *   Fator de redescoberta aleatória: ±10% para quebrar monotonia
- *     — aplicado com peso menor em atividades muito recentes (< 6h)
- *
- * Uma atividade de amigo de 3 dias atrás ainda pode superar
- * um desconhecido de 1 dia atrás, mas nunca supera algo de horas atrás.
- */
-function calcularRanking(grupos, amigosSet, currentUid) {
-  const agora = Date.now();
-
-  return grupos.map(grupo => {
-    const ageMs    = agora - grupo.ultimoMs;
-    const ageHours = ageMs / 3600000;
-
-    // Score base: decai com o tempo (0 a 1, 1 = agora, 0 ≈ 2 semanas)
-    const baseScore = Math.max(0, 1 - ageMs / DUAS_SEMANAS_MS);
-
-    // Boost de amigo — suas próprias atividades recebem o mesmo boost
-    const isSeu   = currentUid && grupo.items.some(i => i.actorUid === currentUid);
-    const isAmigo = grupo.items.some(i => amigosSet.has(i.actorUid));
-    const friendBoost = (isAmigo || isSeu) ? 0.40 : 0;
-
-    // Boost de tipo big
-    const typeBoost = isBig(grupo.tipo) ? 0.15 : 0;
-
-    // Fator de redescoberta — menor para conteúdo muito fresco
-    const recentDamp = ageHours < 6 ? 0.02 : 0.10;
-    const redescoberta = (Math.random() * 2 - 1) * recentDamp;
-
-    const score = baseScore * (1 + friendBoost + typeBoost) + redescoberta;
-
-    return { ...grupo, _score: score, _isAmigo: isAmigo, _isSeu: isSeu };
-  });
-}
-
-// ════════════════════════════════════════════════════════════════════════════
 // INJETAR CSS
 // ════════════════════════════════════════════════════════════════════════════
 function injetarCSS() {

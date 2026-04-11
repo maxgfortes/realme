@@ -18,9 +18,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
-// ═══════════════════════════════════════════════════════════
-// FIREBASE (reutiliza instância existente se já inicializada)
-// ═══════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -34,9 +31,6 @@ const _app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const _db  = getFirestore(_app);
 const _auth = getAuth(_app);
 
-// ═══════════════════════════════════════════════════════════
-// CACHE INTERNO
-// ═══════════════════════════════════════════════════════════
 const _userCache = new Map();
 
 async function _getUser(uid) {
@@ -60,9 +54,6 @@ async function _getUser(uid) {
   } catch { return {}; }
 }
 
-// ═══════════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════════
 function _rel(ts) {
   if (!ts) return '';
   try {
@@ -87,9 +78,7 @@ function _fmt(txt) {
     .replace(/\n/g, '<br>');
 }
 
-// ═══════════════════════════════════════════════════════════
-// INJEÇÃO DE ESTILOS
-// ═══════════════════════════════════════════════════════════
+
 function _injectStyles() {
   if (document.getElementById('timeline-styles')) return;
   const s = document.createElement('style');

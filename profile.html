@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -528,7 +528,6 @@
   </div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Menu Lateral
   const menuOverlay = document.getElementById('menuOverlay');
   const openMenuBtns = document.querySelectorAll('[id="open-settings-btn"]');
   const closeMenuBtn = document.getElementById('closeMenu');
@@ -554,13 +553,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // Sticky Menu on Scroll
   const profileMenu = document.getElementById('profileMenu');
   const menuPlaceholder = document.querySelector('.menu-placeholder');
   const navbarHeight = 60;
   let menuOriginalTop = 0;
 
-  // Calcula a posição inicial do menu
   window.addEventListener('load', () => {
     menuOriginalTop = profileMenu.offsetTop;
   });
@@ -577,7 +574,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Tabs com Slide e Swipe
   const buttons = document.querySelectorAll('.profile-menu .menu-item');
   const tabsContainer = document.querySelector('.tabs-container');
   const slider = document.querySelector('.slider');
@@ -585,31 +581,25 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTab = 0;
   const totalTabs = 3;
 
-  // Função para mudar de tab
   function changeTab(index) {
     if (index < 0 || index >= totalTabs || currentTab === index) return;
     
     currentTab = index;
-    
-    // Atualiza menu ativo
+
     buttons.forEach(btn => btn.classList.remove('active'));
     buttons[index].classList.add('active');
 
-    // Move o slider
     slider.style.transform = `translateX(${index * 100}%)`;
 
-    // Desliza as tabs
     tabsContainer.style.transform = `translateX(-${index * 33.333}%)`;
   }
 
-  // Click nos botões
   buttons.forEach((button, index) => {
     button.addEventListener('click', () => {
       changeTab(index);
     });
   });
 
-  // Touch/Swipe para trocar tabs
   let touchStartX = 0;
   let touchEndX = 0;
   let touchStartY = 0;
@@ -630,20 +620,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleSwipe() {
     const diffX = touchStartX - touchEndX;
     const diffY = Math.abs(touchStartY - touchEndY);
-    
-    // Verifica se é um swipe horizontal (não vertical)
+
     if (Math.abs(diffX) > minSwipeDistance && diffY < 100) {
       if (diffX > 0) {
-        // Swipe para esquerda - próxima tab
         changeTab(currentTab + 1);
       } else {
-        // Swipe para direita - tab anterior
         changeTab(currentTab - 1);
       }
     }
   }
 
-  // Mouse drag para desktop
   let isDragging = false;
   let dragStartX = 0;
   let dragStartY = 0;
@@ -682,7 +668,6 @@ document.addEventListener('DOMContentLoaded', () => {
     profileBody.style.cursor = 'default';
   });
 
-  // ===== MODAL "VER MAIS" =====
   const moreOverlay = document.querySelector('.more-overlay');
   const moreModal   = document.querySelector('.more-info-modal');
   const viewMoreBtn = document.querySelector('.view-more');
@@ -712,7 +697,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === moreOverlay) closeMoreModal();
   });
 
-  // Drag to close — touch
   let _dragStartY = 0, _dragCurY = 0, _dragging = false;
 
   dragArea.addEventListener('touchstart', (e) => {
@@ -740,7 +724,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Drag to close — mouse
   let _mouseStart = 0, _mouseDragging = false;
 
   dragArea.addEventListener('mousedown', (e) => {
@@ -773,7 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }); 
 </script>
 <script type="module" src="./src/js/profiles.js"></script>
-<!--<script src="https://www.youtube.com/iframe_api"></script>-->
+<script src="https://www.youtube.com/iframe_api"></script>
 <script type="module" src="./src/js/auth-verification.js"></script>
 </body>
 </html>

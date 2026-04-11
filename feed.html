@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="./src/img/icon.png" type="image/png" />
@@ -13,7 +13,7 @@
   <link rel="dns-prefetch" href="https://i.postimg.cc" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f0f0f"/>
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="./src/img/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="./src/styles/base.css" />
@@ -30,7 +30,6 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
   <style>
-    /* === ESTILOS DO POST === */
     .post-card {
       background: rgba(20, 20, 20, 0.582);
       padding: 20px;
@@ -152,7 +151,6 @@
     justify-content: center;
   }
 
-  /* Menu bottom - fix: estava display:none no HTML mas o JS precisa de display block via .active */
   .menu-bottom-layer {
     display: none;
     position: fixed;
@@ -175,18 +173,49 @@
 </div>
 
 
+<div class="feeling-create-overlay" id="feeling-overlay">
+  <div class="feeling-create-modal" id="feeling-modal">
+    <div class="user-header">
+      <div class="pfp-modal-feeling">
+        <img src="https://i.ibb.co/dJ2cdtzT/IMG-8203.jpg" alt="">
+      </div>
+      <div class="user-info-modal-feeling">
+        <div class="username-modal-feeling">Seu Status Atual</div>
+      </div>
+    </div>
+    <div class="feelings-area">
+      <div class="feelings-grid">
+        <button class="feeling-btn">Feliz</button>
+        <button class="feeling-btn">Ansioso</button>
+        <button class="feeling-btn">Triste</button>
+        <button class="feeling-btn">Apatico</button>
+        <button class="feeling-btn">Bravo</button>
+        <button class="feeling-btn">Cansado</button>
+        <button class="feeling-btn">Chateado</button>
+        <button class="feeling-btn">Alegre</button>
+        <button class="feeling-btn">Pensativo</button>
+        <button class="feeling-btn">Depressivo</button>
+        <button class="feeling-btn">Medo</button>
+        <button class="feeling-btn">Nostalgico</button>
+      </div>
+    </div>
+    <div class="modal-feeling-btns">
+      <button class="send-feeling-btn" id="enviarFeeling">Enviar</button>
+      <button class="cancel-feeling-btn" id="cancelarFeeling">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
 
 <div class="post-layer" id="postLayer">
-  <div class="header-layer">
-    <h1 class="header">Nova publicação</h1> 
-    <button id="closeLayerBtn" class="back-post">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
-        <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-      </svg>
-    </button>
-  </div>
-
   <div class="content-area">
+    <div class="header-layer">
+      <h1 class="header">Nova publicação</h1> 
+      <button id="closeLayerBtn" class="back-post">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+    </div>
     <div class="post-content-type">
       <div class="text-area">
         <div class="text-input-area">
@@ -218,6 +247,7 @@
     </div>
   </div>
 </div>
+
 
 
   <div class="navbar-top" id="navbar-top">
@@ -262,45 +292,22 @@
         </div>
         </div>
     </section>
-    <div class="feelings-stories">
-  
-  <div class="feeling-item">
-    <div class="feeling-text">maxgfortes está triste</div>
-    <img src="./src/img/default.jpg" alt="maxgfortes">
+  <div class="feelings-stories">
+  <div class="feeling-item my-feeling">
+    <div class="note-user-infos">
+      <div class="note-pfp">
+        <div class="note-pfp-border">
+          <img src="./src/img/default2.jpg" alt="">
+        </div>
+      </div>
+      <div class="note-username">...</div>
+    </div>
+    <div class="humor-note-border" id="create-feeling-btn">
+      <div class="humor-note placeholder">Como você está se sentindo?</div>
+    </div>
   </div>
-
-  <div class="feeling-item">
-    <div class="feeling-text">ana está feliz</div>
-    <img src="./src/img/default.jpg" alt="ana">
   </div>
-
-  <div class="feeling-item">
-    <div class="feeling-text">joão está cansado</div>
-    <img src="./src/img/default.jpg" alt="joão">
-  </div>
-
-  <div class="feeling-item">
-    <div class="feeling-text">maria está animada</div>
-    <img src="./src/img/default.jpg" alt="maria">
-  </div>
-
-    <div class="feeling-item">
-    <div class="feeling-text">ana está feliz</div>
-    <img src="./src/img/default.jpg" alt="ana">
-  </div>
-
-  <div class="feeling-item">
-    <div class="feeling-text">joão está cansado</div>
-    <img src="./src/img/default.jpg" alt="joão">
-  </div>
-
-  <div class="feeling-item">
-    <div class="feeling-text">maria está animada</div>
-    <img src="./src/img/default.jpg" alt="maria">
-  </div>
-
-</div>
-    <div id="feed"></div>
+      <div id="feed"></div>
   </main>
 
   <div class="navbar-bottom">
@@ -324,137 +331,41 @@
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-  query,
-  orderBy,
-  limit
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-  authDomain: "ifriendmatch.firebaseapp.com",
-  projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
-  messagingSenderId: "306331636603",
-  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-  measurementId: "G-D96BEW6RC3"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-async function carregarNovosUsuarios() {
-  const container = document.querySelector('.new-people');
-  if (!container) return;
-  // Remove antigos
-  container.querySelectorAll('.newuser').forEach(e => e.remove());
-
-  // Busca últimos 6 usuários
-  const q = query(collection(db, "newusers"), orderBy("createdat", "desc"), limit(6));
-  const snap = await getDocs(q);
-
-  for (const docu of snap.docs) {
-    const { userid } = docu.data();
-    // Busca dados do usuário
-    const userRef = doc(db, "users", userid);
-    const userSnap = await getDoc(userRef);
-    let displayname = "Novo Usuário";
-    let username = "";
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      displayname = userData.displayname || userData.username || "Novo Usuário";
-      username = userData.username || "";
-    }
-    // Busca foto de perfil
-    let userphoto = "./src/img/default.jpg";
-    try {
-      const photoRef = doc(db, "users", userid, "user-infos", "user-media");
-      const photoSnap = await getDoc(photoRef);
-      if (photoSnap.exists()) {
-        userphoto = photoSnap.data().userphoto || userphoto;
-      }
-    } catch {}
-
-    // Cria elemento
-    const div = document.createElement('div');
-    div.className = "newuser";
-    div.innerHTML = `
-      <img src="${userphoto}" alt="Avatar" onerror="this.src='./src/img/default.jpg'">
-      <div class="new-user-info" style="cursor:pointer;" data-uid="${userid}">
-        <span class="new-user-username" style="font-weight:bold;">${displayname}</span>
-        <span class="new-user-username" style="font-size:13px;color:#aaa;">@${username}</span>
-      </div>
-    `;
-    container.insertBefore(div, container.querySelector('.reloadarea'));
-  }
-}
-
-// Evento do botão recarregar
-document.addEventListener('DOMContentLoaded', () => {
-  // Evento para abrir perfil ao clicar no botão
-  document.querySelector('.new-people').addEventListener('click', (e) => {
-  const infoDiv = e.target.closest('.new-user-info');
-  if (infoDiv && infoDiv.dataset.uid) {
-    window.location.href = `PF.html?userid=${encodeURIComponent(infoDiv.dataset.uid)}`;
-  }
-});
-});
-</script>
 <script type="module" src="./src/js/feed.js"></script>
-<script type="module" src="./src/js/pfp-navbar.js"></script>
 <script type="module" src="./src/js/auth-verification.js"></script>
-<script type="module" src="./src/js/notification.js"></script>
+<script type="module" src="./src/js/notifications.js"></script>
 <script type="module" src="./src/js/badge.js"></script>
+<script type="module" src="./src/js/feeling-notes.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
-      .then(() => console.log('Service Worker registrado com sucesso'))
-      .catch(err => console.error('Falha ao registrar o SW:', err));
-    // Registrar o service worker de mensagens do Firebase (se existir na raiz)
+      .then(() => console.log(''))
+      .catch(err => console.error('', err));
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
-      .then(() => console.log('Firebase Messaging SW registrado com sucesso'))
-      .catch(err => console.warn('firebase-messaging-sw.js não encontrado ou falha ao registrar:', err));
+      .then(() => console.log(''))
+      .catch(err => console.warn('', err));
   });
 }
-document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona os elementos principais:
-    const postLayer = document.getElementById('postLayer');
-    const openBtn = document.getElementById('openPostLayer'); // Botão que ABRIRÁ a camada
-    const closeBtn = document.getElementById('closeLayerBtn'); // Botão que FECHARÁ a camada
-    
-    // --- Lógica de Abertura (Slide da Direita para Esquerda) ---
-    function openPostLayer() {
-        if (postLayer) {
-            postLayer.classList.add('is-open');
-        }
-    }
 
-    // --- Lógica de Fechamento (Slide da Esquerda para Direita) ---
-    function closePostLayer() {
-        if (postLayer) {
-            postLayer.classList.remove('is-open');
-        }
-    }
-    if (openBtn) {
-        openBtn.addEventListener('click', openPostLayer);
-    }
 
-    // 2. Ao clicar no botão de fechar (dentro do layer)
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closePostLayer);
-    }
+const overlay = document.getElementById("feeling-overlay");
+const openBtn = document.getElementById("create-feeling-btn");
+const cancelBtn = document.getElementById("cancelarFeeling");
+
+openBtn.addEventListener("click", () => {
+  overlay.classList.add("active");
 });
 
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    overlay.classList.remove("active");
+  }
+});
 
-
+cancelBtn.addEventListener("click", () => {
+  overlay.classList.remove("active");
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const navbar = document.querySelector('.navbar-top');

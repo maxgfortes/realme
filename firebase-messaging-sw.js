@@ -1,12 +1,6 @@
-// ===================
-// SERVICE WORKER — REALME SPA
-// Versão com Firebase Cloud Messaging (FCM) integrado
-// ===================
-
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
-// ─── Firebase init no SW ────────────────────────────────────
 firebase.initializeApp({
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -43,7 +37,6 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// ─── Clique na notificação ───────────────────────────────────
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   if (event.action === "close") return;
@@ -54,7 +47,6 @@ self.addEventListener("notificationclick", (event) => {
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // Foca janela já aberta se existir
         for (const client of clientList) {
           if (client.url === urlToOpen && "focus" in client) {
             return client.focus();
@@ -69,14 +61,12 @@ self.addEventListener("notificationclick", (event) => {
 const CACHE_NAME = "realme-spa-v2";
 const urlsToCache = [
   "./",
-  "./feed.html",
-  "./explore.html",
   "./src/img/icon.png",
   "./src/img/default.jpg",
 ];
 
 self.addEventListener("install", (event) => {
-  console.log("🔧 SW: Instalando...");
+  console.log("");
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
       cache.addAll(urlsToCache).catch((err) =>
@@ -87,7 +77,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("✅ SW: Ativado");
+  console.log("");
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -122,5 +112,3 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
-
-console.log("🚀 SW RealMe carregado com FCM");

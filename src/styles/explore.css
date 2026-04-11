@@ -431,6 +431,7 @@ body {
 .act-big {
     padding: 8px;
     display: flex;
+    gap: 12px;
 }
 
 .act-doble {
@@ -1168,6 +1169,7 @@ body {
 .xact-list {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .xact-empty {
@@ -1347,4 +1349,18 @@ body {
       font-size: 17px;
       font-weight: bold;
       color: #fff;
+    }
+
+
+    .act-icon {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1/1;
+    }
+
+    .act-icon svg {
+      height: 40px;
+      width: 40px;
     }

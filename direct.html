@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="./src/img/icon.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
@@ -52,7 +52,7 @@
   <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
 </svg>
         </button>
-        <img src="./src/icon/default.jpg" alt="Foto" id="dmChatUserImg" onerror="this.src='./src/icon/default.jpg'" >
+        <img src="./src/img/default.jpg" alt="Foto" id="dmChatUserImg" onerror="this.src='./src/img/default.jpg'" >
         <span id="dmChatUserName" class="dm-chat-username" style="cursor:pointer;">Selecione uma conversa</span>
       </div>
       <div class="dm-messages" id="dmMessages">
@@ -109,8 +109,8 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
-      .then(() => console.log('Service Worker registrado com sucesso'))
-      .catch(err => console.error('Falha ao registrar o SW:', err));
+      .then(() => console.log(''))
+      .catch(err => console.error('', err));
   });
 }
 </script>

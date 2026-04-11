@@ -12,10 +12,6 @@ import {
   triggerMudancaStatus
 } from './activitie-creator.js';
 
-
-// ═══════════════════════════════════════════
-// FIREBASE CONFIG
-// ═══════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -29,7 +25,6 @@ const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
 
-// ─── ImgBB ───────────────────────────────────────────────────────
 const IMGBB_API_KEY = "fc8497dcdf559dc9cbff97378c82344c";
 
 async function uploadToImgBB(file) {
@@ -41,20 +36,15 @@ async function uploadToImgBB(file) {
   throw new Error('ImgBB: ' + (data.error?.message || 'Erro desconhecido'));
 }
 
-// ═══════════════════════════════════════════
-// ESTADO
-// ═══════════════════════════════════════════
+
 let currentUser = null;
 let currentData = {};
 let pendingUploads = { pfp: null, banner: null };
 
-// ═══════════════════════════════════════════
-// SELETORES
-// ═══════════════════════════════════════════
+
 const pfpImg        = document.querySelector('.pfp');
 const bannerImg     = document.querySelector('.banner');
 const inputs        = document.querySelectorAll('.label-input');
-// 0=nome 1=username 2=pronomes 3=bio 4=genero(→select) 5=localizacao 6=relacionamento(→select) 7=musica 8=corPerfil
 const inNome        = inputs[0];
 const inUsername    = inputs[1];
 const inPronomes    = inputs[2];
@@ -64,7 +54,7 @@ const inMusica      = inputs[7];
 const inCor         = inputs[8];
 const saveBtn       = document.querySelector('.save-btn');
 
-// ─── Select gênero ───────────────────────────────────────────────
+
 const _inGeneroOrig = inputs[4];
 const selGenero = document.createElement('select');
 selGenero.className = _inGeneroOrig.className;
@@ -80,7 +70,6 @@ selGenero.style.cssText = 'width:100%;background:transparent;border:none;color:i
 });
 _inGeneroOrig.parentNode.replaceChild(selGenero, _inGeneroOrig);
 
-// ─── Select relacionamento (opções dependem do gênero) ───────────
 const _inRelacOrig = inputs[6];
 const selRelac = document.createElement('select');
 selRelac.className = _inRelacOrig.className;
@@ -115,9 +104,7 @@ _inRelacOrig.parentNode.replaceChild(selRelac, _inRelacOrig);
 const inGenero = selGenero;
 const inRelac  = selRelac;
 
-// ═══════════════════════════════════════════
-// TOAST DE FEEDBACK
-// ═══════════════════════════════════════════
+
 let toastTimeout;
 function showToast(msg, type = 'info') {
   let toast = document.getElementById('edit-toast');
@@ -149,14 +136,7 @@ function showToast(msg, type = 'info') {
     }, 3500);
   }
 }
-function hideToast() {
-  const toast = document.getElementById('edit-toast');
-  if (toast) { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(20px)'; }
-}
 
-// ═══════════════════════════════════════════
-// VALIDAÇÕES
-// ═══════════════════════════════════════════
 const RULES = {
   nome: {
     max: 40,
@@ -207,7 +187,6 @@ const RULES = {
   },
 };
 
-// Contador de caracteres em tempo real
 function setupCharCounter(input, fieldKey) {
   const rule = RULES[fieldKey];
   if (!rule?.max) return;
@@ -225,7 +204,6 @@ function setupCharCounter(input, fieldKey) {
   update();
 }
 
-// Feedback visual em campo inválido
 function setFieldError(input, msg) {
   input.style.borderBottom = '2px solid #f85149';
   let err = input.parentElement.querySelector('.field-error');
@@ -238,9 +216,7 @@ function clearFieldError(input) {
   input.parentElement.querySelector('.field-error')?.remove();
 }
 
-// ═══════════════════════════════════════════
-// USERNAME FORCED LOWERCASE
-// ═══════════════════════════════════════════
+
 inUsername.addEventListener('input', () => {
   const pos = inUsername.selectionStart;
   inUsername.value = inUsername.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -248,14 +224,12 @@ inUsername.addEventListener('input', () => {
   clearFieldError(inUsername);
 });
 
-// Limpa erros ao digitar
+
 [inNome, inPronomes, inBio, inLocalizacao, inMusica].forEach(inp => {
   inp.addEventListener('input', () => clearFieldError(inp));
 });
 
-// ═══════════════════════════════════════════
-// UPLOAD DE IMAGEM (pfp e banner)
-// ═══════════════════════════════════════════
+
 function criarFileInput(accept, callback) {
   const input = document.createElement('input');
   input.type = 'file';
@@ -289,7 +263,6 @@ async function uploadImagem(file) {
   return url;
 }
 
-// Área clicável: PFP
 document.querySelector('.pfp-area').addEventListener('click', () => {
   const fi = criarFileInput('image/*', file => {
     const err = validarImagem(file);
@@ -301,7 +274,6 @@ document.querySelector('.pfp-area').addEventListener('click', () => {
   fi.click();
 });
 
-// Área clicável: Banner
 document.querySelector('.banner-area').addEventListener('click', () => {
   const fi = criarFileInput('image/*', file => {
     const err = validarImagem(file);
@@ -335,9 +307,7 @@ function addCameraOverlay(containerSel) {
 addCameraOverlay('.pfp-area');
 addCameraOverlay('.banner-area');
 
-// ═══════════════════════════════════════════
-// CARREGAR DADOS ATUAIS
-// ═══════════════════════════════════════════
+
 async function carregarDadosAtuais(uid) {
   try {
     const [userDoc, mediaDoc, moreDoc, aboutDoc, linksDoc] = await Promise.all([
@@ -355,7 +325,6 @@ async function carregarDadosAtuais(uid) {
 
     currentData = { ...u, media: m, moreInfos: mi, about: a, linksData: l };
 
-    // Preenche campos principais
     inNome.value       = u.displayName || u.displayname || u.name || '';
     inUsername.value   = u.username || '';
     inBio.value        = mi.bio || '';
@@ -366,17 +335,14 @@ async function carregarDadosAtuais(uid) {
     inMusica.value = m.musicTheme || '';
     if (m.profileColor) inCor.value = m.profileColor;
 
-    // Pronomes: pronom1/pronom2
     const p1 = a.pronom1 || '', p2 = a.pronom2 || '';
     inPronomes.value = p2 ? `${p1}/${p2}` : p1;
 
-    // Fotos
     const foto = m.pfp || m.userphoto;
     if (foto) pfpImg.src = foto;
     const banner = m.banner || m.headerphoto;
     if (banner) bannerImg.src = banner;
 
-    // ─── Preenche inputs de links ───────────────────────────────
     document.querySelectorAll('[data-link]').forEach(input => {
       const key = input.dataset.link;
       input.value = l[key] || '';
@@ -385,9 +351,6 @@ async function carregarDadosAtuais(uid) {
   } catch (e) { console.error('carregarDados:', e); showToast('Erro ao carregar seus dados.', 'error'); }
 }
 
-// ═══════════════════════════════════════════
-// VERIFICAR SE USERNAME JÁ EXISTE
-// ═══════════════════════════════════════════
 async function usernameDisponivel(newUsername, currentUid) {
   if (newUsername === (currentData.username || '')) return true;
   const snap = await getDoc(doc(db, 'usernames', newUsername));
@@ -395,14 +358,11 @@ async function usernameDisponivel(newUsername, currentUid) {
   return snap.data().uid === currentUid;
 }
 
-// ═══════════════════════════════════════════
-// SALVAR
-// ═══════════════════════════════════════════
+
 saveBtn.addEventListener('click', async () => {
   if (!currentUser) { showToast('Você precisa estar logado.', 'error'); return; }
   const uid = currentUser.uid;
  
-  // ── Validar todos os campos ──────────────────────
   const validations = [
     { input: inNome,        key: 'nome',       val: inNome.value.trim() },
     { input: inUsername,    key: 'username',   val: inUsername.value },
@@ -419,8 +379,7 @@ saveBtn.addEventListener('click', async () => {
     if (err) { setFieldError(input, err); hasError = true; }
   }
   if (hasError) { showToast('Corrija os campos em vermelho.', 'error'); return; }
- 
-  // ── Verificar disponibilidade do username ────────
+
   const newUsername = inUsername.value;
   showToast('Verificando username…', 'loading');
   let disponivel;
@@ -428,14 +387,12 @@ saveBtn.addEventListener('click', async () => {
   catch { showToast('Erro ao verificar username.', 'error'); return; }
   if (!disponivel) { setFieldError(inUsername, 'Este username já está em uso.'); showToast('Username já está em uso.', 'error'); return; }
  
-  // ── Upload de imagens (se houver) ────────────────
   saveBtn.disabled = true;
   showToast('Salvando…', 'loading');
  
   let pfpUrl    = currentData.media?.userphoto || currentData.media?.pfp || null;
   let bannerUrl = currentData.media?.banner || currentData.media?.headerphoto || null;
  
-  // Captura o que vai mudar antes dos uploads
   const mudouFoto    = !!pendingUploads.pfp;
   const mudouBanner  = !!pendingUploads.banner;
   const mudouNome    = inNome.value.trim() !== (currentData.displayName || currentData.displayname || currentData.name || '');
@@ -468,28 +425,23 @@ saveBtn.addEventListener('click', async () => {
     return;
   }
  
-  // ── Parsear pronomes ─────────────────────────────
   const pronoSplit = inPronomes.value.trim().split('/');
   const pronom1 = pronoSplit[0]?.trim() || '';
   const pronom2 = pronoSplit[1]?.trim() || '';
  
-  // ── Escrever no Firestore ────────────────────────
   try {
     const oldUsername = currentData.username || '';
  
-    // 1. Documento principal /users/{uid}
     await setDoc(doc(db, 'users', uid), {
       displayName: inNome.value.trim(),
       displayname: inNome.value.trim(),
       username:    newUsername,
     }, { merge: true });
- 
-    // 2. /usernames
+
     if (newUsername !== oldUsername) {
       await setDoc(doc(db, 'usernames', newUsername), { uid, username: newUsername });
     }
  
-    // 3. user-infos/user-media
     const mediaPayload = {
       musicTheme:   inMusica.value.trim(),
       profileColor: inCor.value,
@@ -498,12 +450,10 @@ saveBtn.addEventListener('click', async () => {
     if (bannerUrl) mediaPayload.banner = bannerUrl;
     await setDoc(doc(db, `users/${uid}/user-infos/user-media`), mediaPayload, { merge: true });
  
-    // 4. user-infos/more-infos
     await setDoc(doc(db, `users/${uid}/user-infos/more-infos`), {
       bio: inBio.value.trim(),
     }, { merge: true });
  
-    // 5. user-infos/about
     await setDoc(doc(db, `users/${uid}/user-infos/about`), {
       gender:        inGenero.value.trim(),
       location:      inLocalizacao.value.trim(),
@@ -511,8 +461,7 @@ saveBtn.addEventListener('click', async () => {
       pronom1,
       pronom2,
     }, { merge: true });
- 
-    // 6. user-infos/links
+
     const linksPayload = {};
     document.querySelectorAll('[data-link]').forEach(input => {
       const key = input.dataset.link;
@@ -520,14 +469,12 @@ saveBtn.addEventListener('click', async () => {
     });
     await setDoc(doc(db, `users/${uid}/user-infos/links`), linksPayload, { merge: true });
  
-    // 7. Limpa cache local do perfil
     try {
       Object.keys(localStorage)
         .filter(k => k.startsWith('profile_cache_'))
         .forEach(k => localStorage.removeItem(k));
     } catch {}
- 
-    // ✅ ATIVIDADES — coleta todos os campos alterados e dispara UMA única atividade
+
     const camposAlterados = [];
     if (mudouFoto)     camposAlterados.push('foto');
     if (mudouBanner)   camposAlterados.push('banner');
@@ -556,18 +503,15 @@ saveBtn.addEventListener('click', async () => {
   }
 });
 
-// ═══════════════════════════════════════════
-// SETUP DE CONTADORES
-// ═══════════════════════════════════════════
+
+
 setupCharCounter(inNome,        'nome');
 setupCharCounter(inUsername,    'username');
 setupCharCounter(inPronomes,    'pronomes');
 setupCharCounter(inBio,         'bio');
 setupCharCounter(inLocalizacao, 'localizacao');
 
-// ═══════════════════════════════════════════
-// AUTH
-// ═══════════════════════════════════════════
+
 onAuthStateChanged(auth, async user => {
   if (!user) {
     showToast('Você precisa estar logado.', 'error');
@@ -578,9 +522,7 @@ onAuthStateChanged(auth, async user => {
   await carregarDadosAtuais(user.uid);
 });
 
-// ═══════════════════════════════════════════
-// TOGGLE LINKS
-// ═══════════════════════════════════════════
+
 const toggle = document.getElementById('links-toggle');
 const linksList = document.querySelector('.links-list');
 const arrow = toggle.querySelector('.toggle-arrow');

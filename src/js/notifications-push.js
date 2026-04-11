@@ -1,14 +1,16 @@
-// ============================================================
-// notifications-push.js — RealMe Frontend
-// ============================================================
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
-import { getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
+  authDomain: "ifriendmatch.firebaseapp.com",
+  projectId: "ifriendmatch",
+  storageBucket: "ifriendmatch.appspot.com",
+  messagingSenderId: "306331636603",
+  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
+  measurementId: "G-D96BEW6RC3"
+};
 
-const app       = getApp();
-const db        = getFirestore(app);
-const messaging = getMessaging(app);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 const VAPID_KEY = "BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg";
 
@@ -44,7 +46,6 @@ function setDismissedNow() {
   catch {}
 }
 
-// Volta a perguntar depois de 3 dias se o usuário dispensou
 function shouldAskAgain() {
   const dismissedAt = getDismissedAt();
   if (!dismissedAt) return true;
@@ -56,7 +57,6 @@ function shouldAskAgain() {
 
 function mostrarModalPermissao() {
   return new Promise((resolve) => {
-    // Remove modal anterior se existir
     document.getElementById("fcm-perm-modal")?.remove();
 
     const overlay = document.createElement("div");
@@ -141,7 +141,6 @@ function mostrarModalPermissao() {
       resolve(false);
     };
 
-    // Fecha ao clicar fora
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) {
         overlay.remove();
@@ -152,8 +151,6 @@ function mostrarModalPermissao() {
   });
 }
 
-// ─── Modal explicativo para quando está BLOQUEADO ────────────
-
 function mostrarModalBloqueado() {
   document.getElementById("fcm-blocked-modal")?.remove();
 
@@ -161,7 +158,6 @@ function mostrarModalBloqueado() {
   const isSaf     = isSafari();
   const isPWA     = isIOSPWA();
 
-  // Instrução específica por plataforma
   let instrucao;
   if (isIos && isPWA) {
     instrucao = `
@@ -183,9 +179,8 @@ function mostrarModalBloqueado() {
       Depois abra o app pela tela inicial e ative as notificações.
     `;
   } else {
-    // Android / Desktop Chrome / Firefox
     instrucao = `
-      Clique no <strong>cadeado 🔒</strong> na barra de endereço do navegador<br>
+      Clique no <strong>cadeado</strong> na barra de endereço do navegador<br>
       → <strong>Permissões do site</strong> → <strong>Notificações</strong><br>
       e selecione <strong>Permitir</strong>.
     `;
@@ -213,7 +208,7 @@ function mostrarModalBloqueado() {
       color: #fff;
       text-align: center;
     ">
-      <div style="font-size: 36px; margin-bottom: 14px;">🔕</div>
+      <div style="font-size: 36px; margin-bottom: 14px;"></div>
       <div style="font-size: 17px; font-weight: 700; margin-bottom: 10px;">
         Notificações bloqueadas
       </div>
@@ -239,7 +234,6 @@ function mostrarModalBloqueado() {
 // ─── Registro do token FCM ───────────────────────────────────
 
 export async function registerPushNotifications(uid) {
-  // Navegador não suporta notificações
   if (!supportsNotifications()) {
     console.log("[FCM] Notificações não suportadas neste navegador.");
     return;
@@ -247,33 +241,26 @@ export async function registerPushNotifications(uid) {
 
   const perm = Notification.permission;
 
-  // Já bloqueado — mostra instrução de como desbloquear
   if (perm === "denied") {
     mostrarModalBloqueado();
     return;
   }
 
-  // Já concedido — só renova o token silenciosamente
   if (perm === "granted") {
     return _registrarToken(uid);
   }
 
-  // Ainda não perguntou ("default") — verifica se deve perguntar
   if (!shouldAskAgain()) {
     console.log("[FCM] Permissão adiada pelo usuário, esperando 3 dias.");
     return;
   }
 
-  // iOS sem PWA — notificações só funcionam via PWA instalada no iPhone
   if (isIOS() && !isIOSPWA()) {
-    // Mostra o modal explicativo mas não pede permissão ainda
-    // (o sistema iOS vai recusar de qualquer forma fora do PWA)
     const aceito = await mostrarModalPermissao();
-    if (aceito) mostrarModalBloqueado(); // explica como instalar o PWA
+    if (aceito) mostrarModalBloqueado(); 
     return;
   }
 
-  // Fluxo normal: mostra modal de contexto → pede permissão nativa
   const aceito = await mostrarModalPermissao();
   if (!aceito) return;
 
@@ -290,7 +277,6 @@ export async function registerPushNotifications(uid) {
   }
 }
 
-/** Registra o SW e salva o token no Firestore */
 async function _registrarToken(uid) {
   try {
     const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
@@ -375,7 +361,7 @@ function showToastNotification(title, body, url, icon) {
     ">×</button>
   `;
 
-  document.getElementById("fcm-toast-close")?.remove(); // limpa listeners
+  document.getElementById("fcm-toast-close")?.remove();
   document.body.appendChild(toast);
 
   toast.querySelector("#fcm-toast-close").onclick = (e) => {
@@ -390,6 +376,5 @@ function showToastNotification(title, body, url, icon) {
     });
   }
 
-  // Auto-remove após 5 segundos
   setTimeout(() => toast?.remove(), 5000);
 }

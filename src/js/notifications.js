@@ -231,7 +231,6 @@ async function renderNotifications(uid) {
 
   let snaps;
   try {
-    // Filtra apenas notificações visíveis do usuário logado
     const q = query(
       collection(db, "notifications"),
       where("toUid", "==", uid),
@@ -260,7 +259,6 @@ async function renderNotifications(uid) {
     return;
   }
 
-  // Buscar dados dos usuários (fromUid) em paralelo
   const rawNts = snaps.docs.map((d) => ({
     id: d.id,
     ...d.data(),
@@ -299,14 +297,12 @@ async function renderNotifications(uid) {
     list.appendChild(container);
   }
 
-  // Staggered animation
   list.querySelectorAll(".nt-swipe-wrapper").forEach((el, i) => {
     el.style.animationDelay = `${i * 40}ms`;
     el.classList.add("nt-animate-in");
   });
 }
 
-// ─── Auth guard ─────────────────────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
   if (user) {
     renderNotifications(user.uid);

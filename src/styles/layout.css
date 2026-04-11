@@ -12,7 +12,6 @@
   border-radius: 12px;
   max-width: 800px;
   box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  
 }
 
 .user-welcome {
@@ -948,24 +947,10 @@ textarea#postText:focus {
   display: none;
 }
 
-.feed-header .active {
-  display: flex;
-}
 
 
   .feed-options {
     display: none;
-  }
-
-  .more-options button{
-    font-size: 20px !important;
-    color: #888 !important;
-    cursor: pointer;
-    padding: 0px;
-    margin-bottom: 4vh;
-    margin-right: 1vh;
-    background-color: transparent!important;
-    border: none !important;
   }
 
 
