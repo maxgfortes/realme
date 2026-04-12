@@ -31,19 +31,40 @@ const auth = getAuth(app);
 
 // ─── Textos por sentimento ────────────────────────────────────────────────────
 const FEELING_TEXTS = {
-  "Feliz":      "está se sentindo feliz",
-  "Ansioso":    "está se sentindo ansioso...",
-  "Triste":     "está se sentindo triste...",
-  "Apatico":    "está se sentindo apático...",
-  "Bravo":      "está bravo hoje",
-  "Cansado":    "está se sentindo cansado...",
-  "Chateado":   "está chateado hoje",
-  "Alegre":     "está se sentindo alegre",
-  "Pensativo":  "está pensativo...",
-  "Depressivo": "está depressivo...",
-  "Medo":       "está com medo...",
-  "Nostalgico": "está bem nostálgico..."
+  M: {
+    "Feliz":      "está se sentindo feliz",
+    "Ansioso":    "está se sentindo ansioso...",
+    "Triste":     "está se sentindo triste...",
+    "Apatico":    "está se sentindo apático...",
+    "Bravo":      "está bravo hoje",
+    "Cansado":    "está se sentindo cansado...",
+    "Chateado":   "está chateado hoje",
+    "Alegre":     "está se sentindo alegre",
+    "Pensativo":  "está pensativo...",
+    "Depressivo": "está depressivo...",
+    "Medo":       "está com medo...",
+    "Nostalgico": "está bem nostálgico..."
+  },
+  F: {
+    "Feliz":      "está se sentindo feliz",
+    "Ansioso":    "está se sentindo ansiosa...",
+    "Triste":     "está se sentindo triste...",
+    "Apatico":    "está se sentindo apática...",
+    "Bravo":      "está brava hoje",
+    "Cansado":    "está se sentindo cansada...",
+    "Chateado":   "está chateada hoje",
+    "Alegre":     "está se sentindo alegre",
+    "Pensativo":  "está pensativa...",
+    "Depressivo": "está depressiva...",
+    "Medo":       "está com medo...",
+    "Nostalgico": "está bem nostálgica..."
+  }
 };
+
+function getFeelingText(feeling, gender) {
+  const map = gender === "F" ? FEELING_TEXTS.F : FEELING_TEXTS.M;
+  return map[feeling] || feeling;
+}
 
 // ─── Estado ───────────────────────────────────────────────────────────────────
 let currentUser     = null;
@@ -61,26 +82,39 @@ function lerCacheLocal(uid) {
   } catch { return null; }
 }
 
+// ─── Resolve gênero → "F" ou "M" ─────────────────────────────────────────────
+function resolverGenero(raw) {
+  if (!raw || typeof raw !== "string") return "M";
+  return raw.trim()[0].toUpperCase() === "F" ? "F" : "M";
+}
+
 // ─── Dados do usuário: cache → Firestore ─────────────────────────────────────
 async function buscarDadosUsuario(uid) {
   const cached = lerCacheLocal(uid);
   if (cached) {
     return {
       username: cached.username || "usuário",
-      photo:    cached.userphoto || "./src/img/default.jpg"
+      photo:    cached.userphoto || "./src/img/default.jpg",
+      gender:   resolverGenero(cached.gender)
     };
   }
   try {
-    const [mediaSnap, dataSnap] = await Promise.all([
+    const [mediaSnap, dataSnap, genderSnap] = await Promise.all([
       getDoc(doc(db, "users", uid, "user-infos", "user-media")),
-      getDoc(doc(db, "users", uid, "user-infos", "user-data"))
+      getDoc(doc(db, "users", uid, "user-infos", "user-data")),
+      getDoc(doc(db, "users", uid, "gender"))
     ]);
+    // tenta pegar o valor do campo independente do nome exato da chave
+    const genderRaw = genderSnap.exists()
+      ? (genderSnap.data().gender ?? genderSnap.data().value ?? Object.values(genderSnap.data())[0])
+      : null;
     return {
       photo:    mediaSnap.exists() ? (mediaSnap.data().userphoto || mediaSnap.data().pfp || "./src/img/default.jpg") : "./src/img/default.jpg",
-      username: dataSnap.exists()  ? (dataSnap.data().username   || "usuário")               : "usuário"
+      username: dataSnap.exists()  ? (dataSnap.data().username   || "usuário") : "usuário",
+      gender:   resolverGenero(genderRaw)
     };
   } catch {
-    return { photo: "./src/img/default.jpg", username: "usuário" };
+    return { photo: "./src/img/default.jpg", username: "usuário", gender: "M" };
   }
 }
 
@@ -131,7 +165,7 @@ async function atualizarMeuItem(user) {
   const myItem = document.querySelector(".feeling-item.my-feeling");
   if (!myItem) return;
 
-  const { photo, username } = await buscarDadosUsuario(user.uid);
+  const { photo, username, gender } = await buscarDadosUsuario(user.uid);
 
   // pfp do card — clique vai para meu próprio perfil
   const pfpWrapper = myItem.querySelector(".note-pfp");
@@ -158,7 +192,7 @@ async function atualizarMeuItem(user) {
 
   if (nota) {
     if (noteEl) {
-      noteEl.textContent = `${nota.text || FEELING_TEXTS[nota.feeling] || nota.feeling}`;
+      noteEl.textContent = nota.text || getFeelingText(nota.feeling, gender);
       noteEl.classList.remove("placeholder");
     }
     border.onclick = null;
@@ -280,9 +314,10 @@ function configurarModal() {
 async function enviarNota(feeling) {
   if (!currentUser) return;
   try {
+    const { gender } = await buscarDadosUsuario(currentUser.uid);
     await setDoc(doc(db, "feelingNotes", currentUser.uid), {
       feeling,
-      text:      FEELING_TEXTS[feeling] || feeling,
+      text:      getFeelingText(feeling, gender),
       creatorId: currentUser.uid,
       createdAt: serverTimestamp()
     });
@@ -307,12 +342,12 @@ async function renderizarNotasAmigos(uid) {
       const nota = await buscarNota(amigoId);
       if (!nota) return null;
       const info = await buscarDadosUsuario(amigoId);
-      return { ...nota, ...info, uid: amigoId };
+      return { ...nota, ...info, uid: amigoId, gender: info.gender };
     })
   );
 
-  resultados.filter(Boolean).forEach(({ text, feeling, username, photo }) => {
-    const displayText = text || FEELING_TEXTS[feeling] || feeling || "...";
+  resultados.filter(Boolean).forEach(({ text, feeling, username, photo, gender }) => {
+    const displayText = text || getFeelingText(feeling, gender) || "...";
     const card = document.createElement("div");
     card.className = "feeling-item";
     card.innerHTML = `
