@@ -31,7 +31,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ─── Mensagens por tipo ─────────────────────────────────────────────────────
+
 const NT_MESSAGES = {
   like:            "curtiu sua publicação.",
   like_comment:    "curtiu seu comentário.",
@@ -46,7 +46,7 @@ function resolveMessage(nt) {
   return NT_MESSAGES[nt.type] ?? nt.message ?? "interagiu com você.";
 }
 
-// ─── Cache de dados de usuários ────────────────────────────────────────────
+
 const userCache = {};
 
 async function fetchUserData(uid) {
@@ -65,7 +65,7 @@ async function fetchUserData(uid) {
   }
 }
 
-// ─── Tempo relativo ─────────────────────────────────────────────────────────
+
 function formatTime(date) {
   const diff = Math.floor((Date.now() - new Date(date)) / 1000);
   if (diff < 60) return "agora";
@@ -75,7 +75,7 @@ function formatTime(date) {
   return new Date(date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
 }
 
-// ─── Agrupamento por dia ────────────────────────────────────────────────────
+
 function getDayLabel(date) {
   const now = new Date();
   const d = new Date(date);
@@ -104,7 +104,7 @@ function groupByDay(notifications) {
   return { groups, order };
 }
 
-// ─── Estado vazio ───────────────────────────────────────────────────────────
+
 function renderEmpty() {
   const list = document.getElementById("notifications-list");
   list.innerHTML = `
@@ -119,7 +119,7 @@ function checkEmptyAfterDelete() {
   if (!list.querySelector(".nt-swipe-wrapper")) renderEmpty();
 }
 
-// ─── Swipe para deletar ─────────────────────────────────────────────────────
+
 function attachSwipe(boxEl) {
   let startX = 0;
   let currentX = 0;
@@ -163,7 +163,7 @@ function attachSwipe(boxEl) {
   document.addEventListener("mouseup", onEnd);
 }
 
-// ─── Elemento de notificação ────────────────────────────────────────────────
+
 const DEFAULT_AVATAR = "../src/img/default.jpg";
 
 function createNtElement(nt, uid) {
@@ -221,7 +221,7 @@ function createNtElement(nt, uid) {
   return wrapper;
 }
 
-// ─── Renderizar notificações ────────────────────────────────────────────────
+
 async function renderNotifications(uid) {
   const list = document.getElementById("notifications-list");
   list.innerHTML = "";

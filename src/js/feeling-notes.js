@@ -76,7 +76,7 @@ async function buscarDadosUsuario(uid) {
       getDoc(doc(db, "users", uid, "user-infos", "user-data"))
     ]);
     return {
-      photo:    mediaSnap.exists() ? (mediaSnap.data().userphoto || "./src/img/default.jpg") : "./src/img/default.jpg",
+      photo:    mediaSnap.exists() ? (mediaSnap.data().userphoto || mediaSnap.data().pfp || "./src/img/default.jpg") : "./src/img/default.jpg",
       username: dataSnap.exists()  ? (dataSnap.data().username   || "usuário")               : "usuário"
     };
   } catch {
@@ -105,11 +105,17 @@ async function buscarNota(uid) {
   } catch { return null; }
 }
 
-// ─── Buscar amigos ────────────────────────────────────────────────────────────
+// ─── Buscar amigos (seguimento mútuo: followers ∩ following) ─────────────────
 async function buscarAmigos(uid) {
   try {
-    const snap = await getDocs(collection(db, "users", uid, "friends"));
-    return snap.docs.map(d => d.id);
+    const [followersSnap, followingSnap] = await Promise.all([
+      getDocs(collection(db, "users", uid, "followers")),
+      getDocs(collection(db, "users", uid, "following")),
+    ]);
+    const followersSet = new Set(followersSnap.docs.map(d => d.id));
+    return followingSnap.docs
+      .filter(d => followersSet.has(d.id))
+      .map(d => d.id);
   } catch { return []; }
 }
 
@@ -120,14 +126,14 @@ function irParaPerfil(username) {
   }
 }
 
-// ─── Atualiza o meu feeling-item ──────────────────────────────────────────────
+// ─── Atualiza o meu feeling-item e a foto/nome no modal ──────────────────────
 async function atualizarMeuItem(user) {
   const myItem = document.querySelector(".feeling-item.my-feeling");
   if (!myItem) return;
 
   const { photo, username } = await buscarDadosUsuario(user.uid);
 
-  // pfp — clique vai para meu próprio perfil
+  // pfp do card — clique vai para meu próprio perfil
   const pfpWrapper = myItem.querySelector(".note-pfp");
   const pfpImg     = myItem.querySelector(".note-pfp-border img");
   if (pfpImg) pfpImg.src = photo;
@@ -138,6 +144,12 @@ async function atualizarMeuItem(user) {
 
   const nameEl = myItem.querySelector(".note-username");
   if (nameEl) nameEl.textContent = username;
+
+  // ── Atualiza foto e nome dentro do modal também ───────────────────────────
+  const modalImg  = document.querySelector(".pfp-modal-feeling img");
+  const modalName = document.querySelector(".username-modal-feeling");
+  if (modalImg)  modalImg.src         = photo;
+  if (modalName) modalName.textContent = username;
 
   const border = myItem.querySelector(".humor-note-border");
   const noteEl = myItem.querySelector(".humor-note");
@@ -211,24 +223,21 @@ function abrirModal() {
 
 function fecharModal() {
   document.getElementById("feeling-overlay")?.classList.remove("active");
-  // Remove selected de todos os botões e reseta variável
   document.querySelectorAll(".feeling-btn.selected").forEach(b => b.classList.remove("selected"));
   selectedFeeling = null;
 }
 
 function configurarModal() {
-  // ── Seleção dos feelings: adiciona/remove classe "selected" ──────────────
+  // ── Seleção dos feelings ──────────────────────────────────────────────────
   document.querySelectorAll(".feeling-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      // Remove selected de todos
       document.querySelectorAll(".feeling-btn.selected").forEach(b => b.classList.remove("selected"));
-      // Adiciona no clicado
       btn.classList.add("selected");
       selectedFeeling = btn.textContent.trim();
     });
   });
 
-  // ── Botão enviar (clone para limpar listeners inline do HTML) ────────────
+  // ── Botão enviar ──────────────────────────────────────────────────────────
   const enviarOriginal = document.getElementById("enviarFeeling");
   if (enviarOriginal) {
     const enviarBtn = enviarOriginal.cloneNode(true);
@@ -236,7 +245,6 @@ function configurarModal() {
 
     enviarBtn.addEventListener("click", async () => {
       if (!selectedFeeling) {
-        // Shake visual indicando que precisa selecionar
         const shakes = ["-5px", "5px", "-4px", "4px", "0px"];
         enviarBtn.style.transition = "transform 0.07s";
         for (const x of shakes) {
@@ -254,7 +262,7 @@ function configurarModal() {
     });
   }
 
-  // ── Botão cancelar (clone para limpar listeners inline do HTML) ──────────
+  // ── Botão cancelar ────────────────────────────────────────────────────────
   const cancelarOriginal = document.getElementById("cancelarFeeling");
   if (cancelarOriginal) {
     const cancelarBtn = cancelarOriginal.cloneNode(true);
@@ -262,7 +270,7 @@ function configurarModal() {
     cancelarBtn.addEventListener("click", fecharModal);
   }
 
-  // ── Fechar clicando fora do modal ────────────────────────────────────────
+  // ── Fechar clicando fora do modal ─────────────────────────────────────────
   document.getElementById("feeling-overlay")?.addEventListener("click", e => {
     if (e.target.id === "feeling-overlay") fecharModal();
   });
@@ -320,7 +328,6 @@ async function renderizarNotasAmigos(uid) {
         <div class="humor-note">${displayText}</div>
       </div>
     `;
-    // Clique na pfp do amigo → perfil dele
     card.querySelector(".note-pfp").addEventListener("click", () => irParaPerfil(username));
     container.appendChild(card);
   });
