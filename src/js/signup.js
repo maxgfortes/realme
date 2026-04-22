@@ -18,7 +18,6 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
   authDomain: "ifriendmatch.firebaseapp.com",
@@ -33,9 +32,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 let cadastrandoAgora = false;
-
 
 function showError(msg) {
   const el = document.querySelector(".error-message");
@@ -136,6 +133,23 @@ async function criarContaSegura(event) {
       updatedAt: serverTimestamp(),
       lastLogin: serverTimestamp()
     });
+
+let fotoPadrao;
+
+if (genero === "feminino") {
+  fotoPadrao = "https://socialrealme.com/src/img/female-default.jpg";
+} else if (genero === "masculino") {
+  fotoPadrao = "https://socialrealme.com/src/img/default.jpg";
+} else {
+  fotoPadrao = "https://socialrealme.com/src/img/default.jpg";
+}
+
+await setDoc(
+  doc(db, "users", user.uid, "user-infos", "user-media"),
+  {
+    userphoto: fotoPadrao,
+  }
+);
 
     window.location.href = "feed.html";
 

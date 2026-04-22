@@ -308,8 +308,12 @@ async function buscarDadosUsuarioPorUid(uid) {
       username: userData.username || extraData.username || '',
       displayname: userData.displayname || extraData.displayname || '',
       name: userData.name || extraData.name || '',
+      surname: userData.surname || extraData.surname || '',
       verified: userData.verified || extraData.verified || false
     };
+
+    const fullname = `${resultado.name} ${resultado.surname}`.trim();
+    resultado.fullname = fullname;
 
     return resultado;
   } catch (error) {
