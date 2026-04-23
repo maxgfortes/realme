@@ -544,10 +544,6 @@ async function renderizarComentarios(uid, postId, container) {
 async function adicionarComentario(uid, postId, conteudo) {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) return;
-  const linkCheck = detectarLinksMaliciosos(conteudo);
-  if (linkCheck.malicioso) {
-    return false;
-  }
   try {
     const comentarioId = gerarIdUnico('comentid');
     const comentarioData = {
@@ -847,6 +843,159 @@ function iconType(postData) {
   }
 }
 
+
+
+function buildPostMediaHTML(postData) {
+  // Suporte a array de imagens (campo "imgs") ou imagem única (campo "img")
+  const imgs = Array.isArray(postData.imgs) && postData.imgs.length > 0
+    ? postData.imgs
+    : (postData.img && postData.img.trim() !== '' ? [postData.img] : []);
+ 
+  if (imgs.length === 0) return ''; // sem mídia
+ 
+  if (imgs.length === 1) {
+    // Comportamento original — sem carrossel
+    return `
+      <div class="post-image">
+        <img src="${imgs[0]}" loading="lazy" decoding="async" style="width:100%;height:auto;display:block;">
+      </div>
+    `;
+  }
+ 
+  // Múltiplas imagens → carrossel
+  const slides = imgs.map(url => `
+    <div class="post-carousel-slide">
+      <img src="${url}" loading="lazy" decoding="async" alt="">
+    </div>
+  `).join('');
+ 
+  const dots = imgs.map((_, i) => `
+    <div class="post-carousel-dot${i === 0 ? ' active' : ''}" data-index="${i}"></div>
+  `).join('');
+ 
+  return `
+    <div class="post-carousel" data-total="${imgs.length}">
+      <div class="post-carousel-track">
+        ${slides}
+      </div>
+    </div>
+    <div class="post-carousel-dots">
+      ${dots}
+    </div>
+  `;
+}
+ 
+ 
+// ============================================================
+// 3. FUNÇÃO DO CARROSSEL — inicializa touch/swipe em um post-card
+//    Chame logo após feed.appendChild(postEl) dentro de renderizarPost()
+// ============================================================
+ 
+/**
+ * Inicializa o carrossel de um post-card.
+ * @param {HTMLElement} postEl - o elemento .post-card recém-inserido
+ */
+function inicializarCarrossel(postEl) {
+  const carousel = postEl.querySelector('.post-carousel');
+  if (!carousel) return; // sem carrossel neste post
+ 
+  const track  = carousel.querySelector('.post-carousel-track');
+  const total  = parseInt(carousel.dataset.total, 10);
+ 
+  // Dots ficam FORA do carousel (irmão seguinte no DOM)
+  const dotsContainer = postEl.querySelector('.post-carousel-dots');
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.post-carousel-dot') : [];
+ 
+  let current   = 0;
+  let startX    = 0;
+  let isDragging = false;
+  let movedX    = 0;
+ 
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    current = index;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+ 
+  // ── Touch ──────────────────────────────────────────────────
+  carousel.addEventListener('touchstart', e => {
+    startX    = e.touches[0].clientX;
+    movedX    = 0;
+    isDragging = true;
+    track.style.transition = 'none'; // remove transição durante o drag
+  }, { passive: true });
+ 
+  carousel.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    movedX = e.touches[0].clientX - startX;
+    // Segue o dedo em tempo real
+    track.style.transform = `translateX(calc(-${current * 100}% + ${movedX}px))`;
+  }, { passive: true });
+ 
+  carousel.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    track.style.transition = ''; // restaura transição CSS
+ 
+    const threshold = carousel.offsetWidth * 0.2; // 20% da largura = swipe
+    if (movedX < -threshold) {
+      goTo(current + 1);
+    } else if (movedX > threshold) {
+      goTo(current - 1);
+    } else {
+      goTo(current); // snap de volta
+    }
+    movedX = 0;
+  });
+ 
+  // ── Mouse (desktop) ────────────────────────────────────────
+  carousel.addEventListener('mousedown', e => {
+    startX     = e.clientX;
+    movedX     = 0;
+    isDragging = true;
+    track.style.transition = 'none';
+    e.preventDefault();
+  });
+ 
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    movedX = e.clientX - startX;
+    track.style.transform = `translateX(calc(-${current * 100}% + ${movedX}px))`;
+  });
+ 
+  window.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    track.style.transition = '';
+ 
+    const threshold = carousel.offsetWidth * 0.2;
+    if (movedX < -threshold) {
+      goTo(current + 1);
+    } else if (movedX > threshold) {
+      goTo(current - 1);
+    } else {
+      goTo(current);
+    }
+    movedX = 0;
+  });
+ 
+  // ── Clique nas bolinhas ────────────────────────────────────
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      track.style.transition = ''; // garante animação no clique
+      goTo(parseInt(dot.dataset.index, 10));
+    });
+  });
+
+carousel.addEventListener('dblclick', async (e) => {
+  e.preventDefault();
+  _animarCoracaoLike(carousel, e);
+  const btnLike = postEl.querySelector('.btn-like');
+  if (btnLike) btnLike.click();
+});
+}
+
 function renderPost(postData, feed) {
   if (postData.visible === false) return;
 
@@ -877,15 +1026,7 @@ function renderPost(postData, feed) {
     <div class="post-content">
     <div class="post-text">${formatarTexto(postData.content || '')}</div>
     <div class="post-informations"><p> - <span>maxgfortes</span> estava com <span>davzx182</span> e <span>isareliquia<span></p></div>
-      ${
-        (postData.img && postData.img.trim() !== "")
-          ? `
-            <div class="post-image">
-              <img src="${postData.img}" loading="lazy" decoding="async" style="width:100%;height:auto;display:block;">
-            </div>
-          `
-          : ''
-      }
+      ${buildPostMediaHTML(postData)}
       <div class="post-actions">
         <div class="post-actions-left">
           <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -918,27 +1059,7 @@ function renderPost(postData, feed) {
     </div>
   `;
   feed.appendChild(postEl);
-
-const postImgWrapper = postEl.querySelector('.post-image');
-if (postImgWrapper) {
-  postImgWrapper.addEventListener('dblclick', async (e) => {
-    e.preventDefault();
-
-    _animarCoracaoLike(postImgWrapper, e);
-
-    const usuarioLogado = auth.currentUser;
-    if (!usuarioLogado) return;
-
-    const likerRef = doc(db, `posts/${postData.postid}/likers/${usuarioLogado.uid}`);
-    const likerSnap = await getDoc(likerRef);
-    const jaCurtiu = likerSnap.exists() && likerSnap.data().like === true;
-
-    if (!jaCurtiu) {
-      const btnLike = postEl.querySelector('.btn-like');
-      if (btnLike) await toggleLikePost(usuarioLogado.uid, postData.postid, btnLike);
-    }
-  });
-}
+  inicializarCarrossel(postEl);
 
   const usuarioLogado = auth.currentUser;
 
@@ -1357,10 +1478,6 @@ async function sendPost() {
     return;
   }
   
-  const linkCheck = detectarLinksMaliciosos(texto);
-  if (linkCheck.malicioso) {
-    return;
-  }
 
   const loadingInfo = mostrarLoading('Enviando post...');
    

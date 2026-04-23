@@ -142,8 +142,7 @@ body.modal-open {
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 60vh;
-      max-height: 80vh;
+      height: 74vh;
       background: #272727;
       border-radius: 22px 22px 0 0;
       padding: 0px;
@@ -210,7 +209,7 @@ body.modal-open {
 
 /* Estilos para seção de comentários */
     .comments-area {
-  max-height: 600px; /* Altura máxima da área de comentários */
+  max-height: 700px; /* Altura máxima da área de comentários */
   overflow-y: auto; /* Adiciona barra de rolagem vertical */
   padding: 0px !important;
   border-radius: 8px;
@@ -247,7 +246,7 @@ body.modal-open {
 }
 
 .post-footer-infos {
-  padding: 8px 0px 8px 0px;
+  padding: 8px 14px 8px 14px;
   font-size: 15.5px;
   display: flex ;
 }
@@ -378,7 +377,7 @@ body.modal-open {
       padding-left: 16px;
       border: 1px solid #ddd;
       border-radius: 200px !important;
-      background-color: #444;
+      background-color: #373737;
       border: none;
     box-shadow: none !important;
     color: #fff;
@@ -529,7 +528,7 @@ body.modal-open {
   border-radius: 12px !important;
   margin-bottom: 0px !important;
   box-shadow: none !important;
-  padding: 14px 14px 14px 14px !important;
+  padding: 14px 0px 44px 0px !important;
   border-left: none;
   border: none !important;
   background: transparent !important;
@@ -597,9 +596,12 @@ body.modal-open {
 /* Imagem postada */
 .post-image {
   margin: 0px 0;
-  border-radius: 10px;
+  border-radius: 0px;
   overflow: hidden;
   max-height: 500px;
+  min-height: 60px;
+  border-top: 1px solid #1F1F1F !important;
+  border-bottom: 1px solid #1F1F1F !important;
 }
 
 .post-image img {
@@ -607,8 +609,7 @@ body.modal-open {
   height: auto;
   display: block;
   object-fit: cover;
-  border-radius: 10px;
-  border: 0.1px solid #373737;
+  border-radius: 0;
 }
 
 /* Texto do post */
@@ -616,7 +617,7 @@ body.modal-open {
   font-size: 17px;
   color: #fff  !important;
   margin: 0 0 0 0;
-  padding: 0 8px 8px 12px;
+  padding: 8px 12px 12px 21px;
 }
 
 /* Ações: curtir, comentar, salvar, banir */
@@ -700,7 +701,7 @@ body.modal-open {
 }
 
 .post-icon svg {
-  height: 40px;
+  height: 36px;
 }
 .user-info {
   width: 100%;
@@ -709,7 +710,7 @@ body.modal-open {
 }
 
 .post-header {
-  padding-bottom: 12px;
+  padding: 14px;
   height: 54px;
   display: flex;
   align-items: center;
@@ -1361,7 +1362,7 @@ textarea#postText:focus {
   flex: none !important;
   align-items: flex-start !important;
   justify-content: flex-start !important;
-  padding: 6px 0px 0px 0px !important;
+  padding: 6px 14px 0px 12px !important;
   flex: 1;
   justify-content: space-between !important;
 }
@@ -2097,12 +2098,6 @@ footer {
 
 
 
-    /* Estilos para imagens nos posts */
-    .post-image {
-      border-radius: 8px;
-      overflow: hidden;
-      max-height: 400px;
-    }
 
     .post-image img {
       width: 100%;
@@ -2258,7 +2253,7 @@ footer {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-top: 15px;
+  padding: 14px;
   border: none;
   max-width: 400px;
   margin: 0 auto;
@@ -2769,4 +2764,75 @@ footer {
 .post-informations span{
   font-weight: bold;
   color: #fff;
+}
+
+
+
+
+
+
+
+
+.post-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  touch-action: pan-y;
+}
+ 
+.post-carousel-track {
+  display: flex;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+ 
+.post-carousel-slide {
+  min-width: 100%;
+  max-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+ 
+.post-carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+ 
+/* Bolinhas */
+.post-carousel-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+ 
+.post-carousel-dot {
+  width: 16px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border-color, #aaa);
+  transition: background 0.25s, transform 0.25s;
+  flex-shrink: 0;
+}
+ 
+.post-carousel-dot.active {
+  background: var(--accent-color, #fff);
+  transform: scale(1.15);
+}
+ 
+/* Imagem simples (quando só tem 1 foto) — mantém o estilo original */
+.post-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none !important;
 }
