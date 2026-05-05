@@ -1,7 +1,7 @@
 const CACHE_NAME = 'realme-spa-v1';
 const urlsToCache = [
   './',
-  './src/styles/base.css',
+  './feed.html',
   './src/styles/components.css',
   './src/icon/icon.png',
   './src/icon/default.jpg'
