@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
-  <link rel="icon" href="./src/img/icon.png" type="image/png" />
+  <link rel="icon" href="../public/img/icon.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="./src/styles/direct.css" />
-  <link rel="stylesheet" href="./src/styles/base.css" />
-  <link rel="stylesheet" href="./src/styles/navbar-bottom.css" /> 
-  <link rel="stylesheet" href="./src/styles/root.css" />
+  <link rel="stylesheet" href="../src/styles/direct.css" />
+  <link rel="stylesheet" href="../src/styles/base.css" />
+  <link rel="stylesheet" href="../src/styles/navbar-bottom.css" /> 
+  <link rel="stylesheet" href="../src/styles/root.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </head>
 <body>
@@ -52,7 +52,7 @@
   <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
 </svg>
         </button>
-        <img src="./src/img/default.jpg" alt="Foto" id="dmChatUserImg" onerror="this.src='./src/img/default.jpg'" >
+        <img src="../public/img/default.jpg" alt="Foto" id="dmChatUserImg" onerror="this.src='../public/img/default.jpg'" >
         <span id="dmChatUserName" class="dm-chat-username" style="cursor:pointer;">Selecione uma conversa</span>
       </div>
       <div class="dm-messages" id="dmMessages">
@@ -87,7 +87,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="profile.html">
-        <img src="./src/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </nav>
@@ -104,7 +104,7 @@
 
 
 
-  <script type="module" src="./src/js/direct.js"></script>
+  <script type="module" src="../src/js/pages/direct.js"></script>
   <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -114,6 +114,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script type="module" src="./src/js/auth-verification.js"></script>
+<script type="module" src="../src/modules/auth-verification.js"></script>
 </body>
 </html>
+

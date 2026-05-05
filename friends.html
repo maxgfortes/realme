@@ -10,10 +10,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="./src/icon/icon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="./src/styles/base.css" />
-  <link rel="stylesheet" href="./src/styles/root.css" />
-  <link rel="stylesheet" href="./src/styles/amigos.css" />
-  <link rel="stylesheet" href="./src/styles/navbar-bottom.css" />
+  <link rel="stylesheet" href="../src/styles/base.css" />
+  <link rel="stylesheet" href="../src/styles/root.css" />
+  <link rel="stylesheet" href="../src/styles/amigos.css" />
+  <link rel="stylesheet" href="../src/styles/navbar-bottom.css" />
 </head>
 <body>
 
@@ -128,7 +128,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="profile.html">
-        <img src="./src/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </div>
@@ -316,7 +316,7 @@
             const userImages = document.querySelectorAll('.user img');
             userImages.forEach(img => {
                 img.onerror = function() {
-                    this.src = './src/img/default.jpg';
+                    this.src = '../public/img/default.jpg';
                 };
             });
         });
@@ -332,21 +332,21 @@ function carregarFotoPerfil() {
         const userMediaSnap = await getDoc(userMediaRef);
 
         if (userMediaSnap.exists()) {
-          const userPhoto = userMediaSnap.data().userphoto || './src/img/default.jpg';
+          const userPhoto = userMediaSnap.data().userphoto || '../public/img/default.jpg';
           navPic.src = userPhoto; 
         } else {
           console.warn('Foto de perfil não encontrada. Usando a padrão.');
-          navPic.src = './src/img/default.jpg';
+          navPic.src = '../public/img/default.jpg';
         }
 
         try { if (userId) registerForPushNotifications(userId); } catch(e) { console.warn('Falha ao registrar push:', e); }
       } catch (error) {
         console.error('Erro ao carregar a foto de perfil:', error);
-        navPic.src = './src/img/default.jpg'; 
+        navPic.src = '../public/img/default.jpg'; 
       }
     } else {
       console.warn('Usuário não autenticado.');
-      navPic.src = './src/img/default.jpg'; 
+      navPic.src = '../public/img/default.jpg'; 
     }
   });
 }
@@ -443,11 +443,11 @@ async function montarUsuario(docSnap) {
 
   const banner = (media.banner?.trim())
     ? media.banner
-    : (media.headerphoto?.trim() ? media.headerphoto : './src/img/bg.jpg');
+    : (media.headerphoto?.trim() ? media.headerphoto : '../public/img/bg.jpg');
 
   const userphoto = (media.pfp?.trim())
     ? media.pfp
-    : (media.userphoto?.trim() ? media.userphoto : './src/img/default.jpg');
+    : (media.userphoto?.trim() ? media.userphoto : '../public/img/default.jpg');
 
   let idade = null;
   const nasc = userData.nascimento || about.nascimento;
@@ -539,7 +539,7 @@ function renderizarResultados(resultados) {
     card.className = 'friend-card';
     card.innerHTML = `
       <div class="card-content">
-        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='./src/img/default.jpg'">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
         <div class="card-info">
           <div class="card-username">${truncar(u.username)}</div>
         </div>
@@ -566,8 +566,8 @@ function renderizarGrid(resultados) {
     userEl.setAttribute('data-username', u.username);
     userEl.innerHTML = `
       <div class="card-media">
-        <img src="${u.banner}" class="card-banner" loading="lazy" onerror="this.src='./src/img/bg.jpg'">
-        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='./src/img/default.jpg'">
+        <img src="${u.banner}" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+        <img src="${u.userphoto}" alt="${u.displayname}" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
       </div>
       <div class="user-name">
         <div class="card-info">
@@ -948,7 +948,7 @@ document.addEventListener('DOMContentLoaded', atualizarMarqueeUltimoUsuario);
 
 function carregarFotoPerfil() {
   const navPic = document.getElementById('nav-pic');
-  const defaultPic = './src/img/default.jpg';
+  const defaultPic = '../public/img/default.jpg';
 
   const cachedPhoto = localStorage.getItem('user_photo_cache');
   if (cachedPhoto) {
@@ -987,6 +987,7 @@ function carregarFotoPerfil() {
 document.addEventListener('DOMContentLoaded', carregarFotoPerfil);
 
 </script>
-<script type="module" src="./src/js/auth-verification.js"></script>
+<script type="module" src="../src/modules/auth-verification.js"></script>
 </body>
 </html>
+

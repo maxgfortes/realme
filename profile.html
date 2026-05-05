@@ -6,13 +6,13 @@
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="./src/styles/profile.css">
-  <link rel="stylesheet" href="./src/styles/base.css">
-  <link rel="stylesheet" href="./src/styles/timeline.css">
-  <link rel="stylesheet" href="./src/styles/layout.css">
-  <link rel="stylesheet" href="./src/styles/navbar-bottom.css">
-  <link rel="stylesheet" href="./src/styles/root.css"/>
-  <link rel="icon" href="./src/img/icon.png" type="image/png" />
+  <link rel="stylesheet" href="../src/styles/profile.css">
+  <link rel="stylesheet" href="../src/styles/base.css">
+  <link rel="stylesheet" href="../src/styles/timeline.css">
+  <link rel="stylesheet" href="../src/styles/layout.css">
+  <link rel="stylesheet" href="../src/styles/navbar-bottom.css">
+  <link rel="stylesheet" href="../src/styles/root.css"/>
+  <link rel="icon" href="../public/img/icon.png" type="image/png" />
   <meta name="theme-color" content="#0f0f0f"/>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -119,7 +119,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="profile.html">
-        <img src="./src/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </div>
@@ -291,7 +291,7 @@
       </div>
     <div class="user-header">
       <div class="pfp-modal-wall">
-        <img src="./src/img/default.jpg" alt="">
+        <img src="../public/img/default.jpg" alt="">
       </div>
       <div class="user-info-modal-wall">
         <div class="username-modal-wall">username</div>
@@ -418,7 +418,7 @@
       <div class="full-header">
         <div class="pfp">
           <div class="pfp-border">
-            <img src="./src/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
+            <img src="../public/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
           </div>
         </div>
         <div class="profile-info-block">
@@ -502,7 +502,7 @@
       <div class="tab gostos-tab">
         <div class="send-wall">
           <div class="pfp-send-wall" id="pfp-user">
-            <img src="./src/img/default.jpg" alt="foto de perfil">
+            <img src="../public/img/default.jpg" alt="foto de perfil">
           </div>
           <div class="input-send-wall">Escreva algo...</div>
         </div>
@@ -755,8 +755,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 }); 
 </script>
-<script type="module" src="./src/js/profiles.js"></script>
+<script type="module" src="../src/js/pages/profiles.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
-<script type="module" src="./src/js/auth-verification.js"></script>
+<script type="module" src="../src/modules/auth-verification.js"></script>
 </body>
 </html>
+

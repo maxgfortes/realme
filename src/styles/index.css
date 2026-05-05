@@ -1,0 +1,420 @@
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      background-image: url(./src/bg/bg.jpg);
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      color: #dbdbdb;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+
+    button {
+      display: inline-block;
+      background-color: #4A90E2;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    .main {
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+
+    .welcome-container-pc {
+      padding: 40px 28px;
+      max-width: 100%;
+      margin: 0 auto;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      padding-top: 60px;
+background: #0F0F0F;
+background: linear-gradient(0deg, rgba(15, 15, 15, 1) 50%, rgba(28, 28, 28, 1) 100%);
+    }
+
+    .welcome-interactions-pc {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logo-main-pc {
+      font-size: 48px;
+      padding: 20px 18px;
+      text-align: center;
+      font-weight: 300;
+    }
+
+    .logo-main-pc span {
+      font-weight: bold;
+      background-color: #4a90e2;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-subtitle-pc {
+      padding: 0 18px;
+      text-align: center;
+      color: #888;
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .profiles-preview-pc {
+      padding: 30px 0;
+      margin: 0 auto;
+    }
+
+    .profiles-preview-pc img{
+
+        width: 600px;
+        height: 100%;
+    }
+
+    .welcome-container {
+      padding: 40px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .logo-main {
+      font-size: 30px;
+      padding: 20px 18px;
+      text-align: center;
+      font-weight: 300;
+      color: #aaa;
+    }
+
+    .logo-main span {
+      font-weight: bold;
+      background-color: #fff;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-subtitle {
+      padding: 0 18px;
+      text-align: center;
+      color: #888;
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .welcome-btns {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 42px 12px 24px;
+      gap: 8px;
+    }
+
+    .welcome-btns a {
+      background: #4A90E2;
+      border: none;
+      padding: 16px 32px;
+      color: #fff;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
+
+
+    .entrar {
+      background: transparent !important;
+      border: 2px solid;
+      background-color: #4A90E2;
+      box-shadow: none !important;
+      width: 100%;
+    }
+
+    .see-profile {
+      display: none;
+      justify-content: center;
+      padding: 20px 12px;
+    }
+
+    .see-profile.active {
+      display: flex;
+    }
+
+    .see-profile a {
+      background-color: #4A90E2;
+      padding: 16px 32px;
+      color: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 400px;
+      font-size: 1.2rem;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .profiles-preview {
+      padding: 30px 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .profiles-preview img {
+      width: 100%;
+      border-radius: 16px;
+    }
+
+    .features-section {
+      padding: 60px 28px;
+      background: linear-gradient(180deg, #0f0f0f 0%, #0f0f0f 100%);
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .features-header h2 {
+      font-size: 36px;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(26, 26, 26, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+
+    .feature-icon {
+      font-size: 40px;
+      background: #63cbff;
+background: linear-gradient(130deg, rgba(99, 203, 255, 1) 0%, rgba(74, 144, 226, 1) 50%, rgba(99, 203, 255, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #f8f9f9;
+    }
+
+    .feature-card p {
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .faq-container {
+      padding: 28px;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+
+    .faq-header h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 40px;
+      color: #f8f9f9;
+    }
+
+    .faq-item {
+      background: #202020;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+
+    .faq-question h3 {
+      font-size: 18px;
+      color: #f8f9f9;
+      font-weight: 600;
+    }
+
+    .faq-icon {
+      font-size: 20px;
+      color: #888;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-answer-content {
+      padding: 20px 20px 20px;
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+    }
+
+    .footer {
+      padding: 40px 18px;
+      padding-bottom: 60px;
+      text-align: center;
+      border-top: 1px solid #1a1a1a;
+    }
+
+    .footer p {
+      color: #888;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-image: none;
+      }
+
+
+      .welcome-subtitle {
+        font-size: 16px;
+      }
+
+      .welcome-container{
+        display: block;
+      }
+
+      .welcome-container-pc {
+        display: none;
+      }
+
+      .welcome-btns a {
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+
+      .features-header h2 {
+        font-size: 28px;
+      }
+
+      .faq-header h1 {
+        font-size: 28px;
+      }
+    }
+
+    .user-info {
+      text-align: center;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px auto;
+      max-width: 400px;
+      display: none;
+    }
+
+    .user-info.active {
+      display: block;
+    }
+
+    .user-info p {
+      color: #f8f9f9;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .user-info span {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .download {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .download-info {
+      height: 30%;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .download-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .download-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px 0;
+      color: #aaa;
+    }
+
+    .download-video {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 60%;
+      padding: 16px;
+    }
+
+    .download-video img {
+      height: 100%;
+      aspect-ratio: 1/2;
+      border-radius: 12px;
+      border: 0.1px solid #333;
+    }

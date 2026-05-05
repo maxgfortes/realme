@@ -6,8 +6,8 @@
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="./src/styles/explore.css">
-  <link rel="stylesheet" href="./src/styles/root.css">
+  <link rel="stylesheet" href="../src/styles/explore.css">
+  <link rel="stylesheet" href="../src/styles/root.css">
   <meta name="theme-color" content="#0f0f0f"/>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -39,6 +39,13 @@
   <div class="activities">
     <div class="pc-header-page">Atividades</div>
     <div class="header-page">Atividades</div>
+    <div class="act-filters">
+      <div class="act-filter active">Todos</div>
+      <div class="act-filter">Comentarios</div>
+      <div class="act-filter">Novas Amizades</div>
+      <div class="act-filter">Posts</div>
+      <div class="act-filter">Notas</div>
+    </div>
     <div id="activities-section"></div>
     </div>
   </div>
@@ -60,23 +67,15 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="profile.html">
-        <img src="./src/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+        <img src="./public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
       </a>
     </div>
   </nav>
 
-  
-<div class="pc-alert">
-  <div class="logo-area">
-    <div class="pc-alert-logo">RealMe</div>
-  </div>
-  <div class="pc-alert-title">Indisponivel em PCs</div>
-  <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
-</div>
-
-<script type="module" src="./src/js/explore-activities.js"></script>
-<script type="module" src="./src/js/activities-render.js"></script>
-<script type="module" src="./src/js/explore-search.js"></script>
-<script type="module" src="./src/js/auth-verification.js"></script>
+<script type="module" src="../src/js/pages/explore-activities.js"></script>
+<script type="module" src="../src/components/activities-render.js"></script>
+<script type="module" src="../src/js/pages/explore-search.js"></script>
+<script type="module" src="../src/modules/auth-verification.js"></script>
 </body>
 </html>
+

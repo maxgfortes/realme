@@ -1,0 +1,244 @@
+.notifications-header {
+    position: fixed;
+    height: 60px;
+    padding: 0 12px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background-color: var(--bg-primary);
+    z-index: 9999999;
+}
+
+.header-block {
+    height: 100%;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.nt-title {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.header-block button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+}
+
+.header-block svg {
+    height: 20px;
+    fill: #fff;
+}
+
+
+.notifications-list {
+    height: 100vh;
+    width: 100%;
+    padding-top: 60px;
+    padding-bottom: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.nt-box {
+    padding: 12px 8px;
+    display: flex;
+    align-items: center;
+    height: 70px;
+}
+
+.nt-box.new {
+    background-color: #303030;
+}
+
+.avatar-area {
+    height: 100%;
+}
+
+.avatar-area img {
+    height: 100%;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.content-area {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 1em;
+    color: #ddd;
+}
+
+.nt-username {
+    font-weight: bold;
+    color: #fff;
+}
+
+.nt-time {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.nt-container-title {
+    padding: 12px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.nts {
+    padding-bottom: 14px;
+}
+
+
+.nt-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.nt-empty-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.nt-empty-sub {
+    font-weight: 1em;
+    color: #999;
+}
+
+
+
+/* ─── Lista ─────────────────────────────────────────────────────────────────── */
+.notifications-list {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.notifications-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Wrapper do swipe ──────────────────────────────────────────────────────── */
+.nt-swipe-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Botão de deletar (revelado com swipe) ─────────────────────────────────── */
+.nt-delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 72px;
+  background: #e53935;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 0;
+  color: #fff;
+  font-size: 0.8em;
+}
+
+.nt-delete-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+}
+
+
+
+
+/* ─── Skeletons ─────────────────────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-title {
+  width: 60px;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 25%,
+    var(--skeleton-shine, rgba(255,255,255,0.13)) 50%,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeleton-box {
+  pointer-events: none;
+  display: none;
+}
+
+.skeleton-avatar {
+  background: linear-gradient(90deg,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 25%,
+    var(--skeleton-shine, rgba(255,255,255,0.13)) 50%,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  display: none;
+}
+
+.skeleton-line {
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 25%,
+    var(--skeleton-shine, rgba(255,255,255,0.13)) 50%,
+    var(--skeleton-base, rgba(255,255,255,0.07)) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeleton-line.short { width: 40%; }
+.skeleton-line.long  { width: 75%; }
+
+
+
+/* ─── Animação de remoção ────────────────────────────────────────────────────── */
+@keyframes nt-remove {
+  to {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+    transform: translateX(-100%);
+  }
+}
+
+.nt-removing {
+  animation: nt-remove 0.25s ease forwards;
+  overflow: hidden;
+}
