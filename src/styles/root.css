@@ -19,6 +19,7 @@
   --bg-input: #474747;
   --bg-hover: #3b3b3b;
   --bg-modal: rgba(15, 15, 15, 0.70);
+  --bg-np: #0f0f0f;
   
   /* ========== CORES DE BORDA ========== */
   --border-primary: #2a2a2a;
@@ -26,6 +27,7 @@
   --border-tertiary: #1a1a1a;
   --border-light: #333333;
   --border-lighter: #404040;
+  --grabber: #555555;
   
   /* ========== CORES DE TEXTO ========== */
   --text-primary: #f8f9f9;

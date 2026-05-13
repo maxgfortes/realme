@@ -14,7 +14,6 @@ import {
   orderBy,
   limit,
   startAfter
-  
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth,
@@ -22,16 +21,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { registerPushNotifications, listenForegroundMessages } from "../../services/notifications-push.js";
-
-import {
-  triggerNovoPost,
-  triggerNovoBubble,
-  triggerNovoComentario
-} from '../../components/activitie-creator.js';
-
-
-let lastPostSnapshot = null; 
-let allItems = []; 
+import { triggerNovoPost, triggerNovoComentario } from '../../components/activitie-creator.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
@@ -44,35 +34,33 @@ const firebaseConfig = {
 };
 
 const IMGBB_API_KEY = 'fc8497dcdf559dc9cbff97378c82344c';
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 const POSTS_LIMIT = 10;
+const CACHE_CONFIG = {
+  POSTS_TTL: 8 * 60 * 1000,
+  USERS_TTL: 20 * 60 * 1000,
+  CHECK_UPDATE_INTERVAL: 2 * 60 * 1000,
+  MAX_CACHED_POSTS: 100
+};
+
 let loading = false;
 let hasMorePosts = true;
+let lastPostSnapshot = null;
+let allItems = [];
+let cacheCheckTimer = null;
 
 let feed = null;
 let loadMoreBtn = null;
 let postInput = null;
 let postButton = null;
 
-// ==============================
-// SISTEMA DE CACHE FORTE DO FEED
-// ==============================
-const CACHE_CONFIG = {
-  POSTS_TTL: 5 * 60 * 1000,          // 5 minutos para posts
-  BUBBLES_TTL: 3 * 60 * 1000,        // 3 minutos para bubbles (expiram em 24h)
-  USERS_TTL: 10 * 60 * 1000,         // 10 minutos para dados de usuário
-  CHECK_UPDATE_INTERVAL: 2 * 60 * 1000, // Verificar atualizações a cada 2 minutos
-  MAX_CACHED_POSTS: 100,             // Máximo de posts em cache
-  MAX_CACHED_BUBBLES: 50             // Máximo de bubbles em cache
-};
+// ============================================================
+// CACHE DO FEED
+// ============================================================
 
-let cacheCheckTimer = null;
-
-// Obter cache de posts com tipo e timestamp
 function getPostsCache() {
   try {
     const cached = localStorage.getItem('feed_posts_cache');
@@ -81,7 +69,6 @@ function getPostsCache() {
     const data = JSON.parse(cached);
     const now = Date.now();
     
-    // Verificar expiração
     if (now - data.timestamp > CACHE_CONFIG.POSTS_TTL) {
           localStorage.removeItem('feed_posts_cache');
       return null;
@@ -94,10 +81,8 @@ function getPostsCache() {
   }
 }
 
-// Salvar cache de posts
 function setPostsCache(posts) {
   try {
-    // Limitar a quantidade de posts em cache
     const postsParaCache = posts.slice(0, CACHE_CONFIG.MAX_CACHED_POSTS);
     
     localStorage.setItem('feed_posts_cache', JSON.stringify({
@@ -109,64 +94,14 @@ function setPostsCache(posts) {
   }
 }
 
-// Obter cache de bubbles
-function getBubblesCache() {
-  try {
-    const cached = localStorage.getItem('feed_bubbles_cache');
-    if (!cached) return null;
-    
-    const data = JSON.parse(cached);
-    const now = Date.now();
-    
-    if (now - data.timestamp > CACHE_CONFIG.BUBBLES_TTL) {
-          localStorage.removeItem('feed_bubbles_cache');
-      return null;
-    }
-    
-    // Filtrar bubbles ainda válidos (menos de 24h)
-    const bubblesValidos = data.bubbles.filter(bubble => {
-      let dataCriacao = bubble.create;
-      if (typeof dataCriacao === 'object' && dataCriacao.seconds) {
-        dataCriacao = dataCriacao.seconds * 1000;
-      } else {
-        dataCriacao = new Date(dataCriacao).getTime();
-      }
-      const diferencaHoras = (now - dataCriacao) / (1000 * 60 * 60);
-      return diferencaHoras < 24;
-    });
-    
-    return bubblesValidos;
-  } catch (e) {
-    console.warn('Erro ao recuperar cache de bubbles:', e);
-    return null;
-  }
-}
-
-// Salvar cache de bubbles
-function setBubblesCache(bubbles) {
-  try {
-    const bubblesParaCache = bubbles.slice(0, CACHE_CONFIG.MAX_CACHED_BUBBLES);
-    
-    localStorage.setItem('feed_bubbles_cache', JSON.stringify({
-      timestamp: Date.now(),
-      bubbles: bubblesParaCache
-    }));
-    } catch (e) {
-    console.warn('Erro ao salvar cache de bubbles:', e);
-  }
-}
-
-// Limpar cache do feed
 function limparCacheFeed() {
   try {
     localStorage.removeItem('feed_posts_cache');
-    localStorage.removeItem('feed_bubbles_cache');
-    } catch (e) {
+  } catch (e) {
     console.warn('Erro ao limpar cache:', e);
   }
 }
 
-// Verificar atualizações em background (sincronização silenciosa)
 function iniciarSincronizacaoBackground() {
   if (cacheCheckTimer) clearInterval(cacheCheckTimer);
   
@@ -175,7 +110,6 @@ function iniciarSincronizacaoBackground() {
       const usuarioLogado = auth.currentUser;
       if (!usuarioLogado) return;
 
-      // Buscar apenas o post mais recente para checar se há novidades
       const q = query(
         collection(db, 'posts'),
         orderBy('create', 'desc'),
@@ -189,7 +123,6 @@ function iniciarSincronizacaoBackground() {
       const cacheAtual = getPostsCache() || [];
       const ultimoEmCache = cacheAtual.find(p => p.tipo === 'post');
 
-      // Só invalida o cache se houver post novo — a próxima loadPosts() irá buscar e reclassificar
       if (ultimoEmCache && postMaisRecente.id !== ultimoEmCache.postid) {
         limparCacheFeed();
       }
@@ -199,7 +132,6 @@ function iniciarSincronizacaoBackground() {
   }, CACHE_CONFIG.CHECK_UPDATE_INTERVAL);
 }
 
-// Parar sincronização
 function pararSincronizacaoBackground() {
   if (cacheCheckTimer) {
     clearInterval(cacheCheckTimer);
@@ -208,9 +140,10 @@ function pararSincronizacaoBackground() {
 }
 
 
-// ===================
-// DETECTAR E FORMATAR HASHTAGS E MENÇÕES
-// ===================
+// ============================================================
+// FORMATAÇÃO DE TEXTO
+// ============================================================
+
 function formatarHashtags(texto) {
   return texto.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
 }
@@ -229,13 +162,12 @@ function formatarTexto(text) {
 }
 
 
+// ============================================================
+// AUTH
+// ============================================================
 
-// ===================
-// VERIFICAR LOGIN COM AUTH
-// ===================
 function verificarLogin() {
   return new Promise((resolve) => {
-    // unsubscribe imediato após primeiro evento — evita múltiplos disparos
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       if (!user) {
@@ -250,41 +182,27 @@ function verificarLogin() {
   });
 }
 
-// ===================
-// GERAR ID UNICO
-// ===================
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
+
 function gerarIdUnico(prefixo = 'id') {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000000);
   return `${prefixo}-${timestamp}${random}`;
 }
 
-// ===================
-// BUSCAR DADOS DO USUÃRIO POR UID
-// ===================
 async function buscarDadosUsuarioPorUid(uid) {
   try {
     const userRef = doc(db, "users", uid);
     const docSnap = await getDoc(userRef);
     if (!docSnap.exists()) {
-      console.warn(`⚠️ Usuário ${uid} não existe no Firebase`);
       return null;
     }
     const userData = docSnap.data();
 
-    // Tenta buscar username/displayname de subcollection user-infos/user-data como fallback
     let extraData = {};
-    try {
-      const extraRef = doc(db, "users", uid, "user-infos", "user-data");
-      const extraSnap = await getDoc(extraRef);
-      if (extraSnap.exists()) {
-        extraData = extraSnap.data();
-      }
-    } catch (e) {
-      // subcollection opcional — ignora erro
-    }
 
-    // Busca userphoto
     let userphoto = '';
     try {
       const photoRef = doc(db, "users", uid, "user-infos", "user-media");
@@ -293,12 +211,10 @@ async function buscarDadosUsuarioPorUid(uid) {
         userphoto = photoSnap.data().userphoto || '';
       }
     } catch (e) {
-      console.warn('⚠️ Erro ao buscar foto:', e.message);
     }
 
     const resultado = {
       userphoto,
-      // Prioriza dado do doc raiz, depois subcollection, depois uid como último recurso
       username: userData.username || extraData.username || '',
       displayname: userData.displayname || extraData.displayname || '',
       name: userData.name || extraData.name || '',
@@ -311,11 +227,13 @@ async function buscarDadosUsuarioPorUid(uid) {
 
     return resultado;
   } catch (error) {
-    console.error("❌ Erro ao buscar dados do usuário:", error);
     return null;
   }
 }
 
+// ============================================================
+// SCROLL INFINITO
+// ============================================================
 
 function configurarScrollInfinito() {
   document.addEventListener('scroll', async (e) => {
@@ -351,18 +269,18 @@ function configurarScrollInfinito() {
   }, true);
 }
 
-// ==============================
-// CACHE DE COMENTÁRIOS (localStorage + stale-while-revalidate)
-// ==============================
-const COMENTARIOS_CACHE_TTL = 2 * 60 * 1000; // 2 minutos
+// ============================================================
+// CACHE DE COMENTÁRIOS
+// ============================================================
+
+const COMENTARIOS_CACHE_TTL = 8 * 60 * 1000; 
 const COMENTARIOS_CACHE_PREFIX = 'coments_cache_';
-const COMENTARIOS_CACHE_MAX_POSTS = 30; // máximo de posts em cache
+const COMENTARIOS_CACHE_MAX_POSTS = 30;
 
 function _coments_getKey(postId) {
   return COMENTARIOS_CACHE_PREFIX + postId;
 }
 
-// Retorna os comentários do cache (mesmo que expirado — stale)
 function getComentariosCache(postId) {
   try {
     const raw = localStorage.getItem(_coments_getKey(postId));
@@ -374,7 +292,6 @@ function getComentariosCache(postId) {
   }
 }
 
-// Verifica se o cache expirou (mas ainda existe)
 function comentariosCacheExpirado(postId) {
   try {
     const raw = localStorage.getItem(_coments_getKey(postId));
@@ -386,10 +303,8 @@ function comentariosCacheExpirado(postId) {
   }
 }
 
-// Salva comentários no cache
 function setComentariosCache(postId, comentarios) {
   try {
-    // Serializa timestamps do Firestore (objeto {seconds, nanoseconds}) para número
     const serializados = comentarios.map(c => ({
       ...c,
       create: (c.create && c.create.seconds) ? c.create.seconds * 1000 : c.create
@@ -400,21 +315,18 @@ function setComentariosCache(postId, comentarios) {
       comentarios: serializados
     }));
 
-    // Limpar entradas antigas se passou do limite
     _coments_limparExcesso();
   } catch (e) {
     console.warn('Erro ao salvar cache de comentários:', e);
   }
 }
 
-// Invalida o cache de um post (após enviar novo comentário)
 function invalidarCacheComentarios(postId) {
   try {
     localStorage.removeItem(_coments_getKey(postId));
   } catch {}
 }
 
-// Evita lotar o localStorage — remove entradas mais antigas
 function _coments_limparExcesso() {
   try {
     const keys = [];
@@ -424,7 +336,6 @@ function _coments_limparExcesso() {
     }
     if (keys.length <= COMENTARIOS_CACHE_MAX_POSTS) return;
 
-    // Ordena por timestamp e remove os mais velhos
     const comTimestamp = keys.map(k => {
       try { return { k, t: JSON.parse(localStorage.getItem(k)).timestamp }; }
       catch { return { k, t: 0 }; }
@@ -435,12 +346,12 @@ function _coments_limparExcesso() {
   } catch {}
 }
 
-// ===================
-// CARREGAR COMENTÃRIOS - VERSÃO CORRIGIDA
-// ===================
+// ============================================================
+// COMENTÁRIOS
+// ============================================================
+
 async function carregarComentarios(postId) {
   try {
-    // Busca já ordenada pelo Firestore (mais antigo primeiro)
     const comentariosQuery = query(
       collection(db, 'posts', postId, 'coments'),
       orderBy('create', 'desc')
@@ -466,15 +377,10 @@ async function carregarComentarios(postId) {
   }
 }
 
-// ===================
-// RENDERIZAR COMENTÁRIOS (com cache localStorage + stale-while-revalidate)
-// ===================
-
-// Renderiza uma lista de comentários num container (função pura, sem I/O)
 function renderListaComentarios(comentarios, container) {
   container.innerHTML = '';
   if (comentarios.length === 0) {
-    container.innerHTML = '<div class="no-comments"><div class="no-comments-title">Nenhum comentario ainda</div><div class="no-comments-sub">Inicie uma conversa!</div></div>';
+    container.innerHTML = '<div class="no-comments"><div class="no-comments-title">Ainda não há nenhum comentario</div><div class="no-comments-sub">Inicie a conversa</div></div>';
     return;
   }
   comentarios.forEach(comentario => {
@@ -506,20 +412,15 @@ async function renderizarComentarios(uid, postId, container) {
   const cached = getComentariosCache(postId);
 
   if (cached) {
-    // Renderiza do cache instantaneamente (sem loading)
     renderListaComentarios(cached, container);
-
-    // Se expirado, rebusca em background e atualiza silenciosamente
     if (comentariosCacheExpirado(postId)) {
       carregarComentarios(postId).then(novos => {
         setComentariosCache(postId, novos);
         renderListaComentarios(novos, container);
-      }).catch(() => {}); // falha silenciosa — cache antigo continua exibido
+      }).catch(() => {});
     }
     return;
   }
-
-  // Sem cache: mostra loading e busca no Firestore
   container.innerHTML = '<p class="no-comments" style="opacity:0.5">Carregando comentários...</p>';
   try {
     const comentarios = await carregarComentarios(postId);
@@ -532,9 +433,6 @@ async function renderizarComentarios(uid, postId, container) {
 }
 
 
-// ===================
-// ADICIONAR COMENTÃRIO
-// ===================
 async function adicionarComentario(uid, postId, conteudo) {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) return;
@@ -546,10 +444,6 @@ async function adicionarComentario(uid, postId, conteudo) {
       senderid: usuarioLogado.uid,
       report: 0
     };
-    // Salva em users/{userid}/posts/{postid}/coments/{comentid}
-    const userComentRef = doc(db, 'users', uid, 'posts', postId, 'coments', comentarioId);
-    await setDoc(userComentRef, comentarioData);
-    // Salva em posts/{postid}/coments/{comentid}
     const postComentRef = doc(db, 'posts', postId, 'coments', comentarioId);
     await setDoc(postComentRef, comentarioData);
     return true;
@@ -559,9 +453,10 @@ async function adicionarComentario(uid, postId, conteudo) {
   }
 }
 
-// ===================
-// FORMATAR DATA RELATIVA
-// ===================
+// ============================================================
+// DATA RELATIVA
+// ============================================================
+
 function formatarDataRelativa(data) {
   if (!data) return 'Data não disponível';
   try {
@@ -589,183 +484,6 @@ function formatarDataRelativa(data) {
   } catch (error) {
     console.error("Erro ao formatar data:", error);
     return 'Data inválida';
-  }
-}
-
-
-// ===================
-// CARREGAR POSTS NO FEED
-// ===================
-
-function bubbleEstaValido(createTimestamp) {
-  const agora = new Date();
-  let dataCriacao;
-  
-  if (typeof createTimestamp === 'object' && createTimestamp.seconds) {
-    dataCriacao = new Date(createTimestamp.seconds * 1000);
-  } else {
-    dataCriacao = new Date(createTimestamp);
-  }
-  
-  const diferencaHoras = (agora - dataCriacao) / (1000 * 60 * 60);
-  return diferencaHoras < 24;
-}
-
-async function carregarBubbles() {
-  try {
-    const bubblesQuery = query(
-      collection(db, 'bubbles'),
-      orderBy('create', 'desc'),
-      limit(50) 
-    );
-    
-    const bubblesSnapshot = await getDocs(bubblesQuery);
-    const bubblesValidos = [];
-    
-    for (const bubbleDoc of bubblesSnapshot.docs) {
-      const bubbleData = bubbleDoc.data();
-      
-      if (bubbleEstaValido(bubbleData.create)) {
-        bubblesValidos.push({
-          ...bubbleData,
-          bubbleid: bubbleDoc.id,
-          tipo: 'bubble'
-        });
-      } 
-    }
-    
-    return bubblesValidos;
-  } catch (error) {
-    console.error("Erro ao carregar bubbles:", error);
-    return [];
-  }
-}
-
-function renderizarBubble(bubbleData, feed) {
-  const bubbleEl = document.createElement('div');
-  bubbleEl.className = 'bubble-container';
-  bubbleEl.innerHTML = `
-    <div class="bubble-header">
-      <div class="user-info-bubble">
-        <img src="./src/img/default.jpg" alt="Avatar do usuário" class="avatar"
-             onerror="this.src='./src/img/default.jpg'" />
-        <div class="user-meta-bubble">
-          <strong class="user-name-link" data-username="${bubbleData.creatorid}">...</strong>
-          <small class="bullet">•</small>
-          <small class="post-date-bubble">${formatarDataRelativa(bubbleData.create)}</small>
-        </div>
-      </div>
-    </div>
-    <div class="bubble-content">
-      <div class="bubble-text">
-        <p>${formatarTexto(bubbleData.content || '')}</p>
-      </div>
-      <div class="more-bubble">
-        ${bubbleData.musicUrl && bubbleData.musicUrl.trim() !== "" ? `
-          <div class="player-bubble">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512">
-              <path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/>
-            </svg>
-            <p class="music-name">Música</p>
-          </div>
-        ` : ''}
-        <div class="interaction">
-          <button class="like-bubble" data-bubble-id="${bubbleData.bubbleid}" data-creator-id="${bubbleData.creatorid}">
-            <i class="far fa-heart"></i>
-            <span class="like-count">0</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  feed.appendChild(bubbleEl);
-
-  buscarUsuarioCached(bubbleData.creatorid).then(userData => {
-    if (userData) {
-      const avatar = bubbleEl.querySelector('.avatar');
-      const nome = bubbleEl.querySelector('.user-name-link');
-      
-      if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
-      if (nome) {
-        nome.textContent = userData.username || userData.displayname || userData.name || '';
-        if (userData.verified) {
-          nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 4px; font-size: 0.9em; color: #4A90E2;"></i>`;
-        }
-      }
-    }
-  });
-  
-  const btnLike = bubbleEl.querySelector('.like-bubble');
-  const usuarioLogado = auth.currentUser;
-  
-  if (btnLike && usuarioLogado) {
-    const likerRef = doc(db, `bubbles/${bubbleData.bubbleid}/likers/${usuarioLogado.uid}`);
-    getDoc(likerRef).then(likerSnap => {
-      if (likerSnap.exists() && likerSnap.data().like === true) {
-        btnLike.classList.add('liked');
-        btnLike.querySelector('i').className = 'fas fa-heart';
-      }
-    });
-    
-    contarLikesBubble(bubbleData.bubbleid).then(totalLikes => {
-      const span = btnLike.querySelector('.like-count');
-      if (span) span.textContent = totalLikes;
-    });
-    
-    btnLike.addEventListener('click', async () => {
-      await toggleLikeBubble(bubbleData.bubbleid, btnLike);
-    });
-  }
-}
-
-async function contarLikesBubble(bubbleId) {
-  try {
-    const likersQuery = query(
-      collection(db, `bubbles/${bubbleId}/likers`),
-      where('like', '==', true)
-    );
-    const snapshot = await getDocs(likersQuery);
-    return snapshot.size;
-  } catch (error) {
-    console.error("Erro ao contar likes do bubble:", error);
-    return 0;
-  }
-}
-
-async function toggleLikeBubble(bubbleId, btnElement) {
-  const usuarioLogado = auth.currentUser;
-  if (!usuarioLogado) {
-    return;
-  }
-  
-  try {
-    const likerRef = doc(db, `bubbles/${bubbleId}/likers/${usuarioLogado.uid}`);
-    const likerSnap = await getDoc(likerRef);
-    
-    if (likerSnap.exists() && likerSnap.data().like === true) {
-      // Remover like
-      await deleteDoc(likerRef);
-      btnElement.classList.remove('liked');
-      btnElement.querySelector('i').className = 'far fa-heart';
-    } else {
-      // Adicionar like
-      await setDoc(likerRef, {
-        like: true,
-        likein: serverTimestamp(),
-        uid: usuarioLogado.uid
-      });
-      btnElement.classList.add('liked');
-      btnElement.querySelector('i').className = 'fas fa-heart';
-    }
-    
-    // Atualizar contador
-    const totalLikes = await contarLikesBubble(bubbleId);
-    const span = btnElement.querySelector('.like-count');
-    if (span) span.textContent = totalLikes;
-    
-  } catch (error) {
-    console.error("Erro ao curtir bubble:", error);
   }
 }
 
@@ -840,15 +558,13 @@ function iconType(postData) {
 
 
 function buildPostMediaHTML(postData) {
-  // Suporte a array de imagens (campo "imgs") ou imagem única (campo "img")
   const imgs = Array.isArray(postData.imgs) && postData.imgs.length > 0
     ? postData.imgs
     : (postData.img && postData.img.trim() !== '' ? [postData.img] : []);
  
-  if (imgs.length === 0) return ''; // sem mídia
+  if (imgs.length === 0) return '';
  
   if (imgs.length === 1) {
-    // Comportamento original — sem carrossel
     return `
       <div class="post-image">
         <img src="${imgs[0]}" loading="lazy" decoding="async" style="width:100%;height:auto;display:block;">
@@ -856,7 +572,6 @@ function buildPostMediaHTML(postData) {
     `;
   }
  
-  // Múltiplas imagens → carrossel
   const slides = imgs.map(url => `
     <div class="post-carousel-slide">
       <img src="${url}" loading="lazy" decoding="async" alt="">
@@ -881,22 +596,16 @@ function buildPostMediaHTML(postData) {
  
  
 // ============================================================
-// 3. FUNÇÃO DO CARROSSEL — inicializa touch/swipe em um post-card
-//    Chame logo após feed.appendChild(postEl) dentro de renderizarPost()
+// CARROSSEL
 // ============================================================
- 
-/**
- * Inicializa o carrossel de um post-card.
- * @param {HTMLElement} postEl - o elemento .post-card recém-inserido
- */
+
 function inicializarCarrossel(postEl) {
   const carousel = postEl.querySelector('.post-carousel');
-  if (!carousel) return; // sem carrossel neste post
+  if (!carousel) return;
  
   const track  = carousel.querySelector('.post-carousel-track');
   const total  = parseInt(carousel.dataset.total, 10);
  
-  // Dots ficam FORA do carousel (irmão seguinte no DOM)
   const dotsContainer = postEl.querySelector('.post-carousel-dots');
   const dots = dotsContainer ? dotsContainer.querySelectorAll('.post-carousel-dot') : [];
  
@@ -912,38 +621,35 @@ function inicializarCarrossel(postEl) {
     dots.forEach((d, i) => d.classList.toggle('active', i === current));
   }
  
-  // ── Touch ──────────────────────────────────────────────────
   carousel.addEventListener('touchstart', e => {
     startX    = e.touches[0].clientX;
     movedX    = 0;
     isDragging = true;
-    track.style.transition = 'none'; // remove transição durante o drag
+    track.style.transition = 'none';
   }, { passive: true });
  
   carousel.addEventListener('touchmove', e => {
     if (!isDragging) return;
     movedX = e.touches[0].clientX - startX;
-    // Segue o dedo em tempo real
     track.style.transform = `translateX(calc(-${current * 100}% + ${movedX}px))`;
   }, { passive: true });
  
   carousel.addEventListener('touchend', () => {
     if (!isDragging) return;
     isDragging = false;
-    track.style.transition = ''; // restaura transição CSS
+    track.style.transition = '';
  
-    const threshold = carousel.offsetWidth * 0.2; // 20% da largura = swipe
+    const threshold = carousel.offsetWidth * 0.2;
     if (movedX < -threshold) {
       goTo(current + 1);
     } else if (movedX > threshold) {
       goTo(current - 1);
     } else {
-      goTo(current); // snap de volta
+      goTo(current);
     }
     movedX = 0;
   });
  
-  // ── Mouse (desktop) ────────────────────────────────────────
   carousel.addEventListener('mousedown', e => {
     startX     = e.clientX;
     movedX     = 0;
@@ -974,10 +680,9 @@ function inicializarCarrossel(postEl) {
     movedX = 0;
   });
  
-  // ── Clique nas bolinhas ────────────────────────────────────
   dots.forEach(dot => {
     dot.addEventListener('click', () => {
-      track.style.transition = ''; // garante animação no clique
+      track.style.transition = '';
       goTo(parseInt(dot.dataset.index, 10));
     });
   });
@@ -989,6 +694,10 @@ carousel.addEventListener('dblclick', async (e) => {
   if (btnLike) btnLike.click();
 });
 }
+
+// ============================================================
+// RENDER POST
+// ============================================================
 
 function renderPost(postData, feed) {
   if (postData.visible === false) return;
@@ -1058,7 +767,6 @@ function renderPost(postData, feed) {
       if (!footer) return;
 
       if (info.total === 0) {
-        // Mantém o espaço reservado mas invisível — sem layout shift
         footer.style.visibility = "hidden";
       } else {
 
@@ -1081,15 +789,11 @@ function renderPost(postData, feed) {
         footer.style.alignItems = "center";
         footer.style.gap = "8px";
         footer.innerHTML = textoHTML;
-        // Revela sem mudar altura — o espaço já estava reservado
         footer.style.visibility = "visible";
       }
     });
   }
 
-
-
-// Atualiza nome e foto do usuário via cache (evita cascata de requisições)
   buscarUsuarioCached(postData.creatorid).then(userData => {
     if (userData) {
       const avatar = postEl.querySelector('.avatar');
@@ -1097,14 +801,11 @@ function renderPost(postData, feed) {
       const username = postEl.querySelector('.post-username');
       if (avatar) avatar.src = userData.userphoto || './src/img/default.jpg';
       if (nome) {
-        // Mostra apenas o username no topo
         nome.textContent = userData.username || userData.displayname || userData.name || '...';
-        // Adiciona ícone de verificado se o usuário for verificado
         if (userData.verified) {
           nome.innerHTML = `${nome.textContent} <i class="fas fa-check-circle" style="margin-left: 2px; font-size: 0.8em; color: #4A90E2;"></i>`;
         }
       }
-      // Remove ou deixa vazio o elemento post-username
       if (username) username.textContent = '';
     }
   });
@@ -1122,7 +823,6 @@ function renderPost(postData, feed) {
     });
   }
 
-  // Atualiza contadores apenas se os botões existirem (evita erro se estrutura mudar)
   contarLikes(postData.postid).then(totalLikes => {
     if (btnLike) {
       const span = btnLike.querySelector('span');
@@ -1138,9 +838,10 @@ function renderPost(postData, feed) {
   }).catch(() => {});
 }
 
-// ===================
-// BUSCAR AMIGOS E AMIGOS DOS AMIGOS
-// ===================
+// ============================================================
+// FEED
+// ============================================================
+
 async function buscarAmigos(uid) {
   try {
     const amigosSnap = await getDocs(collection(db, `users/${uid}/friends`));
@@ -1152,7 +853,7 @@ async function buscarAmigos(uid) {
 }
 
 async function buscarAmigosDosAmigos(uid, amigosUids) {
-  const amigosDosAmigos = new Map(); // uid -> sugeridoPor (username do amigo)
+  const amigosDosAmigos = new Map();
   try {
     const promises = amigosUids.slice(0, 20).map(async amigoUid => {
       try {
@@ -1161,7 +862,6 @@ async function buscarAmigosDosAmigos(uid, amigosUids) {
         const usernameAmigo = userData?.username || amigoUid;
         snap.docs.forEach(d => {
           const idAmigoDosAmigos = d.id;
-          // Excluir o próprio usuário e amigos diretos
           if (idAmigoDosAmigos !== uid && !amigosUids.includes(idAmigoDosAmigos)) {
             if (!amigosDosAmigos.has(idAmigoDosAmigos)) {
               amigosDosAmigos.set(idAmigoDosAmigos, usernameAmigo);
@@ -1174,24 +874,19 @@ async function buscarAmigosDosAmigos(uid, amigosUids) {
   } catch (e) {
     console.warn('Erro ao buscar amigos dos amigos:', e);
   }
-  return amigosDosAmigos; // Map<uid, sugeridoPorUsername>
+  return amigosDosAmigos;
 }
 
-// Converte timestamp Firestore ou Date em segundos numéricos
 function toSeconds(ts) {
   if (!ts) return 0;
   if (typeof ts === 'object' && ts.seconds) return ts.seconds;
   return new Date(ts).getTime() / 1000;
 }
 
-// Ordena array de posts por data decrescente (cronológico)
 function ordenarCronologico(posts) {
   return posts.sort((a, b) => toSeconds(b.create) - toSeconds(a.create));
 }
 
-// ===================
-// MONTAR FEED COM PROPORÇÕES 60/30/10
-// ===================
 async function montarFeedProporcional(uid, todosOsPosts, amigosUids, amigosDosAmigosMap) {
   const postsAmigos = [];
   const postsAmigosDosAmigos = [];
@@ -1201,7 +896,6 @@ async function montarFeedProporcional(uid, todosOsPosts, amigosUids, amigosDosAm
     if (!post || post.visible === false) continue;
     const criadorId = post.creatorid;
     if (criadorId === uid) {
-      // Posts do próprio usuário entram como amigos
       postsAmigos.push({ ...post, _feedTipo: 'amigo' });
     } else if (amigosUids.includes(criadorId)) {
       postsAmigos.push({ ...post, _feedTipo: 'amigo' });
@@ -1216,13 +910,10 @@ async function montarFeedProporcional(uid, todosOsPosts, amigosUids, amigosDosAm
     }
   }
 
-  // Ordena cada grupo cronologicamente
   ordenarCronologico(postsAmigos);
   ordenarCronologico(postsAmigosDosAmigos);
   ordenarCronologico(postsDescoberta);
 
-  // Intercala respeitando ~60/30/10 por janela de 10 posts
-  // Para cada 10 posts: 6 amigos, 3 amigos dos amigos, 1 descoberta
   const resultado = [];
   let iA = 0, iAA = 0, iD = 0;
   const total = todosOsPosts.filter(p => p && p.visible !== false).length;
@@ -1230,23 +921,18 @@ async function montarFeedProporcional(uid, todosOsPosts, amigosUids, amigosDosAm
   while (resultado.length < total) {
     const lote = [];
 
-    // 6 de amigos
     for (let i = 0; i < 6 && iA < postsAmigos.length; i++, iA++) {
       lote.push(postsAmigos[iA]);
     }
-    // 3 de amigos dos amigos
     for (let i = 0; i < 3 && iAA < postsAmigosDosAmigos.length; i++, iAA++) {
       lote.push(postsAmigosDosAmigos[iAA]);
     }
-    // 1 de descoberta
     for (let i = 0; i < 1 && iD < postsDescoberta.length; i++, iD++) {
       lote.push(postsDescoberta[iD]);
     }
 
-    // Se o lote ficou vazio, todos os grupos acabaram
     if (lote.length === 0) break;
 
-    // Dentro de cada lote de 10, ordena cronologicamente (mantém feed cronológico)
     ordenarCronologico(lote);
     resultado.push(...lote);
   }
@@ -1259,30 +945,18 @@ async function loadPosts() {
   loading = true;
 
   const isFirstLoad = !feed || feed.children.length === 0;
-
-  // CACHE-FIRST: renderiza do cache enquanto busca dados frescos
   if (isFirstLoad) {
     const postsEmCache = getPostsCache();
-    const bubblesEmCache = getBubblesCache();
 
-    if (postsEmCache || bubblesEmCache) {
-      allItems = [];
-      if (postsEmCache) postsEmCache.forEach(p => allItems.push(p));
-      if (bubblesEmCache) bubblesEmCache.forEach(b => allItems.push(b));
-
+    if (postsEmCache) {
+      allItems = [...postsEmCache];
       ordenarCronologico(allItems);
-
       for (const item of allItems) {
-        if (item.tipo === 'bubble') {
-          renderizarBubble(item, feed);
-        } else {
-          renderPost(item, feed);
-        }
+        renderPost(item, feed);
       }
     }
   }
 
-  // Indicador de carregamento para scroll infinito
   let loadingIndicator = document.getElementById('scroll-loading-indicator');
   if (!isFirstLoad && !loadingIndicator) {
     loadingIndicator = document.createElement('div');
@@ -1298,7 +972,6 @@ async function loadPosts() {
   }
 
   try {
-    // auth.currentUser pode ser null logo após inicialização — aguarda resolução segura
     let usuarioLogado = auth.currentUser;
     if (!usuarioLogado) {
       usuarioLogado = await new Promise((resolve) => {
@@ -1316,14 +989,6 @@ async function loadPosts() {
       amigosUids = await buscarAmigos(uid);
       amigosDosAmigosMap = await buscarAmigosDosAmigos(uid, amigosUids);
     }
-
-    // Bubbles: apenas na primeira carga
-    if (!lastPostSnapshot) {
-      const bubbles = await carregarBubbles();
-      setBubblesCache(bubbles);
-    }
-
-    // Busca lote de posts
     let postsQuery = query(
       collection(db, 'posts'),
       orderBy('create', 'desc'),
@@ -1353,36 +1018,20 @@ async function loadPosts() {
     const postsRaw = postsSnapshot.docs.map(d => ({ ...d.data(), postid: d.id, tipo: 'post' }));
 
     if (isFirstLoad) {
-      // Buscar bubbles para misturar
-      const bubblesAtuais = getBubblesCache() || await carregarBubbles();
-      setBubblesCache(bubblesAtuais);
-
-      // Aplicar proporções 60/30/10 nos posts
       const postsProporcional = await montarFeedProporcional(uid, postsRaw, amigosUids, amigosDosAmigosMap);
 
-      // Salvar em cache
       setPostsCache(postsProporcional);
 
-      // Montar allItems: bubbles + posts ordenados
-      allItems = [];
-      bubblesAtuais.forEach(b => allItems.push(b));
-      postsProporcional.forEach(p => allItems.push(p));
-
-      // Mistura bubbles e posts cronologicamente no feed
+      allItems = [...postsProporcional];
       ordenarCronologico(allItems);
 
       feed.innerHTML = '';
       for (const item of allItems) {
-        if (item.tipo === 'bubble') {
-          renderizarBubble(item, feed);
-        } else {
-          renderPost(item, feed);
-        }
+        renderPost(item, feed);
       }
 
       iniciarSincronizacaoBackground();
     } else {
-      // SCROLL INFINITO — busca amigos novamente para classificar os novos posts
       amigosUids = await buscarAmigos(uid);
       amigosDosAmigosMap = await buscarAmigosDosAmigos(uid, amigosUids);
       const postsProporcional = await montarFeedProporcional(uid, postsRaw, amigosUids, amigosDosAmigosMap);
@@ -1405,7 +1054,6 @@ async function loadPosts() {
     if (loadingIndicator) loadingIndicator.remove();
 
   } catch (error) {
-    console.error('❌ Erro ao carregar posts:', error);
     if (loadMoreBtn) loadMoreBtn.textContent = 'Erro ao carregar';
     const ind = document.getElementById('scroll-loading-indicator');
     if (ind) ind.remove();
@@ -1414,11 +1062,6 @@ async function loadPosts() {
   loading = false;
 }
 
-
-
-// ===================
-// ENVIAR POST - VERSÃO OTIMIZADA
-// ===================
 async function sendPost() {
   const usuarioLogado = auth.currentUser;
   if (!usuarioLogado) {
@@ -1493,19 +1136,16 @@ async function sendPost() {
 }
 
 
+// ============================================================
+// LIKES
+// ============================================================
 
 async function contarComentarios(postId) {
-  // Os comentários são salvos na sub-coleção 'coments' (sem 'r') em outras partes do código
   const comentariosRef = collection(db, 'posts', postId, 'coments');
   const snapshot = await getDocs(comentariosRef);
   return snapshot.size;
 }
 
-
-// ===================
-// CURTIR POST (posts/{postid})
-// ===================
-// Função para alternar entre like e deslike
 
 async function contarLikes(postId) {
   const likersRef = collection(db, 'posts', postId, 'likers');
@@ -1523,7 +1163,6 @@ async function toggleLikePost(uid, postId, element) {
     let curtidasAtuais = parseInt(spanCurtidas.textContent) || 0;
 
     if (likerSnap.exists() && likerSnap.data().like === true) {
-      // DESCURTIR
       await updateDoc(likerRef, {
         like: false,
         timestamp: Date.now()
@@ -1532,7 +1171,6 @@ async function toggleLikePost(uid, postId, element) {
       element.classList.remove("liked");
       spanCurtidas.textContent = Math.max(0, curtidasAtuais - 1);
     } else {
-      // CURTIR
       if (likerSnap.exists()) {
         await updateDoc(likerRef, {
           like: true,
@@ -1549,8 +1187,6 @@ async function toggleLikePost(uid, postId, element) {
       element.classList.add("liked");
       spanCurtidas.textContent = curtidasAtuais + 1;
     }
-
-    // Atualiza "curtido por"
     atualizarCurtidoPorDepoisDoLike(element, postId);
 
   } catch (error) {
@@ -1558,8 +1194,6 @@ async function toggleLikePost(uid, postId, element) {
   }
 }
 
-
-// [REMOVIDO] Listener de like duplicado - consolidado em configurarEventListeners()
 async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
   const usuarioLogado = auth.currentUser;
   const footerBox = btn.closest(".post-card").querySelector(".post-footer-box");
@@ -1575,7 +1209,6 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
     return;
   }
 
-  // Renderiza as fotos de perfil
   let fotosHTML = '';
   if (info.fotos && info.fotos.length > 0) {
     fotosHTML = '<div style="display: flex; margin-right: 4px;">';
@@ -1597,7 +1230,6 @@ async function atualizarCurtidoPorDepoisDoLike(btn, postId) {
     fotosHTML += '</div>';
   }
 
-  // Monta o texto "Curtido por X, Y e outras Z pessoas"
   let textoHTML = '<span>Curtido por ';
 
   if (info.usernames.length === 1) {
@@ -1639,7 +1271,6 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
   const total = likersTotal.length;
   if (total === 0) return { usernames: [], total: 0, fotos: [] };
 
-  // CASO 1: só você curtiu — usa cache direto
   if (total === 1 && likersTotal[0].uid === usuarioLogadoUid) {
     const meusDados = await buscarUsuarioCached(usuarioLogadoUid);
     return {
@@ -1649,26 +1280,22 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
     };
   }
 
-  // CASO 2: múltiplos likers
   const likersExibicao = likersTotal.filter(l => l.uid !== usuarioLogadoUid);
   if (likersExibicao.length === 0) return { usernames: ["você"], total, fotos: [] };
 
   likersExibicao.sort((a, b) => b.timestamp - a.timestamp);
 
-  // Busca amigos do cache de localStorage (já existe no buscarUsuarioCached)
   const amigosSnap = await getDocs(collection(db, `users/${usuarioLogadoUid}/friends`));
   const amigosUid = amigosSnap.docs.map(d => d.id);
 
   const amigosQueCurtiram = likersExibicao.filter(l => amigosUid.includes(l.uid));
   const outrosQueCurtiram = likersExibicao.filter(l => !amigosUid.includes(l.uid));
 
-  // Seleciona até 2 (priorizando amigos)
   const pessoasParaMostrar = [
     ...amigosQueCurtiram.slice(0, 2),
     ...outrosQueCurtiram.slice(0, 2 - Math.min(2, amigosQueCurtiram.length))
   ].slice(0, 2);
 
-  // ✅ Busca todos em paralelo via cache — sem waterfall de requisições
   const dadosPessoas = await Promise.all(
     pessoasParaMostrar.map(p => buscarUsuarioCached(p.uid))
   );
@@ -1679,10 +1306,10 @@ async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
   return { usernames, total, fotos };
 }
 
+// ============================================================
+// PERFIL
+// ============================================================
 
-// ===================
-// OBTER FOTO DE PERFIL DO USUÁRIO
-// ===================
 function obterFotoPerfil(userData, usuarioLogado) {
   const possiveisFotos = [
     userData?.userphoto,
@@ -1703,12 +1330,11 @@ function obterFotoPerfil(userData, usuarioLogado) {
   return './src/img/default.jpg';
 }
 
+// ============================================================
+// CACHE DE USUÁRIOS
+// ============================================================
 
-// ==============================
-// SISTEMA DE CACHE GLOBAL
-// ==============================
-
-const CACHE_USER_TIME = 1000 * 60 * 30; // 30 minutos
+const CACHE_USER_TIME = 1000 * 60 * 30;
 
 function getCache(key) {
   try {
@@ -1716,9 +1342,6 @@ function getCache(key) {
     if (!raw) return null;
 
     const data = JSON.parse(raw);
-
-    // Expirou mas NÃO apaga — mantém o stale disponível enquanto
-    // a revalidação em background ainda não terminou (evita username sumindo)
     return data.value || null;
   } catch {
     return null;
@@ -1750,23 +1373,17 @@ function setCache(key, value) {
 
 
 
-// ==============================
-// CACHE DE USUÁRIOS
-// ==============================
 async function buscarUsuarioCached(uid) {
   const key = `user_cache_${uid}`;
 
-  // Para o próprio usuário logado, nunca usar cache stale — sempre busca do Firebase
   const ehProprioUsuario = auth.currentUser && auth.currentUser.uid === uid;
   if (ehProprioUsuario) {
-    // Tenta usar cache fresco (gravado por atualizarGreeting logo na inicialização)
     if (!isCacheExpirado(key)) {
       const raw = localStorage.getItem(key);
       if (raw) {
         try { return JSON.parse(raw).value; } catch {}
       }
     }
-    // Cache expirado ou ausente — busca direto do Firebase e atualiza
     const dados = await buscarDadosUsuarioPorUid(uid);
     if (dados) setCache(key, dados);
     return dados;
@@ -1782,7 +1399,6 @@ async function buscarUsuarioCached(uid) {
 
   if (stale) {
     if (isCacheExpirado(key)) {
-      // Revalida em background mas mantém o stale visível até terminar
       buscarDadosUsuarioPorUid(uid).then(dados => {
         if (dados) setCache(key, dados);
       }).catch(() => {});
@@ -1790,13 +1406,14 @@ async function buscarUsuarioCached(uid) {
     return stale;
   }
 
-  // Sem cache nenhum — busca e aguarda
   const dados = await buscarDadosUsuarioPorUid(uid);
   if (dados) setCache(key, dados);
   return dados;
 }
 
-//Saudação
+// ============================================================
+// SAUDAÇÃO
+// ============================================================
 
 async function atualizarGreeting(userParam) {
   const user = userParam || auth.currentUser;
@@ -1806,18 +1423,14 @@ async function atualizarGreeting(userParam) {
   const cacheKey = `user_cache_${uid}`;
   const photoKey = `user_photo_${uid}`;
 
-  // Saudação imediata enquanto busca os dados
   const saudacao = getSaudacao();
   const greetingEl = document.getElementById('greeting');
   if (greetingEl) greetingEl.textContent = saudacao;
 
-  // Invalida o cache do próprio usuário antes de buscar — garante dado fresco do Firebase
   try { localStorage.removeItem(cacheKey); } catch {}
 
-  // Sempre busca direto do Firestore — garante que o nome aparece corretamente
   const userData = await buscarDadosUsuarioPorUid(uid);
 
-  // Atualiza cache para uso futuro (posts, bubbles, etc.)
   if (userData) {
     setCache(cacheKey, userData);
     if (userData.userphoto) setCache(photoKey, userData.userphoto);
@@ -1826,10 +1439,6 @@ async function atualizarGreeting(userParam) {
   const cachedPhoto = userData?.userphoto || getCache(photoKey);
   updateUI({ saudacao, nome: getNome(userData), userData, user, cachedPhoto });
 }
-
-// ==============================
-// HELPERS
-// ==============================
 
 function getSaudacao() {
   const agora = new Date();
@@ -1876,18 +1485,17 @@ function updateUI({ saudacao, nome, userData, user, cachedPhoto }) {
 
 
 // ============================================================
-// SISTEMA DE ABERTURA DO POST LAYER
-// Conecta: botão "+", "Como foi o seu dia?", sidebar "Criar",
-//           botão fechar, e abrirPostModal global
+// POST LAYER
 // ============================================================
+
 function configurarPostLayer() {
   const postLayer = document.getElementById('postLayer');
   const closeBtn  = document.getElementById('closeLayerBtn');
+  const feedPage = document.getElementById('feedPage');
 
   if (!postLayer) return;
 
   function abrirLayer(tipoPadrao = 'post') {
-    // Ativar tab correta
     document.querySelectorAll('.post-type-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.post-content-type').forEach(c => c.classList.remove('active'));
     const tab = document.querySelector(`.post-type-tab[data-type="${tipoPadrao}"]`);
@@ -1895,10 +1503,20 @@ function configurarPostLayer() {
     if (tab) tab.classList.add('active');
     if (content) content.classList.add('active');
 
+    const user = auth.currentUser;
+    if (user) {
+      buscarUsuarioCached(user.uid).then(dados => {
+        const avatar = postLayer.querySelector('.np-avatar');
+        const usernameEl = postLayer.querySelector('.np-username');
+        if (avatar && dados?.userphoto) avatar.src = dados.userphoto;
+        if (usernameEl) usernameEl.textContent = dados?.username || dados?.displayname || '';
+      });
+    }
+
     postLayer.classList.add('active');
+    feedPage.classList.add('closed')
     document.body.style.overflow = 'hidden';
 
-    // Focar textarea
     setTimeout(() => {
       const textarea = postLayer.querySelector('.post-content-type.active .np-text-input');
       if (textarea) textarea.focus();
@@ -1907,36 +1525,28 @@ function configurarPostLayer() {
 
   function fecharLayer() {
     postLayer.classList.remove('active');
+    feedPage.classList.remove('closed');
     document.body.style.overflow = '';
     limparInputsPost();
-    // Remover preview de imagem se existir
     document.querySelector('.image-preview-container')?.remove();
   }
 
-  // Fechar ao clicar no botão de voltar
   if (closeBtn) closeBtn.addEventListener('click', fecharLayer);
 
-  // Fechar ao clicar no fundo (fora do conteúdo)
   postLayer.addEventListener('click', (e) => {
     if (e.target === postLayer) fecharLayer();
   });
 
-  // Fechar com ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && postLayer.classList.contains('active')) fecharLayer();
   });
 
-  // Botão "+" na navbar-top
   const topBtn = document.getElementById('openPostLayerNav');
   if (topBtn) topBtn.addEventListener('click', () => abrirLayer('post'));
 
-  // Botão "Como foi o seu dia?" / "Criar post"
   const npBtn = document.getElementById('openPostLayer');
   if (npBtn) npBtn.addEventListener('click', () => abrirLayer('post'));
 
-
-
-  // Sidebar "Criar"
   const sidebarCriar = document.querySelector('.sidebar .postmodal');
   if (sidebarCriar) {
     sidebarCriar.removeAttribute('onclick');
@@ -1946,13 +1556,8 @@ function configurarPostLayer() {
     });
   }
 
-  // Expor globalmente para onclick inline residual
   window.abrirPostModal  = () => abrirLayer('post');
   window.fecharPostModal = fecharLayer;
-
-  // ============================================================
-  // UPLOAD DE IMAGEM NO POST-LAYER (suporte a drag & drop + click)
-  // ============================================================
   const postFileArea = document.getElementById('post-file-input');
   const previewPost  = document.querySelector('.image-preview-post');
   const previewImg   = previewPost?.querySelector('img');
@@ -1964,7 +1569,6 @@ function configurarPostLayer() {
     fileInputLayer = document.createElement('input');
     fileInputLayer.type = 'file';
     fileInputLayer.id   = 'post-layer-file-input';
-    // Suporta todos os tipos aceitos pelo ImgBB + browser
     fileInputLayer.accept = 'image/jpeg,image/png,image/gif,image/webp,image/bmp';
     fileInputLayer.style.display = 'none';
     document.body.appendChild(fileInputLayer);
@@ -1974,31 +1578,14 @@ function configurarPostLayer() {
 
   function aplicarPreview(file) {
     if (!file) return;
-    if (!IMGBB_TIPOS_SUPORTADOS.includes(file.type)) {
-      return;
-    }
-    postImageFile = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (previewImg) previewImg.src = e.target.result;
-      if (previewPost) previewPost.style.display = 'block';
-      if (postFileArea) postFileArea.style.display = 'none';
-      // Mostrar badge do tipo
-      const badge = previewPost?.querySelector('.preview-type-badge');
-      if (badge) {
-        badge.textContent = file.type === 'image/gif' ? 'GIF' : file.type.split('/')[1].toUpperCase();
-        badge.style.display = 'block';
-      }
-    };
-    reader.readAsDataURL(file);
+    if (!IMGBB_TIPOS_SUPORTADOS.includes(file.type)) return;
+    adicionarImagemCarrosel(file);
   }
 
-  // Click na área de upload
   if (postFileArea) {
     postFileArea.addEventListener('click', selecionarArquivo);
   }
 
-  // Drag & drop
   const fileBox = postFileArea?.closest('.file-box') || postFileArea;
   if (fileBox) {
     fileBox.addEventListener('dragover', (e) => {
@@ -2009,33 +1596,20 @@ function configurarPostLayer() {
     fileBox.addEventListener('drop', (e) => {
       e.preventDefault();
       fileBox.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file) aplicarPreview(file);
+      Array.from(e.dataTransfer.files).forEach(f => aplicarPreview(f));
     });
   }
 
-  // Seleção via input
   fileInputLayer.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) aplicarPreview(file);
-    fileInputLayer.value = ''; // permite reselecionar o mesmo arquivo
+    Array.from(e.target.files).forEach(f => aplicarPreview(f));
+    fileInputLayer.value = '';
   });
-
-  // Remover imagem
-  if (removeBtn) {
-    removeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      postImageFile = null;
-      if (previewImg) previewImg.src = '';
-      if (previewPost) previewPost.style.display = 'none';
-      if (postFileArea) postFileArea.style.display = '';
-    });
-  }
 }
 
-// ===================
-// CRIAR INPUT DE URL DE IMAGEM (seleção direta)
-// ===================
+// ============================================================
+// UPLOAD DE IMAGEM
+// ============================================================
+
 async function comprimirImagem(file, maxWidth = 1920, quality = 0.8) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2089,9 +1663,8 @@ function fileToBase64(file) {
   });
 }
 
-// Tipos suportados pelo ImgBB
 const IMGBB_TIPOS_SUPORTADOS = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
-const IMGBB_MAX_SIZE = 32 * 1024 * 1024; // 32MB limite ImgBB
+const IMGBB_MAX_SIZE = 32 * 1024 * 1024;
 
 async function uploadImagemPost(file, userId) {
   try {
@@ -2105,7 +1678,6 @@ async function uploadImagemPost(file, userId) {
 
     let fileToUpload = file;
     
-    // Comprimir apenas imagens estáticas maiores que 2MB (NÃO comprimir GIFs!)
     if (file.type !== 'image/gif' && file.size > 2 * 1024 * 1024) {
       fileToUpload = await comprimirImagem(file, 1920, 0.8);
     }
@@ -2152,13 +1724,11 @@ function mostrarPreview(file) {
   if (file.size > maxSize) {
   }
   
-  // Remove preview anterior se existir
   let imagePreview = postArea.nextElementSibling;
   if (imagePreview && imagePreview.classList.contains('image-preview-container')) {
     imagePreview.remove();
   }
   
-  // Cria novo preview
   imagePreview = document.createElement('div');
   imagePreview.className = 'image-preview-container';
   imagePreview.innerHTML = `
@@ -2182,7 +1752,6 @@ function mostrarPreview(file) {
   };
   reader.readAsDataURL(file);
   
-  // Botão de remover
   removeBtn.addEventListener('click', () => {
     const fileInput = document.getElementById('image-file-input');
     if (fileInput) fileInput.value = '';
@@ -2194,10 +1763,7 @@ function mostrarPreview(file) {
 function criarInputImagem() {
   const postArea = document.querySelector('.post-area');
   const fileBtn = document.querySelector('.file-button');
-  
   if (!postArea || !fileBtn) return;
-
-  // Cria input file oculto
   let fileInput = document.getElementById('image-file-input');
   if (!fileInput) {
     fileInput = document.createElement('input');
@@ -2215,17 +1781,16 @@ function criarInputImagem() {
       }
     });
   }
-  
-  // Ao clicar no botão, abre diretamente o seletor de arquivos
   fileBtn.addEventListener('click', () => {
     fileInput.click();
   });
 }
 
 
-// ===================
-// MODAL DE COMENTÁRIOS COM DRAG E CLICK FORA
-// ===================
+// ============================================================
+// MODAL DE COMENTÁRIOS
+// ============================================================
+
 async function abrirModalComentarios(postId, creatorId) {
   const modalExistente = document.querySelector('.mobile-comments-modal');
   if (modalExistente) modalExistente.remove();
@@ -2256,29 +1821,24 @@ async function abrirModalComentarios(postId, creatorId) {
   `;
   document.body.appendChild(modal);
   
-  // BLOQUEIA O SCROLL DA PÁGINA
   const scrollY = window.scrollY;
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
   document.body.style.top = `-${scrollY}px`;
   
-  // Força o reflow antes de adicionar a classe active
   modal.offsetHeight;
   
-  // Exibe o modal com animação
   requestAnimationFrame(() => {
     modal.classList.add('active');
   });
 
-  // FECHAR AO CLICAR FORA DO CONTEÚDO
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       fecharModalComentarios();
     }
   });
 
-  // DRAG TO CLOSE
   const modalContent = modal.querySelector('.mobile-comments-content');
   const modalGrab = modal.querySelector('.modal-grab');
   const header = modal.querySelector('.modal-comments-header');
@@ -2298,11 +1858,8 @@ async function abrirModalComentarios(postId, creatorId) {
     currentY = e.touches[0].clientY;
     const deltaY = currentY - startY;
     
-    // Só permite arrastar para baixo
     if (deltaY > 0) {
       modalContent.style.transform = `translateY(${deltaY}px)`;
-      
-      // Adiciona opacidade conforme arrasta
       const opacity = Math.max(0, 1 - (deltaY / 300));
       modal.style.backgroundColor = `rgba(0, 0, 0, ${opacity * 0.5})`;
     }
@@ -2315,17 +1872,14 @@ async function abrirModalComentarios(postId, creatorId) {
     const deltaY = currentY - startY;
     modalContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     
-    // Se arrastou mais de 150px, fecha o modal
     if (deltaY > 150) {
       fecharModalComentarios();
     } else {
-      // Volta para a posição original
       modalContent.style.transform = 'translateY(0)';
       modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     }
   };
 
-  // Adiciona listeners
   modalGrab.addEventListener('touchstart', handleTouchStart);
   modalGrab.addEventListener('touchmove', handleTouchMove);
   modalGrab.addEventListener('touchend', handleTouchEnd);
@@ -2334,7 +1888,6 @@ async function abrirModalComentarios(postId, creatorId) {
   header.addEventListener('touchmove', handleTouchMove);
   header.addEventListener('touchend', handleTouchEnd);
 
-  // Carrega os comentários
   const commentsList = modal.querySelector('.comments-list-mobile');
   await renderizarComentarios(creatorId, postId, commentsList);
   
@@ -2345,7 +1898,6 @@ if (btnComment) {
   if (span) span.textContent = total;
 }
   
-  // Listener para o botão de envio
   modal.querySelector('.comment-submit-mobile').addEventListener('click', async (e) => {
     e.preventDefault();
     const input = modal.querySelector('.comment-input-mobile');
@@ -2355,7 +1907,7 @@ if (btnComment) {
       if (sucesso) {
         triggerNovoComentario(postId, creatorId).catch(console.warn);
         input.value = '';
-        invalidarCacheComentarios(postId); // força rebusca no Firestore
+        invalidarCacheComentarios(postId);
         await renderizarComentarios(creatorId, postId, commentsList);
         // Atualiza contador no botão do feed
         const btnCommentFeed = document.querySelector(`.btn-comment[data-id="${postId}"]`);
@@ -2368,7 +1920,6 @@ if (btnComment) {
     } 
   });
 
-  // Listener para Enter
   modal.querySelector('.comment-input-mobile').addEventListener('keypress', async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -2403,8 +1954,6 @@ function fecharModalComentarios() {
     
     setTimeout(() => {
       modal.remove();
-      
-      // RESTAURA O SCROLL DA PÁGINA
       const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
@@ -2415,7 +1964,6 @@ function fecharModalComentarios() {
   }
 }
 
-// Torna a função de fechar globalmente acessível
 window.fecharModalComentarios = fecharModalComentarios;
 
 let currentMenuPost = null;
@@ -2463,12 +2011,10 @@ function configurarListenersMenuBottom() {
   const menuLayer = document.querySelector('.menu-bottom-layer');
   if (!menuLayer) return;
 
-  // Clique fora
   menuLayer.addEventListener('click', (e) => {
     if (e.target === menuLayer) fecharMenuBottom();
   });
 
-  // Ações
   menuLayer.addEventListener('click', async (e) => {
     const btn = e.target.closest('.menu-bottom-btn');
     if (!btn || !currentMenuPost) return;
@@ -2498,9 +2044,9 @@ function configurarListenersMenuBottom() {
   });
 }
 
-// =====================
-// DELETE CORRIGIDO
-// =====================
+// ============================================================
+// MENU BOTTOM / AÇÕES DO POST
+// ============================================================
 
 async function handleDeletarPost(postId, ownerId, postElement) {
   if (!postId) return;
@@ -2529,16 +2075,15 @@ async function handleDeletarPost(postId, ownerId, postElement) {
   }
 }
 
-// ===================
-// EVENT LISTENERS - VERSÃO COMPLETA E CORRIGIDA
-// ===================
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
 function configurarEventListeners() {
-  // Botão de enviar post
   if (postButton) {
     postButton.addEventListener('click', sendPost);
   }
   
-  // Enter no input de post
   if (postInput) {
     postInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -2548,13 +2093,7 @@ function configurarEventListeners() {
     });
   }
   
-  // Botão de carregar mais
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', loadPosts);
-  }
-  
   if (feed) {
-    // ✅ ÚNICO LISTENER DE CLICK NO FEED
     feed.addEventListener('click', async (e) => {
       const btnLike = e.target.closest('.btn-like');
       const btnReport = e.target.closest('.btn-report');
@@ -2563,43 +2102,21 @@ function configurarEventListeners() {
       const btnMore = e.target.closest(".more-options-button");
       const commentSubmit = e.target.closest('.comment-submit');
 
-      // CURTIR POST
       if (btnLike) {
         const uid = auth.currentUser?.uid;
         const postId = btnLike.dataset.id;
         if (uid && postId) {
           await toggleLikePost(uid, postId, btnLike);
-        } else {
         }
       }
 
-      // DENUNCIAR POST
-      if (btnReport) {
-        const postId = btnReport.dataset.id;
-        const uid = btnReport.dataset.username;
-        let targetOwnerUsername = "cache";
-        try {
-          const userData = await buscarDadosUsuarioPorUid(uid);
-          targetOwnerUsername = userData?.username || userData?.displayname || "cache";
-        } catch {}
-        criarModalDenuncia({
-          targetType: "post",
-          targetId: postId,
-          targetPath: `posts/${postId}`,
-          targetOwnerId: uid,
-          targetOwnerUsername
-        });
-      }
-
-      // ABRIR COMENTÁRIOS
       if (btnComment) {
         const postId = btnComment.dataset.id;
         const uid = btnComment.dataset.username;
         abrirModalComentarios(postId, uid);
       }
 
-      // 👤 LINK PARA PERFIL
-const userInfo = e.target.closest('.user-info');
+      const userInfo = e.target.closest('.user-info');
       if (userInfo && !e.target.closest('.more-options-button')) {
         const userNameLink = userInfo.querySelector('.user-name-link');
         if (userNameLink) {
@@ -2611,7 +2128,6 @@ const userInfo = e.target.closest('.user-info');
         return;
       }
 
-      // ⋮ MENU 3 PONTINHOS
       if (btnMore) {
         const postCard = btnMore.closest(".post-card");
         const postId = postCard.querySelector('.btn-like')?.dataset.id;
@@ -2621,8 +2137,6 @@ const userInfo = e.target.closest('.user-info');
         }
       }
 
-      
-      // ✉️ ENVIAR COMENTÁRIO VIA BOTÃO (fallback inline - raramente usado)
       if (commentSubmit) {
         const uid = commentSubmit.dataset.username;
         const postId = commentSubmit.dataset.postId;
@@ -2640,9 +2154,6 @@ const userInfo = e.target.closest('.user-info');
   }
 }
 
-// ===================
-// LISTENER PARA NOMES DE USUÁRIOS NOS COMENTÁRIOS
-// ===================
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('comentario-nome')) {
     const uid = e.target.dataset.username;
@@ -2653,12 +2164,12 @@ document.addEventListener('click', (e) => {
 });
 
 
-// ===================
-// ATUALIZAR DATAS AUTOMATICAMENTE
-// ===================
+// ============================================================
+// ATUALIZAÇÃO DE DATAS
+// ============================================================
+
 function atualizarDatasAutomaticamente() {
   setInterval(() => {
-    // Atualiza datas relativas no feed (.post-date-mobile)
     document.querySelectorAll('.post-date-mobile').forEach(dateElement => {
       const postCard = dateElement.closest('.post-card');
       if (postCard) {
@@ -2675,16 +2186,10 @@ function atualizarDatasAutomaticamente() {
   }, 60000);
 }
 
+// ============================================================
+// LOADING
+// ============================================================
 
-// ===================
-// SISTEMA DE TIPOS DE POST
-// ===================
-let currentPostType = 'post';
-let postImageFile = null;
-
-// ========================
-// FUNÇÕES DE LOADING
-// ========================
 function mostrarLoading(mensagem) {
   const container = document.createElement('div');
   container.className = 'loading-overlay';
@@ -2743,9 +2248,10 @@ function atualizarTextoLoading(mensagem) {
   }
 }
 
-// ========================
-// ANIMAÇÃO DE CORAÇÃO
-// ========================
+// ============================================================
+// ANIMAÇÃO DE CORAÇÃO (double tap)
+// ============================================================
+
 function _animarCoracaoLike(carousel, e) {
   const rect = carousel.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -2780,105 +2286,6 @@ function _animarCoracaoLike(carousel, e) {
   setTimeout(() => heart.remove(), 1500);
 }
 
-// ========================
-// MODAL DE DENÚNCIA
-// ========================
-function criarModalDenuncia(config) {
-  const { targetType, targetId, targetPath, targetOwnerId, targetOwnerUsername } = config;
-  
-  const modal = document.createElement('div');
-  modal.className = 'denunciar-modal-overlay';
-  modal.innerHTML = `
-    <div class="denunciar-modal-content">
-      <h2>Denunciar ${targetType}</h2>
-      <select id="reason-select" class="reason-select">
-        <option value="">Selecione um motivo...</option>
-        <option value="inappropriate">Conteúdo inapropriado</option>
-        <option value="spam">Spam</option>
-        <option value="harassment">Assédio</option>
-        <option value="violence">Violência</option>
-        <option value="hate">Discurso de ódio</option>
-        <option value="other">Outro</option>
-      </select>
-      <textarea id="report-details" class="report-details" placeholder="Detalhes adicionais (opcional)"></textarea>
-      <div class="modal-actions">
-        <button id="cancel-report" class="btn-cancel">Cancelar</button>
-        <button id="submit-report" class="btn-submit">Denunciar</button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  
-  const style = document.createElement('style');
-  if (!document.getElementById('report-modal-style')) {
-    style.id = 'report-modal-style';
-    style.textContent = `
-      .denunciar-modal-overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7);
-        z-index: 99998;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .denunciar-modal-content {
-        background: #1a1a1a;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 400px;
-        color: #fff;
-      }
-      .denunciar-modal-content h2 {
-        margin-bottom: 15px;
-      }
-      .reason-select, .report-details {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        background: #2a2a2a;
-        color: #fff;
-        border: 1px solid #444;
-        border-radius: 4px;
-      }
-      .modal-actions {
-        display: flex;
-        gap: 10px;
-      }
-      .modal-actions button {
-        flex: 1;
-        padding: 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-      .btn-cancel {
-        background: #444;
-        color: #fff;
-      }
-      .btn-submit {
-        background: #E74C3C;
-        color: #fff;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  
-  modal.querySelector('#cancel-report').addEventListener('click', () => modal.remove());
-  modal.querySelector('#submit-report').addEventListener('click', async () => {
-    const reason = modal.querySelector('#reason-select').value;
-    if (!reason) {
-      alert('Selecione um motivo para a denúncia');
-      return;
-    }
-    await handleDenunciarPost(targetId, targetOwnerId, reason);
-    modal.remove();
-  });
-}
 
 async function handleDenunciarPost(postId, ownerId, reason = 'other') {
   try {
@@ -2905,12 +2312,14 @@ async function handleDenunciarPost(postId, ownerId, reason = 'other') {
   }
 }
 
-// ===================
-// SISTEMA DE TIPOS DE POST
-// ===================
+// ============================================================
+// TIPOS DE POST
+// ============================================================
+
+let postImageFiles = [];
+const MAX_IMAGES = 12;
 
 function inicializarSistemaTipoPost() {
-  // Contador de caracteres (igual ao original)
   document.querySelectorAll('.np-text-input').forEach(textarea => {
     textarea.addEventListener('input', (e) => {
       const counter = e.target.parentElement.querySelector('.char-counter');
@@ -2923,64 +2332,123 @@ function inicializarSistemaTipoPost() {
     });
   });
 
-  // Upload de imagem POST (igual ao original)
-  const postFileArea = document.getElementById('post-file-input');
-  if (postFileArea) {
-    postFileArea.addEventListener('click', () => {
-      const input   = document.createElement('input');
+  const addImgBtn = document.getElementById('np-add-img');
+  if (addImgBtn) {
+    addImgBtn.addEventListener('click', () => {
+      if (postImageFiles.length >= MAX_IMAGES) {
+        alert(`Máximo de ${MAX_IMAGES} imagens atingido.`);
+        return;
+      }
+      const input = document.createElement('input');
       input.type    = 'file';
       input.accept  = 'image/*';
-      input.onchange = (e) => handlePostImageUpload(e.target.files[0]);
+      input.multiple = true;
+      input.onchange = (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(f => adicionarImagemCarrosel(f));
+      };
       input.click();
     });
   }
 
-  // Remover imagem POST (igual ao original)
-  document.querySelector('.remove-image-post')?.addEventListener('click', () => {
-    postImageFile = null;
-    const preview = document.querySelector('.image-preview-post');
-    if (preview) preview.style.display = 'none';
+  const carroselContainer = document.querySelector('.image-preview-carrosel');
+  if (carroselContainer) {
+    carroselContainer.addEventListener('click', (e) => {
+      const removeBtn = e.target.closest('.remove-image');
+      if (!removeBtn) return;
+      const imgPreview = removeBtn.closest('.img-preview');
+      const index = parseInt(imgPreview?.dataset.index ?? '-1');
+      if (index >= 0) {
+        postImageFiles.splice(index, 1);
+        renderizarPreviewsCarrosel();
+      }
+    });
+  }
+
+  document.getElementById('btnLocal')?.addEventListener('click', () => {
+    const overlay = document.getElementById('overlayLocal');
+    if (overlay) overlay.style.display = 'flex';
   });
 
-  // -------------------------------------------------------
-  // BOTÃO "POST" — envia texto + imagem
-  // -------------------------------------------------------
+  document.getElementById('confirm-local')?.addEventListener('click', () => {
+    const overlay = document.getElementById('overlayLocal');
+    if (overlay) overlay.style.display = 'none';
+    const input = document.getElementById('add-location');
+    const btnLocal = document.getElementById('btnLocal');
+    if (btnLocal) {
+      const dot = btnLocal.querySelector('.np-btn-dot');
+      if (dot) dot.style.display = input?.value.trim() ? 'block' : 'none';
+    }
+  });
+
+  document.getElementById('cancel-local')?.addEventListener('click', () => {
+    const overlay = document.getElementById('overlayLocal');
+    if (overlay) {
+      overlay.style.display = 'none';
+      const input = document.getElementById('add-location');
+      if (input) input.value = '';
+    }
+  });
+
   document.getElementById('btn-post')?.addEventListener('click', async () => {
     const user  = auth.currentUser;
-    const texto = document.querySelector('.np-text-input').value.trim();
-    await enviarPost(user, texto, postImageFile);
-  });
-
-  // -------------------------------------------------------
-  // BOTÃO "NOTA" — envia só texto, ignora imagem
-  // -------------------------------------------------------
-  document.getElementById('btn-bubble')?.addEventListener('click', async () => {
-    const user  = auth.currentUser;
-    const texto = document.querySelector('.np-text-input').value.trim();
-    await enviarBubble(user, texto);
+    const texto = document.querySelector('.np-text-input')?.value.trim() ?? '';
+    await enviarPost(user, texto, postImageFiles);
   });
 }
 
-function handlePostImageUpload(file) {
-  if (!file || !file.type.startsWith('image/')) {
+function adicionarImagemCarrosel(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  if (postImageFiles.length >= MAX_IMAGES) {
+    alert(`Máximo de ${MAX_IMAGES} imagens atingido.`);
+    return;
+  }
+  postImageFiles.push(file);
+  renderizarPreviewsCarrosel();
+}
+
+function renderizarPreviewsCarrosel() {
+  const carrosel = document.querySelector('.image-preview-carrosel');
+  if (!carrosel) return;
+
+  carrosel.innerHTML = '';
+
+  if (postImageFiles.length === 0) {
+    carrosel.classList.remove('visible');
     return;
   }
 
-  postImageFile = file;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const preview = document.querySelector('.image-preview-post');
-    preview.querySelector('img').src = e.target.result;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
+  carrosel.classList.add('visible');
 
+  postImageFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'img-preview';
+    div.dataset.index = index;
+    div.innerHTML = `
+      <img src="" alt="Preview ${index + 1}">
+      <button class="remove-image" type="button"><i class="fas fa-times"></i></button>
+    `;
+    carrosel.appendChild(div);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      div.querySelector('img').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const addImgBtn = document.getElementById('np-add-img');
+  if (addImgBtn) {
+    addImgBtn.textContent = postImageFiles.length >= MAX_IMAGES
+      ? `Máximo atingido (${MAX_IMAGES})`
+      : `Adicionar Imagem (${postImageFiles.length}/${MAX_IMAGES})`;
+  }
+}
 
 function limparInputsPost() {
   document.querySelectorAll('.np-text-input').forEach(input => {
     input.value = '';
-    const counter = input.parentElement.querySelector('.char-counter');
+    const counter = input.parentElement?.querySelector('.char-counter');
     if (counter) {
       const max = input.getAttribute('maxlength');
       counter.textContent = `0/${max}`;
@@ -2988,14 +2456,22 @@ function limparInputsPost() {
     }
   });
 
-  postImageFile  = null;
+  postImageFiles = [];
+  renderizarPreviewsCarrosel();
 
-  const previewPost  = document.querySelector('.image-preview-post');
-  if (previewPost)  previewPost.style.display  = 'none';
+  const locationInput = document.getElementById('add-location');
+  if (locationInput) locationInput.value = '';
+  const btnLocal = document.getElementById('btnLocal');
+  if (btnLocal) {
+    const dot = btnLocal.querySelector('.np-btn-dot');
+    if (dot) dot.style.display = 'none';
+  }
 
   const postFileArea = document.getElementById('post-file-input');
   if (postFileArea) postFileArea.style.display = '';
 }
+
+
 
 async function enviarPublicacao() {
   const usuarioLogado = auth.currentUser;
@@ -3004,56 +2480,60 @@ async function enviarPublicacao() {
   }
 
   const activeContent = document.querySelector('.post-content-type.active');
-  const textarea = activeContent.querySelector('.np-text-input');
+  const textarea = activeContent ? activeContent.querySelector('.np-text-input') : document.querySelector('.np-text-input');
   const texto = textarea ? textarea.value.trim() : '';
 
-  if (currentPostType === 'post') {
-    await enviarPost(usuarioLogado, texto, postImageFile);
-  } else if (currentPostType === 'bubble') {
-    await enviarBubble(usuarioLogado, texto);
-  }
+  await enviarPost(usuarioLogado, texto, postImageFiles);
 }
 
-async function enviarPost(user, texto, imageFile) {
-  if (!texto && !imageFile) {
+async function enviarPost(user, texto, imageFiles) {
+  const files = Array.isArray(imageFiles) ? imageFiles.filter(Boolean) : (imageFiles ? [imageFiles] : []);
+  if (!texto && files.length === 0) {
     alert('Escreva algo ou adicione uma imagem!');
     return;
   }
  
-  // Fecha o modal na hora
   const postLayer = document.getElementById('postLayer');
   if (postLayer) postLayer.classList.remove('active');
   document.body.style.overflow = '';
   limparInputsPost();
  
-  // Inicia barra em 0%
   const bar = criarBarraPost();
-  avancarBarra(bar, 10); // começa com 10% imediatamente
+  avancarBarra(bar, 10);
  
   try {
     const postId = gerarIdUnico('post');
-    let urlImagem = '';
-    let deleteUrlImagem = '';
+    const urls = [];
+    const deleteUrls = [];
  
-    if (imageFile) {
-      avancarBarra(bar, 30); // 30% — iniciando upload
-      const uploadResult = await uploadImagemPost(imageFile, user.uid);
-      if (!uploadResult.success) {
-        removerBarra(bar);
-        alert('Erro no upload: ' + uploadResult.error);
-        return;
+    if (files.length > 0) {
+      const step = 50 / files.length;
+      for (let i = 0; i < files.length; i++) {
+        avancarBarra(bar, 10 + step * i);
+        const uploadResult = await uploadImagemPost(files[i], user.uid);
+        if (!uploadResult.success) {
+          removerBarra(bar);
+          alert('Erro no upload: ' + uploadResult.error);
+          return;
+        }
+        urls.push(uploadResult.url);
+        deleteUrls.push(uploadResult.deleteUrl);
       }
-      urlImagem       = uploadResult.url;
-      deleteUrlImagem = uploadResult.deleteUrl;
-      avancarBarra(bar, 70); // 70% — upload concluído
+      avancarBarra(bar, 70);
     } else {
-      avancarBarra(bar, 60); // sem imagem, vai direto pra 60%
+      avancarBarra(bar, 60);
     }
+
+    const locationInput = document.getElementById('add-location');
+    const location = locationInput ? locationInput.value.trim() : '';
+    if (locationInput) locationInput.value = '';
  
     const postData = {
       content:      texto,
-      img:          urlImagem,
-      imgDeleteUrl: deleteUrlImagem,
+      img:          urls.length === 1 ? urls[0] : '',
+      imgs:         urls.length > 1 ? urls : [],
+      imgDeleteUrl: deleteUrls.length === 1 ? deleteUrls[0] : '',
+      imgDeleteUrls: deleteUrls.length > 1 ? deleteUrls : [],
       likes:        0,
       saves:        0,
       comentarios:  0,
@@ -3063,15 +2543,16 @@ async function enviarPost(user, texto, imageFile) {
       visible:      true,
       create:       serverTimestamp()
     };
+
+    if (location) postData.location = location;
  
-    avancarBarra(bar, 85); // 85% — salvando
+    avancarBarra(bar, 85);
     await setDoc(doc(db, 'posts', postId), postData);
     await setDoc(doc(db, 'users', user.uid, 'posts', postId), postData);
  
-    // ✅ ATIVIDADE — novo post
     triggerNovoPost(postId).catch(console.warn);
  
-    avancarBarra(bar, 100); // 100% — salvo!
+    avancarBarra(bar, 100);
     setTimeout(() => removerBarra(bar), 400);
  
     feed.innerHTML   = '';
@@ -3088,59 +2569,14 @@ async function enviarPost(user, texto, imageFile) {
   }
 }
 
-async function enviarBubble(user, texto) {
-  if (!texto) {
-    alert('Escreva algo para a nota!');
-    return;
-  }
- 
-  // Fecha o modal na hora
-  const postLayer = document.getElementById('postLayer');
-  if (postLayer) postLayer.classList.remove('active');
-  document.body.style.overflow = '';
-  limparInputsPost();
- 
-  // Inicia barra em 0%
-  const bar = criarBarraPost();
-  avancarBarra(bar, 20);
- 
-  try {
-    const bubbleId = gerarIdUnico('bubble');
- 
-    avancarBarra(bar, 60); // salvando
-    await setDoc(doc(db, 'bubbles', bubbleId), {
-      content:   texto,
-      bubbleid:  bubbleId,
-      creatorid: user.uid,
-      create:    serverTimestamp(),
-      musicUrl:  ''
-    });
- 
 
-    triggerNovoBubble(bubbleId).catch(console.warn);
- 
-    avancarBarra(bar, 100); // pronto
-    setTimeout(() => removerBarra(bar), 400);
- 
-    feed.innerHTML   = '';
-    lastPostSnapshot = null;
-    hasMorePosts     = true;
-    loading          = false;
-    limparCacheFeed();
-    await loadPosts();
- 
-  } catch (error) {
-    console.error('Erro ao enviar nota:', error);
-    removerBarra(bar);
-    alert('Erro ao enviar nota: ' + error.message);
-  }
-}
 
-// ===================
-// BARRA DE PROGRESSO DO POST (0% → 100%)
-// ===================
+
+// ============================================================
+// BARRA DE PROGRESSO
+// ============================================================
+
 function criarBarraPost() {
-  // injeta o CSS uma única vez
   if (!document.getElementById('plb-style')) {
     const s = document.createElement('style');
     s.id = 'plb-style';
@@ -3164,7 +2600,6 @@ function criarBarraPost() {
     document.head.appendChild(s);
   }
 
-  // remove barra antiga se existir
   document.getElementById('post-loading-bar')?.remove();
 
   const bar = document.createElement('div');
@@ -3186,9 +2621,9 @@ function removerBarra(bar) {
   }
 }
 
-// ===================
+// ============================================================
 // INICIALIZAÇÃO
-// ===================
+// ============================================================
 
 window.addEventListener("DOMContentLoaded", async () => {
   feed       = document.getElementById('feed');
@@ -3199,10 +2634,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   carregarFotoPerfil(null);
 
   const user = await verificarLogin();
-  if (!user) {
-    console.error('❌ Usuário não autenticado');
-    return;
-  }
 
   carregarFotoPerfil(user);
   criarInputImagem();
@@ -3216,12 +2647,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   atualizarDatasAutomaticamente();
 });
 
-
-
-
-// ==============================
-// CLEANUP QUANDO PÁGINA É DEIXADA
-// ==============================
 window.addEventListener('beforeunload', () => {
   pararSincronizacaoBackground();
 });
@@ -3229,7 +2654,6 @@ window.addEventListener('beforeunload', () => {
 window.addEventListener('pagehide', () => {
   pararSincronizacaoBackground();
 });
-
 
 function carregarFotoPerfil(user) {
   const navPic = document.getElementById('nav-pic');
@@ -3264,7 +2688,6 @@ function carregarFotoPerfil(user) {
         localStorage.removeItem('user_photo_cache');
       }
     } catch (error) {
-      console.error('Erro ao buscar foto:', error);
       if (!cachedPhoto && navPic) navPic.src = defaultPic;
     }
   })();
