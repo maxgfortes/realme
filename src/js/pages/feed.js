@@ -1666,6 +1666,19 @@ function fileToBase64(file) {
 const IMGBB_TIPOS_SUPORTADOS = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
 const IMGBB_MAX_SIZE = 32 * 1024 * 1024;
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function uploadComRetry(file, userId, tentativas = 3) {
+  for (let t = 0; t < tentativas; t++) {
+    if (t > 0) await sleep(1000 * t);
+    const result = await uploadImagemPost(file, userId);
+    if (result.success) return result;
+  }
+  return { success: false, error: 'Falhou após várias tentativas' };
+}
+
 async function uploadImagemPost(file, userId) {
   try {
     if (!file) throw new Error('Nenhum arquivo selecionado.');
@@ -2495,6 +2508,10 @@ async function enviarPost(user, texto, imageFiles) {
  
   const postLayer = document.getElementById('postLayer');
   if (postLayer) postLayer.classList.remove('active');
+
+  const feedPage = document.getElementById('feedPage');
+  if (feedPage) feedPage.classList.remove('closed');
+
   document.body.style.overflow = '';
   limparInputsPost();
  
@@ -2510,7 +2527,8 @@ async function enviarPost(user, texto, imageFiles) {
       const step = 50 / files.length;
       for (let i = 0; i < files.length; i++) {
         avancarBarra(bar, 10 + step * i);
-        const uploadResult = await uploadImagemPost(files[i], user.uid);
+        if (i > 0) await sleep(800);
+        const uploadResult = await uploadComRetry(files[i], user.uid);
         if (!uploadResult.success) {
           removerBarra(bar);
           alert('Erro no upload: ' + uploadResult.error);
