@@ -2378,31 +2378,6 @@ function inicializarSistemaTipoPost() {
     });
   }
 
-  document.getElementById('btnLocal')?.addEventListener('click', () => {
-    const overlay = document.getElementById('overlayLocal');
-    if (overlay) overlay.style.display = 'flex';
-  });
-
-  document.getElementById('confirm-local')?.addEventListener('click', () => {
-    const overlay = document.getElementById('overlayLocal');
-    if (overlay) overlay.style.display = 'none';
-    const input = document.getElementById('add-location');
-    const btnLocal = document.getElementById('btnLocal');
-    if (btnLocal) {
-      const dot = btnLocal.querySelector('.np-btn-dot');
-      if (dot) dot.style.display = input?.value.trim() ? 'block' : 'none';
-    }
-  });
-
-  document.getElementById('cancel-local')?.addEventListener('click', () => {
-    const overlay = document.getElementById('overlayLocal');
-    if (overlay) {
-      overlay.style.display = 'none';
-      const input = document.getElementById('add-location');
-      if (input) input.value = '';
-    }
-  });
-
   document.getElementById('btn-post')?.addEventListener('click', async () => {
     const user  = auth.currentUser;
     const texto = document.querySelector('.np-text-input')?.value.trim() ?? '';
@@ -2720,4 +2695,4 @@ onAuthStateChanged(auth, async (user) => {
       console.warn("[FCM] Falha ao registrar notificações:", e);
     }
   }
-});
+}); 
