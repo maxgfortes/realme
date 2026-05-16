@@ -135,7 +135,7 @@ function renderListaComentarios(comentarios, container) {
     comentarioEl.innerHTML = `
       <div class="comentario-header">
         <img src="${fotoUsuario}" alt="Avatar" class="comentario-avatar"
-             onerror="this.src='./src/img/default.jpg'" />
+             onerror="this.src='./public/img/default.jpg'" />
         <div class="comentario-meta">
           <strong class="comentario-nome" data-username="${comentario.senderid}">${usernameParaExibir}${isVerified}</strong>
           <small class="comentario-data">${formatarDataRelativa(comentario.create)}</small>

@@ -140,7 +140,7 @@ export async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
     return {
       usernames: ["você"],
       total,
-      fotos: [meusDados?.userphoto || './src/img/default.jpg']
+      fotos: [meusDados?.userphoto || './public/img/default.jpg']
     };
   }
 
@@ -165,7 +165,7 @@ export async function gerarTextoCurtidoPor(postId, usuarioLogadoUid) {
   );
 
   const usernames = dadosPessoas.map(d => d?.username || d?.displayname || "usuário");
-  const fotos = dadosPessoas.map(d => d?.userphoto || './src/img/default.jpg');
+  const fotos = dadosPessoas.map(d => d?.userphoto || './public/img/default.jpg');
 
   return { usernames, total, fotos };
 }

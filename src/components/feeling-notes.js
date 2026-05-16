@@ -94,7 +94,7 @@ async function buscarDadosUsuario(uid) {
   if (cached) {
     return {
       username: cached.username || "usuário",
-      photo:    cached.userphoto || "./src/img/default.jpg",
+      photo:    cached.userphoto || "./public/img/default.jpg",
       gender:   resolverGenero(cached.gender)
     };
   }
@@ -109,12 +109,12 @@ async function buscarDadosUsuario(uid) {
       ? (genderSnap.data().gender ?? genderSnap.data().value ?? Object.values(genderSnap.data())[0])
       : null;
     return {
-      photo:    mediaSnap.exists() ? (mediaSnap.data().userphoto || mediaSnap.data().pfp || "./src/img/default.jpg") : "./src/img/default.jpg",
+      photo:    mediaSnap.exists() ? (mediaSnap.data().userphoto || mediaSnap.data().pfp || "./public/img/default.jpg") : "./public/img/default.jpg",
       username: dataSnap.exists()  ? (dataSnap.data().username   || "usuário") : "usuário",
       gender:   resolverGenero(genderRaw)
     };
   } catch {
-    return { photo: "./src/img/default.jpg", username: "usuário", gender: "M" };
+    return { photo: "./public/img/default.jpg", username: "usuário", gender: "M" };
   }
 }
 

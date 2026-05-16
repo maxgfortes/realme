@@ -46,7 +46,7 @@ async function _getUser(uid) {
     const result = {
       username:    u.username    || u.displayname || u.name || uid,
       displayname: u.displayname || u.username    || u.name || uid,
-      userphoto:   m.userphoto   || m.pfp         || './src/img/default.jpg',
+      userphoto:   m.userphoto   || m.pfp         || './public/img/default.jpg',
       verified:    u.verified    || false,
     };
     _userCache.set(uid, result);
@@ -263,7 +263,7 @@ async function _renderPost(postData, container, isTarget = false) {
     <div class="post-header">
       <div class="user-info" style="cursor:pointer;" data-uid="${postData.creatorid}">
         <img src="${userData.userphoto}" alt="" class="avatar"
-             onerror="this.src='./src/img/default.jpg'">
+             onerror="this.src='./public/img/default.jpg'">
         <div class="user-meta">
           <strong class="user-name-link" data-username="${postData.creatorid}">
             ${userData.username}${verifiedBadge}
@@ -518,8 +518,8 @@ async function _renderComentarios(creatorId, postId, container) {
       el.className = 'comentario-item';
       el.innerHTML = `
         <div class="comentario-header">
-          <img src="${c.u?.userphoto || './src/img/default.jpg'}" class="comentario-avatar"
-               onerror="this.src='./src/img/default.jpg'">
+          <img src="${c.u?.userphoto || './public/img/default.jpg'}" class="comentario-avatar"
+               onerror="this.src='./public/img/default.jpg'">
           <div class="comentario-meta">
             <strong class="comentario-nome">${c.u?.username || c.senderid}</strong>
             <small class="comentario-data">${_rel(c.create)}</small>

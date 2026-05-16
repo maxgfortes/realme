@@ -1,0 +1,294 @@
+
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+}
+
+.modal-footer-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  bottom: 0;
+  min-height: 120px;
+  height: 120px;
+  background-color: #212327;
+}
+
+.modal-footer-btn {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  background: var(--primary-btn);
+}
+
+.modal-footer-btn.secundary {
+  background: transparent;
+  color: var(--primary-btn);
+}
+
+
+
+
+.search-modal-area {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-modal-input {
+  width: 100%;
+  background: #323438;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px 16px;
+  border-radius: 16px;
+}
+
+.search-modal-input:focus {
+  outline: none;
+  border: none;
+}
+
+
+.selected-dot {
+  display: none;
+}
+
+.selected-dot.active {
+  display: flex;
+  position: absolute;
+  right: -4px;
+  bottom: 4px;
+  width: 26px;
+  height: 26px;
+  background-color: var(--primary-btn);
+  border-radius: 50%;
+  border: 3px solid #212327;
+  padding: 2px;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-dot svg {
+  width: 12px;
+}
+
+
+.sections-btns-row {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.add-music-overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: var(--bg-modal);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  z-index: 9999999;
+  transition: opacity .25s ease;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+
+.add-music-modal {
+  background-color: #212327;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+  gap: 16px;
+  width: 100%;
+  height: 70vh;
+  border-radius: 22px 22px 0 0;
+  padding: 12px 16px calc(26px + env(safe-area-inset-bottom)) 12px;
+  transform: translateY(100%);
+  transition: transform .38s cubic-bezier(.16,1,.3,1);
+}
+
+
+.music-icon img {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.musics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.musics-list-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  padding-bottom: 12px;
+}
+
+
+.music-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.music-box:last-child {
+  border-bottom: none;
+}
+
+.music-icon {
+  height: 100%;
+}
+
+.music-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.music-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.4);
+  transform-origin: center;
+}
+
+.music-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.music-name {
+  font-size: 16px;
+  color: #fff;
+  font-weight: bold;
+  transition: margin-left 0.3s ease, color 0.3s ease;
+}
+
+.music-artist {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.music-status {
+  height: 100%;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected-music-dot {
+  background: var(--primary-btn);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 6px;
+  display: none;
+}
+
+.selected-music-dot.active {
+  display: flex;
+}
+
+.music-status svg {
+  width: 16px;
+  height: 16px;
+  fill: #212327;
+}
+
+
+.add-music-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.add-music-overlay.visible .add-music-modal {
+  transform: translateY(0);
+}
+
+
+.music-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.barrinhas {
+  display: none;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.barrinhas span {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--primary-btn);
+  animation: pulsar 0.5s ease-in-out infinite alternate;
+}
+.barrinhas span:nth-child(2) { animation-delay: 0.15s; }
+.barrinhas span:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes pulsar {
+  from { height: 3px; }
+  to   { height: 14px; }
+}
+
+.music-box.tocando .barrinhas {
+  display: flex;
+}
+.music-box.tocando .music-name {
+  color: var(--primary-btn);
+  margin-left: 4px;
+}
+
+.music-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 87%; 
+}
+

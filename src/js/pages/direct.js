@@ -86,7 +86,7 @@ const conversasCache = {
 function gerarChatId(u1, u2) { return `chat-${[u1, u2].sort().join("-")}`; }
 
 async function buscarDadosUsuario(userId) {
-  let photoUrl    = userCache.getPhoto(userId) || "./src/img/default.jpg";
+  let photoUrl    = userCache.getPhoto(userId) || "./public/img/default.jpg";
   let displayName = userCache.getName(userId)  || userId;
   Promise.all([
     getDoc(doc(db, "users", userId, "user-infos", "user-media")).then(s => { if (s.exists() && s.data().userphoto) { userCache.setPhoto(userId, s.data().userphoto); } }).catch(()=>{}),
@@ -141,7 +141,7 @@ function renderizarConversas(arr, filtrarTermo = "") {
     if (unicos.has(fid)) continue;
     unicos.add(fid);
 
-    const photo   = userCache.getPhoto(fid) || "./src/img/default.jpg";
+    const photo   = userCache.getPhoto(fid) || "./public/img/default.jpg";
     const nome    = userCache.getName(fid)  || fid;
     if (filtrarTermo && !nome.toLowerCase().includes(filtrarTermo.toLowerCase())) continue;
 
@@ -153,7 +153,7 @@ function renderizarConversas(arr, filtrarTermo = "") {
     btn.className = "dm-user-btn";
     btn.dataset.friendid = fid;
     btn.innerHTML = `
-      <img src="${photo}" alt="Foto" onerror="this.src='./src/img/default.jpg'">
+      <img src="${photo}" alt="Foto" onerror="this.src='./public/img/default.jpg'">
       <div class="dm-user-info">
         <div class="dm-user-row">
           <span class="dm-user-name ${isUnread ? 'unread-name' : ''}">${escapeHtml(nome)}</span>
@@ -178,7 +178,7 @@ function truncarMensagem(msg, max) {
 // ── Foto perfil navbar ─────────────────────────────────────────────────────────
 function carregarFotoPerfil() {
   const navPic     = document.getElementById('nav-pic');
-  const defaultPic = './src/img/default.jpg';
+  const defaultPic = './public/img/default.jpg';
   const cachedPhoto = localStorage.getItem('user_photo_cache');
   if (cachedPhoto && navPic) navPic.src = cachedPhoto;
 

@@ -1,7 +1,7 @@
 const YT_API_KEY = 'AIzaSyANnbp95mLLqwl4FThjC__R5gQWqJ7_V7g';
 const MAX_RECENTS = 10;
 
-let selectedMusic = null;
+window.selectedMusic = null;
 let nowPlaying = null;
 let searchTimer = null;
 
@@ -46,7 +46,7 @@ function renderList(musics) {
     const channel  = item.snippet.channelTitle;
     const thumb    = item.snippet.thumbnails.default.url;
 
-    const isSelected = selectedMusic && selectedMusic.videoId === videoId;
+    const isSelected = window.selectedMusic && window.selectedMusic.videoId === videoId;
 
     const box = document.createElement('div');
     box.className = 'music-box';
@@ -87,16 +87,16 @@ function renderList(musics) {
 
 function toggleSelectMusic(music) {
 
-  if (selectedMusic && selectedMusic.videoId === music.videoId) {
-    selectedMusic = null;
+  if (window.selectedMusic && window.selectedMusic.videoId === music.videoId) {
+    window.selectedMusic = null;
 
     const box = document.querySelector('[data-video-id="' + music.videoId + '"]');
     box.querySelector('.selected-music-dot').classList.remove('active');
     return;
   }
 
-  selectedMusic = music;
-  selectedMusic.url = 'https://www.youtube.com/watch?v=' + music.videoId;
+  window.selectedMusic = music;
+  window.selectedMusic.url = 'https://www.youtube.com/watch?v=' + music.videoId;
 
   document.querySelectorAll('.selected-music-dot').forEach(function (dot) {
     dot.classList.remove('active');

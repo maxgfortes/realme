@@ -31,6 +31,50 @@ body {
     color: #ccc;
 }
 
+.label-btns {
+    display: flex;
+    height: 100%;
+}
+
+.label-btn {
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    padding: 0 6px 0 0;
+    color: #fff;
+    background: transparent;
+    font-size: 1rem;
+    border: none;
+}
+
+.remove-area {
+    height: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    padding: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.label-btn-remove {
+    background: #333;
+    border: none;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: 9999px;
+    padding: 0 6px;
+    height: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.label-btn-remove svg {
+    width: 8px;
+    height: 8px;
+    fill: #fff;
+}
 
 .label-input-area {
     width: 100%;
@@ -292,3 +336,4 @@ body {
 .toggle-arrow.rotated {
   transform: rotate(180deg);
 }
+

@@ -62,7 +62,7 @@ const CACHE_NAME = "realme-spa-v2";
 const urlsToCache = [
   "./",
   "./src/img/icon.png",
-  "./src/img/default.jpg",
+  "./public/img/default.jpg",
 ];
 
 self.addEventListener("install", (event) => {

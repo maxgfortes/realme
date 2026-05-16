@@ -164,7 +164,7 @@ function attachSwipe(boxEl) {
 }
 
 
-const DEFAULT_AVATAR = "../src/img/default.jpg";
+const DEFAULT_AVATAR = "../public/img/default.jpg";
 
 function createNtElement(nt, uid) {
   const wrapper = document.createElement("div");

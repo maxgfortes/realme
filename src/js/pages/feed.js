@@ -2534,7 +2534,8 @@ async function enviarPost(user, texto, imageFiles) {
       creatorid:    user.uid,
       reports:      0,
       visible:      true,
-      create:       serverTimestamp()
+      create:       serverTimestamp(),
+      musicUrl:     selectedMusic ? selectedMusic.url : ''
     };
 
     if (location) postData.location = location;

@@ -74,15 +74,15 @@ async function getUserData(uid) {
 }
 
 async function getUserPhoto(uid) {
-  if (!uid) return './src/img/default.jpg';
+  if (!uid) return './public/img/default.jpg';
   if (memCache.photos.has(uid)) return memCache.photos.get(uid);
   try {
     const snap = await getDoc(doc(db, 'users', uid, 'user-infos', 'user-media'));
     const d = snap.exists() ? snap.data() : {};
-    const p = d.pfp || d.userphoto || './src/img/default.jpg';
+    const p = d.pfp || d.userphoto || './public/img/default.jpg';
     memCache.photos.set(uid, p);
     return p;
-  } catch { return './src/img/default.jpg'; }
+  } catch { return './public/img/default.jpg'; }
 }
 
 // localStorage perfil — TTL 7 dias, stale após 5 min
@@ -263,7 +263,7 @@ function renderMidia(media) {
     document.querySelectorAll('.profile-pic,.user-pic').forEach(el => {
       el.src = foto;
       el.onerror = () => {
-        el.src = './src/img/default.jpg';
+        el.src = './public/img/default.jpg';
       };
     });
     document.querySelectorAll('.pfp-border').forEach(el => {
@@ -785,7 +785,7 @@ async function adicionarLinhaUsuario(uid, profileUid, tipo, container) {
     actionHTML = `<button class="lo-action-btn ${jaSegue ? 'following' : ''}" data-action="follow" data-uid="${uid}" data-following="${jaSegue}">${jaSegue ? 'Seguindo' : 'Seguir'}</button>`;
   }
   row.innerHTML = `
-    <img class="lo-avatar" src="${foto}" alt="${un}" onerror="this.src='./src/img/default.jpg'">
+    <img class="lo-avatar" src="${foto}" alt="${un}" onerror="this.src='./public/img/default.jpg'">
     <div class="lo-user-info">
       <div class="lo-user-username">${un}</div>
       ${dn !== un ? `<div class="lo-user-pronouns">${dn}</div>` : ''}
@@ -1155,7 +1155,7 @@ if (sendWallContainer) {
     getUserData(profileUserId),
     getUserPhoto(profileUserId),
     auth.currentUser ? getUserData(auth.currentUser.uid) : Promise.resolve({}),
-    auth.currentUser ? getUserPhoto(auth.currentUser.uid) : Promise.resolve('./src/img/default.jpg'),
+    auth.currentUser ? getUserPhoto(auth.currentUser.uid) : Promise.resolve('./public/img/default.jpg'),
   ]);
 
   const targetUsername = targetUser.username || targetUser.name || 'usuário';
@@ -1163,8 +1163,8 @@ if (sendWallContainer) {
 
   if (textarea)  textarea.placeholder = `Escreva para ${targetUsername}...`;
   if (sendText)  sendText.textContent = `Escreva para ${targetUsername}...`;
-  if (sendImg)   sendImg.src  = myPhoto || './src/img/default.jpg';
-  if (modalImg)  modalImg.src = myPhoto || './src/img/default.jpg';
+  if (sendImg)   sendImg.src  = myPhoto || './public/img/default.jpg';
+  if (modalImg)  modalImg.src = myPhoto || './public/img/default.jpg';
   if (modalName) modalName.textContent = myName;
 
   const abrirModal  = () => { modal.classList.add('active'); };
@@ -1203,14 +1203,14 @@ if (sendWallContainer) {
       const fragment = document.createDocumentFragment();
       for (const post of posts) {
         const userData = memCache.users.get(post.authorId) || {};
-        const fotoUrl  = memCache.photos.get(post.authorId) || './src/img/default.jpg';
+        const fotoUrl  = memCache.photos.get(post.authorId) || './public/img/default.jpg';
         const nome        = userData.username || userData.name || 'usuário';
         const podeDeletar = currentUserId === post.authorId || currentUserId === profileUserId;
         const card = document.createElement('div'); card.className = 'wall-card';
         card.innerHTML = `
           <div class="wall-card-header">
             <div class="wall-card-left-header">
-              <div class="wall-card-pfp"><img src="${fotoUrl}" onerror="this.src='./src/img/default.jpg'"></div>
+              <div class="wall-card-pfp"><img src="${fotoUrl}" onerror="this.src='./public/img/default.jpg'"></div>
               <div class="wall-card-infos"><div class="wall-card-username">${nome}</div></div>
             </div>
             ${podeDeletar ? `<div class="wall-card-right-header">
@@ -1276,7 +1276,7 @@ onAuthStateChanged(auth, async user => {
 
   // Foto do nav: usa cache local imediatamente (sem Firestore aqui)
   const navPic = $('nav-pic');
-  if (navPic && !user) navPic.src = './src/img/default.jpg';
+  if (navPic && !user) navPic.src = './public/img/default.jpg';
 
   const usernameURL = urlParam('username') || urlParam('u') || urlParam('user');
   const useridURL   = urlParam('userid')   || urlParam('uid');

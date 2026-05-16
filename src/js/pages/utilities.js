@@ -120,7 +120,7 @@ export function obterFotoPerfil(userData, usuarioLogado) {
       }
     }
   }
-  return './src/img/default.jpg';
+  return './public/img/default.jpg';
 }
 
 const CACHE_USER_TIME = 1000 * 60 * 30;

@@ -1,4 +1,4 @@
-const btnMencionar = document.getElementById('btnMention');
+/* const btnMencionar = document.getElementById('btnMention');
 const btnMusica = document.getElementById('btnMusic');
 const btnLocal = document.getElementById('btnLocal');
 
@@ -39,10 +39,6 @@ document.getElementById('cancel-music').addEventListener('click', function () {
 });
 document.getElementById('cancel-local').addEventListener('click', fecharTodos);
 
-
-
-
-
 document.getElementById('confirm-mention').addEventListener('click', fecharTodos);
 document.getElementById('confirm-music').addEventListener('click', function () {
   if (selectedMusic) {
@@ -52,8 +48,6 @@ document.getElementById('confirm-music').addEventListener('click', function () {
   fecharTodos();
 });
 document.getElementById('confirm-local').addEventListener('click', fecharTodos);
-
-
 
 
 
@@ -67,3 +61,4 @@ overlayLocal.addEventListener('click', function(e) {
   if (e.target === overlayLocal) fecharTodos();
 });
 
+*/
