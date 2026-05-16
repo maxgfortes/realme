@@ -3576,3 +3576,130 @@ footer {
 .post-music-title.visible {
   opacity: 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.post-music-iframe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  top: -9999px;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.post-media-wrapper {
+  position: relative;
+  display: block;
+  line-height: 0;
+}
+
+.post-music-btn {
+  position: absolute;
+  bottom: 22px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  cursor: pointer;
+  max-width: 200px;
+  overflow: hidden;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+
+/* Ícone de volume dentro do botão */
+.post-music-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+}
+
+
+.post-music-info {
+  position: relative;
+  flex: 1;
+  height: 16px;
+  overflow: hidden;
+  min-width: 60px;
+  max-width: 150px;
+  display: none;
+}
+
+
+/* ── Linha de música abaixo do username no header ─────────── */
+.post-music-meta {
+  position: relative;
+  height: 14px;
+  margin-top: 2px;
+  overflow: hidden;
+  max-width: 200px;
+  font-size: 16px;
+}
+
+.post-music-meta-date,
+.post-music-meta-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  opacity: 0;
+  transform: translateY(-10px);
+
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+
+/* entrando por baixo */
+.post-music-meta-date.visible,
+.post-music-meta-title.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.user-meta, .user-info {
+  width: 300px;
+}
+/* ── Oculta a data padrão quando há música (evita duplicata) ─ */
+.post-card[data-has-music] .post-date-mobile {
+  display: none;
+}
+
+.post-music-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+

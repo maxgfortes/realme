@@ -52,6 +52,12 @@ let lastPostSnapshot = null;
 let allItems = [];
 let cacheCheckTimer = null;
 
+// ============================================================
+// SISTEMA DE MÚSICA
+// ============================================================
+let currentMusicPost = null;  // post-card atualmente tocando
+let musicObserver    = null;  // IntersectionObserver
+
 let feed = null;
 let loadMoreBtn = null;
 let postInput = null;
@@ -696,15 +702,252 @@ carousel.addEventListener('dblclick', async (e) => {
 }
 
 // ============================================================
+// SISTEMA DE MÚSICA — player por post
+// ============================================================
+
+/**
+ * Extrai o título de uma URL do YouTube/SoundCloud via oEmbed.
+ * Retorna uma string ou null em caso de falha.
+ */
+async function buscarTituloMusica(musicUrl) {
+  try {
+    const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(musicUrl)}&format=json`;
+    const resp = await fetch(oembedUrl);
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    return data.title || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Cria o elemento iframe de música dentro de um post.
+ * O iframe fica oculto — só serve como source de áudio.
+ */
+function criarIframeMusica(postEl, musicUrl) {
+  if (!musicUrl) return;
+
+  // Converte URL normal do YouTube para embed com autoplay+mute inicial
+  let embedUrl = musicUrl;
+  try {
+    const url = new URL(musicUrl);
+    if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
+      let videoId = url.searchParams.get('v');
+      if (!videoId) {
+        videoId = url.pathname.split('/').filter(Boolean).pop();
+      }
+      if (videoId) {
+        // enablejsapi=1 permite controle via postMessage
+        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1&loop=1&playlist=${videoId}&enablejsapi=1&controls=0`;
+      }
+    }
+  } catch { /* mantém embedUrl original */ }
+
+  const iframe = document.createElement('iframe');
+  iframe.className  = 'post-music-iframe';
+  iframe.src        = embedUrl;
+  iframe.allow      = 'autoplay; encrypted-media';
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.dataset.musicUrl = musicUrl;
+  iframe.dataset.muted    = 'false'; // começa mudo até o IntersectionObserver ligar
+
+  postEl.appendChild(iframe);
+}
+
+/**
+ * Envia comando play/pause/mute para um iframe do YouTube via postMessage.
+ */
+function ytCommand(iframe, func, args = []) {
+  try {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func, args }),
+      '*'
+    );
+  } catch { /* iframe pode não ter carregado ainda */ }
+}
+
+/**
+ * Toca a música de um post (sem som até o usuário clicar).
+ * Para a música do post anterior.
+ */
+function tocarMusicaPost(postEl) {
+  if (currentMusicPost && currentMusicPost !== postEl) {
+    pararMusicaPost(currentMusicPost);
+  }
+
+  const iframe = postEl.querySelector('.post-music-iframe');
+  if (!iframe) return;
+
+  currentMusicPost = postEl;
+
+  // Autoplay silencioso (iframe já inicia muted=1)
+  ytCommand(iframe, 'playVideo');
+  ytCommand(iframe, 'mute');
+  iframe.dataset.muted = 'true';
+
+  postEl.classList.add('post-music-playing');
+  postEl.classList.remove('post-music-muted');
+
+  // Atualiza o ícone do banner
+  atualizarIconeMusica(postEl, true, true);
+}
+
+/**
+ * Para a música e reseta o estado do post.
+ */
+function pararMusicaPost(postEl) {
+  const iframe = postEl.querySelector('.post-music-iframe');
+  if (iframe) {
+    ytCommand(iframe, 'pauseVideo');
+    ytCommand(iframe, 'mute');
+    iframe.dataset.muted = 'true';
+  }
+  postEl.classList.remove('post-music-playing', 'post-music-unmuted');
+  postEl.classList.add('post-music-muted');
+  atualizarIconeMusica(postEl, false, true);
+
+  if (currentMusicPost === postEl) currentMusicPost = null;
+}
+
+/**
+ * Alterna entre mudo / com som ao clicar no post.
+ */
+function toggleMutePost(postEl) {
+  const iframe = postEl.querySelector('.post-music-iframe');
+  if (!iframe) return;
+
+  const estaMudo = iframe.dataset.muted === 'true';
+
+  if (estaMudo) {
+    ytCommand(iframe, 'unMute');
+    ytCommand(iframe, 'setVolume', [80]);
+    iframe.dataset.muted = 'false';
+    postEl.classList.add('post-music-unmuted');
+    postEl.classList.remove('post-music-muted');
+    atualizarIconeMusica(postEl, true, false);
+  } else {
+    ytCommand(iframe, 'mute');
+    iframe.dataset.muted = 'true';
+    postEl.classList.remove('post-music-unmuted');
+    postEl.classList.add('post-music-muted');
+    atualizarIconeMusica(postEl, true, true);
+  }
+}
+
+/**
+ * Atualiza o ícone de volume no banner do post.
+ */
+function atualizarIconeMusica(postEl, tocando, mudo) {
+  const icone = postEl.querySelector('.post-music-icon');
+  if (!icone) return;
+  if (!tocando) {
+    icone.innerHTML = '<i class="fas fa-music"></i>';
+  } else if (mudo) {
+    icone.innerHTML = '<i class="fas fa-volume-mute"></i>';
+  } else {
+    icone.innerHTML = '<i class="fas fa-volume-up"></i>';
+  }
+}
+
+/**
+ * Inicia o alternador data ↔ nome da música.
+ * Atualiza tanto o botão flutuante (overlay) quanto o .post-music-meta no header.
+ */
+function iniciarAlternadorBanner(postEl, musicUrl) {
+  // Elementos do botão flutuante sobre a imagem
+  const dataEl   = postEl.querySelector('.post-music-date');
+  const tituloEl = postEl.querySelector('.post-music-title');
+  // Elementos na linha abaixo do username
+  const metaData   = postEl.querySelector('.post-music-meta-date');
+  const metaTitulo = postEl.querySelector('.post-music-meta-title');
+
+  // Busca título via oEmbed
+  buscarTituloMusica(musicUrl).then(titulo => {
+    const t = titulo || '♪ Música';
+    if (tituloEl) tituloEl.textContent = t;
+    if (metaTitulo) metaTitulo.textContent = t;
+  });
+
+  // Estado inicial: data visível
+  if (dataEl)   dataEl.classList.add('visible');
+  if (tituloEl) tituloEl.classList.remove('visible');
+  if (metaData)   metaData.classList.add('visible');
+  if (metaTitulo) metaTitulo.classList.remove('visible');
+
+  let mostrando = 'data';
+
+  const timer = setInterval(() => {
+    if (mostrando === 'data') {
+      if (dataEl)   dataEl.classList.remove('visible');
+      if (tituloEl) tituloEl.classList.add('visible');
+      if (metaData)   metaData.classList.remove('visible');
+      if (metaTitulo) metaTitulo.classList.add('visible');
+      mostrando = 'titulo';
+    } else {
+      if (tituloEl) tituloEl.classList.remove('visible');
+      if (dataEl)   dataEl.classList.add('visible');
+      if (metaTitulo) metaTitulo.classList.remove('visible');
+      if (metaData)   metaData.classList.add('visible');
+      mostrando = 'data';
+    }
+  }, 5000);
+
+  postEl._musicBannerTimer = timer;
+}
+
+/**
+ * Registra o IntersectionObserver para um post com música.
+ * Quando o post entra em 60%+ da viewport, toca; ao sair, pausa.
+ */
+function observarPostMusica(postEl) {
+  if (!musicObserver) {
+    musicObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+          tocarMusicaPost(entry.target);
+        } else if (!entry.isIntersecting) {
+          if (currentMusicPost === entry.target) {
+            pararMusicaPost(entry.target);
+          }
+        }
+      });
+    }, { threshold: [0, 0.6] });
+  }
+  musicObserver.observe(postEl);
+}
+
+// ============================================================
 // RENDER POST
 // ============================================================
 
 function renderPost(postData, feed) {
   if (postData.visible === false) return;
 
+  const temMusica = !!(postData.musicUrl && postData.musicUrl.trim());
+
   const postEl = document.createElement('div');
   postEl.className = 'post-card';
   postEl.dataset.postId = postData.postid;
+  if (temMusica) postEl.dataset.hasMusic = '1';
+
+  // Botão flutuante sobre a imagem — canto inferior direito
+  const musicBtnHTML = temMusica ? `
+    <button class="post-music-btn" title="Alternar som" type="button">
+      <span class="post-music-icon"><i class="fas fa-volume-mute"></i></span>
+      <div class="post-music-info">
+        <span class="post-music-date visible">${formatarDataRelativa(postData.create)}</span>
+        <span class="post-music-title"></span>
+      </div>
+    </button>
+  ` : '';
+
+  // Wrappa a media em .post-media-wrapper para posicionar o botão
+  const rawMedia = buildPostMediaHTML(postData);
+  const mediaHTML = (temMusica && rawMedia)
+    ? `<div class="post-media-wrapper">${rawMedia}${musicBtnHTML}</div>`
+    : rawMedia;
+
   postEl.innerHTML = `
     <div class="post-header">
       <div class="user-info">
@@ -713,6 +956,10 @@ function renderPost(postData, feed) {
         <div class="user-meta">
           <strong class="user-name-link" data-username="${postData.creatorid}"></strong>
           <small class="post-date-mobile">${formatarDataRelativa(postData.create)}</small>
+          ${temMusica ? `<div class="post-music-meta">
+            <span class="post-music-meta-date">${formatarDataRelativa(postData.create)}</span>
+            <span class="post-music-meta-title"></span>
+          </div>` : ''}
         </div>
       </div>
       <div class="left-space-options">
@@ -728,7 +975,7 @@ function renderPost(postData, feed) {
     </div>
     <div class="post-content">
     <div class="post-text">${formatarTexto(postData.content || '')}</div>
-      ${buildPostMediaHTML(postData)}
+      ${mediaHTML}
       <div class="post-actions">
         <div class="post-actions-left">
           <button class="btn-like" data-username="${postData.creatorid}" data-id="${postData.postid}">
@@ -757,6 +1004,32 @@ function renderPost(postData, feed) {
   `;
   feed.appendChild(postEl);
   inicializarCarrossel(postEl);
+
+  // ── Música ──────────────────────────────────────────────────
+  if (temMusica) {
+    criarIframeMusica(postEl, postData.musicUrl);
+    observarPostMusica(postEl);
+    iniciarAlternadorBanner(postEl, postData.musicUrl);
+
+    // Clique na imagem ou no texto alterna mudo/com-som
+    const clickTargets = postEl.querySelectorAll('.post-image, .post-carousel, .post-text');
+    clickTargets.forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.defaultPrevented) return;
+        toggleMutePost(postEl);
+      });
+    });
+
+    // Clique no botão flutuante
+    const musicBtn = postEl.querySelector('.post-music-btn');
+    if (musicBtn) {
+      musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMutePost(postEl);
+      });
+    }
+  }
+  // ────────────────────────────────────────────────────────────
 
   const usuarioLogado = auth.currentUser;
 
@@ -2696,4 +2969,4 @@ onAuthStateChanged(auth, async (user) => {
       console.warn("[FCM] Falha ao registrar notificações:", e);
     }
   }
-}); 
+});
