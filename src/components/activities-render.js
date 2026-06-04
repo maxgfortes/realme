@@ -395,10 +395,6 @@ function injetarCSS() {
   .act-big[data-profile-nav] {
     cursor: pointer;
   }
-  .act-new .act-big {
-    background: rgba(255,255,255,0.06);
-    border-left: 2px solid rgba(255,255,255,0.15);
-  }
   `;
   document.head.appendChild(s);
 }
@@ -491,7 +487,7 @@ function profileNavAttr(tipo, items) {
 }
 
 // ─── Renderiza card grande ────────────────────────────────────────────────────
-function renderBigCard(grupo, currentUid, isNovo = false) {
+function renderBigCard(grupo, currentUid) {
   const { tipo, items, ultimoMs, _isAmigo } = grupo;
   const ids    = items.map(i => i.activityId).join(',');
   const isDono = items.some(i => i.actorUid === currentUid);
@@ -520,7 +516,7 @@ function renderBigCard(grupo, currentUid, isNovo = false) {
   }
 
   return `
-  <div class="act-swipe-wrapper${isNovo ? ' act-new' : ''}" data-type="${tipo}">
+  <div class="act-swipe-wrapper" data-type="${tipo}">
     <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
         <div>
@@ -534,7 +530,7 @@ function renderBigCard(grupo, currentUid, isNovo = false) {
 }
 
 // ─── Renderiza card pequeno — agora usa layout big ───────────────────────────
-function renderSmallCard(grupo, currentUid, isNovo = false) {
+function renderSmallCard(grupo, currentUid) {
   const { tipo, items, ultimoMs, _isAmigo } = grupo;
   const ids    = items.map(i => i.activityId).join(',');
   const isDono = items.some(i => i.actorUid === currentUid);
@@ -548,7 +544,7 @@ function renderSmallCard(grupo, currentUid, isNovo = false) {
   if (!fotos.length) fotos.push({ src: DEFAULT_PHOTO, uid: items[0].actorUid });
 
   return `
-  <div class="act-swipe-wrapper${isNovo ? ' act-new' : ''}" data-type="${tipo}">
+  <div class="act-swipe-wrapper" data-type="${tipo}">
     <div class="act-delete-hint"><i class="fas fa-trash-can"></i></div>
     <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
@@ -562,7 +558,7 @@ function renderSmallCard(grupo, currentUid, isNovo = false) {
   </div>`;
 }
 
-function montarLayout(grupos, currentUid, ultimaVisita = 0) {
+function montarLayout(grupos, currentUid) {
   let html = '';
   let bucketAtual = null;
 
@@ -574,9 +570,8 @@ function montarLayout(grupos, currentUid, ultimaVisita = 0) {
       html += `<div class="act-section-label">${bucket.label}</div>`;
     }
 
-    const isNovo = grupoIsNovo(grupo, ultimaVisita);
-    if (isBig(grupo.tipo)) html += renderBigCard(grupo, currentUid, isNovo);
-    else                   html += renderSmallCard(grupo, currentUid, isNovo);
+    if (isBig(grupo.tipo)) html += renderBigCard(grupo, currentUid);
+    else                   html += renderSmallCard(grupo, currentUid);
   }
 
   return html;
@@ -701,28 +696,10 @@ function ativarSwipeDelete(container, currentUid) {
 }
 
 
-// ─── Sistema de "visto" — baseado em timestamp da última visita ───────────────
-const SEEN_LS_KEY = 'xact_seen_v1';
 
-function lerUltimaVisita(uid) {
-  try {
-    const raw = localStorage.getItem(`${SEEN_LS_KEY}_${uid}`);
-    return raw ? parseInt(raw, 10) : 0;
-  } catch (_) { return 0; }
-}
-
-function salvarVisitaAgora(uid) {
-  try { localStorage.setItem(`${SEEN_LS_KEY}_${uid}`, String(Date.now())); } catch (_) {}
-}
-
-// Retorna true se o grupo contém algum item mais recente que ultimaVisita
-function grupoIsNovo(grupo, ultimaVisita) {
-  if (!ultimaVisita) return false;
-  return grupo.ultimoMs > ultimaVisita;
-}
 
 // ─── Busca e monta o HTML das atividades (lógica pura, sem tocar no DOM) ──────
-async function fetchEMontarHtml(uid, ultimaVisita = 0) {
+async function fetchEMontarHtml(uid) {
   const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
 
   const [snap, amigosSet] = await Promise.all([
@@ -796,7 +773,7 @@ async function fetchEMontarHtml(uid, ultimaVisita = 0) {
   }));
 
   return `
-    <div class="xact-list">${montarLayout(gruposOrdenados, uid, ultimaVisita)}</div>
+    <div class="xact-list">${montarLayout(gruposOrdenados, uid)}</div>
     <div class="end-feed">
     <h3>As atividades acabaram...</h3>
     <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
@@ -822,13 +799,12 @@ async function carregarAtividades() {
   if (cached) {
     container.innerHTML = cached.html;
     ativarSwipeDelete(container, uid);
-    setTimeout(() => salvarVisitaAgora(uid), 100);
 
     // Cache ainda fresco → não revalida agora
     if (!cached.stale) return;
 
     // Cache stale → revalida em background sem travar a tela
-    fetchEMontarHtml(uid, lerUltimaVisita(uid)).then(html => {
+    fetchEMontarHtml(uid).then(html => {
       if (!html) return;
       salvarCacheAtividades(uid, html);
       // Atualiza o DOM só se o usuário ainda não fez scroll (UX menos intrusivo)
@@ -845,8 +821,7 @@ async function carregarAtividades() {
   container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
 
   try {
-    const ultimaVisita = lerUltimaVisita(uid);
-    const html = await fetchEMontarHtml(uid, ultimaVisita);
+    const html = await fetchEMontarHtml(uid);
 
     if (!html) {
       container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`;
@@ -856,8 +831,6 @@ async function carregarAtividades() {
     salvarCacheAtividades(uid, html);
     container.innerHTML = html;
     ativarSwipeDelete(container, uid);
-    // Marca visita DEPOIS de renderizar — próxima visita não verá esses como novos
-    setTimeout(() => salvarVisitaAgora(uid), 100);
 
   } catch (err) {
     console.error('[activities-render] Erro:', err);
@@ -875,13 +848,11 @@ window.recarregarAtividades = async function () {
   container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
 
   try {
-    const ultimaVisita = lerUltimaVisita(user.uid);
-    const html = await fetchEMontarHtml(user.uid, ultimaVisita);
+    const html = await fetchEMontarHtml(user.uid);
     if (!html) { container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`; return; }
     salvarCacheAtividades(user.uid, html);
     container.innerHTML = html;
     ativarSwipeDelete(container, user.uid);
-    setTimeout(() => salvarVisitaAgora(user.uid), 100);
   } catch (err) {
     console.error('[activities-render] Erro ao recarregar:', err);
   }
