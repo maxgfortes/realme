@@ -45,8 +45,11 @@ let allItems = [];
 let syncTimer = null;
 let currentMusicPost = null;
 let musicObserver = null;
+let userActivatedSound = false; // true após o usuário ativar som manualmente
 let postImageFiles = [];
 let currentMenuPost = null;
+let cachedFriendUids = null; // cache entre chamadas de loadPosts
+let selectedMentions = []; // { uid, username, userphoto } selecionados no modal
 
 let feed, loadMoreBtn, postInput, postButton;
 
@@ -234,7 +237,13 @@ async function getUserCached(uid) {
 
 function waitForAuth() {
   return new Promise(resolve => {
+    const timeout = setTimeout(() => {
+      unsub();
+      console.warn('[Auth] Timeout aguardando autenticação');
+      resolve(null);
+    }, 8000);
     const unsub = onAuthStateChanged(auth, user => {
+      clearTimeout(timeout);
       unsub();
       if (!user) setTimeout(() => { window.location.href = 'login.html'; }, 2000);
       resolve(user ?? null);
@@ -357,6 +366,11 @@ async function updateLikedByFooter(postEl, postId) {
   if (!footer) return;
 
   const info = await getLikedByInfo(postId, user.uid);
+
+  // Atualizar contador de likes aproveitando o dado já buscado
+  const likeSpan = postEl.querySelector('.btn-like span');
+  if (likeSpan) likeSpan.textContent = info.total;
+
   if (info.total === 0) {
     if (footerBox) footerBox.style.display = 'none';
     footer.innerHTML = '';
@@ -588,11 +602,12 @@ function buildMusicIframe(postEl, musicUrl) {
 
   const iframe = document.createElement('iframe');
   iframe.className = 'post-music-iframe';
+  iframe.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;top:-9999px;left:-9999px;';
   iframe.src = embedUrl;
   iframe.allow = 'autoplay; encrypted-media';
   iframe.setAttribute('allowfullscreen', '');
   iframe.dataset.musicUrl = musicUrl;
-  iframe.dataset.muted = 'false';
+  iframe.dataset.muted = 'true';
   postEl.appendChild(iframe);
 }
 
@@ -614,11 +629,23 @@ function playMusicPost(postEl) {
   if (!iframe) return;
   currentMusicPost = postEl;
   ytCmd(iframe, 'playVideo');
-  ytCmd(iframe, 'mute');
-  iframe.dataset.muted = 'true';
-  postEl.classList.add('post-music-playing');
-  postEl.classList.remove('post-music-muted');
-  setMusicIcon(postEl, true, true);
+
+  if (userActivatedSound) {
+    // usuário já ativou som antes — toca com som direto
+    ytCmd(iframe, 'unMute');
+    ytCmd(iframe, 'setVolume', [80]);
+    iframe.dataset.muted = 'false';
+    postEl.classList.add('post-music-playing', 'post-music-unmuted');
+    postEl.classList.remove('post-music-muted');
+    setMusicIcon(postEl, true, false);
+  } else {
+    // primeira vez — toca mutado até o usuário interagir
+    ytCmd(iframe, 'mute');
+    iframe.dataset.muted = 'true';
+    postEl.classList.add('post-music-playing');
+    postEl.classList.remove('post-music-muted');
+    setMusicIcon(postEl, true, true);
+  }
 }
 
 function pauseMusicPost(postEl) {
@@ -635,6 +662,7 @@ function toggleMute(postEl) {
   if (!iframe) return;
   const muted = iframe.dataset.muted === 'true';
   if (muted) {
+    userActivatedSound = true; // usuário ativou — todos os próximos posts tocam com som
     ytCmd(iframe, 'unMute');
     ytCmd(iframe, 'setVolume', [80]);
     iframe.dataset.muted = 'false';
@@ -642,6 +670,7 @@ function toggleMute(postEl) {
     postEl.classList.remove('post-music-muted');
     setMusicIcon(postEl, true, false);
   } else {
+    userActivatedSound = false; // usuário desativou — volta ao comportamento mutado
     ytCmd(iframe, 'mute');
     iframe.dataset.muted = 'true';
     postEl.classList.remove('post-music-unmuted');
@@ -713,7 +742,7 @@ function renderPost(postData, container) {
     : rawMedia;
 
   const sugeridoPorHTML = postData._feedTipo === 'amigoDosAmigos' && postData._sugeridoPor
-    ? `<p class="post-sugerido-por"><i class="fas fa-user-friends"></i> Sugerido por <strong>@${postData._sugeridoPor}</strong></p>`
+    ? `<p class="post-sugerido-por"><i class="fas fa-user-friends"></i> Sugerido por <strong>${postData._sugeridoPor}</strong></p>`
     : '';
 
   const postEl = document.createElement('div');
@@ -726,7 +755,7 @@ function renderPost(postData, container) {
       <div class="user-info">
         <img src="${DEFAULT_AVATAR}" alt="Avatar do usuário" class="avatar" onerror="this.src='./src/img/default.jpg'">
         <div class="user-meta">
-          <strong class="user-name-link" data-username="${postData.creatorid}"></strong>
+          <span class="user-name-link" data-username="${postData.creatorid}"></span>
           <small class="post-date-mobile">${formatRelativeDate(postData.create)}</small>
           ${hasMusic ? `<div class="post-music-meta">
             <span class="post-music-meta-date">${formatRelativeDate(postData.create)}</span>
@@ -760,7 +789,7 @@ function renderPost(postData, container) {
       <div class="post-footer-infos">
         <div class="post-footer-box">
           <div class="post-footer-label">
-            <svg class="liked-by-svg" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
+           <!--<svg class="liked-by-svg" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M433.871 21.441c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>-->
             <p class="post-liked-by" style="min-height:28px;visibility:hidden;"></p>
             ${sugeridoPorHTML}
           </div>
@@ -793,28 +822,57 @@ function renderPost(postData, container) {
     });
   }
 
-  getUserCached(postData.creatorid).then(userData => {
+  getUserCached(postData.creatorid).then(async userData => {
     if (!userData) return;
     const avatar = postEl.querySelector('.avatar');
     const nameEl = postEl.querySelector('.user-name-link');
     if (avatar) avatar.src = userData.userphoto || DEFAULT_AVATAR;
-    if (nameEl) {
-      nameEl.textContent = userData.username || userData.displayname || userData.name || '...';
-      if (userData.verified) {
-        nameEl.innerHTML += ' <i class="fas fa-check-circle" style="margin-left:2px;font-size:0.8em;color:#4A90E2;"></i>';
-      }
+    if (!nameEl) return;
+
+    const ownerUsername = userData.username || userData.displayname || userData.name || '...';
+    const verifiedBadge = userData.verified
+      ? ' <i class="fas fa-check-circle" style="margin-left:2px;font-size:0.8em;color:#4A90E2;"></i>'
+      : '';
+
+    const mentions = Array.isArray(postData.mentions) ? postData.mentions.filter(Boolean) : [];
+
+    if (mentions.length === 0) {
+      // Sem mentions — só nome + badge
+      nameEl.innerHTML = `<strong>${ownerUsername}</strong>${verifiedBadge}`;
+      return;
     }
+
+    // Com mentions — array de UIDs puros, resolve até 2 usernames
+    const MAX_SHOW = 2;
+    const toFetch = mentions.slice(0, MAX_SHOW);
+    const resolved = await Promise.all(toFetch.map(async (uid) => {
+      const u = await getUserCached(uid);
+      return { username: u?.username || u?.displayname || u?.name || '?', uid };
+    }));
+
+    const extras = mentions.length - MAX_SHOW;
+
+    // Monta as partes bold/normal alternadas
+    // Formato: {ownerBold} estava com {u1Bold}, {u2Bold} e outras {X} pessoas
+    const mentionLinks = resolved.map(r =>
+      `<strong><a href="profile.html?userid=${encodeURIComponent(r.username)}" class="mention-link" style="color:inherit;text-decoration:none;">${r.username}</a></strong>`
+    );
+
+    let mentionsPart = '';
+    if (mentionLinks.length === 1) {
+      mentionsPart = mentionLinks[0];
+    } else {
+      mentionsPart = mentionLinks.join('<span style="font-weight:normal;">, </span>');
+    }
+    if (extras > 0) {
+      mentionsPart += `<span style="font-weight:normal;"> e outras </span><strong>${extras}</strong><span style="font-weight:normal;"> ${extras === 1 ? 'pessoa' : 'pessoas'}</span>`;
+    }
+
+    nameEl.innerHTML =
+      `<strong>${ownerUsername}</strong>${verifiedBadge}` +
+      `<span style="font-weight:normal;font-size:0.9em;"> estava com </span>` +
+      mentionsPart;
   });
-
-  countLikes(postData.postid).then(n => {
-    const span = postEl.querySelector('.btn-like span');
-    if (span) span.textContent = n;
-  }).catch(() => {});
-
-  countComments(postData.postid).then(n => {
-    const span = postEl.querySelector('.btn-comment span');
-    if (span) span.textContent = n;
-  }).catch(() => {});
 }
 
 
@@ -926,8 +984,10 @@ async function loadPosts() {
 
     const [postsSnap, friendUids] = await Promise.all([
       getDocs(postsQuery),
-      isFirst || !lastPostSnapshot ? fetchFriends(currentUid) : Promise.resolve([])
+      cachedFriendUids !== null ? Promise.resolve(cachedFriendUids) : fetchFriends(currentUid)
     ]);
+
+    if (!cachedFriendUids) cachedFriendUids = friendUids;
 
     if (postsSnap.empty) {
       hasMorePosts = false;
@@ -977,6 +1037,7 @@ function resetFeed() {
   lastPostSnapshot = null;
   hasMorePosts = true;
   loading = false;
+  cachedFriendUids = null;
   clearPostsCache();
 }
 
@@ -1104,7 +1165,7 @@ async function submitPost(user, text, imageFiles) {
     if (locationInput) locationInput.value = '';
 
     const postData = {
-      content: text,
+      content: _injectMentionsIntoText(text),
       img: urls.length === 1 ? urls[0] : '',
       imgs: urls.length > 1 ? urls : [],
       imgDeleteUrl: deleteUrls.length === 1 ? deleteUrls[0] : '',
@@ -1115,7 +1176,8 @@ async function submitPost(user, text, imageFiles) {
       reports: 0,
       visible: true,
       create: serverTimestamp(),
-      musicUrl: typeof selectedMusic !== 'undefined' && selectedMusic ? selectedMusic.url : ''
+      musicUrl: typeof selectedMusic !== 'undefined' && selectedMusic ? selectedMusic.url : '',
+      mentions: selectedMentions.map(m => m.uid)
     };
     if (location) postData.location = location;
 
@@ -1343,6 +1405,143 @@ async function handleReportPost(postId, ownerId, reason = 'other') {
 }
 
 
+// ─── SISTEMA DE MENÇÕES ──────────────────────────────────────
+
+let _mentionFriends = []; // cache da lista de amigos carregada
+
+async function _loadMentionFriends() {
+  const user = auth.currentUser;
+  if (!user) return [];
+  if (_mentionFriends.length) return _mentionFriends;
+
+  try {
+    const snap = await getDocs(collection(db, `users/${user.uid}/friends`));
+    const uids = snap.docs.map(d => d.id);
+    const profiles = await Promise.all(uids.map(async uid => {
+      const data = await getUserCached(uid);
+      return data ? { uid, username: data.username || data.displayname || uid, userphoto: data.userphoto || DEFAULT_AVATAR } : null;
+    }));
+    _mentionFriends = profiles.filter(Boolean).sort((a, b) => a.username.localeCompare(b.username));
+  } catch { _mentionFriends = []; }
+
+  return _mentionFriends;
+}
+
+function _renderMentionList(friends, query = '') {
+  const row = document.querySelector('.users-list-modal-row');
+  if (!row) return;
+
+  const filtered = query
+    ? friends.filter(f => f.username.toLowerCase().includes(query.toLowerCase()))
+    : friends;
+
+  row.innerHTML = '';
+
+  if (!filtered.length) {
+    row.innerHTML = `<div style="text-align:center;padding:32px 16px;color:#555;font-size:14px;">
+      ${query ? 'Nenhum amigo encontrado' : 'Você ainda não tem amigos para mencionar'}
+    </div>`;
+    return;
+  }
+
+  filtered.forEach(friend => {
+    const isSelected = selectedMentions.some(m => m.uid === friend.uid);
+    const box = document.createElement('div');
+    box.className = 'user-list-box';
+    box.dataset.uid = friend.uid;
+    box.innerHTML = `
+      <div class="user-list-img">
+        <img src="${friend.userphoto}" alt="${friend.username}" class="user-list-avatar" onerror="this.src='../public/img/default.jpg'">
+        <div class="selected-dot${isSelected ? ' active' : ''}">
+          <svg fill="#212327" viewBox="-3.13 -3.13 84.63 84.63" xmlns="http://www.w3.org/2000/svg" stroke="#212327" stroke-width="3.13476">
+            <path d="M78.049,19.015L29.458,67.606c-0.428,0.428-1.121,0.428-1.548,0L0.32,40.015c-0.427-0.426-0.427-1.119,0-1.547l6.704-6.704c0.428-0.427,1.121-0.427,1.548,0l20.113,20.112l41.113-41.113c0.429-0.427,1.12-0.427,1.548,0l6.703,6.704C78.477,17.894,78.477,18.586,78.049,19.015z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="user-list-info">
+        <div class="user-list-name">${friend.username}</div>
+      </div>`;
+
+    box.addEventListener('click', () => {
+      const idx = selectedMentions.findIndex(m => m.uid === friend.uid);
+      if (idx >= 0) {
+        selectedMentions.splice(idx, 1);
+        box.querySelector('.selected-dot').classList.remove('active');
+      } else {
+        selectedMentions.push(friend);
+        box.querySelector('.selected-dot').classList.add('active');
+      }
+    });
+
+    row.appendChild(box);
+  });
+}
+
+function _updateMentionBtnDot() {
+  const dot = document.getElementById('btnMention')?.querySelector('.np-btn-dot');
+  if (dot) dot.style.display = selectedMentions.length ? 'block' : 'none';
+}
+
+function _injectMentionsIntoText(text) {
+  if (!selectedMentions.length) return text;
+  const mentions = selectedMentions.map(m => `@${m.username}`).join(' ');
+  return text ? `${text} ${mentions}` : mentions;
+}
+
+function setupMentionModal() {
+  const overlay   = document.getElementById('overlayMention');
+  const btnOpen   = document.getElementById('btnMention');
+  const btnConfirm = document.getElementById('confirm-mention');
+  const btnCancel  = document.getElementById('cancel-mention');
+  const searchInput = document.getElementById('search-mention');
+  if (!overlay || !btnOpen) return;
+
+  // Dot indicator no botão (reutiliza padrão do btnLocal)
+  if (!btnOpen.querySelector('.np-btn-dot')) {
+    const dot = document.createElement('span');
+    dot.className = 'np-btn-dot';
+    dot.style.cssText = 'display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#4A90E2;';
+    btnOpen.style.position = 'relative';
+    btnOpen.appendChild(dot);
+  }
+
+  btnOpen.addEventListener('click', async () => {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const row = document.querySelector('.users-list-modal-row');
+    if (row) row.innerHTML = `<div style="text-align:center;padding:40px;color:#555;"><i class="fas fa-spinner fa-spin" style="font-size:22px;"></i></div>`;
+
+    const friends = await _loadMentionFriends();
+    if (searchInput) searchInput.value = '';
+    _renderMentionList(friends);
+  });
+
+  searchInput?.addEventListener('input', () => {
+    _renderMentionList(_mentionFriends, searchInput.value);
+  });
+
+  btnConfirm?.addEventListener('click', () => {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    _updateMentionBtnDot();
+  });
+
+  btnCancel?.addEventListener('click', () => {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    // não limpa selectedMentions — mantém o que tinha antes de abrir
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+}
+
+
 // ─── POST LAYER ──────────────────────────────────────────────
 
 function setupPostLayer() {
@@ -1552,6 +1751,9 @@ function clearPostInputs() {
   if (dot) dot.style.display = 'none';
   const fileArea = document.getElementById('post-file-input');
   if (fileArea) fileArea.style.display = '';
+  // Limpa menções
+  selectedMentions = [];
+  _updateMentionBtnDot();
 }
 
 
@@ -1621,11 +1823,14 @@ async function updateGreeting(userParam) {
   const greetingEl = document.getElementById('greeting');
   if (greetingEl) greetingEl.textContent = greeting;
 
-  cacheRemove(`user_cache_${user.uid}`);
-  const userData = await fetchUser(user.uid);
-  if (userData) {
-    cacheSet(`user_cache_${user.uid}`, userData, CACHE.USERS_TTL);
-    if (userData.userphoto) cacheSet(`user_photo_${user.uid}`, userData.userphoto, CACHE.USERS_TTL);
+  // Usa cache se disponível, busca em background se expirado
+  const key = `user_cache_${user.uid}`;
+  let userData = cacheGet(key);
+  if (!userData || cacheExpired(key)) {
+    userData = await fetchUser(user.uid);
+    if (userData) cacheSet(key, userData, CACHE.USERS_TTL);
+  } else if (cacheExpired(key)) {
+    fetchUser(user.uid).then(d => { if (d) cacheSet(key, d, CACHE.USERS_TTL); }).catch(() => {});
   }
 
   const greetingElFinal = document.getElementById('greeting');
@@ -1726,6 +1931,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   await updateGreeting(user);
   setupPostLayer();
   initPostTypeSystem();
+  setupMentionModal();
   setupEventListeners();
   setupBottomMenuListeners();
   setupInfiniteScroll();

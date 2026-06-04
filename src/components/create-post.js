@@ -287,7 +287,7 @@ async function atualizarGreeting() {
 
 
 // ============================================================
-// CONFIGURAR LINKS DE PERFIL / LOGOUT
+// CONFIGURAR LINKS DE PERFIL / LOGOUT / LOGIN
 // ============================================================
 function configurarLinks() {
   const user = auth.currentUser;
@@ -299,10 +299,19 @@ function configurarLinks() {
   if (linkSidebar) linkSidebar.href = urlPerfil;
   if (linkMobile)  linkMobile.href  = urlPerfil;
 
-  document.querySelectorAll('#btnSair').forEach(btn => {
+  // Botão "Sair" - redireciona para register.html
+  document.querySelectorAll('#btnSair, .logoff').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      auth.signOut().then(() => { window.location.href = 'index.html'; });
+      auth.signOut().then(() => { window.location.href = 'register.html'; });
+    });
+  });
+
+  // Botão "Entrar" - redireciona para login.html
+  document.querySelectorAll('.login').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      auth.signOut().then(() => { window.location.href = 'login.html'; });
     });
   });
 }

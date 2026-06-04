@@ -236,3 +236,17 @@
 .transition-normal { transition: var(--transition-normal); }
 
 
+
+*{
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+}
+
+*:focus,
+*:active{
+  outline: none;
+  box-shadow: none;
+}

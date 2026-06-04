@@ -132,13 +132,7 @@
   gap: 12px;
 }
 
-.avatar {
-  width: 50px !important;
-  height: 50px !important;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #373737;
-}
+
 
 
 .user-meta {

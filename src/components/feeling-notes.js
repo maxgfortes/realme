@@ -379,3 +379,22 @@ window.addEventListener("DOMContentLoaded", () => {
     await renderizarNotasAmigos(user.uid);
   });
 });
+
+
+const overlay = document.getElementById("feeling-overlay");
+const openBtn = document.getElementById("create-feeling-btn");
+const cancelBtn = document.getElementById("cancelarFeeling");
+
+openBtn.addEventListener("click", () => {
+  overlay.classList.add("active");
+});
+
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    overlay.classList.remove("active");
+  }
+});
+
+cancelBtn.addEventListener("click", () => {
+  overlay.classList.remove("active");
+});

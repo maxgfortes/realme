@@ -13,6 +13,9 @@ import {
   orderBy,
   getDocs,
   updateDoc,
+  deleteDoc,
+  setDoc,
+  serverTimestamp,
   Timestamp,
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
@@ -40,6 +43,8 @@ const NT_MESSAGES = {
   follow:          "começou a te seguir.",
   mention_post:    "te mencionou em uma publicação.",
   mention_comment: "te mencionou em um comentário.",
+  friend_request:  "te enviou um pedido de amizade.",
+  friend_accepted: "aceitou seu pedido de amizade.",
 };
 
 function resolveMessage(nt) {
@@ -164,6 +169,161 @@ function attachSwipe(boxEl) {
 }
 
 
+// ─────────────────────────────────────────────────────────
+// AMIZADE — aceitar / recusar
+// ─────────────────────────────────────────────────────────
+async function aceitarAmizade(fromUid, meUid) {
+  // fromUid = quem enviou (resource.data.from)
+  // meUid   = quem aceita (resource.data.to) — auth.uid deve ser este
+  // updateDoc só toca status+acceptedAt, compatível com a security rule
+  await updateDoc(doc(db, `friendRequests/${fromUid}_${meUid}`), {
+    status: "accepted",
+    acceptedAt: serverTimestamp(),
+  });
+}
+
+async function recusarAmizade(fromUid, meUid) {
+  await Promise.all([
+    deleteDoc(doc(db, `friendRequests/${fromUid}_${meUid}`)),
+    deleteDoc(doc(db, `friendRequests/${meUid}_${fromUid}`)),
+  ]);
+}
+
+// ─────────────────────────────────────────────────────────
+// OVERLAY — Pedidos de Amizade
+// ─────────────────────────────────────────────────────────
+async function abrirOverlayPedidos(meUid) {
+  if (document.getElementById("fr-overlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "fr-overlay";
+  overlay.innerHTML = `
+    <div class="fr-backdrop"></div>
+    <div class="fr-panel">
+      <div class="fr-header">
+        <div class="header-block">
+          <button id="fr-close-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+          </button>
+          <div class="nt-title">Pedidos de amizade</div>
+        </div>
+        <div class="header-block"></div>
+        <div class="header-block"></div>
+      </div>
+      <div class="fr-list" id="fr-list">
+        <div class="fr-loading"><i class="fas fa-spinner fa-spin"></i></div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(() => overlay.classList.add("fr-open"));
+
+  const fechar = () => {
+    overlay.classList.remove("fr-open");
+    overlay.addEventListener("transitionend", () => {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }, { once: true });
+  };
+
+  overlay.querySelector("#fr-close-btn").addEventListener("click", fechar);
+  overlay.querySelector(".fr-backdrop").addEventListener("click", fechar);
+
+  await carregarPedidos(meUid, overlay.querySelector("#fr-list"));
+}
+
+async function carregarPedidos(meUid, listEl) {
+  try {
+    const snap = await getDocs(
+      query(collection(db, "friendRequests"), where("to", "==", meUid), where("status", "==", "pending"))
+    );
+
+    if (snap.empty) {
+      listEl.innerHTML = `
+        <div class="fr-empty">
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      
+          <p>Nenhum pedido pendente</p>
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = "";
+
+    const pedidos = await Promise.all(
+      snap.docs.map(async d => {
+        const data   = d.data();
+        const user   = await fetchUserData(data.from);
+        return { reqId: d.id, fromUid: data.from, ...user };
+      })
+    );
+
+    for (const p of pedidos) {
+      const row = document.createElement("div");
+      row.className = "fr-row";
+      row.innerHTML = `
+        <img class="fr-avatar" src="${p.userphoto || DEFAULT_AVATAR}"
+             onerror="this.src='${DEFAULT_AVATAR}'" alt="${p.username}">
+        <div class="fr-info">
+          <span class="fr-username">${p.username}</span>
+          <span class="fr-sub">quer ser seu amigo</span>
+        </div>
+        <div class="fr-actions">
+          <button class="fr-btn fr-accept" title="Aceitar"><i class="fas fa-check"></i></button>
+          <button class="fr-btn fr-decline" title="Recusar"><i class="fas fa-times"></i></button>
+        </div>`;
+
+      row.querySelector(".fr-accept").addEventListener("click", async () => {
+        row.querySelectorAll(".fr-btn").forEach(b => b.disabled = true);
+        await aceitarAmizade(p.fromUid, meUid);
+        row.classList.add("fr-row-done");
+        row.addEventListener("transitionend", () => {
+          row.remove();
+          if (!listEl.querySelector(".fr-row")) {
+            listEl.innerHTML = `<div class="fr-empty"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      <p>Nenhum pedido pendente</p></div>`;
+          }
+        }, { once: true });
+      });
+
+      row.querySelector(".fr-decline").addEventListener("click", async () => {
+        row.querySelectorAll(".fr-btn").forEach(b => b.disabled = true);
+        await recusarAmizade(p.fromUid, meUid);
+        row.classList.add("fr-row-done");
+        row.addEventListener("transitionend", () => {
+          row.remove();
+          if (!listEl.querySelector(".fr-row")) {
+            listEl.innerHTML = `<div class="fr-empty"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      <p>Nenhum pedido pendente</p></div>`;
+          }
+        }, { once: true });
+      });
+
+      listEl.appendChild(row);
+    }
+  } catch (e) {
+    console.error("carregarPedidos:", e);
+    listEl.innerHTML = `<div class="fr-empty"><i class="fas fa-exclamation-circle"></i><p>Erro ao carregar pedidos.</p></div>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// BADGE — conta pedidos pendentes
+// ─────────────────────────────────────────────────────────
+async function atualizarBadgePedidos(meUid) {
+  const badge = document.getElementById("fr-badge");
+  if (!badge) return;
+  try {
+    const snap = await getDocs(
+      query(collection(db, "friendRequests"), where("to", "==", meUid), where("status", "==", "pending"))
+    );
+    const count = snap.size;
+    badge.textContent  = count > 9 ? "9+" : String(count);
+    badge.style.display = count > 0 ? "flex" : "none";
+  } catch { badge.style.display = "none"; }
+}
+
 const DEFAULT_AVATAR = "../public/img/default.jpg";
 
 function createNtElement(nt, uid) {
@@ -190,7 +350,48 @@ function createNtElement(nt, uid) {
 
   const contentArea = document.createElement("div");
   contentArea.className = "content-area";
-  contentArea.innerHTML = `<p><span class="nt-username">${nt.username}</span> ${resolveMessage(nt)} <span class="nt-time">${formatTime(nt.createdAt)}</span></p>`;
+
+  if (nt.type === "friend_request") {
+    contentArea.innerHTML = `
+      <p><span class="nt-username">${nt.username}</span> ${resolveMessage(nt)} <span class="nt-time">${formatTime(nt.createdAt)}</span></p>
+      <div class="nt-fr-actions">
+        <button class="nt-fr-btn nt-fr-accept">Aceitar</button>
+        <button class="nt-fr-btn nt-fr-decline">✕</button>
+      </div>`;
+
+    const acceptBtn  = contentArea.querySelector(".nt-fr-accept");
+    const declineBtn = contentArea.querySelector(".nt-fr-decline");
+
+    const dismiss = () => {
+      wrapper.classList.add("nt-removing");
+      wrapper.addEventListener("animationend", async () => {
+        try { await updateDoc(doc(db, "notifications", nt.id), { visible: false }); } catch {}
+        wrapper.remove();
+        document.querySelectorAll(".nt-container").forEach(c => {
+          if (!c.querySelector(".nt-swipe-wrapper")) c.remove();
+        });
+        checkEmptyAfterDelete();
+      }, { once: true });
+    };
+
+    acceptBtn.addEventListener("click", async () => {
+      acceptBtn.disabled = true; declineBtn.disabled = true;
+      acceptBtn.textContent = "...";
+      try { await aceitarAmizade(nt.fromUid, uid); } catch (e) { console.error(e); }
+      dismiss();
+      atualizarBadgePedidos(uid);
+    });
+
+    declineBtn.addEventListener("click", async () => {
+      acceptBtn.disabled = true; declineBtn.disabled = true;
+      try { await recusarAmizade(nt.fromUid, uid); } catch (e) { console.error(e); }
+      dismiss();
+      atualizarBadgePedidos(uid);
+    });
+
+  } else {
+    contentArea.innerHTML = `<p><span class="nt-username">${nt.username}</span> ${resolveMessage(nt)} <span class="nt-time">${formatTime(nt.createdAt)}</span></p>`;
+  }
 
   box.appendChild(avatarArea);
   box.appendChild(contentArea);
@@ -202,20 +403,17 @@ function createNtElement(nt, uid) {
   deleteBtn.addEventListener("click", () => {
     wrapper.classList.add("nt-removing");
     wrapper.addEventListener("animationend", async () => {
-  try {
-    await updateDoc(doc(db, "notifications", nt.id), { visible: false });
-  } catch (err) {
-    console.error("Erro ao ocultar notificação:", err);
-  }
-
-  wrapper.remove();
-
-  document.querySelectorAll(".nt-container").forEach((c) => {
-    if (!c.querySelector(".nt-swipe-wrapper")) c.remove();
-  });
-
-  checkEmptyAfterDelete();
-}, { once: true });
+      try {
+        await updateDoc(doc(db, "notifications", nt.id), { visible: false });
+      } catch (err) {
+        console.error("Erro ao ocultar notificação:", err);
+      }
+      wrapper.remove();
+      document.querySelectorAll(".nt-container").forEach((c) => {
+        if (!c.querySelector(".nt-swipe-wrapper")) c.remove();
+      });
+      checkEmptyAfterDelete();
+    }, { once: true });
   });
 
   return wrapper;
@@ -306,9 +504,11 @@ async function renderNotifications(uid) {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     renderNotifications(user.uid);
+    atualizarBadgePedidos(user.uid);
+
+    const frBtn = document.getElementById("fr-btn");
+    if (frBtn) frBtn.addEventListener("click", () => abrirOverlayPedidos(user.uid));
   } else {
     renderEmpty();
   }
 });
-
-

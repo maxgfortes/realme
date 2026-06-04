@@ -1,8 +1,3 @@
-// ============================================================
-// activities-render.js — Realme
-// Versão 2 — layout big+small, swipe-to-delete, ranking inteligente
-// ============================================================
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
@@ -59,7 +54,6 @@ function salvarCacheAtividades(uid, html) {
       JSON.stringify({ timestamp: Date.now(), html })
     );
   } catch (_) {
-    // localStorage cheio — ignora silenciosamente
   }
 }
 
@@ -176,16 +170,24 @@ async function resolveUser(uid) {
   }
 }
 
-// ─── Busca amigos do usuário atual ───────────────────────────────────────────
+// ─── Busca amigos bidirecionais do usuário atual (via friendRequests) ─────────
 async function buscarAmigos(uid) {
   const amigos = new Set();
   try {
-    const [followersSnap, followingSnap] = await Promise.all([
-      getDocs(collection(db, `users/${uid}/followers`)),
-      getDocs(collection(db, `users/${uid}/following`))
+    const [comoRemetente, comoDestinatario] = await Promise.all([
+      getDocs(query(
+        collection(db, 'friendRequests'),
+        where('from',   '==', uid),
+        where('status', '==', 'accepted')
+      )),
+      getDocs(query(
+        collection(db, 'friendRequests'),
+        where('to',     '==', uid),
+        where('status', '==', 'accepted')
+      ))
     ]);
-    followersSnap.forEach(d => amigos.add(d.id));
-    followingSnap.forEach(d => amigos.add(d.id));
+    comoRemetente.forEach(d => amigos.add(d.data().to));
+    comoDestinatario.forEach(d => amigos.add(d.data().from));
   } catch (_) {}
   return amigos;
 }
@@ -199,106 +201,115 @@ function toMs(ts) {
 
 function tempoContextual(ms) {
   const diff = Date.now() - ms;
-  const m    = Math.floor(diff / 60000);
-  const h    = Math.floor(diff / 3600000);
-  const d    = Math.floor(diff / 86400000);
-  const hora = new Date(ms).getHours();
-  const periodo = hora < 12 ? 'de manhã' : hora < 18 ? 'à tarde' : 'à noite';
+  const m = Math.floor(diff / 60000);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  const w = Math.floor(d / 7);
 
-  if (diff < 60000)  return 'agora mesmo';
-  if (m < 60)        return `${m}min atrás`;
-  if (h < 24)        return `${h}h atrás`;
-  if (d === 1)       return `ontem ${periodo}`;
-  if (d < 7)         return `${d} dias atrás`;
-  if (d < 14)        return 'semana passada';
-  return `${d} dias atrás`;
+  if (diff < 60000) return 'agora';
+  if (m < 60)       return `${m}min`;
+  if (h < 24)       return `${h}h`;
+  if (d === 1)      return '1 dia';
+  if (d < 7)        return `${d} dias`;
+  if (w === 1)      return '1 semana';
+  if (w < 5)        return `${w} semanas`;
+  return `${Math.floor(d / 30)} meses`;
 }
 function profileLink(username) {
   return `<a class="act-link" href="profile.html?u=${username}">${username}</a>`;
 }
-function spanAcao(text)  { return `<span class="act-acao">${text}</span>`; }
+function spanAcao(text)  { return `<span class="act-acao">${text}.</span>`; }
 function spanTempo(text) { return `<span class="act-tempo">${text}</span>`; }
 
-// ─── Texto limpo e natural ────────────────────────────────────────────────────
 function gerarTexto(tipo, items, ultimoMs) {
   const primeiro = items[0];
   const n        = items.length;
-  const autor    = profileLink(primeiro.authorUsername || primeiro.actorUid);
-  const tempo    = tempoContextual(ultimoMs);
-  const diffDays = Math.floor((Date.now() - ultimoMs) / 86400000);
 
-  const autoresUnicos = [...new Map(items.map(i => [i.actorUid, i])).values()];
-  const autoresLinks  = autoresUnicos.map(i => profileLink(i.authorUsername || i.actorUid));
+  const autor = profileLink(
+    primeiro.authorUsername || primeiro.actorUid
+  );
+
+  const tempo = spanTempo(
+    tempoContextual(ultimoMs)
+  );
+
+  const autoresUnicos = [
+    ...new Map(
+      items.map(i => [i.actorUid, i])
+    ).values()
+  ];
+
+  const autoresLinks = autoresUnicos.map(i =>
+    profileLink(i.authorUsername || i.actorUid)
+  );
+
   function listarNomes(links) {
     if (links.length === 1) return links[0];
     if (links.length === 2) return `${links[0]} e ${links[1]}`;
-    const u = [...links]; const last = u.pop();
+
+    const u = [...links];
+    const last = u.pop();
+
     return `${u.join(', ')} e ${last}`;
   }
 
   const statusLabel = {
-    solteiro: 'solteiro', namorando: 'namorando',
-    casado: 'casado', em_compromisso: 'em compromisso', viuvo: 'viúvo'
-  };
-  const campoLabel = {
-    bio: 'atualizou a bio', foto: 'mudou a foto', banner: 'mudou o banner',
-    nome: 'mudou o nome', pronomes: 'atualizou os pronomes',
-    localizacao: 'atualizou a localização', musica: 'mudou a música favorita',
-    genero: 'atualizou o gênero', username: 'mudou o username'
+    solteiro: 'solteiro',
+    namorando: 'namorando',
+    casado: 'casado',
+    em_compromisso: 'em compromisso',
+    viuvo: 'viúvo'
   };
 
   switch (tipo) {
     case 'new_post':
       return n === 1
-        ? `${autor} ${spanAcao('publicou um post')} ${spanTempo(tempo)}`
-        : `${autor} ${spanAcao('fez')} ${spanAcao(n + ' novos posts')} ${spanTempo(tempo)}`;
+        ? `${autor} publicou um post. ${tempo}`
+        : `${autor} publicou ${n} posts. ${tempo}`;
 
     case 'new_bubble':
       return n === 1
-        ? `${autor} ${spanAcao('publicou uma nota')} ${spanTempo(tempo)}`
-        : `${autor} ${spanAcao('publicou')} ${spanAcao(n + ' notas')} ${spanTempo(tempo)}`;
+        ? `${autor} publicou uma nota. ${tempo}`
+        : `${autor} publicou ${n} notas. ${tempo}`;
 
     case 'new_comment': {
-      const alvo = primeiro.targetUsername ? profileLink(primeiro.targetUsername) : 'alguém';
+      const alvo = primeiro.targetUsername
+        ? profileLink(primeiro.targetUsername)
+        : 'alguém';
+
       return n === 1
-        ? `${autor} ${spanAcao('comentou em')} ${alvo} ${spanTempo(tempo)}`
-        : `${autor} ${spanAcao('deixou')} ${spanAcao(n + ' comentários')} ${spanAcao('em')} ${alvo} ${spanTempo(tempo)}`;
+        ? `${autor} comentou em um post ${alvo}. ${tempo}`
+        : `${autor} comentou ${n} vezes em ${alvo}. ${tempo}`;
     }
 
     case 'new_friendship': {
-      const amigo = primeiro.targetUsername ? profileLink(primeiro.targetUsername) : 'alguém';
-      return `${autor} ${spanAcao('e')} ${amigo} ${spanAcao('são amigos agora')} • ${spanTempo(tempo)}`;
+      const amigo = primeiro.targetUsername
+        ? profileLink(primeiro.targetUsername)
+        : 'alguém';
+
+      return `${autor} e ${amigo} são amigos agora. ${tempo}`;
     }
 
-    case 'profile_update': {
-      const campos = Array.isArray(primeiro.campos) ? primeiro.campos : [primeiro.campo];
-      if (campos.length === 1) {
-        const acao = campoLabel[campos[0]] || 'atualizou o perfil';
-        return diffDays === 1
-          ? `${autor} ${spanAcao(acao)} ${spanTempo('ontem')}`
-          : `${autor} ${spanAcao(acao)} ${spanTempo(tempo)}`;
-      }
-      const acoes = campos.map(c => campoLabel[c] || c).join(', ');
-      return `${autor} ${spanAcao('atualizou o perfil')} — ${spanAcao(acoes)} ${spanTempo(tempo)}`;
-    }
+    case 'profile_update':
+      return `${autor} atualizou o perfil. ${tempo}`;
 
     case 'status_change': {
-      const novoStatus = statusLabel[primeiro.novoStatus] || primeiro.novoStatus;
-      return diffDays === 0
-        ? `${autor} ${spanAcao('está')} ${spanAcao(novoStatus)} ${spanTempo(tempo)}`
-        : `${autor} ${spanAcao('está')} ${spanAcao(novoStatus)} ${spanAcao('desde')} ${spanTempo(tempo)}`;
+      const novoStatus =
+        statusLabel[primeiro.novoStatus] ||
+        primeiro.novoStatus;
+
+      return `${autor} está ${novoStatus}. ${tempo}`;
     }
 
     case 'new_user':
       return n === 1
-        ? `${autor} ${spanAcao('chegou ao Realme')} ${spanTempo(tempo)} 👋`
-        : `${listarNomes(autoresLinks)} ${spanAcao('entraram no Realme')} ${spanTempo(tempo)} 👋`;
+        ? `${autor} entrou no Realme. ${tempo}`
+        : `${listarNomes(autoresLinks)} entraram no Realme. ${tempo}`;
 
     default:
-      return `${autor} ${spanAcao('fez algo novo')} ${spanTempo(tempo)}`;
+      return `${autor} fez algo novo. ${tempo}`;
   }
 }
-
 
 // ─── Classifica um timestamp em um bucket de seção ───────────────────────────
 function getBucket(ms) {
@@ -372,7 +383,22 @@ function injetarCSS() {
   const s = document.createElement('style');
   s.id = 'xact-style';
   s.textContent = `
-  
+  .act-post-thumb {
+    width: 32px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    align-self: center;
+    margin-left: auto;
+  }
+  .act-big[data-profile-nav] {
+    cursor: pointer;
+  }
+  .act-new .act-big {
+    background: rgba(255,255,255,0.06);
+    border-left: 2px solid rgba(255,255,255,0.15);
+  }
   `;
   document.head.appendChild(s);
 }
@@ -395,12 +421,82 @@ function avatarsHtml(fotos) {
   </div>`;
 }
 
+// ─── Cache de imagens de post (memória) ──────────────────────────────────────
+const postImgCache = {};
+
+// Busca a imagem de preview de um post no Firestore:
+//   1. Campo `img` (string) no doc posts/{postId}
+//   2. Campo `imgs` (array) no mesmo doc — usa o primeiro item
+// Retorna a URL ou null se não encontrar.
+async function fetchPostImage(postId) {
+  if (!postId) return null;
+  if (postId in postImgCache) return postImgCache[postId];
+
+  try {
+    const snap = await getDoc(doc(db, 'posts', postId));
+    if (snap.exists()) {
+      const d = snap.data();
+      // Tenta campo escalar primeiro, depois array
+      const url =
+        (typeof d.img === 'string' && d.img.trim() ? d.img.trim() : null) ||
+        (Array.isArray(d.imgs) && d.imgs.length ? d.imgs[0] : null) ||
+        null;
+      postImgCache[postId] = url;
+      return url;
+    }
+  } catch (_) {}
+
+  postImgCache[postId] = null;
+  return null;
+}
+
+// ─── Preview de imagem do post ───────────────────────────────────────────────
+// Versão síncrona: usa o que já está no item OU o que já foi cacheado.
+// A busca assíncrona é feita em fetchPostImages() antes de renderizar.
+function postImageHtml(items) {
+  // 1. Já resolvida via cache de memória
+  const postId = items.find(i => i.postId)?.postId;
+  const cached = postId ? postImgCache[postId] : undefined;
+  if (cached) {
+    return `<img class="act-post-thumb" src="${cached}" onerror="this.style.display='none'" loading="lazy" alt="">`;
+  }
+
+  // 2. Fallback: campo img direto no item (dado legado)
+  const imgUrl = items.find(i => i.img?.trim())?.img;
+  if (imgUrl) return `<img class="act-post-thumb" src="${imgUrl}" onerror="this.style.display='none'" loading="lazy" alt="">`;
+
+  return '';
+}
+
+// Pré-busca imagens de todos os grupos que sejam posts, preenchendo o cache.
+async function fetchPostImages(grupos) {
+  const postIds = [
+    ...new Set(
+      grupos
+        .filter(g => g.tipo === 'new_post')
+        .flatMap(g => g.items.map(i => i.postId).filter(Boolean))
+    )
+  ];
+  if (!postIds.length) return;
+  await Promise.all(postIds.map(fetchPostImage));
+}
+
+// ─── Atributo de navegação para perfil (profile_update / status_change) ──────
+function profileNavAttr(tipo, items) {
+  if (['profile_update', 'status_change'].includes(tipo)) {
+    const username = items[0].authorUsername || items[0].actorUid;
+    return `data-profile-nav="${encodeURIComponent(username)}"`;
+  }
+  return '';
+}
+
 // ─── Renderiza card grande ────────────────────────────────────────────────────
-function renderBigCard(grupo, currentUid) {
+function renderBigCard(grupo, currentUid, isNovo = false) {
   const { tipo, items, ultimoMs, _isAmigo } = grupo;
   const ids    = items.map(i => i.activityId).join(',');
   const isDono = items.some(i => i.actorUid === currentUid);
   const texto  = gerarTexto(tipo, items, ultimoMs);
+  const navAttr = profileNavAttr(tipo, items);
 
   // Para new_friendship pega foto do ator + foto do target — ambas via cache de perfil
   let fotos;
@@ -424,24 +520,26 @@ function renderBigCard(grupo, currentUid) {
   }
 
   return `
-  <div class="act-swipe-wrapper" data-type="${tipo}">
-    <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}">
+  <div class="act-swipe-wrapper${isNovo ? ' act-new' : ''}" data-type="${tipo}">
+    <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
         <div>
           ${avatarsHtml(fotos)}
         </div>
         <div class="act-text"><p>${texto}</p></div>
+        ${postImageHtml(items)}
       </div>
     </div>
   </div>`;
 }
 
 // ─── Renderiza card pequeno — agora usa layout big ───────────────────────────
-function renderSmallCard(grupo, currentUid) {
+function renderSmallCard(grupo, currentUid, isNovo = false) {
   const { tipo, items, ultimoMs, _isAmigo } = grupo;
   const ids    = items.map(i => i.activityId).join(',');
   const isDono = items.some(i => i.actorUid === currentUid);
   const texto  = gerarTexto(tipo, items, ultimoMs);
+  const navAttr = profileNavAttr(tipo, items);
 
   const fotos = [...new Map(items.map(i => [i.actorUid, i])).values()]
     .map(i => ({ src: i.authorPhoto || DEFAULT_PHOTO, uid: i.actorUid }))
@@ -450,20 +548,21 @@ function renderSmallCard(grupo, currentUid) {
   if (!fotos.length) fotos.push({ src: DEFAULT_PHOTO, uid: items[0].actorUid });
 
   return `
-  <div class="act-swipe-wrapper" data-type="${tipo}">
+  <div class="act-swipe-wrapper${isNovo ? ' act-new' : ''}" data-type="${tipo}">
     <div class="act-delete-hint"><i class="fas fa-trash-can"></i></div>
-    <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}">
+    <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
         <div>
           ${avatarsHtml(fotos)}
         </div>
         <div class="act-text"><p>${texto}</p></div>
+        ${postImageHtml(items)}
       </div>
     </div>
   </div>`;
 }
 
-function montarLayout(grupos, currentUid) {
+function montarLayout(grupos, currentUid, ultimaVisita = 0) {
   let html = '';
   let bucketAtual = null;
 
@@ -475,8 +574,9 @@ function montarLayout(grupos, currentUid) {
       html += `<div class="act-section-label">${bucket.label}</div>`;
     }
 
-    if (isBig(grupo.tipo)) html += renderBigCard(grupo, currentUid);
-    else                   html += renderSmallCard(grupo, currentUid);
+    const isNovo = grupoIsNovo(grupo, ultimaVisita);
+    if (isBig(grupo.tipo)) html += renderBigCard(grupo, currentUid, isNovo);
+    else                   html += renderSmallCard(grupo, currentUid, isNovo);
   }
 
   return html;
@@ -590,11 +690,39 @@ function ativarSwipeDelete(container, currentUid) {
     card.addEventListener('mousedown', e => { if (isDono) onStart(e); });
     document.addEventListener('mousemove', e => { if (dragging) onMove(e); });
     document.addEventListener('mouseup',   () => { if (dragging) onEnd(); });
+
+    // Clique no card → navega para o perfil (profile_update / status_change)
+    card.addEventListener('click', e => {
+      if (e.target.closest('.act-link')) return; // deixa o link do autor funcionar
+      const nav = card.dataset.profileNav;
+      if (nav) window.location.href = `profile.html?username=${nav}`;
+    });
   });
 }
 
+
+// ─── Sistema de "visto" — baseado em timestamp da última visita ───────────────
+const SEEN_LS_KEY = 'xact_seen_v1';
+
+function lerUltimaVisita(uid) {
+  try {
+    const raw = localStorage.getItem(`${SEEN_LS_KEY}_${uid}`);
+    return raw ? parseInt(raw, 10) : 0;
+  } catch (_) { return 0; }
+}
+
+function salvarVisitaAgora(uid) {
+  try { localStorage.setItem(`${SEEN_LS_KEY}_${uid}`, String(Date.now())); } catch (_) {}
+}
+
+// Retorna true se o grupo contém algum item mais recente que ultimaVisita
+function grupoIsNovo(grupo, ultimaVisita) {
+  if (!ultimaVisita) return false;
+  return grupo.ultimoMs > ultimaVisita;
+}
+
 // ─── Busca e monta o HTML das atividades (lógica pura, sem tocar no DOM) ──────
-async function fetchEMontarHtml(uid) {
+async function fetchEMontarHtml(uid, ultimaVisita = 0) {
   const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
 
   const [snap, amigosSet] = await Promise.all([
@@ -657,6 +785,9 @@ async function fetchEMontarHtml(uid) {
   const grupos = agrupar(atividades);
   if (!grupos.length) return null;
 
+  // Pré-busca imagens de posts no Firestore antes de renderizar
+  await fetchPostImages(grupos);
+
   // Mantém a ordem cronológica do agrupamento — sem calcularRanking
   const gruposOrdenados = grupos.map(grupo => ({
     ...grupo,
@@ -665,7 +796,7 @@ async function fetchEMontarHtml(uid) {
   }));
 
   return `
-    <div class="xact-list">${montarLayout(gruposOrdenados, uid)}</div>
+    <div class="xact-list">${montarLayout(gruposOrdenados, uid, ultimaVisita)}</div>
     <div class="end-feed">
     <h3>As atividades acabaram...</h3>
     <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
@@ -691,12 +822,13 @@ async function carregarAtividades() {
   if (cached) {
     container.innerHTML = cached.html;
     ativarSwipeDelete(container, uid);
+    setTimeout(() => salvarVisitaAgora(uid), 100);
 
     // Cache ainda fresco → não revalida agora
     if (!cached.stale) return;
 
     // Cache stale → revalida em background sem travar a tela
-    fetchEMontarHtml(uid).then(html => {
+    fetchEMontarHtml(uid, lerUltimaVisita(uid)).then(html => {
       if (!html) return;
       salvarCacheAtividades(uid, html);
       // Atualiza o DOM só se o usuário ainda não fez scroll (UX menos intrusivo)
@@ -713,7 +845,8 @@ async function carregarAtividades() {
   container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
 
   try {
-    const html = await fetchEMontarHtml(uid);
+    const ultimaVisita = lerUltimaVisita(uid);
+    const html = await fetchEMontarHtml(uid, ultimaVisita);
 
     if (!html) {
       container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`;
@@ -723,6 +856,8 @@ async function carregarAtividades() {
     salvarCacheAtividades(uid, html);
     container.innerHTML = html;
     ativarSwipeDelete(container, uid);
+    // Marca visita DEPOIS de renderizar — próxima visita não verá esses como novos
+    setTimeout(() => salvarVisitaAgora(uid), 100);
 
   } catch (err) {
     console.error('[activities-render] Erro:', err);
@@ -740,11 +875,13 @@ window.recarregarAtividades = async function () {
   container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
 
   try {
-    const html = await fetchEMontarHtml(user.uid);
+    const ultimaVisita = lerUltimaVisita(user.uid);
+    const html = await fetchEMontarHtml(user.uid, ultimaVisita);
     if (!html) { container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`; return; }
     salvarCacheAtividades(user.uid, html);
     container.innerHTML = html;
     ativarSwipeDelete(container, user.uid);
+    setTimeout(() => salvarVisitaAgora(user.uid), 100);
   } catch (err) {
     console.error('[activities-render] Erro ao recarregar:', err);
   }

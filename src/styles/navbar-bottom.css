@@ -360,6 +360,7 @@
   width: 28px;  /* ou o tamanho que você usa nos outros ícones */
   height: 26px;
   fill: #888; /* pega a cor do texto do link */
+
 }
 
     .active-bar svg{
@@ -425,8 +426,8 @@
 .update-dot-nt::after {
   content: "";
   position: absolute;
-  bottom: 14px;
-  right: 8px;
+  top: 14px;
+  right: 4px;
 
   width: 8px;
   height: 8px;

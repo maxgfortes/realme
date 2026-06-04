@@ -844,7 +844,7 @@ body {
     border-radius: 0.875rem;
     height: 4.6vh;
     min-height: 38px;
-    background-color: #333;
+    background-color: #2c2c2c;
     width: 100%;
     color: #cacaca !important;
     display: flex;
@@ -1266,8 +1266,8 @@ body {
 
 /* avatar único */
 .act-avatars.single img {
-  width: 54px;
-  height: 54px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
@@ -1275,8 +1275,8 @@ body {
 
 /* dois avatars sobrepostos */
 .act-avatars.duo {
-  width: 54px;
-  height: 54px;
+  width: 53px;
+  height: 53px;
 }
 .act-avatars.duo img {
   width: 44px;
@@ -1302,7 +1302,7 @@ body {
 }
 .act-text p {
   margin: 0;
-  font-size: .98rem;
+  font-size: 0.95rem;
   line-height: 1.45;
   color: #ddd;
   white-space: normal;
@@ -1314,10 +1314,11 @@ body {
   color: #fff;
 }
 .act-acao  { 
-  color: #aaa;
+  color: #ccc;
 }
 .act-tempo { 
-  color: #aaa;
+  color: #666;
+  font-size: 0.8rem;
 }
 
 /* link de perfil dentro do texto */
@@ -1383,7 +1384,6 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
-      display: none;
     }
 
     .act-filter.active {

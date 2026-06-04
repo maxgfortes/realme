@@ -167,7 +167,7 @@ body {
   width: 100%;
   padding: 12px 18px;
   border-radius: 9999px;
-  background: #27272788;
+  background: #2c2c2c;
   border: none;
   color: #fff;
   font-size: 1em;
@@ -264,7 +264,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 11px 16px 11px;
   background: #0F0F0F;
   z-index: 99999999;
 }
@@ -278,13 +278,13 @@ body {
 
 .dm-chat-header span {
   flex: 1;
-  font-size: 1.1em;
-  color: #ccc;
-  font-weight: 500;
+  font-size: 1rem;
+  color: #f1f1f1;
   cursor: pointer;
+  font-weight: bold;
 }
 
-.dm-chat-username { cursor: pointer; }
+.dm-chat-username { cursor: pointer;  }
 
 /* ── Área de mensagens ───────────────────────────────────────────────────── */
 .dm-messages {
@@ -293,7 +293,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 12px 10px 100px;
+  padding: 12px 14px 100px 10px;
   padding-top: 120px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -346,25 +346,34 @@ body {
 }
 
 /* Meus */
-.meu { background: #3199ff; color: white; align-self: flex-end; }
+.meu {   background: rgb(0, 120, 254); color: white; align-self: flex-end; }
 
 /* ── iMessage tail on last sent bubble ──────────────────────────────────── */
-.meu-bloco .dm-msg-bubble:last-of-type.meu {
-  border-bottom-right-radius: 4px;
-}
 
 .meu-bloco .dm-msg-bubble:last-of-type.meu::after {
-  content: '';
+  content: "";
   position: absolute;
+  z-index: 1;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  height: 20px;
+  background: var(--bg-primary);
+  border-bottom-left-radius: 10px;
+}
+
+.meu-bloco .dm-msg-bubble:last-of-type.meu::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
   bottom: 0;
   right: -8px;
-  width: 16px;
-  height: 16px;
-  background: #3199ff;
-  border-bottom-left-radius: 14px;
-  clip-path: polygon(0 0, 0% 100%, 100% 100%);
-  pointer-events: none;
+  height: 20px;
+  width: 20px;
+  background: rgb(0, 120, 254);
+  border-bottom-left-radius: 15px;
 }
+
 
 /* ── Image fills bubble completely ──────────────────────────────────────── */
 .dm-msg-bubble.meu:has(.dm-msg-image),
@@ -377,35 +386,44 @@ body {
 }
 
 /* Deles */
-.deles { background: #1e1e1e; color: #f1f1f1; }
+.deles { background: #313131; color: #f1f1f1; }
 
 /* ── iMessage tail on last received bubble ───────────────────────────────── */
-.deles-bloco .dm-msg-bubble:last-of-type.deles {
-  border-bottom-left-radius: 4px;
-}
+
 
 .deles-bloco .dm-msg-bubble:last-of-type.deles::after {
-  content: '';
+  content: "";
   position: absolute;
+  z-index: 1;
   bottom: 0;
-  left: -8px;
-  width: 16px;
-  height: 16px;
-  background: #1e1e1e;
-  border-bottom-right-radius: 14px;
-  clip-path: polygon(100% 0, 0% 100%, 100% 100%);
-  pointer-events: none;
+  left: -10px;
+  width: 10px;
+  height: 20px;
+  background: var(--bg-primary);
+  border-bottom-right-radius: 10px;
+}
+
+.deles-bloco .dm-msg-bubble:last-of-type.deles::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  left: -7px;
+  height: 20px;
+  width: 20px;
+  background: #313131;
+  border-bottom-right-radius: 15px;
 }
 
 /* ── Reactions — fixed top-right of bubble ───────────────────────────────── */
 .dm-reactions {
   position: absolute;
-  top: -18px;
-  right: -6px;
+  bottom: -22px;
+  left: 6px;
   display: flex;
   flex-wrap: nowrap;
   gap: 2px;
-  z-index: 10;
+  z-index: 99999;
   pointer-events: none;
 }
 
@@ -420,7 +438,6 @@ body {
   position: relative;
   cursor: pointer;
   transition: filter 0.15s;
-  /* Space for reaction chip above */
   margin-top: 2px;
 }
 
@@ -493,14 +510,12 @@ body {
 
 /* ── Reply bar (área de input) ───────────────────────────────────────────── */
 .dm-reply-bar {
-  padding: 14px 14px 44px 14px;
+  padding: 14px 14px 24px 14px;
   flex-shrink: 0;
-  background: #272727cc;
-  border-bottom: 0.1px solid #333;
-  backdrop-filter: blur(6px);
-  border-top: 0.1px solid #333;
-  border-radius: 26px;
+  background: #272727;
+  border-radius: 16px;
   margin-bottom: 8px;
+  z-index: 9999;
 }
 
 .reply-bar-inner {
@@ -527,7 +542,7 @@ body {
 }
 
 .reply-bar-name {
-  font-size: 16px;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #ffffff;
 }
@@ -595,13 +610,13 @@ body {
   justify-content: flex-end;
 }
 
-.dm-visto   { color: #3199ff ; font-weight: bold; }
+.dm-visto   { color:rgb(0, 120, 254);; font-weight: bold; }
 .dm-enviado { color: #666; font-weight: bold;}
 
 /* ── Reações (chip style) ─────────────────────────────────────────────────── */
 
 .dm-reaction-chip {
-  background:#3199ff;
+  background:#323233;
   border-radius: 20px;
   padding: 7px;
   font-size: 13px;
@@ -616,12 +631,12 @@ body {
 .dm-context-menu {
   position: absolute;
   z-index: 99999999;
-  background: #1c1c1e;
+  background: #2a2a2c;
   border: 1px solid #333;
-  border-radius: 24px;
+  border-radius: 16px;
   padding: 10px;
   min-width: 180px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.664);
   bottom: calc(100% + 6px);
   right: 0;
   animation: contextFadeIn 0.15s ease;
@@ -791,7 +806,7 @@ body {
 .dm-send-area {
   display: flex;
   flex-direction: column;
-  padding: 26px 22px;
+  padding: 26px 10px;
   gap: 0;
   position: absolute;
   bottom: 0;
@@ -806,33 +821,8 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  background: linear-gradient(
-    0deg,
-    rgb(15, 15, 15) 0%,
-    rgba(15,15,15,0.6) 40%,
-    rgba(15,15,15,0.25) 70%,
-    rgba(15,15,15,0) 100%
-  );
-
-  mask-image: linear-gradient(
-    to top,
-    black 0%,
-    rgba(0,0,0,.8) 30%,
-    rgba(0,0,0,.4) 65%,
-    transparent 100%
-  );
-
-  -webkit-mask-image: linear-gradient(
-    to top,
-    black 0%,
-    rgba(0,0,0,.8) 30%,
-    rgba(0,0,0,.4) 65%,
-    transparent 100%
-  );
+  background: var(--bg-primary);
+  transform: translateY(50px);
 }
 
 .dm-send-area > * {
@@ -845,34 +835,12 @@ body {
   display: flex;
   border-radius: 9999px;
   align-items: center;
-  background: #27272788;
-  border-bottom: 0.1px solid #333;
-  border-top: 0.1px solid #333;
+  background: #272727;
   min-height: 50px;
+  z-index: 99;
 }
 
-@supports (backdrop-filter: blur(10px)) {
-  .input-area {
-    backdrop-filter: blur(6px);
-  background: #27272788;
-  border-bottom: 0.1px solid #333;
-  border-top: 0.1px solid #333;
-  }
 
-  .dm-context-menu {
-  position: absolute;
-  z-index: 99999999;
-  border: 1px solid #333;
-  border-radius: 24px;
-  padding: 10px;
-  min-width: 180px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-  bottom: calc(100% + 6px);
-  right: 0;
-  animation: contextFadeIn 0.15s ease;
-}
-
-}
 
 #dmMsgInput {
   flex: 1;
@@ -886,8 +854,8 @@ body {
 }
 
 #dmSendBtn {
-  background-color: #3199ff;
-  border: 1px solid #3199ff;
+background: rgb(0, 120, 254);
+border: none;
   padding: 0px 18px !important;
   height: 42px;
   align-items: center;
@@ -1049,4 +1017,136 @@ body {
 
 .deles-bloco .swipe-reply-icon {
   right: -28px;
+}
+
+
+/* ── Skeleton loading ─────────────────────────────────────────────────────── */
+.dm-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  pointer-events: none;
+}
+
+.sk-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+}
+
+.sk-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sk-line {
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+}
+
+.sk-name { width: 45%; }
+.sk-msg  { width: 70%; }
+
+/* Skeleton de mensagens */
+.sk-bubble {
+  height: 40px;
+  border-radius: 18px;
+  max-width: 220px;
+  width: 55%;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+  margin: 4px 0;
+}
+.sk-bubble-meu { margin-left: auto; }
+
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Adapta as cores do skeleton ao tema — ajuste se necessário */
+:root {
+  --sk-a: rgba(128, 128, 128, 0.1);
+  --sk-b: rgba(128, 128, 128, 0.22);
+}
+
+/* ── Estado vazio ─────────────────────────────────────────────────────────── */
+.dm-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px 48px;
+  gap: 10px;
+  text-align: center;
+  animation: dm-fade-in 0.3s ease;
+}
+
+.dm-empty-state svg {
+  width: 84px;
+  height: 84px;
+  color: var(--text-secondary, #8e8e93);
+  margin-bottom: 6px;
+}
+
+.dm-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1c1c1e);
+  margin: 0;
+}
+
+.dm-empty-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary, #8e8e93);
+  margin: 0;
+  max-width: 210px;
+  line-height: 1.45;
+}
+
+/* ── Bolinha de não-lido ──────────────────────────────────────────────────── */
+.dm-unread-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent, #0a84ff);
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: center;
+}
+
+/* ── Fade in geral ────────────────────────────────────────────────────────── */
+@keyframes dm-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+.dm-time-separator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 12px;
+  color: #999;
+  font-size: 12px;
+}
+
+.dm-time-separator::before,
+.dm-time-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bg-primary );
+  opacity: 0.3;
 }

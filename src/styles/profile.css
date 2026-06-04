@@ -6,8 +6,8 @@
 
     .navbar-top svg {
       margin-top: 8px;
-  width: 20px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 20px;
+  width: 18px;  /* ou o tamanho que você usa nos outros ícones */
+  height: 18px;
   fill: currentColor; /* pega a cor do texto do link */
 }
 
@@ -1955,8 +1955,8 @@ background: #fff;
   }
     .navbar-top svg {
       margin-top: 8px;
-  width: 20px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 20px;
+  width: 20px !important;  /* ou o tamanho que você usa nos outros ícones */
+  height: 20px !important;
   fill: currentColor; /* pega a cor do texto do link */
 }
 

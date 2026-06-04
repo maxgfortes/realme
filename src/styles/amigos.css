@@ -238,10 +238,10 @@ input.estilo::placeholder {
 }
 
 .estilo p {
-  font-size: 16px;
+  font-size: 0.9rem;
   font-weight: bold;
-  color: #a3a3a3;
-  margin-bottom: 4px;
+  color: #bbbbbb;
+  margin: 0 0 6px 4px;
 }
 
 /* Container do switch */
@@ -1012,7 +1012,6 @@ input.estilo {
         padding: 0 12px;
         height: 60px;
         justify-content: space-between;
-        border-bottom: 0.1px solid var(--border-primary);
     }
 
     .opt-left {
@@ -1148,7 +1147,7 @@ input.estilo {
     text-decoration: none;
     display: flex;
     align-items: center;
-    border: #2c2c2c solid 1px;
+    border: none;
     background-color: #202020;
 }
 
@@ -1243,6 +1242,7 @@ nav {
     border-radius: 16px;
     font-size: 16px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .search-btn:hover {
