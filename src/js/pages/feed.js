@@ -365,7 +365,13 @@ async function updateLikedByFooter(postEl, postId) {
   const footerBox = postEl.querySelector('.post-footer-box');
   if (!footer) return;
 
-  const info = await getLikedByInfo(postId, user.uid);
+  let info;
+  try {
+    info = await getLikedByInfo(postId, user.uid);
+  } catch (err) {
+    console.warn('[LikedBy] Falha ao carregar curtidas:', err);
+    return;
+  }
 
   // Atualizar contador de likes aproveitando o dado já buscado
   const likeSpan = postEl.querySelector('.btn-like span');
@@ -406,7 +412,7 @@ async function countLikes(postId) {
 }
 
 async function countComments(postId) {
-  return (await getDocs(collection(db, `posts/${postId}/coments`))).size;
+  return (await getDocs(collection(db, 'posts', postId, 'coments'))).size;
 }
 
 async function toggleLike(uid, postId, btn) {
@@ -721,6 +727,17 @@ function observeMusicPost(postEl) {
 }
 
 
+// ─── AUTH HELPER ─────────────────────────────────────────────
+
+function getAuthUser() {
+  if (auth.currentUser) return Promise.resolve(auth.currentUser);
+  return new Promise(resolve => {
+    const unsub = onAuthStateChanged(auth, user => { unsub(); resolve(user ?? null); });
+    setTimeout(() => resolve(null), 5000);
+  });
+}
+
+
 // ─── RENDER POST ─────────────────────────────────────────────
 
 function renderPost(postData, container) {
@@ -800,6 +817,13 @@ function renderPost(postData, container) {
   container.appendChild(postEl);
   initCarousel(postEl);
 
+  const commentCountEl = postEl.querySelector('.btn-comment span');
+  if (commentCountEl) {
+    countComments(postData.postid)
+      .then(n => { commentCountEl.textContent = n; })
+      .catch(() => {});
+  }
+
   if (hasMusic) {
     buildMusicIframe(postEl, postData.musicUrl);
     observeMusicPost(postEl);
@@ -813,14 +837,16 @@ function renderPost(postData, container) {
     });
   }
 
-  const user = auth.currentUser;
-  if (user) {
+  getAuthUser().then(user => {
+    if (!user) return;
     updateLikedByFooter(postEl, postData.postid);
     const likerRef = doc(db, `posts/${postData.postid}/likers/${user.uid}`);
-    getDoc(likerRef).then(s => {
-      if (s.exists() && s.data().like === true) postEl.querySelector('.btn-like')?.classList.add('liked');
-    });
-  }
+    getDoc(likerRef)
+      .then(s => {
+        if (s.exists() && s.data().like === true) postEl.querySelector('.btn-like')?.classList.add('liked');
+      })
+      .catch(() => {});
+  });
 
   getUserCached(postData.creatorid).then(async userData => {
     if (!userData) return;

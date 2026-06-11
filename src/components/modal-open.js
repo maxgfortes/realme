@@ -60,4 +60,4 @@ overlayMusica.addEventListener('click', function(e) {
 overlayLocal.addEventListener('click', function(e) {
   if (e.target === overlayLocal) fecharTodos();
 });
-*/
+*/   

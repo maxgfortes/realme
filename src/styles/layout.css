@@ -5,14 +5,7 @@
   width: 840px;
 }
 
-.welcome-box {
-  background: rgba(20, 20, 20, 0.582);
-  backdrop-filter: blur(8px);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  max-width: 800px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.7);
-}
+
 
 .user-welcome {
     background-color: rgba(0, 255, 255, 0);
