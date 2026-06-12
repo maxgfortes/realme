@@ -666,7 +666,7 @@
 
     .menu-header {
       padding: 10px 12px 12px 12px;
-      border-bottom: 0.1px solid #2a2a2a;
+      border-bottom: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -2653,7 +2653,7 @@ background: #fff;
 
     .menu-header {
       padding: 10px 12px 12px 12px;
-      border-bottom: 0.1px solid #2a2a2a;
+      border-bottom: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
