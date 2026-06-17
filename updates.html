@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <title>RealMe</title>
+  <link rel="icon" href="./public/img/icon.png" type="image/png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="theme-color" content="#0f0f0f">
+  <link rel="stylesheet" href="./src/styles/root.css">
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
+  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
+  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+</head>
+<style>
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+  background: #0f0f0f;
+  color: #ffffff;
+}
+
+.nav-pc {
+  position: fixed;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #0f0f0f;
+}
+
+.nav-mobile {
+    display: none;
+    position: fixed;
+    width: 100%;
+    align-items: center;
+    height: 60px;
+    background: #0f0f0f;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-mobile svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+}
+
+.logo {
+    font-size: 1.9rem;
+    font-weight: bold;
+    padding: 6px;
+    font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+}
+
+.main-section {
+    width: 100%;
+    height: 100vh;
+    padding: 80px 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.updates-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 940px;
+    padding: 20px;
+}
+
+.update-item {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    user-select: text !important;
+}
+
+.update-header {
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.update-title {
+    font-size: 1.5rem;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+.update-time {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.update-text {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.footer-area {
+    padding: 20px;
+    height: 100px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.footer-block {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.links {
+    display: flex;
+    gap: 20px;
+}
+
+.links a {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.copy p {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.socials {
+    display: flex;
+    gap: 15px;
+    display: none;
+}
+
+.socials a {
+    color: #aaa;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 700px) {
+    .nav-pc {
+        display: none;
+    }
+    .nav-mobile {
+        display: flex;
+    }
+    .main-section {
+        padding: 60px 0;
+    }
+    .footer-area {
+        flex-direction: column;
+        height: auto;
+        gap: 10px;
+    }
+}
+
+</style>
+<body>
+    <nav class="nav-pc">
+        <div class="logo">RealMe</div>
+    </nav>
+
+    <nav class="nav-mobile">
+        <button class="backBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+        </button>
+        <div class="logo">RealMe</div>
+    </nav>
+
+    <main class="main-section">
+        <div class="updates-grid">
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">Update Title</div>
+                <div class="update-time">01/01/2000 - 00:00 </div>
+            </div>
+            <div class="update-text">Update content goes here.</div>
+        </div>
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">Update Title</div>
+                <div class="update-time">01/01/2000 - 00:00 </div>
+            </div>
+            <div class="update-text">Update content goes here.</div>
+        </div>
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">Update Title</div>
+                <div class="update-time">01/01/2000 - 00:00 </div>
+            </div>
+            <div class="update-text">Update content goes here.</div>
+        </div>
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">Update Title</div>
+                <div class="update-time">01/01/2000 - 00:00 </div>
+            </div>
+            <div class="update-text">Update content goes here.</div>
+        </div>
+        </div>
+    </main>
+
+    <footer class="footer-area">
+        <div class="footer-block">
+            <div class="links">
+                <a href="https://www.socialrealme.com">Home</a>
+                <a href="https://www.socialrealme.com/login">Login</a>
+                <a href="https://www.socialrealme.com/register">Register</a>
+                <a href="https://www.socialrealme.com/profile">Profile</a>
+            </div>
+        </div>
+        <div class="footer-block">
+            <div class="copy">
+                <p>&copy; 2026 RealMe. All rights reserved.</p>
+            </div>
+        </div>
+        <div class="footer-block">
+            <div class="socials">
+                <a href="https://www.tiktok.com/@socialrealme" ><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/socialrealme" ><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
