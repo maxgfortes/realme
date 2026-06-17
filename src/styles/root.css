@@ -250,3 +250,8 @@
   outline: none;
   box-shadow: none;
 }
+
+
+@view-transition {
+  navigation: auto;
+}
