@@ -1,241 +1,209 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"/>
+
   <title>RealMe</title>
+  <meta name="description" content="RealMe é a rede social que conecta você a amigos, família e pessoas novas perto de você. Compartilhe momentos, converse e viva conexões reais. Crie sua conta grátis." />
+  <meta name="keywords" content="RealMe, rede social, conectar pessoas, fazer amigos online, app de conexões, rede social brasileira, conexão, novas amizades, amigos proximos, anos 2000, alternativo, nicho " />
+  <meta name="author" content="maxgfortes" />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="canonical" href="https://socialrealme.com" />
+
   <link rel="icon" href="./public/img/icon.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <meta name="theme-color" content="#0f0f0f" />
   <link rel="stylesheet" href="./src/styles/root.css" />
   <link rel="stylesheet" href="./src/styles/index.css" />
+
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe — Rede Social para Conectar Pessoas Reais">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "RealMe",
+    "url": "https://socialrealme.com",
+    "description": "RealMe é a rede social que conecta você a amigos, família e pessoas novas perto de você.",
+    "sameAs": [
+      "https://youtube.com/@socialrealme",
+      "https://tiktok.com/@socialrealme"
+    ]
+  }
+  </script>
 </head>
 <body>
-  <div class="main">
-    <div class="welcome-container-pc">
-      <div class="profiles-preview-pc">
-        <img src="./public/img/conections.png" alt="Preview do RealMe">
-      </div>
-      <div class="welcome-interactions-pc">
-        <div class="welcome-header-pc">
-        <div class="logo-main-pc">Bem vindo ao <span>RealMe</span></div>
-      </div>
-      <div class="welcome-subtitle-pc">
-        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com seus amigos</p>
-      </div>
 
-      <div id="userInfo" class="user-info">
-        <p>Olá, <strong id="userName"></strong>!</p>
-        <span>Você já tem uma conta</span>
-      </div>
-
-      <div class="welcome-btns" id="authButtons">
-        <a href="/register.html" class="criar-conta">Criar Conta</a>
-        <a href="/login.html" class="entrar">Entrar</a>
-      </div>
- 
-      <div class="see-profile" id="profileButton">
-        <a href="#" id="profileLink">Entrar</a>
-      </div>
-      </div>
-    </div>
-    <div class="welcome-container">
-      <div class="welcome-header">
-        <div class="logo-main">Bem vindo ao <span>RealMe</span></div>
-      </div>
-      <div class="welcome-subtitle">
-        <p>Conecte-se com seus amigos, conheça novas pessoas e compartilhe momentos especiais</p>
-      </div>
-      <div id="userInfo" class="user-info">
-        <p>Olá, <strong id="userName"></strong>!</p>
-        <span>Você já tem uma conta</span>
-      </div>
-
-      <div class="welcome-btns" id="authButtons">
-        <a href="/register.html" class="criar-conta">Criar Conta</a>
-        <a href="/login.html" class="entrar">Entrar</a>
-      </div>
-
-      <div class="see-profile" id="profileButton">
-        <a href="#" id="profileLink">Entrar</a>
-      </div>
-
-      <div class="profiles-preview">
-        <img src="./public/img/conections.png" alt="Preview do RealMe">
-      </div>
-    </div>
-    
-    <div class="download">
-      <div class="download-info">
-        <div class="download-title">Baixe o App do RealMe</div>
-        <div class="download-sub">Veja abaixo como baixar o App do RealMe</div>
-      </div>
-      <div class="download-video">
-        <img src="./public/img/download-gif.gif" alt="">
-      </div>
-    </div>
-
-    <div class="features-section">
-      <div class="features-header">
-        <h2>Por que usar o RealMe?</h2>
-        <p style="color: #888; max-width: 600px; margin: 0 auto;">Tudo que você precisa para criar um perfil incrível em um só lugar</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-paint-brush"></i></div>
-          <h3>Totalmente Personalizável</h3>
-          <p>Escolha cores, fontes, imagens e crie um perfil único que representa você</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-user-group"></i></div>
-          <h3>Facil de Fazer Amizades</h3>
-          <p>Faça amizades por gostos, personalidade, estilo, sonhos e muito mais facilmente usando a função Achar Amigos</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
-          <h3>100% Responsivo</h3>
-          <p>Seu perfil fica perfeito em qualquer dispositivo, do celular ao desktop</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-          <h3>Fácil de Usar</h3>
-          <p>Interface intuitiva que permite criar e editar seu perfil em minutos</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-          <h3>Seguro e Confiável</h3>
-          <p>Seus dados estão protegidos com Firebase e autenticação segura</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fas fa-rocket"></i></div>
-          <h3>Rápido e Leve</h3>
-          <p>Carregamento instantâneo e performance otimizada para a melhor experiência</p>
-        </div>
-      </div>
-    </div>
-    <div class="faq-container">
-      <div class="faq-header">
-        <h1>Perguntas Frequentes</h1>
-      </div>
-      
-      <div class="faq-item">
-        <div class="faq-question">
-          <h3>O que é o RealMe?</h3>
-          <i class="fas fa-chevron-down faq-icon"></i>
-        </div>
-        <div class="faq-answer">
-          <div class="faq-answer-content">
-            O RealMe é uma plataforma moderna de match de amizades e relacionamentos que conecta pessoas com interesses semelhantes, facilitando novas conexões e amizades.
-          </div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-question">
-          <h3>É gratuito?</h3>
-          <i class="fas fa-chevron-down faq-icon"></i>
-        </div>
-        <div class="faq-answer">
-          <div class="faq-answer-content">
-            Sim! O ReealMe é 100% gratuito. Você pode criar sua conta, achar amigos e personalizar seu perfil sem pagar nada.
-          </div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-question">
-          <h3>Como compartilho meu perfil?</h3>
-          <i class="fas fa-chevron-down faq-icon"></i>
-        </div>
-        <div class="faq-answer">
-          <div class="faq-answer-content">
-            Seu perfil tem uma URL única no formato: pfmobile.html?u=seuusername. Você pode compartilhar esse link em qualquer lugar - Instagram, TikTok, Twitter, WhatsApp e mais!
-          </div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-question">
-          <h3>Posso mudar meu email depois?</h3>
-          <i class="fas fa-chevron-down faq-icon"></i>
-        </div>
-        <div class="faq-answer">
-          <div class="faq-answer-content">
-            No momento, o email não pode ser alterado após a criação da conta. Escolha com cuidado! Em futuras atualizações, essa funcionalidade será adicionada.
-          </div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-question">
-          <h3>Meus dados estão seguros?</h3>
-          <i class="fas fa-chevron-down faq-icon"></i>
-        </div>
-        <div class="faq-answer">
-          <div class="faq-answer-content">
-            Sim! Usamos Firebase, uma plataforma do Google, para autenticação e armazenamento. Suas senhas são criptografadas e seus dados são protegidos com as melhores práticas de segurança.
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      <p>Copyright 2026 RealMe - Todos os direitos reservados. Criado por maxgfortes</p>
+<nav class="nav">
+  <div class="nav-left">
+    <div class="logo">RealMe</div>
+  </div>
+  <div class="nav-right">
+    <div class="auth-area">
+      <a href="/login.html" class="auth-btn login">Entrar</a>
+      <a href="/register.html" class="auth-btn register">Criar conta</a>
     </div>
   </div>
+</nav>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div class="welcome-container">
+  <div class="welcome-left">
+    <div class="welcome-img">
+      <img src="./public/img/conections.png" alt="Mapa de conexões do RealMe" width="640" height="640" />
+    </div>
+  </div>
+  <div class="welcome-right">
+    <div class="welcome-headers">
+      <h1 class="welcome-title">Bem vindo ao <span>RealMe</span></h1>
+      <p class="welcome-sub">Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com quem importa.</p>
+      <p class="welcome-text">Tudo em um só lugar: mensagens, posts, perfis e uma rede feita para aproximar pessoas de verdade — sem filtros, sem pressão, só você sendo você.</p>
+    </div>
+    <div class="welcome-actions">
+      <a href="/register.html" class="welcome-auth-btn">Criar Conta</a>
+      <a href="/login.html" class="welcome-auth-btn login">Fazer Login</a>
+    </div>
+  </div>
+</div>
 
-    const firebaseConfig = {
-  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-  authDomain: "ifriendmatch.firebaseapp.com",
-  projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
-  messagingSenderId: "306331636603",
-  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-  measurementId: "G-D96BEW6RC3"
-};
+<section class="about">
+  <div class="about-container">
+    <div class="section-left">
+      <div class="about-content">
+        <h2 class="about-title">Se conecte facilmente com as pessoas ao seu redor.</h2>
+        <p class="about-text">Com o RealMe, você pode facilmente se conectar com amigos e família, conhecer pessoas novas perto de você e compartilhar sua vida com quem importa. Tudo isso de forma simples, rápida e segura.</p>
+      </div>
+    </div>
+    <div class="section-right">
+      <div class="list-content">
+        <h3 class="section-sub">Use o RealMe para...</h3>
+        <div class="section-list">
+          <div class="list-item">
+            <div class="list-icon">
+              <svg aria-label="Marcados" class="x1lliihq x1n2onr6 x1cp0k07" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
+            </div>
+            <div class="list-label">Se conectar com amigos e família</div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">
+              <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+            </div>
+            <div class="list-label">Conhecer pessoas novas perto de você</div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">
+              <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
+            </div>
+            <div class="list-label">Compartilhar momentos e pensamentos do seu dia</div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">
+              <svg aria-label="Salvos" class="x1lliihq x1n2onr6 x1cp0k07" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Salvos</title><polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polygon></svg>
+            </div>
+            <div class="list-label">Criar eventos e convidar seus amigos</div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">
+              <svg aria-label="Descurtir" class="x1lliihq x1n2onr6 xxk16z8" fill="currentColor" height="24" role="img" viewBox="0 0 48 48" width="24"><title>Descurtir</title><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg></div>
+            <div class="list-label">Curtir e interagir com as pessoas ao seu redor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<section class="more-info">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">220+</div>
+      <div class="stat-label">Pessoas conectadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">9+</div>
+      <div class="stat-label">Países alcançados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">4.8★</div>
+      <div class="stat-label">Avaliação geral</div>
+    </div>
+  </div>
+</section>
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          
-          document.getElementById('userName').textContent = userData.username || 'Usuário';
-          document.getElementById('userInfo').classList.add('active');
-          document.getElementById('authButtons').style.display = 'none';
-          document.getElementById('profileButton').classList.add('active');
-          document.getElementById('profileLink').href = `feed.html`;
-        }
-      }
-    });
+<section class="download">
+  <div class="section-left">
+    <div class="section-content">
+      <h2 class="section-title">Baixe o Aplicativo</h2>
+      <p class="section-text">Leve o RealMe para onde você for. Baixe agora e comece a se conectar com quem é real.</p>
+      <div class="app-promos">
+        <a href="#" class="app-promo" aria-label="Baixar na iPhone">
+          <i class="fa-brands fa-apple" aria-hidden="true"></i>
+          <span class="app-promo-text"><small>Disponível em </small>iPhone</span>
+        </a>
+        <a href="#" class="app-promo" aria-label="Baixar no Android">
+          <i class="fa-brands fa-google-play" aria-hidden="true"></i>
+          <span class="app-promo-text"><small>Disponível em </small>Android</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="section-right">
+    <div class="section-content">
+      <img class="download-gif" src="./public/img/download-gif.gif" alt="Demonstração do aplicativo RealMe" loading="lazy" width="240" height="240" />
+    </div>
+  </div>
+</section>
 
-    document.querySelectorAll('.faq-question').forEach(question => {
-      question.addEventListener('click', () => {
-        const item = question.parentElement;
-        const wasActive = item.classList.contains('active');
-        
-        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-        
-        if (!wasActive) {
-          item.classList.add('active');
-        }
-      });
-    });
-  </script>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="brand-col">
+      <p class="logo">RealMe</p>
+      <p>A rede social que te conecta com o que é real. Compartilhe momentos, descubra pessoas e conecte-se.</p>
+      <div class="social-row">
+        <a href="https://youtube.com/@socialrealme" aria-label="YouTube" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.2s-.23-1.64-.94-2.36c-.9-.95-1.9-.95-2.36-1C16.9 2.5 12 2.5 12 2.5h-.01s-4.9 0-8.2.34c-.46.05-1.46.05-2.36 1C.72 4.56.5 6.2.5 6.2S.27 8.12.27 10.05v1.8c0 1.93.23 3.85.23 3.85s.22 1.64.93 2.36c.9.95 2.08.92 2.6 1.02 1.9.18 8.07.34 8.07.34s4.9-.01 8.2-.35c.46-.06 1.46-.06 2.36-1.01.71-.72.94-2.36.94-2.36s.23-1.92.23-3.85v-1.8c0-1.93-.23-3.85-.23-3.85zM9.55 14.4V7.7l6.45 3.36-6.45 3.34z"/></svg>
+        </a>
+        <a href="https://tiktok.com/@socialrealme" aria-label="TikTok" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M16.6 5.82c-.9-.78-1.4-1.93-1.4-3.16h-3.1v13.5a2.6 2.6 0 1 1-1.84-2.49V10.5a5.7 5.7 0 1 0 4.94 5.66c0-.1 0-.2-.01-.3a6.2 6.2 0 0 0 3.7 1.2v-3.13c-.78 0-2.04-.34-2.6-1.06a4.2 4.2 0 0 0 .31-2.27c.83.6 1.84.96 2.9.96v-2.7c-1.07 0-2.06-.46-2.9-1.1z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><a href="#">Sobre</a></li>
+        <li><a href="/updates.html">Atualizações</a></li>
+      </ul>
+    </nav>
+    <nav class="col">
+      <h4>Contato e legal</h4>
+      <ul>
+        <li><a href="mailto:contato@socialrealme.com">contato@socialrealme.com</a></li>
+        <li><a href="#">Termos de uso</a></li>
+        <li><a href="#">Privacidade</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 RealMe — Todos os direitos reservados. Criado por maxgfortes.</p>
+  </div>
+</footer>
 </body>
 </html>
