@@ -48,7 +48,19 @@ const $    = id  => document.getElementById(id);
 const $q   = sel => document.querySelector(sel);
 const urlParam = name => new URLSearchParams(window.location.search).get(name);
 
-function getDisplayName(d) { return d?.displayName || d?.displayname || d?.name || d?.username || 'Usuário'; }
+function getDisplayName(d) {
+  const fullName = [d?.name, d?.surname]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    fullName ||
+    d?.displayName ||
+    d?.displayname ||
+    d?.username ||
+    'Usuário'
+  );
+}
 function getUsername(d)    { return d?.username || ''; }
 function safe(fn)          { try { fn(); } catch (e) { console.warn(e); } }
 
@@ -729,7 +741,6 @@ function abrirOverlay(uid, tabInicial = 'amigos') {
   const overlay = document.createElement('div');
   overlay.id = 'listas-overlay';
   overlay.innerHTML = `
-    <div class="page-content-pc-container"><div class="page-pc-area">
     <div class="lo-header">
       <button class="lo-back" id="lo-back-btn">
         <svg viewBox="0 0 298 512" width="18" height="18" fill="currentColor">
@@ -739,8 +750,7 @@ function abrirOverlay(uid, tabInicial = 'amigos') {
       <span class="lo-title">Amigos de ${profileUsername}</span>
       <span class="lo-spacer"></span>
     </div>
-    <div class="lo-page" id="lo-page-amigos"><div class="lo-loading"><i class="fas fa-spinner fa-spin"></i></div></div>
-    </div></div>`;
+    <div class="lo-page" id="lo-page-amigos"><div class="lo-loading"><i class="fas fa-spinner fa-spin"></i></div></div>`;
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
@@ -1206,10 +1216,6 @@ async function _renderWallUnificado(profileUserId, wallFeed, currentUserId) {
       if (item.type === 'mention') {
         const wrapper = document.createElement('div');
         wrapper.className = 'wall-post-item wall-mention-item';
-        const badge = document.createElement('div');
-        badge.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:12px;color:#888;';
-        badge.innerHTML = '<i class="fas fa-at" style="font-size:11px;color:#4A90E2;"></i> Você foi mencionado neste post';
-        wrapper.appendChild(badge);
         renderPost({ ...item.data, postid: item.postId }, wrapper);
         wallFeed.appendChild(wrapper);
         continue;
@@ -1307,7 +1313,7 @@ async function _renderWallCard({ snapId, profileUserId, authorId, text, createdA
           </button>
           <button class="btn-comment wall-coment-btn" data-snap="${snapId}" data-base="${basePath}">
             <svg viewBox="0 0 122.97 122.88" xmlns="http://www.w3.org/2000/svg"><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/></svg>
-            <p>Comentar</p><span>${comentCount}</span>
+            <span>${comentCount}</span>
           </button>
         </div>
       </div>

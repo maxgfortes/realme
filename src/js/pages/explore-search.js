@@ -27,17 +27,13 @@ const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
 
-// Aguarda o Firebase restaurar a sessão antes de qualquer query.
-// Sem isso, o token de auth ainda não está pronto e o Firestore
-// rejeita a leitura com "Missing or insufficient permissions".
 const authReady = new Promise(resolve => {
   const unsub = onAuthStateChanged(auth, user => {
-    unsub();       // escuta só uma vez
-    resolve(user); // null = não logado, User = logado
+    unsub();
+    resolve(user);
   });
 });
 
-// ─── Cache de busca (sessionStorage — dura enquanto a aba estiver aberta) ──
 const SEARCH_CACHE_PREFIX = "search_cache_";
 const SEARCH_CACHE_TTL    = 5 * 60 * 1000; // 5 minutos
 
@@ -60,7 +56,7 @@ function setCache(term, data) {
       SEARCH_CACHE_PREFIX + term,
       JSON.stringify({ ts: Date.now(), data })
     );
-  } catch { /* quota exceeded — ignora */ }
+  } catch {}
 }
 
 // ─── Cache de fotos de perfil (Map em memória) ─────────────────────────────

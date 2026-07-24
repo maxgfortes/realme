@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
@@ -16,16 +16,24 @@
   <link rel="stylesheet" href="../src/styles/base.css"/>
   <meta name="screen-orientation" content="portrait">
   <meta name="x5-orientation" content="portrait">
+
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 </head>
 <body>
 
-  <form>
+  <form class="form-area">
     <div class="step1">
       <div class="create-area">
       <div class="info-area1">
@@ -98,8 +106,8 @@
   </form>
 
 </body>
-<script type="module" src="../src/js/pages/signup.js"></script>
- <style>
+
+<style>
   .field-error {
     color: #ff4d4d;
     font-size: 0.78rem;
@@ -111,7 +119,7 @@
     outline-color: #ff4d4d !important;
   }
 </style>
- <script>
+<script>
   function showError(inputEl, errorEl, msg) {
     inputEl.classList.add('invalid');
     errorEl.textContent = msg;
@@ -177,6 +185,6 @@
     document.querySelector('.step1').classList.remove('hidden');
     document.querySelector('.step2').classList.remove('visible');
   });
- </script>
+</script>
 </html>
 

@@ -314,7 +314,6 @@ async function _renderPost(postData, container, isTarget = false) {
                 77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,
                 .51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"/>
             </svg>
-            <p>Comentar</p>
             <span>0</span>
           </button>
         </div>

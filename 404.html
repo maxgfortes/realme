@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png">
   <link rel="manifest" href="/manifest.json">
@@ -10,18 +10,44 @@
   <meta name="theme-color" content="#0f0f0f">
   <link rel="stylesheet" href="../src/styles/base.css">
   <link rel="stylesheet" href="../src/styles/root.css">
+
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 </head>
 <style>
+    .nav {
+        position: fixed;
+        height: 67px;
+        width: 100%;
+        background: var(--bg-primary);
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+    }
+
+    .logo {
+        font-size: 1.9rem;
+        font-weight: bold;
+        padding: 6px;
+        font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+        letter-spacing: -0.01em;
+    }
+
     .error-area {
         height: 100vh;
         width: 100vw;
-        background-color:var(--bg-primary);
+        background: var(--bg-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -32,7 +58,7 @@
     }
 
     .error-title {
-        font-size: 2.5rem;
+        font-size: 4.5rem;
         font-weight: bold;
         color: #fff;
         padding: 6px;
@@ -52,7 +78,7 @@
     }
 
     .home-btn {
-        background-color: var(--primary-btn);
+        background: var(--primary-btn);
         padding: 12px 32px;
         text-decoration: none;
         font-weight: bold;
@@ -69,6 +95,10 @@
     }
 </style>
 <body>
+    <nav class="nav">
+        <div class="logo">RealMe</div>
+    </nav>
+
     <main class="error-area">
         <div class="error-box">
             <div class="text-area">

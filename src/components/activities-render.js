@@ -384,7 +384,7 @@ function injetarCSS() {
   s.id = 'xact-style';
   s.textContent = `
   .act-post-thumb {
-    width: 32px;
+    width: 40px;
     height: 46px;
     object-fit: cover;
     border-radius: 8px;

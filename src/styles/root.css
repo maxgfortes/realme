@@ -1,6 +1,7 @@
 :root {
   /* ========== CORES PRINCIPAIS ========== */
   --primary-color:   #3f88e7;
+  --new-color: #1c3196;
   --primary-btn:   #4a59e2;
   --primary-hover: #357ABD;
   --primary-light: #63a9fa;
@@ -37,14 +38,7 @@
   --text-disabled: #8d8d8d;
   --text-dark: #666;
   --text-darker: #555;
-  
-  /* ========== CORES DE STATUS ========== */
-  --success: #00D95F;
-  --warning: #d29922;
-  --error: #f85149;
-  --danger: #e91e63;
-  --info: #1DA1F2;
-  
+
   /* ========== CORES SOCIAIS ========== */
   --instagram: #E4405F;
   --twitter: #1DA1F2;
@@ -236,7 +230,6 @@
 .transition-normal { transition: var(--transition-normal); }
 
 
-
 *{
   -webkit-tap-highlight-color: transparent;
   tap-highlight-color: transparent;
@@ -250,7 +243,6 @@
   outline: none;
   box-shadow: none;
 }
-
 
 @view-transition {
   navigation: auto;

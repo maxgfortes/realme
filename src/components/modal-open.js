@@ -1,4 +1,4 @@
-/* const btnMencionar = document.getElementById('btnMention');
+const btnMencionar = document.getElementById('btnMention');
 const btnMusica = document.getElementById('btnMusic');
 const btnLocal = document.getElementById('btnLocal');
 
@@ -59,5 +59,4 @@ overlayMusica.addEventListener('click', function(e) {
 });
 overlayLocal.addEventListener('click', function(e) {
   if (e.target === overlayLocal) fecharTodos();
-});
-*/   
+});  

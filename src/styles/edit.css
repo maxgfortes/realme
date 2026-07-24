@@ -131,8 +131,6 @@ body {
     width: 100%;
 }
 
-
-
 .major-container {
     border: 0.1px solid var(--navbar-border);
     border-left: none;
@@ -209,70 +207,65 @@ body {
 }
 
 
-
-    /* Navbar Top */
-    .navbar-top {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: var(--bg-primary);
-      backdrop-filter: blur(20px);
-      border-bottom: 0.01px solid var(--navbar-border);
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px;
-      z-index: 9999;
-      align-items: center;
-    }
-
-
-    .navbar-top svg {
-  width: 20px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 20px;
-  fill: currentColor; /* pega a cor do texto do link */
+.navbar-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-primary);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.01px solid var(--navbar-border);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 9999;
+    align-items: center;
 }
 
-    .top-left, .top-right {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.navbar-top svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
 
-    .top-right a {
-        padding: 12px;
-        color: var(--text-primary);
-    }
+.top-left, .top-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .top-right button {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 22px;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
+.top-right a {
+    padding: 12px;
+    color: var(--text-primary);
+}
 
-    .top-right button:hover {
-      color: var(--primary-color);
-    }
+.top-right button {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 22px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
 
-    .top-left {
-      display: flex;
-      gap: 12px;
-    }
+.top-right button:hover {
+    color: var(--primary-color);
+}
 
-    .top-left button, .top-left a {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 20px;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
+.top-left {
+    display: flex;
+    gap: 12px;
+}
 
-
+.top-left button, .top-left a {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
 
 .navbar-top h2 {
     font-size: 18px;
@@ -307,7 +300,6 @@ body {
     background-color: var(--primary-btn);
 }
 
-
 .links-list {
   max-height: 0;
   overflow: hidden;
@@ -316,7 +308,7 @@ body {
 }
 
 .links-list.open {
-  max-height: 2000px; /* valor maior que o conteúdo real */
+  max-height: 2000px;
   opacity: 1;
 }
 
@@ -336,4 +328,3 @@ body {
 .toggle-arrow.rotated {
   transform: rotate(180deg);
 }
-

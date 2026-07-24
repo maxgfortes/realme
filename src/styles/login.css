@@ -1,8 +1,7 @@
-
 @media (min-width: 901px){
 
 body {
-  background-color: #272727 ;
+  background-color: #1d1d1d ;
 }
 
 .main {
@@ -18,7 +17,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #272727;
+  background-color: #1d1d1d;
 }
 
 .img-area img {
@@ -136,7 +135,7 @@ body {
   border: none;
   font-size: 1rem;
   color: #fff;
-  background: #555;
+  background: #4a59e2;
   border-radius: 12px;
   font-weight: bold;
   padding: 18px;

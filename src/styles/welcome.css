@@ -1,0 +1,172 @@
+.main {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    background: #0f0f0f ;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+body {
+    overflow: hidden;
+    height: 100vh;
+    width: 100%;
+}
+
+.bottom-area {
+    height: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 9999;
+}
+
+.btn-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.welcome-area {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 28px;
+}
+
+.logo-area {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.greeting-area {
+    width: 100%;
+}
+
+.greeting-text {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size:  1.4rem;
+    font-weight: bold;
+    color: #aaaaaa;
+}
+
+.logo {
+    font-size: 1.9rem;
+    font-weight: bold;
+    padding: 6px;
+    font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 10px #00000080;
+}
+
+.btn {
+    background-color: white;
+    color: rgb(61, 61, 61);
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1rem;
+    text-align: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 9999px;
+}
+
+.btn.register {
+    background: var(--primary-btn);
+    color: #fff;
+}
+
+.btn.login {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #333;
+}
+
+
+
+.floating-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.floating-bg .foto {
+    position: absolute;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.floating-bg .foto1 {
+    width: 150px;
+    height: 150px;
+    left: 20px;
+    top: 29%;
+    animation: flutuar1 7s ease-in-out infinite;
+}
+
+.floating-bg .foto2 {
+    width: 150px;
+    height: 150px;
+    right: 16px;
+    top: 19%;
+    animation: flutuar2 8.5s ease-in-out infinite;
+}
+
+.floating-bg .foto3 {
+    width: 150px;
+    height: 150px;
+    left: 46%;
+    top: 42%;
+    animation: flutuar3 6s ease-in-out infinite;
+}
+
+.floating-bg .foto4 {
+    width: 110px;
+    height: 110px;
+    left: 18%;
+    top: 48%;
+    animation: flutuar4 6s ease-in-out infinite;
+}
+
+.floating-bg .foto5 {
+    width: 110px;
+    height: 110px;
+    left: 28%;
+    top: 14%;
+    animation: flutuar2 6s ease-in-out infinite;
+}
+
+.floating-bg .foto6 {
+    width: 90px;
+    height: 90px;
+    left: 40%;
+    top: 30%;
+    animation: flutuar4 6s ease-in-out infinite;
+}
+
+@keyframes flutuar1 {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-8px) rotate(1deg); }
+}
+@keyframes flutuar2 {
+    0%, 100% { transform: translateY(0) rotate(1deg); }
+    50%      { transform: translateY(10px) rotate(-1deg); }
+}
+@keyframes flutuar3 {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-9px) rotate(2deg); }
+}
+@keyframes flutuar4 {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(4px) rotate(2deg); }
+}
+
+

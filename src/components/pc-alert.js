@@ -1,4 +1,4 @@
-function createPcAlert({ title, subtitle, logo } = {}) {
+function createPcAlert() {
   if (!document.getElementById("pc-alert-style")) {
     const style = document.createElement("style");
     style.id = "pc-alert-style";
@@ -6,22 +6,23 @@ function createPcAlert({ title, subtitle, logo } = {}) {
       @media (min-width: 901px) {
         .pc-alert {
           display: flex;
-          background-color: #0f0f0fc2;
+          background-color: #0f0f0f;
           height: 100vh;
           width: 100%;
           position: fixed;
           align-items: center;
           justify-content: center;
-          z-index: 9999;
+          z-index: 99999999999;
           flex-direction: column;
           background-image: url("/public/img/alert-bg.png");
           background-position: center;
           background-repeat: no-repeat;
           background-size: cover;
           top: 0;
+          left: 0;
           pointer-events: all;
         }
-        .pc-alert-logo { font-size: 2em; font-weight: bold; color: #fff; font-family: Arial, Helvetica, sans-serif; }
+        .pc-alert-logo { font-size: 2.2em; font-weight: bold; color: #fff; font-family: Arial, Helvetica, sans-serif; }
         .logo-area { padding-bottom: 30px; }
         .pc-alert-subtitle { font-size: 1em; color: #aaa; }
         .pc-alert-title { font-size: 1.2em; font-weight: bold; color: #fff; }
@@ -37,10 +38,10 @@ function createPcAlert({ title, subtitle, logo } = {}) {
   el.className = "pc-alert";
   el.innerHTML = `
     <div class="logo-area">
-      <div class="pc-alert-logo">${logo ?? "RealMe"}</div>
+      <div class="pc-alert-logo">RealMe</div>
     </div>
-    <div class="pc-alert-title">${title ?? "Indisponivel em PCs"}</div>
-    <div class="pc-alert-subtitle">${subtitle ?? "por enquanto o realme só esta disponivel em celulares."}</div>
+    <div class="pc-alert-title">Indisponivel em PCs</div>
+    <div class="pc-alert-subtitle">por enquanto o realme só esta disponivel em celulares.</div>
   `;
   return el;
 }

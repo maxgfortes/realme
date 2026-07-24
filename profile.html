@@ -8,10 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="../src/styles/profile.css">
   <link rel="stylesheet" href="../src/styles/base.css">
-  <link rel="stylesheet" href="../src/styles/timeline.css">
-  <link rel="stylesheet" href="../src/styles/layout.css">
-  <link rel="stylesheet" href="../src/styles/navbar-bottom.css">
   <link rel="stylesheet" href="../src/styles/root.css">
+  <link rel="stylesheet" href="../src/styles/timeline.css">
+  <link rel="stylesheet" href="../src/styles/navbar-bottom.css">
   <link rel="stylesheet" href="../src/styles/feed-mobile.css">
   <link rel="stylesheet" href="../src/styles/menu-bottom.css">
   <link rel="icon" href="../public/img/icon.png" type="image/png">
@@ -20,59 +19,67 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="screen-orientation" content="portrait">
   <meta name="x5-orientation" content="portrait">
+  
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
 
-  <style>
-    .more-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 999999;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      bottom: 0;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-    }
-    .more-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-      height: 100vh;
-    }
-    .more-info-modal {
-      transform: translateY(100%);
-      transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
-    }
-    .more-overlay.active .more-info-modal {
-      transform: translateY(0);
-    }
-    .scroll-fade-top,
-    .scroll-fade-bottom {
-      position: sticky;
-      left: 0; right: 0;
-      width: 100%;
-      height: 52px;
-      pointer-events: none;
-      z-index: 10;
-      flex-shrink: 0;
-      display: block;
-    }
-    .scroll-fade-top {
-      top: 0;
-      background: linear-gradient(to bottom, #212327 0%, transparent 100%);
-      margin-bottom: -52px;
-    }
-    .scroll-fade-bottom {
-      bottom: 0;
-      background: linear-gradient(to top, #212327 0%, transparent 100%);
-      margin-top: -52px;
-    }
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+
+<style>
+.more-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.more-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+  height: 100vh;
+}
+.more-info-modal {
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.more-overlay.active .more-info-modal {
+  transform: translateY(0);
+}
+.scroll-fade-top,
+.scroll-fade-bottom {
+  position: sticky;
+  left: 0; right: 0;
+  width: 100%;
+  height: 52px;
+  pointer-events: none;
+  z-index: 10;
+  flex-shrink: 0;
+  display: block;
+}
+.scroll-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, #212327 0%, transparent 100%);
+  margin-bottom: -52px;
+}
+.scroll-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, #212327 0%, transparent 100%);
+  margin-top: -52px;
+}
     
 .more-overlay {
   position: fixed;
@@ -97,407 +104,373 @@
 </head>
 <body>
 
-  <div class="navbar-bottom">
-    <div class="navbar-bottom-area">
-      <a href="feed.html">
-        <svg aria-label="Página inicial" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Página inicial</title><path d="m21.762 8.786-7-6.68C13.266.68 10.734.68 9.238 2.106l-7 6.681A4.017 4.017 0 0 0 1 11.68V20c0 1.654 1.346 3 3 3h5.005a1 1 0 0 0 1-1L10 15c0-1.103.897-2 2-2 1.09 0 1.98.877 2 1.962L13.999 22a1 1 0 0 0 1 1H20c1.654 0 3-1.346 3-3v-8.32a4.021 4.021 0 0 0-1.238-2.894ZM21 20a1 1 0 0 1-1 1h-4.001L16 15c0-2.206-1.794-4-4-4s-4 1.794-4 4l.005 6H4a1 1 0 0 1-1-1v-8.32c0-.543.226-1.07.62-1.447l7-6.68c.747-.714 2.013-.714 2.76 0l7 6.68c.394.376.62.904.62 1.448V20Z"></path></svg>
-      </a>
-      <a href="friends.html">
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
-      </a>
-      <a href="direct.html">
-        <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="#888" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg><a href="explore.html">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
-      </a>
-      <a href="profile.html">
-        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
-      </a>
-    </div>
-  </div>
-
-  <div class="more-overlay">
-    <div class="more-info-modal">
-      <div class="header-area">
-        <div class="drag-area">
-          <div class="graber"></div>
-        </div>
-        <div class="header-libs">
-    <div class="btn-edit-header">
-      <button class="btn-edit-area" id="cancel-edit" style="display: none;">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div class="more-info-header">
-      <p>Sobre <span id="username-modal"></span></p>
-    </div>
-    <div class="btn-edit-header">
-      <button class="btn-edit-area btn-edit" id="open-edit">
-        <i class="fa-solid fa-pen-to-square"></i>
-      </button>
-      <button class="btn-edit-area" id="save-view-mode" style="display: none;">
-        <i class="fa-solid fa-check"></i>
-      </button>
-    </div>
-  </div>
-      </div>
-        <div class="scroll-content">
-        <div class="view-mode">
-        <div class="scroll-fade-top"></div>
-
-        <div class="basic-info-container">
-          <div class="safe-area-top"></div>
-          <div class="info-header">Informações básicas</div>
-          <div class="infos-box">
-            <div class="info-label modal-info-nome">Nome: <span></span></div>
-            <div class="info-label modal-info-genero">Gênero: <span></span></div>
-            <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
-            <div class="info-label modal-info-estado-civil">Relacionamento: <span></span></div>
-            <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
-            <div class="info-label modal-info-buscando">Buscando por: <span></span></div>
-            <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
-          </div>
-        </div>
-
-        <div class="interests-container">
-          <div class="interests-header">Visão geral</div>
-          <div class="infos-box modal-info-overview"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Meu estilo</div>
-          <div class="infos-box modal-info-style"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Minha personalidade</div>
-          <div class="infos-box modal-info-personality"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Músicas</div>
-          <div class="infos-box modal-info-music"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Filmes e Séries</div>
-          <div class="infos-box modal-info-movies"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Livros</div>
-          <div class="infos-box modal-info-books"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Personagens</div>
-          <div class="infos-box modal-info-characters"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Comidas e Bebidas</div>
-          <div class="infos-box modal-info-foods"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Hobbies</div>
-          <div class="infos-box modal-info-hobbies"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Jogos favoritos</div>
-          <div class="infos-box modal-info-games"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Outros gostos</div>
-          <div class="infos-box modal-info-others"><div class="info-label"><span></span></div></div>
-        </div>
-        <div class="safe-area"></div>
-        <div class="scroll-fade-bottom"></div>
-        </div>
-        <div class="edit-mode">
-        <div class="scroll-fade-top"></div>
-
-        <div class="basic-info-container">
-          <div class="safe-area-top"></div>
-          <div class="info-header">Informações básicas</div>
-          <div class="infos-box">
-            <div class="info-label modal-info-nome">Nome: <span></span></div>
-            <div class="info-label modal-info-genero">Gênero: <span></span></div>
-            <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
-            <div class="info-label modal-info-estado-civil">Status Civil: <span></span></div>
-            <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
-            <div class="info-label modal-info-buscando">Buscando por:</div>
-            <textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea>
-            <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
-          </div>
-        </div>
-
-        <div class="interests-container">
-          <div class="interests-header">Visão geral</div>
-          <div class="infos-box modal-info-overview"><div class="info-label"><textarea placeholder="Conte um pouco sobre quem você é" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Meu estilo</div>
-          <div class="infos-box modal-info-style"><div class="info-label"><textarea placeholder="Como você descreve seu estilo?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Minha personalidade</div>
-          <div class="infos-box modal-info-personality"><div class="info-label"><textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Músicas</div>
-          <div class="infos-box modal-info-music"><div class="info-label"><textarea placeholder="Quais musicas fazem você ser quem é?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Filmes e Séries</div>
-          <div class="infos-box modal-info-movies"><div class="info-label"><textarea placeholder="Quais filmes e series são a sua cara?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Livros</div>
-          <div class="infos-box modal-info-books"><div class="info-label"><textarea placeholder="Conte um pouco sobre seus livros?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Personagens</div>
-          <div class="infos-box modal-info-characters"><div class="info-label"><textarea placeholder="Qual personagem ou pessoa você mais gosta?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Comidas e Bebidas</div>
-          <div class="infos-box modal-info-foods"><div class="info-label"><textarea placeholder="Quais comidas você ama?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Hobbies</div>
-          <div class="infos-box modal-info-hobbies"><div class="info-label"><textarea placeholder="O que você faz para passar o tempo?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Jogos favoritos</div>
-          <div class="infos-box modal-info-games"><div class="info-label"><textarea placeholder="O que você mais gosta de jogar?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="interests-container">
-          <div class="interests-header">Outros gostos</div>
-          <div class="infos-box modal-info-others"><div class="info-label"><textarea placeholder="Quais são os seus outros gostos?" maxlength="160" class="edit-input"></textarea></div></div>
-        </div>
-        <div class="safe-area"></div>
-        <div class="scroll-fade-bottom"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-   <div class="wall-send-overlay" id="wall-modal">
-    <div class="wall-modal">
-      <div class="modal-wall-grab">
+<div class="more-overlay">
+  <div class="more-info-modal">
+    <div class="header-area">
+      <div class="drag-area">
         <div class="graber"></div>
       </div>
+      <div class="header-libs">
+          <div class="btn-edit-header">
+            <button class="btn-edit-area" id="cancel-edit" style="display: none;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="more-info-header">
+            <p>Sobre <span id="username-modal"></span></p>
+          </div>
+          <div class="btn-edit-header">
+            <button class="btn-edit-area btn-edit" id="open-edit">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn-edit-area" id="save-view-mode" style="display: none;">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-content">
+      <div class="view-mode">
+      <div class="scroll-fade-top"></div>
+
+      <div class="basic-info-container">
+        <div class="safe-area-top"></div>
+        <div class="info-header">Informações básicas</div>
+        <div class="infos-box">
+          <div class="info-label modal-info-nome">Nome: <span></span></div>
+          <div class="info-label modal-info-genero">Gênero: <span></span></div>
+          <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
+          <div class="info-label modal-info-estado-civil">Relacionamento: <span></span></div>
+          <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
+          <div class="info-label modal-info-buscando">Buscando por: <span></span></div>
+          <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
+        </div>
+      </div>
+
+      <div class="interests-container">
+        <div class="interests-header">Visão geral</div>
+        <div class="infos-box modal-info-overview"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Meu estilo</div>
+        <div class="infos-box modal-info-style"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Minha personalidade</div>
+        <div class="infos-box modal-info-personality"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Músicas</div>
+        <div class="infos-box modal-info-music"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Filmes e Séries</div>
+        <div class="infos-box modal-info-movies"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Livros</div>
+        <div class="infos-box modal-info-books"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Personagens</div>
+        <div class="infos-box modal-info-characters"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Comidas e Bebidas</div>
+        <div class="infos-box modal-info-foods"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Hobbies</div>
+        <div class="infos-box modal-info-hobbies"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Jogos favoritos</div>
+        <div class="infos-box modal-info-games"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Outros gostos</div>
+        <div class="infos-box modal-info-others"><div class="info-label"><span></span></div></div>
+      </div>
+      <div class="safe-area"></div>
+      <div class="scroll-fade-bottom"></div>
+      </div>
+      <div class="edit-mode">
+      <div class="scroll-fade-top"></div>
+
+      <div class="basic-info-container">
+        <div class="safe-area-top"></div>
+        <div class="info-header">Informações básicas</div>
+        <div class="infos-box">
+          <div class="info-label modal-info-nome">Nome: <span></span></div>
+          <div class="info-label modal-info-genero">Gênero: <span></span></div>
+          <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
+          <div class="info-label modal-info-estado-civil">Status Civil: <span></span></div>
+          <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
+          <div class="info-label modal-info-buscando">Buscando por:</div>
+          <textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea>
+          <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
+        </div>
+      </div>
+
+      <div class="interests-container">
+        <div class="interests-header">Visão geral</div>
+        <div class="infos-box modal-info-overview"><div class="info-label"><textarea placeholder="Conte um pouco sobre quem você é" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Meu estilo</div>
+        <div class="infos-box modal-info-style"><div class="info-label"><textarea placeholder="Como você descreve seu estilo?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Minha personalidade</div>
+        <div class="infos-box modal-info-personality"><div class="info-label"><textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Músicas</div>
+        <div class="infos-box modal-info-music"><div class="info-label"><textarea placeholder="Quais musicas fazem você ser quem é?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Filmes e Séries</div>
+        <div class="infos-box modal-info-movies"><div class="info-label"><textarea placeholder="Quais filmes e series são a sua cara?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Livros</div>
+        <div class="infos-box modal-info-books"><div class="info-label"><textarea placeholder="Conte um pouco sobre seus livros?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Personagens</div>
+        <div class="infos-box modal-info-characters"><div class="info-label"><textarea placeholder="Qual personagem ou pessoa você mais gosta?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Comidas e Bebidas</div>
+        <div class="infos-box modal-info-foods"><div class="info-label"><textarea placeholder="Quais comidas você ama?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Hobbies</div>
+        <div class="infos-box modal-info-hobbies"><div class="info-label"><textarea placeholder="O que você faz para passar o tempo?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Jogos favoritos</div>
+        <div class="infos-box modal-info-games"><div class="info-label"><textarea placeholder="O que você mais gosta de jogar?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="interests-container">
+        <div class="interests-header">Outros gostos</div>
+        <div class="infos-box modal-info-others"><div class="info-label"><textarea placeholder="Quais são os seus outros gostos?" maxlength="160" class="edit-input"></textarea></div></div>
+      </div>
+      <div class="safe-area"></div>
+      <div class="scroll-fade-bottom"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- overlay Send Wall-->
+<div class="wall-send-overlay" id="wall-modal">
+  <div class="wall-modal">
+    <div class="modal-wall-grab">
+      <div class="graber"></div>
+    </div>
     <div class="user-header">
       <div class="pfp-modal-wall">
-        <img src="../public/img/default.jpg" alt="">
+        <img src="../public/img/default.jpg" alt="Foto de perfil">
       </div>
       <div class="user-info-modal-wall">
         <div class="username-modal-wall">username</div>
       </div>
     </div>
     <div class="input-modal-wall">
-      <textarea name="wall-input" id="wall-input" class="wall-modal-input" placeholder="Escreva algo para maxgfortes..."></textarea>
+      <textarea name="wall-input" id="wall-input" class="wall-modal-input" placeholder="Escreva algo..."></textarea>
     </div>
     <div class="modal-wall-btns">
       <button class="send-wall-btn" id="enviarWall">Enviar</button>
       <button class="cancel-wall-btn" id="cancelarWall">Cancelar</button>
     </div>
-    </div>
   </div>
+</div>
 
-  <div class="menu-overlay" id="menuOverlay">
-    <div class="side-menu">
-      <div class="menu-header">
-        <button class="close-menu" id="closeMenu">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
-            <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-          </svg>
-        </button>
-        <h3>Configurações e atividade</h3>
-        <button class="close-menu none">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
-            <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="menu-items">
-        <div class="menu-conjunt">
-          <a href="profile.html" class="menu-item-link">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
-            <span>Meu Perfil</span>
-          </a>
-        </div>
-        <div class="section-title">Conta</div>
-        <div class="menu-conjunt">
-          <a href="edit.html" class="menu-item-link edit">
+<!-- Menu Lateral -->
+<div class="menu-overlay" id="menuOverlay">
+  <div class="side-menu">
+
+    <div class="menu-header">
+      <button class="close-menu" id="closeMenu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+      <h3>Configurações e atividade</h3>
+      <button class="close-menu none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+    </div>
+
+    <div class="menu-items">
+      <div class="section-title">Conta</div>
+      <div class="menu-conjunt">
+        <a href="edit.html" class="menu-item-link edit">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#f8f9f9"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12.5L17.75 3.75C18.4404 3.05964 19.5596 3.05964 20.25 3.75V3.75C20.9404 4.44036 20.9404 5.55964 20.25 6.25L15.5 11L11.5 15H9Z" stroke="#f8f9f9" stroke-width="1.8719999999999999" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
           <span>Editar Perfil</span>
         </a>
-        </div>
-        <div class="section-title">Notificações</div>
-        <div class="menu-conjunt">
-          <a href="#" class="menu-item-link" id="btn-toggle-notif">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 17H20L18.5951 15.5951C18.2141 15.2141 18 14.6973 18 14.1585V11C18 8.38757 16.3304 6.16509 14 5.34142V5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5V5.34142C7.66962 6.16509 6 8.38757 6 11V14.1585C6 14.6973 5.78595 15.2141 5.40493 15.5951L4 17H9M15 17H9M15 17V18C15 19.6569 13.6569 21 12 21C10.3431 21 9 19.6569 9 18V17" stroke="#f8f9f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      </div>
+
+      <div class="section-title">Notificações</div>
+      <div class="menu-conjunt">
+        <a href="#" class="menu-item-link" id="btn-toggle-notif">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 17H20L18.5951 15.5951C18.2141 15.2141 18 14.6973 18 14.1585V11C18 8.38757 16.3304 6.16509 14 5.34142V5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5V5.34142C7.66962 6.16509 6 8.38757 6 11V14.1585C6 14.6973 5.78595 15.2141 5.40493 15.5951L4 17H9M15 17H9M15 17V18C15 19.6569 13.6569 21 12 21C10.3431 21 9 19.6569 9 18V17" stroke="#f8f9f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span id="notif-menu-label">Ativar Notificações</span>
         </a>
-        </div>
-        <div class="section-title">Mais opções</div>
-        <div class="menu-conjunt">
-          <a href="#" class="menu-item-link">
+      </div>
+
+      <div class="section-title">Mais opções</div>
+      <div class="menu-conjunt">
+        <a href="#" class="menu-item-link">
           <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
           <span>Compartilhar Meu Perfil</span>
         </a>
-        <a href="#" class="menu-item-link">
+        <a href="/welcome.html" class="menu-item-link">
           <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title>ionicons-v5-l</title><path d="M478.33,433.6l-90-218a22,22,0,0,0-40.67,0l-90,218a22,22,0,1,0,40.67,16.79L316.66,406H419.33l18.33,44.39A22,22,0,0,0,458,464a22,22,0,0,0,20.32-30.4ZM334.83,362,368,281.65,401.17,362Z"></path><path d="M267.84,342.92a22,22,0,0,0-4.89-30.7c-.2-.15-15-11.13-36.49-34.73,39.65-53.68,62.11-114.75,71.27-143.49H330a22,22,0,0,0,0-44H214V70a22,22,0,0,0-44,0V90H54a22,22,0,0,0,0,44H251.25c-9.52,26.95-27.05,69.5-53.79,108.36-31.41-41.68-43.08-68.65-43.17-68.87a22,22,0,0,0-40.58,17c.58,1.38,14.55,34.23,52.86,83.93.92,1.19,1.83,2.35,2.74,3.51-39.24,44.35-77.74,71.86-93.85,80.74a22,22,0,1,0,21.07,38.63c2.16-1.18,48.6-26.89,101.63-85.59,22.52,24.08,38,35.44,38.93,36.1a22,22,0,0,0,30.75-4.9Z"></path></g></svg>
-         <span>Idioma</span>
+          <span>Idioma</span>
         </a>
-        </div>
-        <div class="section-title">Entrar</div>
-        <div class="menu-conjunt">
-                  <a href="#" class="menu-item-link login">
+      </div>
+
+      <div class="section-title">Entrar</div>
+      <div class="menu-conjunt">
+        <a href="#" class="menu-item-link login">
           <span>Entrar</span>
         </a>
         <a href="#" class="menu-item-link logoff">
           <span>Sair</span>
         </a>
-        </div>
       </div>
     </div>
-  </div>
 
-
-  <div class="bg-pf">
-    <div class="bg-pf2"></div>
-  </div>
-
-
-  <div class="timeline-overlay" id="timeline-overlay">
-    <div class="timeline">
-      <div class="timeline-header">
-        <div class="area-header">
-          <div class="timeline-btn">
-            <button>Fechar</button>
-          </div>
-        </div>
-        <div class="area-header">
-          <div class="timeline-header-info">
-            <div class="timeline-title">Posts</div>
-            <div class="timeline-username" id="timeline-username"></div>
-          </div>
-        </div>
-        <div class="area-header"></div>
-      </div>
-      <div class="timeline-posts" id="timeline-posts"></div>
-    </div>
-  </div>
-
-  <nav class="navbar-top">
-    <div class="top-left">
-      <button onclick="window.history.back()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
-          <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
-        </svg>
-      </button>
-      <h2 id="headername">usuario</h2><span class="verificado"><i class="fas fa-check-circle"></i></span>
-    </div>
-    <div class="top-right">
-      <a id="open-settings-btn">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95">
-          <g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g>
-        </svg>
-      </a>
-    </div>
-  </nav>
-
-  <!-- Profile Container -->
-  <div class="page-content-pc-container">
-    <div class="page-pc-area">
-  <div class="full-profile-container">
-    <div class="pf-banner-area">
-      <div class="profile-banner"></div>
-    </div>
-    <div class="profile-header">
-      <div class="full-header">
-        <div class="pfp">
-          <div class="pfp-border">
-            <img src="../public/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
-          </div>
-        </div>
-        <div class="profile-info-block">
-          <div class="name-line">
-            <h2 class="profile-name" id="displayname">username</h2>
-            <div class="handle" id="username"></div>
-          </div>
-          <div class="profile-stats">
-            <div class="stat-item">
-              <span class="stat-count" id="amigosCount">0</span>
-              <span class="stat-label">amigos</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-count" id="seguidoresCount">0</span>
-              <span class="stat-label">posts</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-count" id="seguindoCount">0</span>
-              <span class="stat-label">fotos</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="bio">
-        <p id="bio"></p>
-      </div>
-      <div class="music">
-        <button id="btnPauseMusic" class="iframe-btn" aria-label="Tocar música do perfil">
-          <div class="svg-music" id="pause">
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve"><g><path d="M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44 c-11.12,11.12-26.48,18-43.44,18c-16.97,0-32.33-6.88-43.44-18C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18 C29.11,6.88,44.47,0,61.44,0L61.44,0z M42.3,39.47h13.59v43.95l-13.59,0V39.47L42.3,39.47L42.3,39.47z M66.99,39.47h13.59v43.95 l-13.59,0V39.47L66.99,39.47L66.99,39.47z M97.42,25.46c-9.21-9.21-21.93-14.9-35.98-14.9c-14.05,0-26.78,5.7-35.98,14.9 c-9.21,9.21-14.9,21.93-14.9,35.98s5.7,26.78,14.9,35.98c9.21,9.21,21.93,14.9,35.98,14.9c14.05,0,26.78-5.7,35.98-14.9 c9.21-9.21,14.9-21.93,14.9-35.98S106.63,34.66,97.42,25.46L97.42,25.46z"/></g></svg>
-          </div>
-          <div class="svg-music active" id="play">
-            <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg>
-          </div>
-        </button>
-        <div class="music-bars">
-          <div class="music-bar"></div>
-          <div class="music-bar"></div>
-          <div class="music-bar"></div>
-        </div>
-        <span id="musicTitle"></span>
-      </div>
-
-      <div class="view-more">Ver mais sobre <span id="view-more-username"></span></div>
-
-      <div class="actions-btn">
-        <!--perfil dos outros-->
-        <button class="action-btn pf">Adicionar</button>
-        <!--seu perfil-->
-        <button class="action-btn mypf">Editar</button>
-        <button class="action-btn share">Compartilhar perfil</button>
-        <button class="action-btn sugestions">Mensagens</button>
-      </div>
-  </div>
-
-    <div id="music-player"></div>
-
-
-    <!-- Profile Menu -->
-<!-- Profile Menu -->
- <div class="main-profile">
-<div class="menu-placeholder"></div>
-<div class="profile-menu-area" id="profileMenu">
-  <div class="profile-menu">
-    <button class="menu-item active" data-tab="0"><i class="fa-solid fa-address-card"></i><p>Feed</p></button>
-    <button class="menu-item" data-tab="1">
-      <svg aria-label="Marcados" class="x1lliihq x1n2onr6 x1cp0k07" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
-      <p>Mural</p></button>
-    <button class="menu-item" data-tab="2"><i class="fas fa-link"></i><p>Links</p></button>
-  </div>
-  <div class="menu-select">
-    <div class="slider">
-      <div class="slide"></div>
-    </div>
   </div>
 </div>
 
-    <!-- Profile Body -->
-    <div class="profile-body">
-      <div class="tabs-container">
-        <div class="tab visao-tab"> <div id="muralPosts"></div>
+<!-- Timeline -->
+<div class="timeline-overlay" id="timeline-overlay">
+  <div class="timeline">
+    <div class="timeline-header">
+      <div class="area-header">
+        <div class="timeline-btn">
+          <button>Fechar</button>
+        </div>
       </div>
+      <div class="area-header">
+        <div class="timeline-header-info">
+          <div class="timeline-title">Posts</div>
+          <div class="timeline-username" id="timeline-username"></div>
+        </div>
+      </div>
+      <div class="area-header"></div>
+    </div>
+    <div class="timeline-posts" id="timeline-posts"></div>
+  </div>
+</div>
+
+<!-- Nav Topo -->
+<nav class="navbar-top">
+  <div class="top-left">
+    <button onclick="window.history.back()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+    </button>
+    <h2 id="headername">usuario</h2><span class="verificado"><i class="fas fa-check-circle"></i></span>
+  </div>
+  <div class="top-right">
+    <a id="open-settings-btn">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95"><g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- Perfil Pagina visivel-->
+<div class="full-profile-container">
+  <div class="pf-banner-area">
+    <div class="profile-banner"></div>
+  </div>
+  <div class="profile-header">
+    <div class="full-header">
+      <div class="pfp">
+        <div class="pfp-border">
+          <img src="../public/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
+        </div>
+      </div>
+      <div class="profile-info-block">
+        <div class="name-line">
+          <h2 class="profile-name" id="displayname">username</h2>
+          <div class="handle" id="username"></div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-count" id="amigosCount">0</span>
+            <span class="stat-label">amigos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-count" id="seguidoresCount">0</span>
+            <span class="stat-label">posts</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-count" id="seguindoCount">0</span>
+            <span class="stat-label">fotos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bio">
+      <p id="bio"></p>
+    </div>
+
+    <div class="music">
+      <button id="btnPauseMusic" class="iframe-btn" aria-label="Tocar música do perfil">
+        <div class="svg-music" id="pause">
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve"><g><path d="M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44 c-11.12,11.12-26.48,18-43.44,18c-16.97,0-32.33-6.88-43.44-18C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18 C29.11,6.88,44.47,0,61.44,0L61.44,0z M42.3,39.47h13.59v43.95l-13.59,0V39.47L42.3,39.47L42.3,39.47z M66.99,39.47h13.59v43.95 l-13.59,0V39.47L66.99,39.47L66.99,39.47z M97.42,25.46c-9.21-9.21-21.93-14.9-35.98-14.9c-14.05,0-26.78,5.7-35.98,14.9 c-9.21,9.21-14.9,21.93-14.9,35.98s5.7,26.78,14.9,35.98c9.21,9.21,21.93,14.9,35.98,14.9c14.05,0,26.78-5.7,35.98-14.9 c9.21-9.21,14.9-21.93,14.9-35.98S106.63,34.66,97.42,25.46L97.42,25.46z"/></g></svg>
+        </div>
+        <div class="svg-music active" id="play">
+          <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg>
+        </div>
+      </button>
+      <div class="music-bars">
+        <div class="music-bar"></div>
+        <div class="music-bar"></div>
+        <div class="music-bar"></div>
+      </div>
+      <span id="musicTitle"></span>
+    </div>
+    
+    <div class="view-more">Ver mais sobre <span id="view-more-username"></span></div>
+
+    <div class="actions-btn">
+      <button class="action-btn pf">Adicionar</button>
+      <button class="action-btn sugestions">Mensagens</button>
+      <!------------------------------------------------->
+      <button class="action-btn mypf">Editar</button>
+      <button class="action-btn share">Compartilhar perfil</button>
+    </div>
+  </div>
+  <div id="music-player"></div>
+
+  <div class="main-profile">
+    <div class="profile-menu-area" id="profileMenu">
+      <div class="profile-menu">
+        <button class="menu-item active" data-tab="0"><i class="fa-solid fa-address-card"></i><p>Feed</p></button>
+        <button class="menu-item" data-tab="1">
+          <svg aria-label="Marcados" class="x1lliihq x1n2onr6 x1cp0k07" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
+        </button>
+        <button class="menu-item" data-tab="2"><i class="fas fa-link"></i></button>
+      </div>
+      <div class="menu-select">
+        <div class="slider">
+          <div class="slide"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <div class="tabs-container">
+      <!-- Posts/Timeline -->
+      <div class="tab visao-tab">
+        <div id="muralPosts"></div>
+      </div>
+      <!-- Wall/Mural -->
       <div class="tab gostos-tab">
         <div class="send-wall">
           <div class="pfp-send-wall" id="pfp-user">
@@ -508,23 +481,37 @@
         <div class="wall-feed" id="wall-feed">
         </div>
       </div>
-        <div class="tab links-tab">
-          <div class="about-container"></div>
-        </div>
-      </div>
-    </div>
- </div>
-
-
-  </div>
-  </div>
-  </div>
-
-
-        </div>
+      <!-- Links -->
+      <div class="tab links-tab">
+        <div class="about-container"></div>
       </div>
     </div>
   </div>
+
+</div>
+
+
+<!-- Nav-bottom -->
+<div class="navbar-bottom">
+  <div class="navbar-bottom-area">
+    <a href="feed.html">
+      <svg aria-label="Página inicial" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Página inicial</title><path d="m21.762 8.786-7-6.68C13.266.68 10.734.68 9.238 2.106l-7 6.681A4.017 4.017 0 0 0 1 11.68V20c0 1.654 1.346 3 3 3h5.005a1 1 0 0 0 1-1L10 15c0-1.103.897-2 2-2 1.09 0 1.98.877 2 1.962L13.999 22a1 1 0 0 0 1 1H20c1.654 0 3-1.346 3-3v-8.32a4.021 4.021 0 0 0-1.238-2.894ZM21 20a1 1 0 0 1-1 1h-4.001L16 15c0-2.206-1.794-4-4-4s-4 1.794-4 4l.005 6H4a1 1 0 0 1-1-1v-8.32c0-.543.226-1.07.62-1.447l7-6.68c.747-.714 2.013-.714 2.76 0l7 6.68c.394.376.62.904.62 1.448V20Z"></path></svg>
+    </a>
+    <a href="friends.html">
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+    </a>
+    <a href="direct.html">
+      <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="#888" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="#888" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
+    </a>
+    <a href="explore.html">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
+    </a>
+    <a href="profile.html">
+      <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+    </a>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const menuOverlay = document.getElementById('menuOverlay');
@@ -762,4 +749,3 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module" src="./src/services/global-direct-nt.js"></script>
 </body>
 </html>
-

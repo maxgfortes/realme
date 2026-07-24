@@ -24,10 +24,6 @@ const auth = getAuth(app);
 const GIPHY_API_KEY = "GlVGYHkr3WSBnllca54iNt0yFbjz7L59";
 const IMGBB_API_KEY = "fc8497dcdf559dc9cbff97378c82344c";
 
-// ── Sons ───────────────────────────────────────────────────────────────────────
-const audioSend    = new Audio('./src/audio/msg send.mp3');
-const audioReceive = new Audio('./src/audio/msg recive.mp3');
-
 // ── DOM refs ───────────────────────────────────────────────────────────────────
 const dmContainer    = document.querySelector('.dm-container');
 const dmUsersList    = document.getElementById("dmUsersList");
@@ -44,7 +40,6 @@ const navbarbottom   = document.querySelector(".navbar-bottom");
 const dmListBackBtn  = document.getElementById('dmListBackBtn');
 const dmTitle        = document.getElementById('dmTitle');
 const dmSearchInput  = document.getElementById('dmSearchInput');
-const dmSearchBtn    = document.getElementById('dmSearchBtn');
 const imgDmBtn       = document.getElementById('img-dm');
 
 // ── Estado global ──────────────────────────────────────────────────────────────
@@ -67,25 +62,49 @@ const memCache = {
   msgs:   new Map(), // chatId → { data, ts }
 
   setPhoto(uid, url) {
-    this.photos.set(uid, url);
-    try { localStorage.setItem(`up_${uid}`, url); } catch (_) {}
+    const entry = { v: url, ts: Date.now() };
+    this.photos.set(uid, entry);
+    try { localStorage.setItem(`up_${uid}`, JSON.stringify(entry)); } catch (_) {}
   },
   getPhoto(uid) {
-    if (this.photos.has(uid)) return this.photos.get(uid);
-    const c = localStorage.getItem(`up_${uid}`);
-    if (c) { this.photos.set(uid, c); return c; }
+    // Retorna o valor mesmo se estiver "vencido" (fresh check é feito à parte),
+    // pra sempre termos algo pra exibir instantaneamente.
+    if (this.photos.has(uid)) return this.photos.get(uid).v;
+    try {
+      const raw = localStorage.getItem(`up_${uid}`);
+      if (raw) {
+        const p = JSON.parse(raw);
+        this.photos.set(uid, p);
+        return p.v;
+      }
+    } catch (_) {}
     return null;
+  },
+  isPhotoFresh(uid) {
+    const e = this.photos.get(uid);
+    return !!e && (Date.now() - e.ts < CACHE_TTL.users);
   },
 
   setName(uid, name) {
-    this.names.set(uid, name);
-    try { localStorage.setItem(`un_${uid}`, name); } catch (_) {}
+    const entry = { v: name, ts: Date.now() };
+    this.names.set(uid, entry);
+    try { localStorage.setItem(`un_${uid}`, JSON.stringify(entry)); } catch (_) {}
   },
   getName(uid) {
-    if (this.names.has(uid)) return this.names.get(uid);
-    const c = localStorage.getItem(`un_${uid}`);
-    if (c) { this.names.set(uid, c); return c; }
+    if (this.names.has(uid)) return this.names.get(uid).v;
+    try {
+      const raw = localStorage.getItem(`un_${uid}`);
+      if (raw) {
+        const p = JSON.parse(raw);
+        this.names.set(uid, p);
+        return p.v;
+      }
+    } catch (_) {}
     return null;
+  },
+  isNameFresh(uid) {
+    const e = this.names.get(uid);
+    return !!e && (Date.now() - e.ts < CACHE_TTL.users);
   },
 
   setMsgs(chatId, arr) {
@@ -139,8 +158,7 @@ function escapeHtml(str) {
 
 function truncarMensagem(msg, max) {
   if (!msg) return "";
-  if (msg.startsWith("__img__")) return "📷 Foto";
-  if (msg.startsWith("__gif__")) return "🎞️ GIF";
+  if (msg.startsWith("__img__")) return "Enviou uma Foto.";
   return msg.length > max ? msg.slice(0, max) + "…" : msg;
 }
 
@@ -298,7 +316,6 @@ function renderizarConversas(arr, filtrarTermo = "") {
 
   dmUsersList.appendChild(frag);
 
-  // Estado vazio
   if (unicos.size === 0) mostrarEstadoVazio();
 }
 
@@ -340,7 +357,10 @@ async function carregarConversas(filtrarTermo = "") {
         lastMessageRead:   cd.lastMessageRead   ?? true,
       });
 
-      if (!memCache.getName(friendId) || !memCache.getPhoto(friendId)) {
+      // Dispara revalidação sempre que não houver cache OU o cache estiver
+      // vencido (TTL de users), mesmo que já exista algo salvo.
+      if (!memCache.getName(friendId) || !memCache.getPhoto(friendId) ||
+          !memCache.isNameFresh(friendId) || !memCache.isPhotoFresh(friendId)) {
         fetchBg.push(buscarDadosUsuarioLazy(friendId));
       }
     }
@@ -360,7 +380,6 @@ async function carregarConversas(filtrarTermo = "") {
 
 // ── Busca ──────────────────────────────────────────────────────────────────────
 dmSearchInput.addEventListener("input",  () => renderizarConversas(chatsArray, dmSearchInput.value.trim()));
-dmSearchBtn.addEventListener("click",   () => renderizarConversas(chatsArray, dmSearchInput.value.trim()));
 
 // ── Selecionar usuário ─────────────────────────────────────────────────────────
 function selecionarUsuario(userId, photoUrl, displayName) {
@@ -437,11 +456,6 @@ function carregarMensagensTempoReal() {
 
     marcarMensagensComoLidas(chatId, msgs);
 
-    if (msgs.length > ultimaQtdMensagens && msgs.length > 0 &&
-        msgs[msgs.length - 1].sender !== loggedUser) {
-      audioReceive.currentTime = 0;
-      audioReceive.play().catch(() => {});
-    }
     ultimaQtdMensagens = msgs.length;
     memCache.setMsgs(chatId, msgs);
     renderizarMensagens(msgs);
@@ -567,14 +581,6 @@ function renderizarMensagens(mensagens) {
       img.loading = "lazy";
       img.addEventListener("click", () => abrirLightbox(m.content));
       bubble.appendChild(img);
-    } else if (m.type === "gif") {
-      const gif = document.createElement("img");
-      gif.className = "dm-msg-gif";
-      gif.src     = m.content;
-      gif.alt     = "gif";
-      gif.loading = "lazy";
-      gif.addEventListener("click", () => abrirLightbox(m.content));
-      bubble.appendChild(gif);
     } else {
       const p = document.createElement("p");
       p.innerHTML = renderizarTexto(m.content || "");
@@ -771,7 +777,7 @@ function mostrarContextMenu(bubble, msg, isSender) {
 function iniciarReply(msg) {
   replyingTo = {
     id: msg.id,
-    content: msg.type === "image" ? "📷 Foto" : msg.type === "gif" ? "🎞️ GIF" : msg.content,
+    content: msg.type === "image" ? "Enviou uma Foto." : msg.content,
     sender: msg.sender,
     senderName: msg.sender === loggedUser ? "Você" : (memCache.getName(msg.sender) || "...")
   };
@@ -845,101 +851,8 @@ function fecharLightbox() {
   document.getElementById("dm-lightbox")?.classList.remove("active");
 }
 
-// ── GIF Picker ─────────────────────────────────────────────────────────────────
-function criarGifPicker() {
-  let picker = document.getElementById("dm-gif-picker");
-  if (picker) { picker.classList.toggle("active"); return; }
 
-  picker = document.createElement("div");
-  picker.id        = "dm-gif-picker";
-  picker.className = "dm-gif-picker";
-  picker.innerHTML = `
-    <div class="gif-picker-header">
-      <input type="text" id="gif-search-input" placeholder="Buscar GIFs..." autocomplete="off">
-      <button id="gif-search-btn">🔍</button>
-    </div>
-    <div class="gif-grid" id="gif-grid">
-      <div class="gif-loading">Carregando GIFs...</div>
-    </div>
-  `;
-  document.querySelector(".dm-chat-area").appendChild(picker);
-  picker.classList.add("active");
-  carregarGifsTrending();
 
-  document.getElementById("gif-search-btn").addEventListener("click", () =>
-    buscarGifs(document.getElementById("gif-search-input").value));
-  document.getElementById("gif-search-input").addEventListener("keypress", e => {
-    if (e.key === "Enter") buscarGifs(e.target.value);
-  });
-
-  document.addEventListener("click", e => {
-    if (!picker.contains(e.target) && e.target.id !== "gif-btn")
-      picker.classList.remove("active");
-  }, { capture: false });
-}
-
-async function carregarGifsTrending() {
-  try {
-    const r = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`);
-    const d = await r.json();
-    renderizarGifs(d.data);
-  } catch (_) {
-    const g = document.getElementById("gif-grid");
-    if (g) g.innerHTML = `<p style="color:#888;padding:12px">Erro ao carregar GIFs.</p>`;
-  }
-}
-
-async function buscarGifs(termo) {
-  if (!termo.trim()) { carregarGifsTrending(); return; }
-  const g = document.getElementById("gif-grid");
-  if (g) g.innerHTML = `<div class="gif-loading">Buscando...</div>`;
-  try {
-    const r = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(termo)}&limit=24&rating=pg-13`);
-    const d = await r.json();
-    renderizarGifs(d.data);
-  } catch (_) {}
-}
-
-function renderizarGifs(gifs) {
-  const grid = document.getElementById("gif-grid");
-  if (!gifs || !gifs.length) { if (grid) grid.innerHTML = `<p style="color:#888;padding:12px">Nenhum GIF encontrado.</p>`; return; }
-  grid.innerHTML = "";
-  gifs.forEach(g => {
-    const url = g.images?.fixed_height_small?.url || g.images?.original?.url;
-    if (!url) return;
-    const img = document.createElement("img");
-    img.src       = url;
-    img.className = "gif-item";
-    img.loading   = "lazy";
-    img.addEventListener("click", () => {
-      enviarGif(url);
-      document.getElementById("dm-gif-picker")?.classList.remove("active");
-    });
-    grid.appendChild(img);
-  });
-}
-
-async function enviarGif(gifUrl) {
-  if (!selectedUser || !loggedUser) return;
-  const chatId  = gerarChatId(loggedUser, selectedUser);
-  await garantirChatExiste(chatId);
-  const msgData = {
-    type: "gif", content: gifUrl,
-    sender: loggedUser, timestamp: serverTimestamp(), read: false,
-    ...(replyingTo ? { replyTo: replyingTo } : {})
-  };
-  try {
-    await Promise.all([
-      addDoc(collection(db, "chats", chatId, "messages"), msgData),
-      updateDoc(doc(db, "chats", chatId), {
-        lastMessage: "__gif__", lastMessageTime: serverTimestamp(),
-        lastMessageSender: loggedUser, lastMessageRead: false
-      })
-    ]);
-    cancelarReply();
-    conversasCache.clear();
-  } catch (err) { console.error("Erro ao enviar GIF:", err); }
-}
 
 // ── Upload de imagem (ImgBB) ───────────────────────────────────────────────────
 imgDmBtn.style.display = "flex";
@@ -951,14 +864,7 @@ fileInput.accept  = "image/*";
 fileInput.style.display = "none";
 document.body.appendChild(fileInput);
 
-const gifBtn       = document.createElement("button");
-gifBtn.id          = "gif-btn";
-gifBtn.className   = "gif-btn";
-gifBtn.textContent = "GIF";
-imgDmBtn.insertAdjacentElement("afterend", gifBtn);
-
 imgDmBtn.addEventListener("click", () => fileInput.click());
-gifBtn.addEventListener("click",   criarGifPicker);
 
 fileInput.addEventListener("change", async () => {
   const file = fileInput.files[0];
@@ -992,9 +898,7 @@ fileInput.addEventListener("change", async () => {
       })
     ]);
     cancelarReply();
-    conversasCache.clear();
-    audioSend.currentTime = 0;
-    audioSend.play().catch(() => {});
+    conversasCache.clear();;
   } catch (err) {
     console.error("Erro ao enviar imagem:", err);
     document.querySelector(`[data-msgid="${tempId}"]`)?.remove();
@@ -1064,8 +968,6 @@ async function enviarMensagem() {
         lastMessageSender: loggedUser, lastMessageRead: false
       })
     ]);
-    audioSend.currentTime = 0;
-    audioSend.play().catch(() => {});
     conversasCache.clear();
   } catch (err) { console.error("Erro ao enviar:", err); }
   enviando = false;

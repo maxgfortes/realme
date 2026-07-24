@@ -3,14 +3,6 @@
   border-top: 1px solid #333;
 }
 
-
-    .navbar-top svg {
-      margin-top: 8px;
-  width: 18px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 18px;
-  fill: currentColor; /* pega a cor do texto do link */
-}
-
     .top-left, .top-right {
       display: flex;
       align-items: center;
@@ -307,38 +299,6 @@
   display: none;
 }
 
-.user-link .fa-instagram {
-  color: #E4405F;
-}
-
-.user-link .fa-twitter {
-  color: #1DA1F2;
-}
-
-.user-link.fa-tiktok {
-  color: #ff0050;
-}
-
-.user-link .fa-youtube {
-  color: #FF0000;
-}
-
-.user-link .fa-github {
-  color: #fff;
-}
-
-.user-link .fa-linkedin {
-  color: #0077B5;
-}
-
-.user-link .fa-discord {
-  color: #7289DA;
-}
-
-.user-link .fa-spotify {
-  color: #1DB954;
-}
-
 
 .link-box {
   margin: 16px ;
@@ -537,98 +497,20 @@
   background: transparent;
 }
 
-
 .empty-posts a {
   color: #cacaca;
   text-decoration: none;
 }
 
-.pf-banner-area {
-  padding: 0; 
+
+body {
+  background-color: var(--bg-primary);
+  color: #f8f9f9;
+  overflow-x: hidden;
+  position: fixed;
+  display: flex;
+  justify-content: center;
 }
-.profiles-banner {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    z-index: 9999;
-    bottom: 4vh;
-    display: none;
-}
-.about-profiles {
-    background-color: #1313135e;
-    border: 1px solid #27272785;
-    backdrop-filter: blur(22px);
-    height: 6vh;
-    width: 26vh;
-    border-radius: 052009052009px;
-    padding: 4px;
-    z-index: 9999;
-    bottom: 4vh;
-    align-self: center;
-    justify-self: center;
-    display: flex;
-}
-
-
-
-.msg-profiles {
-    padding: 4px 12px;
-    font-size: 14px;
-    color: #888;
-    font-weight: bold;
-    align-self: center;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-primary);
-      color: #f8f9f9;
-      overflow-x: hidden;
-      position: fixed;
-      display: flex;
-      justify-content: center;
-    }
 
     /* Menu Lateral Overlay */
     .menu-overlay {
@@ -666,7 +548,7 @@
 
     .menu-header {
       padding: 10px 12px 12px 12px;
-      border-bottom: none;
+      border-bottom: 0.1px solid #2a2a2a;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -978,12 +860,6 @@
       margin-top: 0px;
     }
 
-    .bio {
-      font-size: 15px;
-      color: #ddd;
-      padding: 8px 12px 14px 0;
-      display: none;
-    }
 
     .music {
       display: flex !important;
@@ -1947,18 +1823,11 @@ background: #fff;
 
 
 
-  .nav-top-pc {
-    display: none;
-  }
-
-  .sidebar {
-    display: none;
-  }
-    .navbar-top svg {
-      margin-top: 8px;
-  width: 20px !important;  /* ou o tamanho que você usa nos outros ícones */
+.navbar-top svg {
+  margin-top: 0px;
+  width: 20px !important;  
   height: 20px !important;
-  fill: currentColor; /* pega a cor do texto do link */
+  fill: currentColor; 
 }
 
     .top-left, .top-right {
@@ -2568,45 +2437,6 @@ background: #fff;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       background-color: var(--bg-primary);
@@ -2653,7 +2483,7 @@ background: #fff;
 
     .menu-header {
       padding: 10px 12px 12px 12px;
-      border-bottom: none;
+      border-bottom: 0.1px solid #2a2a2a;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3490,33 +3320,6 @@ background: #fff;
      text-align: center;
      word-break: break-word;
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

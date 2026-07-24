@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"/>
-<title>RealMe</title>
-<link rel="icon" href="../public/img/icon.png" type="image/png" />
-<link rel="manifest" href="/manifest.json" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="RealMe" />
-<meta name="theme-color" content="#0f0f0f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="screen-orientation" content="portrait">
-<meta name="x5-orientation" content="portrait">
-<link rel="apple-touch-icon" href="../public/img/icon.png" />
-<link rel="icon" href="./src/icon/icon.png" type="image/png" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<link rel="stylesheet" href="../src/styles/root.css" />
-<link rel="stylesheet" href="../src/styles/base.css" />
-<link rel="stylesheet" href="../src/styles/login.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+  <title>RealMe</title>
+  <link rel="icon" href="../public/img/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RealMe" />
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <link rel="apple-touch-icon" href="../public/img/icon.png" />
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../src/styles/root.css" />
+  <link rel="stylesheet" href="../src/styles/base.css" />
+  <link rel="stylesheet" href="../src/styles/login.css" />
+
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 </head>
 <body>
-  <div class="main">
-    <div class="img-area">
-      <img src="../public/img/conections.png" alt="conections">
-    </div>
-    <div class="step1">
-      <div class="create-area">
+
+<div class="main">
+  <div class="img-area">
+    <img src="../public/img/conections.png" alt="conections">
+  </div>
+  <div class="step1">
+    <div class="create-area">
       <div class="info-area1">
         <div class="logo-area"><p>Faça login no <span>RealMe</span></p></div>
       </div>
-        <form>
+      <form>
         <div class="inputs-area">
           <div class="input">
             <label for="email">Email</label>
@@ -52,15 +61,14 @@
           <button  type="submit">Entrar</button>
         </div>
       </form>
-      </div>
-      <div class="more">
-        <div class="forgot-password"><button>esqueceu a senha?</button></div>
-        <div class="alert1">Ainda não tem conta? <a href="register.html">Criar Conta</a></div>
-      </div>
+    </div>
+    <div class="more">
+      <div class="forgot-password"><button>esqueceu a senha?</button></div>
+      <div class="alert1">Ainda não tem conta? <a href="register.html">Criar Conta</a></div>
     </div>
   </div>
+</div>
+
 </body>
-<script type="module" src="../src/js/pages/signup.js"></script>
+<script type="module" src="/src/js/pages/signup.js"></script>
 </html>
-
-

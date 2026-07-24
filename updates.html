@@ -2,21 +2,37 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <meta name="theme-color" content="#0f0f0f">
   <link rel="stylesheet" href="./src/styles/root.css">
+
+  <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
-  <meta property="og:description" content="Entre no RealMe ainda hoje e seja você mesmo!">
-  <meta property="og:url" content="https://maxgfortes.github.io/realme/PF.html">
-  <meta property="og:image" content="https://maxgfortes.github.io/realme/src/icon/share_icon.png">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="https://i.postimg.cc/7PfNb8TT/share-icon.png">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 </head>
 <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
 body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, Arial;
@@ -27,11 +43,11 @@ body {
 .nav-pc {
   position: fixed;
   width: 100%;
-  height: 50px;
   display: flex;
   align-items: center;
   padding: 10px 20px;
   background: #0f0f0f;
+  height: 67px;
 }
 
 .nav-mobile {
@@ -63,6 +79,7 @@ body {
     font-weight: bold;
     padding: 6px;
     font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+    letter-spacing: -0.01em;
 }
 
 .main-section {
@@ -81,6 +98,7 @@ body {
     width: 100%;
     max-width: 940px;
     padding: 20px;
+    height: 100%;
 }
 
 .update-item {
@@ -109,6 +127,19 @@ body {
 .update-text {
     font-size: 1rem;
     color: #ccc;
+}
+
+.alert {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert p {
+    font-size: 1.4rem;
+    color: #666;
 }
 
 .footer-area {
@@ -184,35 +215,7 @@ body {
     </nav>
 
     <main class="main-section">
-        <div class="updates-grid">
-        <div class="update-item">
-            <div class="update-header">
-                <div class="update-title">Update Title</div>
-                <div class="update-time">01/01/2000 - 00:00 </div>
-            </div>
-            <div class="update-text">Update content goes here.</div>
-        </div>
-        <div class="update-item">
-            <div class="update-header">
-                <div class="update-title">Update Title</div>
-                <div class="update-time">01/01/2000 - 00:00 </div>
-            </div>
-            <div class="update-text">Update content goes here.</div>
-        </div>
-        <div class="update-item">
-            <div class="update-header">
-                <div class="update-title">Update Title</div>
-                <div class="update-time">01/01/2000 - 00:00 </div>
-            </div>
-            <div class="update-text">Update content goes here.</div>
-        </div>
-        <div class="update-item">
-            <div class="update-header">
-                <div class="update-title">Update Title</div>
-                <div class="update-time">01/01/2000 - 00:00 </div>
-            </div>
-            <div class="update-text">Update content goes here.</div>
-        </div>
+        <div class="updates-grid" id="updatesGrid">
         </div>
     </main>
 
@@ -237,6 +240,91 @@ body {
             </div>
         </div>
     </footer>
-
 </body>
+
+<script type="module">
+    import {
+        collection,
+        getDocs,
+        query,
+        orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    import { db } from "./src/config/config.js";
+
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return "";
+
+        const dateObj = typeof timestamp.toDate === "function"
+            ? timestamp.toDate()
+            : new Date(timestamp);
+
+        return dateObj.toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    async function loadArticles() {
+        const updatesGrid = document.getElementById("updatesGrid");
+
+        try {
+            const q = query(
+                collection(db, "publicUpdates"),
+                orderBy("date", "desc")
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            updatesGrid.innerHTML = "";
+
+            if (querySnapshot.empty) {
+                updatesGrid.innerHTML = `
+                    <div class="alert"><p>Nenhuma atualização encontrada.</p></div>
+                `;
+                return;
+            }
+
+            querySnapshot.forEach(doc => {
+                const article = doc.data();
+
+                const articleElement = document.createElement("article");
+                articleElement.classList.add("update-item");
+
+                const formattedDate = formatTimestamp(article.date);
+
+                articleElement.innerHTML = `
+                <div class="update-header">
+                    <div class="update-title">
+                        ${article.title || "Sem título"}
+                    </div>
+
+                    <div class="update-time">
+                        ${formattedDate}
+                    </div>
+                </div>
+
+                <div class="update-text">
+                    ${article.content || ""}
+                </div>
+                `;
+
+                updatesGrid.appendChild(articleElement);
+            });
+        }
+
+        catch (error) {
+            console.error("Erro ao carregar artigos:", error);
+
+            updatesGrid.innerHTML = `
+                <div class="alert"><p>Erro ao encontrar atualizações.</p></div>
+            `;
+        }
+    }
+
+    loadArticles();
+</script>
 </html>

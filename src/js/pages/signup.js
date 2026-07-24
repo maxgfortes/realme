@@ -66,7 +66,7 @@ function showLoading(show, loadingText = "Processando...") {
 /* ================= VALIDAÇÕES ================= */
 
 const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-const validarUsername = u => /^[a-zA-Z0-9_]{3,20}$/.test(u);
+const validarUsername = u => /^[a-z0-9_]{3,20}$/.test(u);
 const validarSenha = s => s.length >= 6;
 const validarNascimento = d => {
   const n = new Date(d);
@@ -119,7 +119,7 @@ async function criarContaSegura(event) {
       createdAt: serverTimestamp()
     });
 
-    await setDoc(doc(db, "users", user.uid), {
+    await setDoc(doc(db, "users", user.uid), { 
       uid: user.uid,
       username,
       email,

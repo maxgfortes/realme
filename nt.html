@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
-  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
-  <link rel="manifest" href="./manifest.json" />
-  <meta name="theme-color" content="#0f0f0f" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon" href="../public/img/icon.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="../src/styles/base.css" />
-  <link rel="stylesheet" href="../src/styles/root.css" />
-  <link rel="stylesheet" href="../src/styles/notifications.css" />
+  <link rel="icon" href="../public/img/icon.png" type="image/png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="../public/img/icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../src/styles/base.css">
+  <link rel="stylesheet" href="../src/styles/root.css">
+  <link rel="stylesheet" href="../src/styles/notifications.css">
 </head>
 <body>
 
-  <div class="notifications-container">
-    <div class="notifications-header">
-      <div class="header-block">
-        <button onclick="window.location.href='feed.html'">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
-        </button>
-        <div class="nt-title">Notificações</div>
-      </div>
-      <div class="header-block"></div>
-      <div class="header-block"></div>
+<div class="notifications-container">
+  <div class="notifications-header">
+    <div class="header-block">
+      <button onclick="window.location.href='feed.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+      <div class="nt-title">Notificações</div>
     </div>
-    <div class="notifications-list">
+    <div class="header-block"></div>
+    <div class="header-block"></div>
+  </div>
+  <div class="notifications-list">
     <div class="nt-fr-entry" id="fr-btn" role="button" tabindex="0">
       <div class="nt-fr-entry-icon">
         <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M275.17 294.335C328.27 294.335 371.2 337.355 371.2 390.365V428.795C371.2 439.415 362.47 447.965 351.94 447.965C341.41 447.965 332.77 439.415 332.77 428.795V390.365C332.68 358.595 306.94 332.855 275.17 332.765H121.54C89.7698 332.855 64.0299 358.595 63.9399 390.365V428.795C63.9399 439.325 55.39 447.965 44.77 447.965C34.24 447.965 25.6001 439.415 25.6001 428.795V390.365C25.6001 337.355 68.5304 294.425 121.63 294.335H275.17ZM198.4 63.9346C251.5 63.9346 294.43 106.955 294.43 159.965C294.43 213.065 251.41 255.995 198.4 255.995C145.39 255.995 102.37 213.065 102.37 160.055C102.37 106.955 145.39 64.0255 198.4 64.0254V63.9346ZM408.1 81.3945C418.538 81.3947 426.999 89.8571 427 100.295V140.795H467.5C477.937 140.795 486.4 149.256 486.4 159.694C486.4 170.133 477.938 178.595 467.5 178.595H427V218.194C427 228.632 418.538 237.095 408.1 237.095C397.662 237.095 389.2 228.632 389.2 218.194V178.595H349.6C339.162 178.595 330.7 170.132 330.7 159.694C330.7 149.257 339.162 140.795 349.6 140.795H389.2V100.295C389.2 89.857 397.662 81.3947 408.1 81.3945ZM198.4 102.365C166.63 102.455 140.89 128.195 140.8 159.965C140.89 191.735 166.63 217.475 198.4 217.565C230.17 217.475 255.91 191.735 256 159.965C255.91 128.195 230.17 102.455 198.4 102.365Z"/></svg>
@@ -41,9 +42,10 @@
       </div>
       <div class="nt-container"></div>
     </div>
-    <div id="notifications-list">
-    </div>
+    <div id="notifications-list"></div>
   </div>
+</div>
+
 </body>
 <script type="module" src="../src/services/notifications.js"></script>
 <script type="module" src="../src/modules/auth-verification.js"></script>
