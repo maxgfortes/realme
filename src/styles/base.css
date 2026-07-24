@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, Arial, sans-serif;
+  background: var(--bg-primary) !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  user-select: none !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+img {
+  -webkit-user-drag: none;
+  pointer-events: auto;
+}
+

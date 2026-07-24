@@ -1,0 +1,986 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-image: none;
+  color: #dbdbdb;
+  overflow-x: hidden;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  user-select: none !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* ── Navbar topo ──────────────────────────────────────────────────────────── */
+.dm-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none !important;
+  padding: 12px 16px;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  z-index: 999999;
+  background-color: #0f0f0f;
+}
+
+.dm-back-btn,
+.dm-new-chat-btn,
+.dm-chat-options {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4em;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  z-index: 999999;
+}
+
+.dm-back-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: currentColor !important;
+  pointer-events: none;
+}
+
+
+.dm-title {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dm-back-btn.list { visibility: hidden; }
+
+/* ── Container principal ─────────────────────────────────────────────────── */
+.dm-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: block;
+  background-color: #0f0f0f;
+    position: fixed;
+}
+
+.dm-users-list,
+.dm-chat-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transition: transform 0.35s cubic-bezier(.7,.2,.3,1);
+  will-change: transform;
+  background: transparent;
+  overflow-x: hidden;
+  z-index: 99999999;
+}
+
+.dm-users-list {
+  z-index: 2;
+  transform: translateX(0);
+  overflow-y: auto;
+  height: 83vh;
+  max-height: 100vh;
+  padding-bottom: 120px;
+}
+
+.dm-chat-area {
+  z-index: 3;
+  transform: translateX(100vw);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  /* messages extend fully to bottom edge */
+  padding-bottom: 0;
+}
+
+.dm-container.show-chat .dm-users-list { transform: translateX(-100vw); }
+.dm-container.show-chat .dm-chat-area  { transform: translateX(0); }
+.dm-container.show-chat ~ .navbar-bottom { display: none !important; }
+
+/* ── Search box ──────────────────────────────────────────────────────────── */
+
+
+.dm-bottom-options {
+  display: flex;
+  padding: 0 18px;
+  gap: 18px;
+  width: 100%;
+  align-items: center;
+}
+
+
+
+.dm-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+}
+
+#dmSearchInput {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 9999px;
+  background: #2c2c2c;
+  border: none;
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+}
+
+
+
+/* ── Botão conversa ──────────────────────────────────────────────────────── */
+.dm-user-btn {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 18px;
+  background: none;
+  border: none;
+  width: 100%;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dm-user-btn:active { background: rgba(255,255,255,0.05); }
+
+.dm-user-btn img {
+  width: 56px;
+  height: 56px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dm-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+.dm-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dm-user-name {
+  font-size: 1.5em;
+  color: #dfdfdf;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dm-user-name.unread-name { color: #fff; font-weight: 700; }
+
+.dm-user-time {
+  font-size: 1.2em;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.dm-user-last {
+  font-size: 1.3em;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.dm-user-last.unread-msg {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Chat header ─────────────────────────────────────────────────────────── */
+.dm-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px 11px;
+  background: #0F0F0F;
+  z-index: 99999999;
+}
+
+.dm-chat-header img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dm-chat-header span {
+  flex: 1;
+  font-size: 1rem;
+  color: #f1f1f1;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dm-chat-username { cursor: pointer;  }
+
+/* ── Área de mensagens ───────────────────────────────────────────────────── */
+.dm-messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 14px 100px 10px;
+  padding-top: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+
+/* Spacer gaps between message groups — iMessage feel */
+.dm-msg-bloco + .dm-msg-bloco {
+  margin-top: 2px;
+}
+
+.meu-bloco + .deles-bloco,
+.deles-bloco + .meu-bloco {
+  margin-top: 10px;
+}
+
+/* ── Bloco de mensagens ──────────────────────────────────────────────────── */
+.dm-msg-bloco {
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+}
+
+.meu-bloco {
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.deles-bloco {
+  margin-right: auto;
+  align-items: flex-start;
+  position: relative;
+  margin-left: 38px;
+  margin-bottom: 8px;
+}
+
+/* ── Bolhas ──────────────────────────────────────────────────────────────── */
+
+.dm-msg-bubble p {
+  margin: 8px 0;
+  padding: 0;
+  line-height: 1.45;
+}
+
+/* Meus */
+.meu {   background: rgb(0, 120, 254); color: white; align-self: flex-end; }
+
+/* ── iMessage tail on last sent bubble ──────────────────────────────────── */
+
+.meu-bloco .dm-msg-bubble:last-of-type.meu::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  height: 20px;
+  background: var(--bg-primary);
+  border-bottom-left-radius: 10px;
+}
+
+.meu-bloco .dm-msg-bubble:last-of-type.meu::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  right: -8px;
+  height: 20px;
+  width: 20px;
+  background: rgb(0, 120, 254);
+  border-bottom-left-radius: 15px;
+}
+
+
+/* ── Image fills bubble completely ──────────────────────────────────────── */
+.dm-msg-bubble.meu:has(.dm-msg-image),
+.dm-msg-bubble.deles:has(.dm-msg-image),
+.dm-msg-bubble.meu:has(.dm-msg-gif),
+.dm-msg-bubble.deles:has(.dm-msg-gif) {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Deles */
+.deles { background: #313131; color: #f1f1f1; }
+
+/* ── iMessage tail on last received bubble ───────────────────────────────── */
+
+
+.deles-bloco .dm-msg-bubble:last-of-type.deles::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  height: 20px;
+  background: var(--bg-primary);
+  border-bottom-right-radius: 10px;
+}
+
+.deles-bloco .dm-msg-bubble:last-of-type.deles::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  left: -7px;
+  height: 20px;
+  width: 20px;
+  background: #313131;
+  border-bottom-right-radius: 15px;
+}
+
+/* ── Reactions — fixed top-right of bubble ───────────────────────────────── */
+.dm-reactions {
+  position: absolute;
+  bottom: -22px;
+  left: 6px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.dm-msg-bubble {
+  padding: 1px 14px;
+  border-radius: 20px;
+  margin: 1px 0;
+  max-width: 100%;
+  min-width: 44px;
+  word-break: break-word;
+  font-size: 17px;
+  position: relative;
+  cursor: pointer;
+  transition: filter 0.15s;
+  margin-top: 2px;
+}
+
+
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+.dm-link {
+  color: #a8d4ff;
+  text-decoration: underline;
+  word-break: break-all;
+  pointer-events: all;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.meu .dm-link { color: #d6eeff; }
+
+/* ── Reply preview (iMessage style: original faded above, new below) ──────── */
+.reply-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 0px 8px;
+  margin-bottom: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  max-width: 100%;
+  overflow: hidden;
+  opacity: 0.55;
+  transform: scale(0.96);
+  transform-origin: bottom center;
+}
+
+.meu .reply-preview {
+}
+
+.deles .reply-preview {
+}
+
+/* The current message content sits visually below reply as if floating */
+.dm-msg-bubble:has(.reply-preview) {
+  padding-top: 4px;
+  padding-bottom: 6px;
+}
+
+.dm-msg-bubble:has(.reply-preview) > p {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 0.5px solid rgba(255,255,255,0.12);
+}
+
+.reply-author {
+  font-weight: 700;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.meu .reply-author { color: rgba(255,255,255,0.7); }
+
+.reply-text {
+  color: #bbb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meu .reply-text { color: rgba(255,255,255,0.85); }
+
+/* ── Reply bar (área de input) ───────────────────────────────────────────── */
+.dm-reply-bar {
+  padding: 14px 14px 24px 14px;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+  z-index: 9999;
+}
+
+.reply-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reply-bar-line {
+  width: 3px;
+  height: 32px;
+  background: #3199ff;
+  border-radius: 3px;
+  flex-shrink: 0;
+  display: none;
+}
+
+.reply-bar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reply-bar-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.reply-bar-text {
+  font-size: 14px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reply-bar-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.reply-bar-close:active { color: #fff; }
+
+/* ── Imagens e GIFs nas mensagens ────────────────────────────────────────── */
+.dm-msg-image,
+.dm-msg-gif {
+  display: block;
+  width: 220px;
+  height: 240px;
+  max-width: 220px;
+  max-height: 280px;
+  border-radius: 18px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin: 0;
+}
+
+.dm-msg-image:active,
+.dm-msg-gif:active { transform: scale(0.97); }
+
+.dm-msg-image.uploading { opacity: 0.5; filter: blur(1px); }
+
+/* ── Foto da outra pessoa ────────────────────────────────────────────────── */
+.dm-msg-foto {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  position: absolute;
+  left: -38px;
+  bottom: 0px;
+  object-fit: cover;
+}
+
+/* ── Footer de mensagem ──────────────────────────────────────────────────── */
+.dm-msg-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #666;
+  margin-top: 3px;
+  padding-right: 4px;
+  justify-content: flex-end;
+}
+
+.dm-visto   { color:rgb(0, 120, 254);; font-weight: bold; }
+.dm-enviado { color: #666; font-weight: bold;}
+
+/* ── Reações (chip style) ─────────────────────────────────────────────────── */
+
+.dm-reaction-chip {
+  background:#323233;
+  border-radius: 20px;
+  padding: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 2px solid var(--bg-primary);
+  z-index: 999999 !important;
+}
+
+.dm-reaction-chip:active { background: rgba(255,255,255,0.2); }
+
+/* ── Context menu ────────────────────────────────────────────────────────── */
+.dm-context-menu {
+  position: absolute;
+  z-index: 99999999;
+  background: #2a2a2c;
+  border-radius: 16px;
+  padding: 10px;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.664);
+  bottom: calc(100% + 6px);
+  right: 0;
+  animation: contextFadeIn 0.15s ease;
+}
+
+.meu-bloco .dm-context-menu { right: 0; left: auto; }
+.deles-bloco .dm-context-menu { left: 0; right: auto; }
+
+@keyframes contextFadeIn {
+  from { opacity: 0; transform: scale(0.92) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dm-context-emojis {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  padding: 4px 0 10px;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 6px;
+}
+
+.dm-context-emojis button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.dm-context-emojis button:active {
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.2);
+}
+
+.dm-context-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #ddd;
+  font-size: 16px;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.dm-context-item:active { background: rgba(255,255,255,0.08); }
+
+
+
+/* ── Lightbox ────────────────────────────────────────────────────────────── */
+.dm-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+}
+
+.dm-lightbox.active { display: flex; align-items: center; justify-content: center; }
+
+.dm-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.70);
+  backdrop-filter: blur(10px);
+}
+
+.dm-lightbox-img {
+  position: relative;
+  z-index: 1;
+  max-width: 90vw;
+  max-height: 76vh;
+  border-radius: 16px;
+  object-fit: contain;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.397);
+  animation: lbIn 0.25s ease;
+}
+
+@keyframes lbIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Área de envio — flutua sobre as mensagens ───────────────────────────── */
+.dm-send-area {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 10px;
+  gap: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  pointer-events: none;
+}
+
+.dm-send-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--bg-primary);
+  transform: translateY(50px);
+}
+
+.dm-send-area > * {
+  pointer-events: all;
+}
+
+.input-area {
+  flex: 1;
+  padding: 0px 4px;
+  display: flex;
+  border-radius: 9999px;
+  align-items: center;
+  background: #272727;
+  min-height: 50px;
+  z-index: 99;
+}
+
+
+
+#dmMsgInput {
+  flex: 1;
+  padding: 13px 10px;
+  border-radius: 28px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+}
+
+#dmSendBtn {
+background: rgb(0, 120, 254);
+border: none;
+  padding: 0px 18px !important;
+  height: 42px;
+  align-items: center;
+  align-self: center;
+  border-radius: 9999px;
+  color: #fff;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+#dmSendBtn:active {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+#dmSendBtn svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: currentColor !important;
+}
+
+.img-btn {
+  background-color: transparent;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  padding: 0 0 0 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.img-btn:active { color: #fff; }
+
+/* ── Sem conversa ────────────────────────────────────────────────────────── */
+.dm-no-chat {
+  color: #888;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1.1em;
+}
+
+/* ── Mensagem apagada ────────────────────────────────────────────────────── */
+.dm-msg-bubble[data-type="deleted"] p {
+  color: #666;
+  font-style: italic;
+}
+
+/* ── Animação entrada mensagem ───────────────────────────────────────────── */
+@keyframes fadeInMsg {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dm-msg-bubble { animation: fadeInMsg 0.2s ease; }
+
+/* ── Navbar bottom ───────────────────────────────────────────────────────── */
+.navbar-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 9999;
+}
+
+.navbar-bottom-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  padding-top: 1px;
+}
+
+.navbar-bottom a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f8f9f9;
+  font-size: 26px;
+  padding: 0;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin-bottom: 34px;
+}
+
+.navbar-bottom-content svg {
+  width: 28px;
+  height: 26px;
+  fill: #888;
+}
+
+.active-bar svg { fill: #fff; }
+
+.profile-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+/* ── Swipe para reply ─────────────────────────────────────────────────────── */
+.dm-msg-bubble {
+  will-change: transform;
+}
+
+.swipe-reply-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.7);
+  opacity: 0;
+  font-size: 1.3em;
+  pointer-events: none;
+  transition: opacity 0.1s, transform 0.1s;
+  color: #aaa;
+}
+
+
+.meu-bloco .swipe-reply-icon {
+  left: -28px;
+}
+
+.deles-bloco .swipe-reply-icon {
+  right: -28px;
+}
+
+
+/* ── Skeleton loading ─────────────────────────────────────────────────────── */
+.dm-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  pointer-events: none;
+}
+
+.sk-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+}
+
+.sk-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sk-line {
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+}
+
+.sk-name { width: 45%; }
+.sk-msg  { width: 70%; }
+
+/* Skeleton de mensagens */
+.sk-bubble {
+  height: 40px;
+  border-radius: 18px;
+  max-width: 220px;
+  width: 55%;
+  background: linear-gradient(90deg, var(--sk-a) 25%, var(--sk-b) 50%, var(--sk-a) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.3s infinite ease-in-out;
+  margin: 4px 0;
+}
+.sk-bubble-meu { margin-left: auto; }
+
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Adapta as cores do skeleton ao tema — ajuste se necessário */
+:root {
+  --sk-a: rgba(128, 128, 128, 0.1);
+  --sk-b: rgba(128, 128, 128, 0.22);
+}
+
+/* ── Estado vazio ─────────────────────────────────────────────────────────── */
+.dm-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px 48px;
+  gap: 10px;
+  text-align: center;
+  animation: dm-fade-in 0.3s ease;
+}
+
+.dm-empty-state svg {
+  width: 84px;
+  height: 84px;
+  color: var(--text-secondary, #8e8e93);
+  margin-bottom: 6px;
+}
+
+.dm-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1c1c1e);
+  margin: 0;
+}
+
+.dm-empty-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary, #8e8e93);
+  margin: 0;
+  max-width: 210px;
+  line-height: 1.45;
+}
+
+/* ── Bolinha de não-lido ──────────────────────────────────────────────────── */
+.dm-unread-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary-btn);
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: center;
+}
+
+/* ── Fade in geral ────────────────────────────────────────────────────────── */
+@keyframes dm-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+.dm-time-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 12px;
+  color: #999;
+  font-size: 12px;
+}

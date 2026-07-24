@@ -1,0 +1,82 @@
+.navbar-bottom {
+  position: fixed;
+  display: block;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+  z-index: 9999;
+}
+
+.navbar-bottom-area svg {
+  width: 28px;
+  height: 26px;
+  fill: #888;
+}
+
+.active-bar svg{
+  fill:  #fff;
+}
+
+.navbar-bottom-area{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  padding-bottom: 32px;
+}
+
+.navbar-bottom-area a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f8f9f9;
+  font-size: 26px;
+  padding: 8px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.profile-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #333;
+}
+
+.update-dot {
+  position: relative;
+}
+
+.update-dot::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
+
+.update-dot-nt {
+  position: relative;
+}
+
+.update-dot-nt::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
