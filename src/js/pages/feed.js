@@ -857,14 +857,6 @@ function initCarousel(postEl) {
     });
   });
 
-  carousel.addEventListener('dblclick', evento => {
-    evento.preventDefault();
-    animateHeartLike(carousel, evento);
-    const botaoLike = postEl.querySelector('.btn-like');
-    if (botaoLike) {
-      botaoLike.click();
-    }
-  });
 }
 
 function renderPost(postData, container) {
@@ -925,6 +917,11 @@ function renderPost(postData, container) {
 
   container.appendChild(postEl);
   initCarousel(postEl);
+
+  const areaDeMidia = postEl.querySelector('.post-content');
+  if (areaDeMidia) {
+    ativarLikeComDoisCliques(areaDeMidia, postEl);
+  }
 
   const contadorComentarios = postEl.querySelector('.btn-comment span');
   if (contadorComentarios) {
@@ -1021,24 +1018,46 @@ function renderPost(postData, container) {
   });
 }
 
+function ativarLikeComDoisCliques(elemento, postEl) {
+  let ultimoClique = 0;
+
+  elemento.addEventListener('click', (evento) => {
+    const agora = Date.now();
+    const tempoEntreCliques = agora - ultimoClique;
+
+    if (tempoEntreCliques < 300 && tempoEntreCliques > 0) {
+      animateHeartLike(elemento, evento);
+
+      const botaoLike = postEl.querySelector('.btn-like');
+      if (botaoLike) {
+        botaoLike.click();
+      }
+
+      ultimoClique = 0;
+    } else {
+      ultimoClique = agora;
+    }
+  });
+}
+
 function animateHeartLike(carousel, evento) {
   const rect = carousel.getBoundingClientRect();
   const coracao = document.createElement('div');
-  coracao.innerHTML = '❤️';
+  coracao.innerHTML = `<svg aria-hidden="true" class="x1lliihq x1n2onr6 xxk16z8" fill="currentColor" height="60" role="img" viewBox="0 0 48 48" width="60"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg>`;
   const posicaoX = evento.clientX - rect.left;
   const posicaoY = evento.clientY - rect.top;
-  coracao.style.cssText = `position:absolute;left:${posicaoX}px;top:${posicaoY}px;pointer-events:none;font-size:50px;animation:floatHeart 1.5s ease-out forwards;z-index:1000;`;
+  coracao.style.cssText = `position:absolute;left:${posicaoX}px;top:${posicaoY}px;transform:translate(-50%,-50%);color:#ff3040;pointer-events:none;line-height:0;animation:floatHeart 1s ease-out forwards;z-index:1000;`;
 
   if (!document.getElementById('heart-animation-style')) {
     const estilo = document.createElement('style');
     estilo.id = 'heart-animation-style';
-    estilo.textContent = `@keyframes floatHeart{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-100px) scale(0.8)}}`;
+    estilo.textContent = `@keyframes floatHeart{0%{opacity:1;transform:translate(-50%,-50%) scale(0.3)}15%{transform:translate(-50%,-50%) scale(1.3)}30%{transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-150%) scale(1)}}`;
     document.head.appendChild(estilo);
   }
 
   carousel.style.position = 'relative';
   carousel.appendChild(coracao);
-  setTimeout(() => coracao.remove(), 1500);
+  setTimeout(() => coracao.remove(), 1000);
 }
 
 async function fetchFriends(uidDoUsuario) {
