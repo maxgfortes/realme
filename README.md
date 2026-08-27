@@ -34,7 +34,7 @@ O realme não existe para prender sua atenção. Existe para conectar você com 
 - Grid de posts no perfil
 - Links sociais no perfil
 - Amizades bidirecionais
-- **Direct** (mensagens diretas)
+- **Mensagens**
   - Reações em mensagens
   - Reply em mensagens
   - Status de humor no direct
