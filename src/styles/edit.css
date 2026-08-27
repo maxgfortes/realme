@@ -20,6 +20,8 @@ body {
 .label-container.color {
     display: flex;
     flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .label-rigth.color {
@@ -181,7 +183,9 @@ body {
 
 .banner-container {
     padding: 10px 0;
-    height: 120px ;
+    height: 120px;
+    width: 100%;
+    max-width: 410px;
 }
 
 .banner-area {
@@ -284,9 +288,12 @@ body {
 }
 
 .save-area {
+    position: fixed;
+    bottom: 0;
     width: 100%;
     padding: 12px;
     padding-bottom: 38px;
+    background: var(--bg-primary);
 }
 
 .save-btn {
