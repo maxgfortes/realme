@@ -37,7 +37,7 @@ O realme não existe para prender sua atenção. Existe para conectar você com 
 - **Mensagens**
   - Reações em mensagens
   - Reply em mensagens
-  - Status de humor no direct
+  - Status de humor nas mensagens
 - **"Ver mais" no perfil**: nome completo, aniversário, gostos (livros, jogos, roupas), procurando por, entrou em, status de relacionamento
 - **Achar amigos**: busca por gostos em comum, localização, personalidade e hobbies, tudo extraído da visão geral dos usuários, montando um grid ordenado por afinidade
 - **Aba de atividades**: últimas atividades dos amigos — novos relacionamentos, novos posts, comentários feitos em qualquer lugar, mudanças de perfil, novas amizades, etc.
