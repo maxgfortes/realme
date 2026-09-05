@@ -6,6 +6,7 @@ body {
 .page-container {
     width: 100%;
     padding-top: 60px;
+    padding-bottom: 200px;
     height: 100dvh; 
     overflow-x: hidden;
     overflow-y: auto;
@@ -135,10 +136,6 @@ body {
 .major-container {
     border-left: none;
     border-right: none;
-}
-
-.major-container.link {
-    border: 0.1px solid var(--navbar-border);
 }
 
 .config-title {
