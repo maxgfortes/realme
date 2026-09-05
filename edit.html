@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
   <title>RealMe</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="../src/styles/base.css">
   <link rel="stylesheet" href="../src/styles/edit.css">
   <link rel="stylesheet" href="../src/styles/root.css">
   <link rel="icon" href="../public/img/icon.png" type="image/png">
+
   <link rel="manifest" href="/manifest.json">
+
   <meta name="theme-color" content="#0f0f0f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -30,126 +34,192 @@
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 </head>
+
 <body>
-  
+
 <div class="navbar-top">
   <div class="top-left">
     <button onclick="window.history.back()">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+        <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+      </svg>
     </button>
   </div>
+
   <h2>Editar perfil</h2>
+
   <div class="top-right">
     <a>
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95"><g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95">
+        <g>
+          <path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/>
+        </g>
+      </svg>
     </a>
   </div>
 </div>
 
 
 <div class="page-container">
-  <div class="media-area"> 
+
+  <div class="media-area">
+
     <div class="pfp-container">
       <div class="pfp-area">
-        <img src="./public/img/default.jpg" alt="pfp" class="pfp">
+        <img src="../public/img/default.jpg" alt="pfp" class="pfp">
       </div>
     </div>
+
     <div class="banner-container">
       <div class="banner-area">
         <img src="../public/img/bg.jpg" alt="banner" class="banner">
       </div>
     </div>
+
   </div>
+
+
   <div class="major-container">
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Nome</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <input type="text" class="label-input" id="name">
         </div>
       </div>
     </div>
+
+
+    <div class="label-container">
+      <div class="label-left">
+        <div class="label-title">Sobrenome</div>
+      </div>
+
+      <div class="label-rigth">
+        <div class="label-input-area">
+          <input type="text" class="label-input" id="surname">
+        </div>
+      </div>
+    </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Nome de usuario</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <input type="text" class="label-input" id="username">
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Pronomes</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <input type="text" class="label-input" id="pronomes">
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Bio</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <input type="text" class="label-input" id="bio">
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Genero</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <select class="label-input" id="genero">
+            <option value="">Selecione</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+          </select>
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Localização</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <input type="text" class="label-input" id="localizacao">
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
       <div class="label-left">
         <div class="label-title">Status de relacionamento</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input">
+          <select class="label-input" id="relacionamento">
+            <option value="">Selecione</option>
+            <option value="Em Compromisso">Em Compromisso</option>
+            <option value="Solteiro(a)">Solteiro(a)</option>
+            <option value="Namorando">Namorando</option>
+            <option value="Noivo(a)">Noivo(a)</option>
+            <option value="Casado(a)">Casado(a)</option>
+            <option value="É Complicado">É Complicado</option>
+          </select>
         </div>
       </div>
     </div>
+
+
     <div class="label-container">
-      <div class="label-left">
+      <div class="label-left last">
         <div class="label-title">Musica</div>
       </div>
+
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input" placeholder="Cole uma URL do youtube">
+          <input type="text" class="label-input" id="musica" placeholder="Cole uma URL do youtube">
         </div>
       </div>
     </div>
+
   </div>
+
+
   <div class="major-container link" id="links-container">
-    <div class="config-title" id="links-toggle">
-      Links
-    </div>
+    <div class="config-title" id="links-toggle">Links</div>
     <div class="links-list">
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fa-brands fa-instagram"></i></div>
+          <div class="label-title">
+            <i class="fa-brands fa-instagram"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -160,7 +230,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fa-brands fa-x-twitter"></i></div>
+          <div class="label-title">
+            <i class="fa-brands fa-x-twitter"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -171,7 +243,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-spotify"></i></div>
+          <div class="label-title">
+            <i class="fab fa-spotify"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -182,7 +256,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-tiktok"></i></div>
+          <div class="label-title">
+            <i class="fab fa-tiktok"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -193,7 +269,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-pinterest"></i></div>
+          <div class="label-title">
+            <i class="fab fa-pinterest"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -204,7 +282,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fa-brands fa-reddit-alien"></i></div>
+          <div class="label-title">
+            <i class="fa-brands fa-reddit-alien"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -215,7 +295,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-facebook"></i></div>
+          <div class="label-title">
+            <i class="fab fa-facebook"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -226,7 +308,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-youtube"></i></div>
+          <div class="label-title">
+            <i class="fab fa-youtube"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -237,7 +321,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-discord"></i></div>
+          <div class="label-title">
+            <i class="fab fa-discord"></i>
+          </div>
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
@@ -248,7 +334,9 @@
       </div>
       <div class="label-container">
         <div class="label-left link">
-          <div class="label-title"><i class="fab fa-playstation"></i></div>
+          <div class="label-title">
+            <i class="fab fa-playstation"></i>
+          </div>
         </div>
         <div class="label-rigth last">
           <div class="label-input-area last">
@@ -259,24 +347,13 @@
       </div>
     </div>
   </div>
-  <div class="label-container color">
-      <div class="label-left">
-        <div class="label-title">Cor de perfil</div>
-      </div>
-      <div class="label-rigth color">
-        <div class="label-input-area">
-          <input type="color" value="#474747" class="label-input color">
-        </div>
-      </div>
-    </div>
   <div class="save-area">
     <button class="save-btn">Salvar</button>
   </div>
 </div>
 
-</body>
-<script type="module" src="./src/js/pages/edit.js"></script> 
+<script type="module" src="./src/js/pages/edit.js"></script>
 <script type="module" src="./src/modules/auth-verification.js"></script>
 <script type="module" src="../src/components/pc-alert.js"></script>
+</body>
 </html>
-

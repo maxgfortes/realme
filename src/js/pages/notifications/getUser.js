@@ -23,11 +23,11 @@ export async function getUser(fromUid) {
     const mediaReference =
         doc(db, "users", fromUid, "user-infos", "user-media");
 
-    const userResult =
-        await getDoc(userReference);
-
-    const mediaResult =
-        await getDoc(mediaReference);
+    const [userResult, mediaResult] =
+        await Promise.all([
+            getDoc(userReference),
+            getDoc(mediaReference)
+        ]);
 
     let username = "usuário";
     let handle = "";

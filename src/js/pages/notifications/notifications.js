@@ -25,7 +25,8 @@ import { deleteNotification } from "./deleteNotification.js";
 import {
     acceptFriendRequest,
     declineFriendRequest,
-    updateFriendRequestsBadge
+    subscribeFriendRequests,
+    unsubscribeFriendRequestsListener
 } from "./friendRequests.js";
 import { enableSwipe } from "./swipe.js";
 
@@ -39,6 +40,9 @@ const defaultAvatar =
 
 
 const posts = {};
+
+
+const fullPageSize = 50;
 
 
 let unsubscribeNotifications = null;
@@ -169,7 +173,7 @@ function createNotification(
 
         <div class="notification-item-content">
 
-            <div class="notification-user-pfp">
+            <div class="notification-user-pfp" style="cursor: pointer;">
 
                 <img
                     src="${user.userphoto}"
@@ -224,12 +228,19 @@ function createNotification(
     `;
 
 
+    function goToProfile() {
+        window.location.href = "perfil.html?uid=" + notification.fromUid;
+    }
+
+
     const nameElement =
         item.querySelector(".notification-name");
 
-    nameElement.addEventListener("click", function() {
-        window.location.href = "perfil.html?uid=" + notification.fromUid;
-    });
+    const pfpElement =
+        item.querySelector(".notification-user-pfp");
+
+    nameElement.addEventListener("click", goToProfile);
+    pfpElement.addEventListener("click", goToProfile);
 
 
     if (notification.type === "friend_request") {
@@ -246,7 +257,6 @@ function createNotification(
             await acceptFriendRequest(notification.fromUid, meUid);
             deleteNotification(notification.id);
             item.remove();
-            updateFriendRequestsBadge(meUid);
         });
 
         declineButton.addEventListener("click", async function() {
@@ -255,7 +265,6 @@ function createNotification(
             await declineFriendRequest(notification.fromUid, meUid);
             deleteNotification(notification.id);
             item.remove();
-            updateFriendRequestsBadge(meUid);
         });
     }
 
@@ -435,6 +444,15 @@ function loadNotifications(uid) {
         renderResolvedNotifications(cached, uid);
     }
 
+    // A velocidade vem do cache local (renderiza na hora) e da resolução
+    // em paralelo abaixo — um único listener em tempo real, sem trocar
+    // de inscrição no meio do caminho, que é frágil e pode deixar o
+    // real-time "travado" dependendo do timing do Firestore.
+    subscribeNotifications(uid);
+}
+
+
+function subscribeNotifications(uid) {
 
     const date =
         new Date();
@@ -480,8 +498,14 @@ function loadNotifications(uid) {
                 "desc"
             ),
 
-            limit(50)
+            limit(fullPageSize)
         );
+
+
+    if (unsubscribeNotifications) {
+        unsubscribeNotifications();
+        unsubscribeNotifications = null;
+    }
 
 
     unsubscribeNotifications =
@@ -532,15 +556,12 @@ function loadNotifications(uid) {
                 }
 
 
-                const resolvedList = [];
-
-                for (const notification of notifications) {
-
-                    const resolved =
-                        await resolveNotification(notification);
-
-                    resolvedList.push(resolved);
-                }
+                // Resolve usuário/post de todas as notificações em
+                // paralelo, em vez de um por um.
+                const resolvedList =
+                    await Promise.all(
+                        notifications.map(resolveNotification)
+                    );
 
 
                 renderResolvedNotifications(resolvedList, uid);
@@ -561,6 +582,7 @@ onAuthStateChanged(
 
         if (!user) {
             renderEmpty();
+            unsubscribeFriendRequestsListener();
             return;
         }
 
@@ -568,7 +590,7 @@ onAuthStateChanged(
             user.uid
         );
 
-        updateFriendRequestsBadge(
+        subscribeFriendRequests(
             user.uid
         );
     }

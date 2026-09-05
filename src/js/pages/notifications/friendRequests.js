@@ -4,7 +4,7 @@ import {
     collection,
     query,
     where,
-    getDocs,
+    onSnapshot,
     doc,
     updateDoc,
     deleteDoc
@@ -16,6 +16,9 @@ import { getUser } from "./getUser.js";
 const requestsList = document.querySelector("#requestsList");
 const requestsSub = document.querySelector(".see-requests-sub");
 const requestsDot = document.querySelector(".new-request-dot");
+
+
+let unsubscribeFriendRequests = null;
 
 
 export async function acceptFriendRequest(fromUid, meUid) {
@@ -67,39 +70,44 @@ function createRequestItem(request, meUid) {
     const acceptButton = item.querySelector(".accept-request-btn");
     const declineButton = item.querySelector(".decline-request-btn");
 
+    // Não precisa mais remover o item nem atualizar o badge na mão:
+    // a escrita no Firestore já dispara o onSnapshot abaixo, que
+    // re-renderiza a lista e o badge sozinho.
     acceptButton.addEventListener("click", async function() {
         acceptButton.disabled = true;
         declineButton.disabled = true;
         await acceptFriendRequest(request.fromUid, meUid);
-        item.remove();
-        updateFriendRequestsBadge(meUid);
     });
 
     declineButton.addEventListener("click", async function() {
         acceptButton.disabled = true;
         declineButton.disabled = true;
         await declineFriendRequest(request.fromUid, meUid);
-        item.remove();
-        updateFriendRequestsBadge(meUid);
     });
 
     return item;
 }
 
 
-export async function loadFriendRequests(meUid) {
+async function renderFriendRequests(result, meUid) {
+
+    const count = result.size;
+
+    if (count > 0) {
+        requestsDot.classList.add("active");
+    } else {
+        requestsDot.classList.remove("active");
+    }
+
+    if (count === 0) {
+        requestsSub.textContent = "Nenhum pedido pendente";
+    } else if (count === 1) {
+        requestsSub.textContent = "1 pedido de amizade";
+    } else {
+        requestsSub.textContent = count + " pedidos de amizade";
+    }
 
     requestsList.innerHTML = "";
-
-    const requestsReference = collection(db, "friendRequests");
-
-    const requestsQuery = query(
-        requestsReference,
-        where("to", "==", meUid),
-        where("status", "==", "pending")
-    );
-
-    const result = await getDocs(requestsQuery);
 
     if (result.empty) {
         requestsList.innerHTML =
@@ -107,18 +115,24 @@ export async function loadFriendRequests(meUid) {
         return;
     }
 
-    for (const requestDocument of result.docs) {
+    // Resolve todos os usuários dos pedidos em paralelo.
+    const requests = await Promise.all(
+        result.docs.map(async function(requestDocument) {
 
-        const requestData = requestDocument.data();
+            const requestData = requestDocument.data();
 
-        const user = await getUser(requestData.from);
+            const user = await getUser(requestData.from);
 
-        const request = {
-            fromUid: requestData.from,
-            username: user.username,
-            handle: user.handle,
-            userphoto: user.userphoto
-        };
+            return {
+                fromUid: requestData.from,
+                username: user.username,
+                handle: user.handle,
+                userphoto: user.userphoto
+            };
+        })
+    );
+
+    for (const request of requests) {
 
         const requestItem = createRequestItem(request, meUid);
 
@@ -127,7 +141,12 @@ export async function loadFriendRequests(meUid) {
 }
 
 
-export async function updateFriendRequestsBadge(meUid) {
+export function subscribeFriendRequests(meUid) {
+
+    if (unsubscribeFriendRequests) {
+        unsubscribeFriendRequests();
+        unsubscribeFriendRequests = null;
+    }
 
     const requestsReference = collection(db, "friendRequests");
 
@@ -137,25 +156,23 @@ export async function updateFriendRequestsBadge(meUid) {
         where("status", "==", "pending")
     );
 
-    const result = await getDocs(requestsQuery);
+    unsubscribeFriendRequests = onSnapshot(
+        requestsQuery,
+        function(result) {
+            renderFriendRequests(result, meUid);
+        }
+    );
+}
 
-    const count = result.size;
 
-    if (count > 0) {
-        requestsDot.style.display = "block";
-    } else {
-        requestsDot.style.display = "none";
+export function unsubscribeFriendRequestsListener() {
+
+    if (unsubscribeFriendRequests) {
+        unsubscribeFriendRequests();
+        unsubscribeFriendRequests = null;
     }
 
-    if (count === 0) {
-        requestsSub.textContent = "Nenhum pedido pendente";
-        return;
-    }
-
-    if (count === 1) {
-        requestsSub.textContent = "1 pedido de amizade";
-        return;
-    }
-
-    requestsSub.textContent = count + " pedidos de amizade";
+    requestsList.innerHTML = "";
+    requestsDot.classList.remove("active");
+    requestsSub.textContent = "Nenhum pedido pendente";
 }

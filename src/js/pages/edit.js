@@ -1,16 +1,15 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc
+  getFirestore, doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-
 import {
   triggerEdicaoPerfil,
   triggerMudancaStatus
-} from './activitie-creator.js';
+} from "./activitie-creator.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
@@ -21,513 +20,705 @@ const firebaseConfig = {
   appId: "1:306331636603:web:c0ae0bd22501803995e3de",
   measurementId: "G-D96BEW6RC3"
 };
-const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db   = getFirestore(app);
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const auth = getAuth(app);
 
 const IMGBB_API_KEY = "fc8497dcdf559dc9cbff97378c82344c";
 
-async function uploadToImgBB(file) {
-  const formData = new FormData();
-  formData.append('image', file);
-  const res  = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body:formData });
-  const data = await res.json();
-  if (data.success) return data.data.url;
-  throw new Error('ImgBB: ' + (data.error?.message || 'Erro desconhecido'));
-}
-
-
-let currentUser = null;
-let currentData = {};
-let pendingUploads = { pfp: null, banner: null };
-
-
-const pfpImg        = document.querySelector('.pfp');
-const bannerImg     = document.querySelector('.banner');
-const inputs        = document.querySelectorAll('.label-input');
-const inNome        = inputs[0];
-const inUsername    = inputs[1];
-const inPronomes    = inputs[2];
-const inBio         = inputs[3];
-const inLocalizacao = inputs[5];
-const inMusica      = inputs[7];
-const inCor         = inputs[8];
-const saveBtn       = document.querySelector('.save-btn');
-
-
-const _inGeneroOrig = inputs[4];
-const selGenero = document.createElement('select');
-selGenero.className = _inGeneroOrig.className;
-selGenero.style.cssText = 'width:100%;background:transparent;border:none;color:inherit;font-size:inherit;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;';
-[
-  { val: '',          label: 'Selecione...' },
-  { val: 'masculino', label: 'Masculino' },
-  { val: 'feminino',  label: 'Feminino'  },
-].forEach(({ val, label }) => {
-  const o = document.createElement('option');
-  o.value = val; o.textContent = label; o.style.background = '#1a1a1a';
-  selGenero.appendChild(o);
-});
-_inGeneroOrig.parentNode.replaceChild(selGenero, _inGeneroOrig);
-
-const _inRelacOrig = inputs[6];
-const selRelac = document.createElement('select');
-selRelac.className = _inRelacOrig.className;
-selRelac.style.cssText = 'width:100%;background:transparent;border:none;color:inherit;font-size:inherit;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;';
-
-function getStatusOpcoes(genero) {
-  const f = genero === 'feminino';
-  return [
-    { val: '',              label: 'Selecione...'  },
-    { val: 'solteiro',      label: f ? 'Solteira'       : 'Solteiro'      },
-    { val: 'namorando',     label:     'Namorando'                         },
-    { val: 'casado',        label: f ? 'Casada'         : 'Casado'        },
-    { val: 'em compromisso',label:     'Em compromisso'                    },
-    { val: 'viuvo',         label: f ? 'Viúva'          : 'Viúvo'         },
-  ];
-}
-
-function atualizarOpcoeStatus(genero, valorAtual) {
-  selRelac.innerHTML = '';
-  getStatusOpcoes(genero).forEach(({ val, label }) => {
-    const o = document.createElement('option');
-    o.value = val; o.textContent = label; o.style.background = '#1a1a1a';
-    selRelac.appendChild(o);
-  });
-  if (valorAtual !== undefined) selRelac.value = valorAtual;
-}
-
-atualizarOpcoeStatus('', '');
-selGenero.addEventListener('change', () => atualizarOpcoeStatus(selGenero.value, selRelac.value));
-_inRelacOrig.parentNode.replaceChild(selRelac, _inRelacOrig);
-
-const inGenero = selGenero;
-const inRelac  = selRelac;
-
-
-let toastTimeout;
-function showToast(msg, type = 'info') {
-  let toast = document.getElementById('edit-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'edit-toast';
-    toast.style.cssText = `
-      position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #1e1e1e; color: #f8f9f9; padding: 12px 22px;
-      border-radius: 14px; font-size: 14px; font-weight: 600;
-      z-index: 999999; opacity: 0; pointer-events: none;
-      transition: opacity .25s, transform .25s;
-      border: 1px solid #333; max-width: 100vw; text-align: center;
-      display: flex; align-items: center; gap: 8px; text-wrap: nowrap;`;
-    document.body.appendChild(toast);
-  }
-  const icons = { success: '', error: '', loading: '', info: '' };
-  toast.innerHTML = `<span>${icons[type] || ''}</span><span>${msg}</span>`;
-  clearTimeout(toastTimeout);
-  requestAnimationFrame(() => {
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateX(-50%) translateY(0)';
-  });
-  if (type !== 'loading') {
-    toastTimeout = setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(20px)';
-    }, 3500);
-  }
-}
-
-const RULES = {
-  nome: {
-    max: 40,
-    validate: v => {
-      if (!v.trim()) return 'O nome não pode estar vazio.';
-      if (v.trim().length > 40) return 'Nome deve ter no máximo 40 caracteres.';
-      return null;
-    }
-  },
-  username: {
-    max: 20,
-    validate: v => {
-      if (!v.trim()) return 'Username não pode estar vazio.';
-      if (v.length < 3) return 'Username deve ter pelo menos 3 caracteres.';
-      if (v.length > 20) return 'Username deve ter no máximo 20 caracteres.';
-      if (!/^[a-z0-9_]+$/.test(v)) return 'Username só pode ter letras minúsculas, números e _.';
-      return null;
-    }
-  },
-  pronomes: {
-    max: 30,
-    validate: v => {
-      if (v.length > 30) return 'Pronomes devem ter no máximo 30 caracteres.';
-      return null;
-    }
-  },
-  bio: {
-    max: 150,
-    validate: v => {
-      if (v.length > 150) return 'Bio deve ter no máximo 150 caracteres.';
-      return null;
-    }
-  },
-  localizacao: {
-    max: 50,
-    validate: v => {
-      if (v.length > 50) return 'Localização deve ter no máximo 50 caracteres.';
-      return null;
-    }
-  },
-  musica: {
-    validate: v => {
-      if (!v) return null;
-      const isYT = /youtube\.com|youtu\.be/.test(v);
-      if (!isYT) return 'Cole uma URL válida do YouTube.';
-      return null;
-    }
-  },
+const fields = {
+  name: document.getElementById("name"),
+  surname: document.getElementById("surname"),
+  username: document.getElementById("username"),
+  pronomes: document.getElementById("pronomes"),
+  bio: document.getElementById("bio"),
+  genero: document.getElementById("genero"),
+  localizacao: document.getElementById("localizacao"),
+  relacionamento: document.getElementById("relacionamento"),
+  musica: document.getElementById("musica")
 };
 
-function setupCharCounter(input, fieldKey) {
-  const rule = RULES[fieldKey];
-  if (!rule?.max) return;
-  const counter = document.createElement('span');
-  counter.style.cssText = 'font-size:11px;color:#555;position:absolute;right:10px;bottom:4px;pointer-events:none; display:none;';
-  const area = input.parentElement;
-  area.style.position = 'relative';
-  area.appendChild(counter);
-  const update = () => {
-    const len = input.value.length;
-    counter.textContent = `${len}/${rule.max}`;
-    counter.style.color = len > rule.max * 0.9 ? (len >= rule.max ? '#f85149' : '#d29922') : '#555';
-  };
-  input.addEventListener('input', update);
-  update();
+const pfpImg = document.querySelector(".pfp");
+const bannerImg = document.querySelector(".banner");
+const pfpArea = document.querySelector(".pfp-area");
+const bannerArea = document.querySelector(".banner-area");
+
+const linkInputs = document.querySelectorAll("[data-link]");
+
+const saveBtn = document.querySelector(".save-btn");
+const linksToggle = document.getElementById("links-toggle");
+const linksList = document.querySelector(".links-list");
+
+let currentUser = null;
+let oldData = {};
+let pendingUploads = {
+  userphoto: null,
+  headerphoto: null
+};
+
+const CACHE_PREFIX = "profileEditCache:";
+
+function getCache(uid) {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + uid);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    return null;
+  }
 }
 
-function setFieldError(input, msg) {
-  input.style.borderBottom = '2px solid #f85149';
-  let err = input.parentElement.querySelector('.field-error');
-  if (!err) { err = document.createElement('span'); err.className = 'field-error';
-    err.style.cssText = 'font-size:11px;color:#f85149;display:block;margin-top:3px;'; input.parentElement.appendChild(err); }
-  err.textContent = msg;
-}
-function clearFieldError(input) {
-  input.style.borderBottom = '';
-  input.parentElement.querySelector('.field-error')?.remove();
+function setCache(uid, data) {
+  try {
+    localStorage.setItem(CACHE_PREFIX + uid, JSON.stringify(data));
+  } catch (error) {
+    return;
+  }
 }
 
+let toastEl = null;
+let toastTimeout = null;
 
-inUsername.addEventListener('input', () => {
-  const pos = inUsername.selectionStart;
-  inUsername.value = inUsername.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
-  inUsername.setSelectionRange(pos, pos);
-  clearFieldError(inUsername);
-});
+function ensureToastStyles() {
+  if (document.getElementById("app-toast-styles")) return;
 
+  const style = document.createElement("style");
+  style.id = "app-toast-styles";
+  style.textContent = `
+    .app-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 140%);
+      background: rgb(20, 20, 20);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      z-index: 99999;
+      width: 90%;
+      text-align: center;
+      pointer-events: none;
+    }
 
-[inNome, inPronomes, inBio, inLocalizacao, inMusica].forEach(inp => {
-  inp.addEventListener('input', () => clearFieldError(inp));
-});
+    .app-toast.show {
+      transform: translate(-50%, -60px);
+    }
+  `;
+  document.head.appendChild(style);
+}
 
+function showToast(message, options = {}) {
+  const { persist = false, duration = 2600 } = options;
 
-function criarFileInput(accept, callback) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = accept;
-  input.style.display = 'none';
-  document.body.appendChild(input);
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (file) callback(file);
-    input.remove();
+  ensureToastStyles();
+
+  if (!toastEl) {
+    toastEl = document.createElement("div");
+    toastEl.className = "app-toast";
+    document.body.appendChild(toastEl);
+  }
+
+  clearTimeout(toastTimeout);
+  toastEl.textContent = message;
+
+  requestAnimationFrame(() => {
+    toastEl.classList.add("show");
   });
-  return input;
+
+  if (!persist) {
+    toastTimeout = setTimeout(() => {
+      hideToast();
+    }, duration);
+  }
 }
 
-function validarImagem(file) {
-  const tipos = ['image/jpeg','image/png','image/webp','image/gif'];
-  if (!tipos.includes(file.type)) return 'Formato inválido. Use JPG, PNG, WEBP ou GIF.';
-  if (file.size > 5 * 1024 * 1024) return 'Imagem deve ter no máximo 5MB.';
+function hideToast() {
+  clearTimeout(toastTimeout);
+  if (toastEl) {
+    toastEl.classList.remove("show");
+  }
+}
+
+function setSelectValue(select, rawValue) {
+  const value = (rawValue || "").trim();
+
+  if (!value) {
+    select.value = "";
+    return;
+  }
+
+  const match = Array.from(select.options).find(
+    option => option.value.trim().toLowerCase() === value.toLowerCase()
+  );
+
+  if (match) {
+    select.value = match.value;
+    return;
+  }
+
+  const extraOption = document.createElement("option");
+  extraOption.value = value;
+  extraOption.textContent = value;
+  select.appendChild(extraOption);
+  select.value = value;
+}
+
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(
+    `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error("Erro ao enviar imagem.");
+  }
+
+  return data.data.url;
+}
+
+function compressImage(file, type) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        if (type === "pfp") {
+          canvas.width = 200;
+          canvas.height = 200;
+
+          const size = Math.min(img.width, img.height);
+          const sx = (img.width - size) / 2;
+          const sy = (img.height - size) / 2;
+
+          ctx.drawImage(
+            img,
+            sx,
+            sy,
+            size,
+            size,
+            0,
+            0,
+            200,
+            200
+          );
+        } else {
+          const width = 750;
+          const height = Math.round(
+            (img.height / img.width) * width
+          );
+
+          canvas.width = width;
+          canvas.height = height;
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+          );
+        }
+
+        canvas.toBlob(
+          blob => {
+            if (!blob) {
+              reject(new Error("Erro ao comprimir a imagem."));
+              return;
+            }
+
+            resolve(
+              new File(
+                [blob],
+                `${type}.jpg`,
+                {
+                  type: "image/jpeg",
+                  lastModified: Date.now()
+                }
+              )
+            );
+          },
+          "image/jpeg",
+          0.8
+        );
+      };
+
+      img.onerror = () => {
+        reject(new Error("Erro ao carregar a imagem."));
+      };
+
+      img.src = reader.result;
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Erro ao ler a imagem."));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function chooseImage(type) {
+  const input = document.createElement("input");
+
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.onchange = async () => {
+    const file = input.files[0];
+
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("A imagem deve ter no máximo 5MB.");
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+
+    if (type === "pfp") {
+      pfpImg.src = preview;
+    } else {
+      bannerImg.src = preview;
+    }
+
+    try {
+      const compressedFile = await compressImage(file, type);
+
+      if (type === "pfp") {
+        pendingUploads.pfp = compressedFile;
+      } else {
+        pendingUploads.banner = compressedFile;
+      }
+    } catch (error) {
+      showToast("Erro ao processar a imagem.");
+    }
+  };
+
+  input.click();
+}
+
+pfpArea.onclick = () => chooseImage("pfp");
+bannerArea.onclick = () => chooseImage("banner");
+
+const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[' -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+
+const RULES = {
+  name: v => {
+    if (!v) return "Digite seu nome";
+    if (v.length > 10) return "O nome deve ter no máximo 10 caracteres";
+    if (!NAME_REGEX.test(v)) return "Digite um nome válido";
+    return null;
+  },
+
+  surname: v => {
+    if (!v) return "Digite seu sobrenome";
+    if (v.length > 15) return "O sobrenome deve ter no máximo 15 caracteres";
+    if (!NAME_REGEX.test(v)) return "Digite um sobrenome válido";
+    return null;
+  },
+
+  username: v => {
+    if (!v) return "Digite seu nome de usuári.";
+    if (v.length < 3) return "O username precisa ter pelo menos 3 caracteres";
+    if (v.length > 20) return "O username deve ter no máximo 20 caracteres";
+    if (!/^[a-z0-9_]+$/.test(v)) {
+      return "O username só pode ter letras minúsculas, números e _.";
+    }
+    return null;
+  },
+
+  pronomes: v => (
+    v.length > 30
+      ? "Os pronomes devem ter no máximo 30 caracteres."
+      : null
+  ),
+
+  bio: v => (
+    v.length > 150
+      ? "A bio deve ter no máximo 150 caracteres."
+      : null
+  ),
+
+  localizacao: v => (
+    v.length > 50
+      ? "A localização deve ter no máximo 50 caracteres."
+      : null
+  ),
+
+  musica: v => (
+    v && !/youtube\.com|youtu\.be/.test(v)
+      ? "Cole uma URL válida do YouTube."
+      : null
+  )
+};
+
+function validate(values) {
+  for (const key of Object.keys(RULES)) {
+    const error = RULES[key](values[key]);
+
+    if (error) return error;
+  }
+
   return null;
 }
 
-function previewImagem(file, imgEl) {
-  const reader = new FileReader();
-  reader.onload = e => { imgEl.src = e.target.result; };
-  reader.readAsDataURL(file);
-}
+function applyUserData(data) {
+  const media = data.media || {};
+  const more = data.more || {};
+  const about = data.about || {};
+  const links = data.links || {};
 
-async function uploadImagem(file) {
-  showToast('Enviando imagem…', 'loading');
-  const url = await uploadToImgBB(file);
-  return url;
-}
+  fields.name.value = data.name || "";
+  fields.surname.value = data.surname || "";
+  fields.username.value = data.username || "";
+  fields.bio.value = more.bio || "";
+  fields.localizacao.value = about.location || "";
+  fields.musica.value = media.musicTheme || "";
 
-document.querySelector('.pfp-area').addEventListener('click', () => {
-  const fi = criarFileInput('image/*', file => {
-    const err = validarImagem(file);
-    if (err) { showToast(err, 'error'); return; }
-    pendingUploads.pfp = file;
-    previewImagem(file, pfpImg);
-    showToast('Foto selecionada. Clique em Salvar.', 'info');
-  });
-  fi.click();
-});
+  fields.pronomes.value = about.pronom1
+    ? about.pronom1 + (about.pronom2 ? "/" + about.pronom2 : "")
+    : "";
 
-document.querySelector('.banner-area').addEventListener('click', () => {
-  const fi = criarFileInput('image/*', file => {
-    const err = validarImagem(file);
-    if (err) { showToast(err, 'error'); return; }
-    pendingUploads.banner = file;
-    previewImagem(file, bannerImg);
-    showToast('Banner selecionado. Clique em Salvar.', 'info');
-  });
-  fi.click();
-});
+  setSelectValue(fields.genero, about.gender);
+  setSelectValue(fields.relacionamento, about.maritalStatus);
 
-document.querySelector('.pfp-area').style.cursor = 'pointer';
-document.querySelector('.banner-area').style.cursor = 'pointer';
+  const pfpUrl = media.pfp || media.userphoto;
 
-function addCameraOverlay(containerSel) {
-  const c = document.querySelector(containerSel);
-  if (!c) return;
-  const ov = document.createElement('div');
-  ov.style.cssText = `
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:rgba(0,0,0,0); border-radius:inherit; transition:background .2s; pointer-events:none;`;
-  const icon = document.createElement('i');
-  icon.className = 'fas fa-camera';
-  icon.style.cssText = 'color:#fff; font-size:22px; opacity:0; transition:opacity .2s; filter:drop-shadow(0 1px 4px #000);';
-  ov.appendChild(icon);
-  c.style.position = 'relative';
-  c.appendChild(ov);
-  c.addEventListener('mouseenter', () => { ov.style.background='rgba(0,0,0,.45)'; icon.style.opacity='1'; });
-  c.addEventListener('mouseleave', () => { ov.style.background='rgba(0,0,0,0)';   icon.style.opacity='0'; });
-}
-addCameraOverlay('.pfp-area');
-addCameraOverlay('.banner-area');
-
-
-async function carregarDadosAtuais(uid) {
-  try {
-    const [userDoc, mediaDoc, moreDoc, aboutDoc, linksDoc] = await Promise.all([
-      getDoc(doc(db, 'users', uid)),
-      getDoc(doc(db, `users/${uid}/user-infos/user-media`)),
-      getDoc(doc(db, `users/${uid}/user-infos/more-infos`)),
-      getDoc(doc(db, `users/${uid}/user-infos/about`)),
-      getDoc(doc(db, `users/${uid}/user-infos/links`)),
-    ]);
-    const u  = userDoc.exists()  ? userDoc.data()  : {};
-    const m  = mediaDoc.exists() ? mediaDoc.data() : {};
-    const mi = moreDoc.exists()  ? moreDoc.data()  : {};
-    const a  = aboutDoc.exists() ? aboutDoc.data() : {};
-    const l  = linksDoc.exists() ? linksDoc.data() : {};
-
-    currentData = { ...u, media: m, moreInfos: mi, about: a, linksData: l };
-
-    inNome.value       = u.displayName || u.displayname || u.name || '';
-    inUsername.value   = u.username || '';
-    inBio.value        = mi.bio || '';
-    const genVal = a.gender || u.gender || '';
-    selGenero.value = genVal;
-    atualizarOpcoeStatus(genVal, a.maritalStatus || '');
-    inLocalizacao.value = a.location || u.location || '';
-    inMusica.value = m.musicTheme || '';
-    if (m.profileColor) inCor.value = m.profileColor;
-
-    const p1 = a.pronom1 || '', p2 = a.pronom2 || '';
-    inPronomes.value = p2 ? `${p1}/${p2}` : p1;
-
-    const foto = m.pfp || m.userphoto;
-    if (foto) pfpImg.src = foto;
-    const banner = m.banner || m.headerphoto;
-    if (banner) bannerImg.src = banner;
-
-    document.querySelectorAll('[data-link]').forEach(input => {
-      const key = input.dataset.link;
-      input.value = l[key] || '';
-    });
-
-  } catch (e) { console.error('carregarDados:', e); showToast('Erro ao carregar seus dados.', 'error'); }
-}
-
-async function usernameDisponivel(newUsername, currentUid) {
-  if (newUsername === (currentData.username || '')) return true;
-  const snap = await getDoc(doc(db, 'usernames', newUsername));
-  if (!snap.exists()) return true;
-  return snap.data().uid === currentUid;
-}
-
-
-saveBtn.addEventListener('click', async () => {
-  if (!currentUser) { showToast('Você precisa estar logado.', 'error'); return; }
-  const uid = currentUser.uid;
- 
-  const validations = [
-    { input: inNome,        key: 'nome',       val: inNome.value.trim() },
-    { input: inUsername,    key: 'username',   val: inUsername.value },
-    { input: inPronomes,    key: 'pronomes',   val: inPronomes.value },
-    { input: inBio,         key: 'bio',        val: inBio.value },
-    { input: inLocalizacao, key: 'localizacao',val: inLocalizacao.value },
-    { input: inMusica,      key: 'musica',     val: inMusica.value },
-  ];
- 
-  let hasError = false;
-  for (const { input, key, val } of validations) {
-    clearFieldError(input);
-    const err = RULES[key]?.validate(val);
-    if (err) { setFieldError(input, err); hasError = true; }
+  if (pfpUrl) {
+    pfpImg.src = pfpUrl;
   }
-  if (hasError) { showToast('Corrija os campos em vermelho.', 'error'); return; }
 
-  const newUsername = inUsername.value;
-  showToast('Verificando username…', 'loading');
-  let disponivel;
-  try { disponivel = await usernameDisponivel(newUsername, uid); }
-  catch { showToast('Erro ao verificar username.', 'error'); return; }
-  if (!disponivel) { setFieldError(inUsername, 'Este username já está em uso.'); showToast('Username já está em uso.', 'error'); return; }
- 
-  saveBtn.disabled = true;
-  showToast('Salvando…', 'loading');
- 
-  let pfpUrl    = currentData.media?.userphoto || currentData.media?.pfp || null;
-  let bannerUrl = currentData.media?.banner || currentData.media?.headerphoto || null;
- 
-  const mudouFoto    = !!pendingUploads.pfp;
-  const mudouBanner  = !!pendingUploads.banner;
-  const mudouNome    = inNome.value.trim() !== (currentData.displayName || currentData.displayname || currentData.name || '');
-  const mudouBio     = inBio.value.trim() !== (currentData.moreInfos?.bio || '');
-  const mudouStatus  = inRelac.value && inRelac.value !== (currentData.about?.maritalStatus || '');
-  const mudouGenero  = inGenero.value !== (currentData.about?.gender || currentData.gender || '');
-  const mudouLocal   = inLocalizacao.value.trim() !== (currentData.about?.location || currentData.location || '');
-  const mudouMusica  = inMusica.value.trim() !== (currentData.media?.musicTheme || '');
-  const mudouPronomes = inPronomes.value.trim() !== (() => {
-    const p1 = currentData.about?.pronom1 || '';
-    const p2 = currentData.about?.pronom2 || '';
-    return p2 ? `${p1}/${p2}` : p1;
-  })();
- 
-  try {
-    if (pendingUploads.pfp) {
-      showToast('Enviando foto de perfil…', 'loading');
-      pfpUrl = await uploadImagem(pendingUploads.pfp);
-      pendingUploads.pfp = null;
-    }
-    if (pendingUploads.banner) {
-      showToast('Enviando banner…', 'loading');
-      bannerUrl = await uploadImagem(pendingUploads.banner);
-      pendingUploads.banner = null;
-    }
-  } catch (e) {
-    console.error('upload:', e);
-    showToast('Erro ao enviar imagem. Tente novamente.', 'error');
-    saveBtn.disabled = false;
+  const bannerUrl = media.banner || media.headerphoto;
+
+  if (bannerUrl) {
+    bannerImg.src = bannerUrl;
+  }
+
+  linkInputs.forEach(input => {
+    input.value = links[input.dataset.link] || "";
+  });
+}
+
+async function loadUser() {
+  const uid = currentUser.uid;
+  const cached = getCache(uid);
+
+  if (cached) {
+    oldData = cached;
+    applyUserData(cached);
+  }
+
+  const [
+    userSnap,
+    mediaSnap,
+    moreSnap,
+    aboutSnap,
+    linksSnap
+  ] = await Promise.all([
+    getDoc(doc(db, "users", uid)),
+    getDoc(doc(db, `users/${uid}/user-infos/user-media`)),
+    getDoc(doc(db, `users/${uid}/user-infos/more-infos`)),
+    getDoc(doc(db, `users/${uid}/user-infos/about`)),
+    getDoc(doc(db, `users/${uid}/user-infos/links`))
+  ]);
+
+  const user = userSnap.exists() ? userSnap.data() : {};
+  const media = mediaSnap.exists() ? mediaSnap.data() : {};
+  const more = moreSnap.exists() ? moreSnap.data() : {};
+  const about = aboutSnap.exists() ? aboutSnap.data() : {};
+  const links = linksSnap.exists() ? linksSnap.data() : {};
+
+  const fresh = {
+    ...user,
+    media,
+    more,
+    about,
+    links
+  };
+
+  oldData = fresh;
+  applyUserData(fresh);
+  setCache(uid, fresh);
+}
+
+async function usernameAvailable(username) {
+  if (username === oldData.username) {
+    return true;
+  }
+
+  const snap = await getDoc(
+    doc(db, "usernames", username)
+  );
+
+  if (!snap.exists()) {
+    return true;
+  }
+
+  return snap.data().uid === currentUser.uid;
+}
+
+saveBtn.onclick = async () => {
+  if (!currentUser) {
+    showToast("Você precisa estar logado.");
     return;
   }
- 
-  const pronoSplit = inPronomes.value.trim().split('/');
-  const pronom1 = pronoSplit[0]?.trim() || '';
-  const pronom2 = pronoSplit[1]?.trim() || '';
- 
+
+  const values = {
+    name: fields.name.value.trim(),
+    surname: fields.surname.value.trim(),
+    username: fields.username.value.trim(),
+    pronomes: fields.pronomes.value.trim(),
+    bio: fields.bio.value.trim(),
+    genero: fields.genero.value.trim(),
+    localizacao: fields.localizacao.value.trim(),
+    relacionamento: fields.relacionamento.value.trim(),
+    musica: fields.musica.value.trim()
+  };
+
+  const error = validate(values);
+
+  if (error) {
+    showToast(error);
+    return;
+  }
+
+  saveBtn.disabled = true;
+
+  const isUploadingImages = Boolean(
+    pendingUploads.pfp || pendingUploads.banner
+  );
+
   try {
-    const oldUsername = currentData.username || '';
- 
-    await setDoc(doc(db, 'users', uid), {
-      displayName: inNome.value.trim(),
-      displayname: inNome.value.trim(),
-      username:    newUsername,
-    }, { merge: true });
+    const available = await usernameAvailable(values.username);
 
-    if (newUsername !== oldUsername) {
-      await setDoc(doc(db, 'usernames', newUsername), { uid, username: newUsername });
+    if (!available) {
+      showToast("Este username já está em uso.");
+      return;
     }
- 
-    const mediaPayload = {
-      musicTheme:   inMusica.value.trim(),
-      profileColor: inCor.value,
-    };
-    if (pfpUrl)    mediaPayload.userphoto = pfpUrl;
-    if (bannerUrl) mediaPayload.banner = bannerUrl;
-    await setDoc(doc(db, `users/${uid}/user-infos/user-media`), mediaPayload, { merge: true });
- 
-    await setDoc(doc(db, `users/${uid}/user-infos/more-infos`), {
-      bio: inBio.value.trim(),
-    }, { merge: true });
- 
-    await setDoc(doc(db, `users/${uid}/user-infos/about`), {
-      gender:        inGenero.value.trim(),
-      location:      inLocalizacao.value.trim(),
-      maritalStatus: inRelac.value.trim(),
-      pronom1,
-      pronom2,
-    }, { merge: true });
 
-    const linksPayload = {};
-    document.querySelectorAll('[data-link]').forEach(input => {
-      const key = input.dataset.link;
-      linksPayload[key] = input.value.trim();
+    let pfpUrl =
+      oldData.media?.pfp ||
+      oldData.media?.userphoto ||
+      "";
+
+    let bannerUrl =
+      oldData.media?.banner ||
+      oldData.media?.headerphoto ||
+      "";
+
+    if (isUploadingImages) {
+      showToast("Enviando imagens...", { persist: true });
+    }
+
+    if (pendingUploads.pfp) {
+      pfpUrl = await uploadImage(pendingUploads.pfp);
+    }
+
+    if (pendingUploads.banner) {
+      bannerUrl = await uploadImage(pendingUploads.banner);
+    }
+
+    const uid = currentUser.uid;
+    const [pronom1, pronom2] = values.pronomes.split("/");
+
+    await Promise.all([
+      setDoc(
+        doc(db, "users", uid),
+        {
+          name: values.name,
+          surname: values.surname,
+          username: values.username
+        },
+        { merge: true }
+      ),
+
+      setDoc(
+        doc(db, `users/${uid}/user-infos/user-media`),
+        {
+          userphoto: pfpUrl,
+          headerphoto: bannerUrl,
+          musicTheme: values.musica
+        },
+        { merge: true }
+      ),
+
+      setDoc(
+        doc(db, `users/${uid}/user-infos/more-infos`),
+        {
+          bio: values.bio
+        },
+        { merge: true }
+      ),
+
+      setDoc(
+        doc(db, `users/${uid}/user-infos/about`),
+        {
+          gender: values.genero,
+          location: values.localizacao,
+          maritalStatus: values.relacionamento,
+          pronom1: pronom1 || "",
+          pronom2: pronom2 || ""
+        },
+        { merge: true }
+      ),
+
+      setDoc(
+        doc(db, `users/${uid}/user-infos/links`),
+        collectLinks(),
+        { merge: true }
+      )
+    ]);
+
+    if (values.username !== oldData.username) {
+      await setDoc(
+        doc(db, "usernames", values.username),
+        {
+          uid,
+          username: values.username
+        }
+      );
+    }
+
+    setCache(uid, {
+      ...oldData,
+      name: values.name,
+      surname: values.surname,
+      username: values.username,
+      media: {
+        ...(oldData.media || {}),
+        userphoto: pfpUrl,
+        headerphoto: bannerUrl,
+        musicTheme: values.musica
+      },
+      more: {
+        ...(oldData.more || {}),
+        bio: values.bio
+      },
+      about: {
+        ...(oldData.about || {}),
+        gender: values.genero,
+        location: values.localizacao,
+        maritalStatus: values.relacionamento,
+        pronom1: pronom1 || "",
+        pronom2: pronom2 || ""
+      },
+      links: collectLinks()
     });
-    await setDoc(doc(db, `users/${uid}/user-infos/links`), linksPayload, { merge: true });
- 
-    try {
-      Object.keys(localStorage)
-        .filter(k => k.startsWith('profile_cache_'))
-        .forEach(k => localStorage.removeItem(k));
-    } catch {}
 
-    const camposAlterados = [];
-    if (mudouFoto)     camposAlterados.push('foto');
-    if (mudouBanner)   camposAlterados.push('banner');
-    if (mudouNome)     camposAlterados.push('nome');
-    if (mudouBio)      camposAlterados.push('bio');
-    if (mudouPronomes) camposAlterados.push('pronomes');
-    if (mudouGenero)   camposAlterados.push('genero');
-    if (mudouLocal)    camposAlterados.push('localizacao');
-    if (mudouMusica)   camposAlterados.push('musica');
+    notifyActivities(values);
 
-    if (camposAlterados.length > 0) {
-      triggerEdicaoPerfil(camposAlterados).catch(console.warn);
-    }
-    if (mudouStatus) triggerMudancaStatus(inRelac.value).catch(console.warn);
- 
-    showToast('Perfil salvo com sucesso!', 'success');
- 
+    hideToast();
+    showToast("Perfil salvo com sucesso!");
+
     setTimeout(() => {
-      window.location.href = `profile.html?username=${newUsername}`;
-    }, 1500);
- 
-  } catch (e) {
-    console.error('save:', e);
-    showToast('Erro ao salvar. Tente novamente.', 'error');
+      window.location.href =
+        `profile.html?username=${values.username}`;
+    }, 1200);
+
+  } catch (err) {
+    hideToast();
+    showToast("Erro ao salvar o perfil.");
+  } finally {
     saveBtn.disabled = false;
   }
+};
+
+function collectLinks() {
+  const links = {};
+
+  linkInputs.forEach(input => {
+    links[input.dataset.link] = input.value.trim();
+  });
+
+  return links;
+}
+
+function notifyActivities(values) {
+  const changed = [];
+
+  if (values.name !== (oldData.name || "")) {
+    changed.push("nome");
+  }
+
+  if (values.surname !== (oldData.surname || "")) {
+    changed.push("sobrenome");
+  }
+
+  if (values.bio !== (oldData.more?.bio || "")) {
+    changed.push("bio");
+  }
+
+  if (values.genero !== (oldData.about?.gender || "")) {
+    changed.push("genero");
+  }
+
+  if (values.localizacao !== (oldData.about?.location || "")) {
+    changed.push("localizacao");
+  }
+
+  if (values.musica !== (oldData.media?.musicTheme || "")) {
+    changed.push("musica");
+  }
+
+  if (pendingUploads.pfp) {
+    changed.push("foto");
+  }
+
+  if (pendingUploads.banner) {
+    changed.push("banner");
+  }
+
+  if (changed.length > 0) {
+    triggerEdicaoPerfil(changed).catch(() => {});
+  }
+
+  if (
+    values.relacionamento &&
+    values.relacionamento !==
+      (oldData.about?.maritalStatus || "")
+  ) {
+    triggerMudancaStatus(values.relacionamento).catch(() => {});
+  }
+}
+
+fields.username.addEventListener("input", () => {
+  fields.username.value = fields.username.value
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "");
 });
 
-
-
-setupCharCounter(inNome,        'nome');
-setupCharCounter(inUsername,    'username');
-setupCharCounter(inPronomes,    'pronomes');
-setupCharCounter(inBio,         'bio');
-setupCharCounter(inLocalizacao, 'localizacao');
-
+linksToggle.onclick = () => {
+  linksList.classList.toggle("open");
+};
 
 onAuthStateChanged(auth, async user => {
   if (!user) {
-    showToast('Você precisa estar logado.', 'error');
-    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+    window.location.href = "login.html";
     return;
   }
+
   currentUser = user;
-  await carregarDadosAtuais(user.uid);
-});
 
-
-const toggle = document.getElementById('links-toggle');
-const linksList = document.querySelector('.links-list');
-const arrow = toggle.querySelector('.toggle-arrow');
-
-toggle.addEventListener('click', () => {
-  linksList.classList.toggle('open');
-  arrow.classList.toggle('rotated');
+  try {
+    await loadUser();
+  } catch (err) {
+    showToast("Erro ao carregar seus dados.");
+  }
 });

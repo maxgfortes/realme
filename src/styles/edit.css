@@ -1,5 +1,6 @@
 body {
     overflow: hidden;
+    position: fixed;
 }
 
 .page-container {
@@ -17,16 +18,6 @@ body {
     font-size: 17px;
 }
 
-.label-container.color {
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.label-rigth.color {
-    height: 80px;
-}
 
 .label-title {
     width: 130px;
@@ -105,7 +96,11 @@ body {
     font-size: 17px;
     outline: none;
     color: #fff;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none
 }
+
 
 .label-input::placeholder {
     color: #666;
@@ -116,6 +111,10 @@ body {
     width: 150px;
 }
 
+.label-left.last {
+    border-bottom:  1px solid #202020;
+}
+
 .label-left.link {
     width: 56px;
 }
@@ -124,7 +123,7 @@ body {
     font-size: 24px;
 }
 .label-rigth {
-    border-bottom: 0.1px solid var(--navbar-border);
+        border-bottom:  1px solid #202020;
     width: 100%;
 }
 
@@ -134,22 +133,17 @@ body {
 }
 
 .major-container {
-    border: 0.1px solid var(--navbar-border);
     border-left: none;
     border-right: none;
-    border-bottom: none;
 }
 
 .major-container.link {
     border: 0.1px solid var(--navbar-border);
-    border-left: none;
-    border-right: none;
-    border-top: none;
 }
 
 .config-title {
-    padding: 12px 22px;
-    font-weight: bold;
+    padding: 12px;
+    color: #ccc;
 }
 
 .label-left.border {
@@ -316,11 +310,11 @@ body {
 
 .links-list.open {
   max-height: 2000px;
+  padding-bottom: 160px;
   opacity: 1;
 }
 
 .config-title {
-  cursor: pointer;
   user-select: none;
   display: flex;
   align-items: center;
