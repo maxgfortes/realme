@@ -262,43 +262,24 @@ body {
 <script type="module">
     import {
         collection,
-        getCountFromServer
+        onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     import { db } from "./src/config/config.js";
 
-    async function countUsers() {
-        try {
-            const snapshot = await getCountFromServer(
-                collection(db, "users")
-            );
-
-            const count = snapshot.data().count;
-            document.getElementById("usersCount").textContent = count;
-
-        } catch (error) {}
+    function countUsers() {
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            document.getElementById("usersCount").textContent = snapshot.size;
+        }, (error) => {});
     }
 
-    async function countPosts() {
-        try {
-            const snapshot = await getCountFromServer(
-                collection(db, "posts")
-            );
-
-            const count = snapshot.data().count;
-
-            document.getElementById("postsCount").textContent = count;
-
-        } catch (error) {}
+    function countPosts() {
+        onSnapshot(collection(db, "posts"), (snapshot) => {
+            document.getElementById("postsCount").textContent = snapshot.size;
+        }, (error) => {});
     }
 
-    async function loadCounts() {
-        await Promise.all([
-            countUsers(),
-            countPosts()
-        ]);
-    }
-
-    loadCounts();
+    countUsers();
+    countPosts();
 </script>
 </html>
