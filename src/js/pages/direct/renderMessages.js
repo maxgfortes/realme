@@ -244,9 +244,6 @@ export function appendMessages(newMessages, chatId, otherUserName) {
 
     newMessages.forEach((message) => {
         const isMine = message.sender === currentUserId;
-        const messageDate = message.timestamp?.toDate
-            ? message.timestamp.toDate()
-            : new Date();
 
         if (
             !currentBox ||
