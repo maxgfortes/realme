@@ -45,7 +45,7 @@ export function openChat(user) {
 
     listPage.classList.add("active");
 
-    loadMessages(chatId);
+    loadMessages(chatId,userName.textContent.trim());
     markMessagesAsRead(chatId, otherUserId);
     setupTyping(chatId);
     loadTyping(chatId, otherUserId);
