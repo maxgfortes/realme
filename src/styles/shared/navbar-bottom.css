@@ -1,0 +1,81 @@
+.navbar-bottom {
+  position: fixed;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  height: 80px;
+  background: var(--bg-primary);
+  z-index: 9999;
+  padding-top: 3px;
+}
+
+.navbar-bottom-area{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 42px;
+  width: 100%;
+  top: 0;
+}
+
+.navbar-bottom-area a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f8f9f9;
+  padding: 8px;
+  height: 42px;
+  width: 42px;
+  text-decoration: none;
+}
+
+.navbar-bottom-area svg {
+  width: 26px;
+  height: 26px;
+  fill: #888;
+}
+
+.active-bar svg{
+  fill:  #fff;
+}
+
+.profile-mini {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #333;
+}
+
+/* ---------- progress bar -----------*/
+.progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--bg-primary);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.progress-bar.active {
+  opacity: 1;
+}
+
+.progress-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--primary-btn);
+  transition: width 0.3s ease;
+}
+
+@media (min-width: 800px) {
+  .navbar-bottom {
+    display: none;
+  }
+}

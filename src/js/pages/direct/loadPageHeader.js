@@ -1,14 +1,22 @@
-import { db, auth } from "/src/config/config.js";
+import { auth, db } from "../../../config/config.js";
 import {
+  collection,
+  addDoc,
+  serverTimestamp,
   doc,
-  onSnapshot
+  onSnapshot,
+  getFirestore,
+  getDocs,
+  query,
+  orderBy,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const navPfp = document.getElementById('nav-pic');
-const navPfpPc = document.getElementById('navPicPc');
-
+const dmTitle = document.getElementById("dmTitle");
 
 function lerCache() {
   const localGreeting = localStorage.getItem("greeting");
@@ -16,7 +24,7 @@ function lerCache() {
   if (!localGreeting) {
     return null;
   }
-  
+
   return JSON.parse(localGreeting);
 }
 
@@ -24,6 +32,7 @@ function salvarCacheGreeting(dadosNovos) {
   const atual = lerCache();
 
   const cache = {
+    displayName: dadosNovos.displayName || (atual ? atual.displayName : null),
     userphoto: dadosNovos.userphoto || (atual ? atual.userphoto : null)
   };
 
@@ -33,19 +42,22 @@ function salvarCacheGreeting(dadosNovos) {
 function mostrarCacheGreeting() {
   const greeting = lerCache();
   if (greeting) {
-    if (greeting.userphoto) {
-      navPfp.src = greeting.userphoto
+    if (greeting.displayName) {
+      dmTitle.textContent = greeting.displayName;
     }
   }
 }
 
-function getProfilePicture(uid) {
-  const ref = doc(db, "users", uid, "user-infos", "user-media");
+function getDisplayName(uid) {
+  const ref = doc(db, "users", uid);
   onSnapshot(ref, function (snap) {
     if (snap.exists()) {
       const dados = snap.data();
-      navPfp.src = dados.userphoto;
-      salvarCacheGreeting({ userphoto: dados.userphoto });
+      const displayName = `${dados.name || ""} ${dados.surname || ""}`.trim();
+      dmTitle.textContent = displayName;
+      salvarCacheGreeting({
+        displayName: displayName
+      });
     }
   });
 }
@@ -54,6 +66,6 @@ mostrarCacheGreeting();
 
 onAuthStateChanged(auth, function (user) {
   if (user) {
-    getProfilePicture(user.uid);
+    getDisplayName(user.uid);
   }
 });
