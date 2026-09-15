@@ -224,14 +224,9 @@ export function appendMessages(newMessages, chatId, otherUserName) {
 
     const currentUserId = auth.currentUser?.uid;
 
-    const wasNearBottom =
-        messagesList.scrollHeight -
-            messagesList.scrollTop -
-            messagesList.clientHeight <
-        120;
-
-    const oldFooter = messagesList.querySelector(".dm-seen-label");
-    if (oldFooter) oldFooter.remove();
+    const distanceFromBottom =
+        messagesList.scrollHeight - messagesList.scrollTop - messagesList.clientHeight;
+    const wasNearBottom = distanceFromBottom < 150;
 
     let currentBox = messagesList.querySelector(".box:last-of-type");
     let currentSender = null;
@@ -277,6 +272,9 @@ export function appendMessages(newMessages, chatId, otherUserName) {
         });
     });
 
+    const oldFooter = messagesList.querySelector(".dm-seen-label");
+    if (oldFooter) oldFooter.remove();
+
     const lastMsg = newMessages[newMessages.length - 1];
     if (lastMsg && lastMsg.sender === currentUserId) {
         const footerDate2 = lastMsg.timestamp?.toDate?.() || new Date();
@@ -294,6 +292,8 @@ export function appendMessages(newMessages, chatId, otherUserName) {
     }
 
     if (wasNearBottom) {
-        messagesList.scrollTop = messagesList.scrollHeight;
+        requestAnimationFrame(() => {
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
     }
 }
