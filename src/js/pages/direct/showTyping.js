@@ -6,6 +6,7 @@ import {
 import { db } from "../../../config/config.js";
 
 let typingUnsubscribe = null;
+let hideTimeout = null;
 
 export function loadTyping(chatId, otherUserId) {
     if (!chatId || !otherUserId) {
@@ -21,8 +22,7 @@ export function loadTyping(chatId, otherUserId) {
         function (snapshot) {
             const data = snapshot.data();
 
-            const isTyping =
-                data?.typing?.[otherUserId] === true;
+            const isTyping = data?.typing?.[otherUserId] === true;
 
             if (isTyping) {
                 showTyping();
@@ -31,10 +31,7 @@ export function loadTyping(chatId, otherUserId) {
             }
         },
         function (error) {
-            console.error(
-                "Erro ao observar typing:",
-                error
-            );
+            console.error("Erro ao observar typing:", error);
         }
     );
 }
@@ -45,22 +42,24 @@ export function stopLoadingTyping() {
         typingUnsubscribe = null;
     }
 
-    hideTyping();
+    hideTyping(true);
 }
 
-function showTyping() {
-    const messagesList = document.getElementById("dmMessages");
+function isNearBottom(messagesList) {
+    return (
+        messagesList.scrollHeight -
+            messagesList.scrollTop -
+            messagesList.clientHeight <
+        120
+    );
+}
 
-    if (!messagesList) {
-        return;
-    }
-
-    if (messagesList.querySelector(".typing-area")) {
-        return;
-    }
-
+function buildTypingArea() {
     const area = document.createElement("div");
     area.className = "typing-area";
+
+    const inner = document.createElement("div");
+    inner.className = "typing-area-inner";
 
     const bubble = document.createElement("div");
     bubble.className = "typing-bubble";
@@ -71,18 +70,72 @@ function showTyping() {
         bubble.appendChild(dot);
     }
 
-    area.appendChild(bubble);
-    messagesList.appendChild(area);
+    inner.appendChild(bubble);
+    area.appendChild(inner);
 
-    messagesList.scrollTop = messagesList.scrollHeight;
+    return area;
 }
 
-function hideTyping() {
+function showTyping() {
+    const messagesList = document.getElementById("dmMessages");
+
+    if (!messagesList) {
+        return;
+    }
+
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+
+    const existing = messagesList.querySelector(".typing-area");
+
+    if (existing) {
+
+        existing.classList.add("show");
+        return;
+    }
+
+    const area = buildTypingArea();
+    const stick = isNearBottom(messagesList);
+
+    messagesList.appendChild(area);
+
+    requestAnimationFrame(function () {
+        area.classList.add("show");
+
+        if (stick) {
+            messagesList.scrollTo({
+                top: messagesList.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    });
+}
+
+function hideTyping(immediate) {
     const typing = document.querySelector(".typing-area");
 
     if (!typing) {
         return;
     }
 
-    typing.remove();
+    if (immediate) {
+        typing.remove();
+        return;
+    }
+
+    typing.classList.remove("show");
+
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+    }
+
+    hideTimeout = setTimeout(function () {
+        hideTimeout = null;
+
+        if (!typing.classList.contains("show")) {
+            typing.remove();
+        }
+    }, 260);
 }

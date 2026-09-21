@@ -5,10 +5,22 @@ import { initReplyPreview } from "./replyPreview.js";
 
 initReplyPreview();
 
+const NEAR_BOTTOM_THRESHOLD_PX = 100;
+
 let footerRefreshTimer = null;
 let footerElementRef = null;
 let footerDate = null;
 let footerType = null;
+
+const state = {
+    chatId: null,
+    otherUserName: "",
+    order: [],
+    nodes: new Map(),
+    currentBox: null,
+    currentSender: null,
+    lastDate: null
+};
 
 function isSameDay(a, b) {
     return (
@@ -16,6 +28,33 @@ function isSameDay(a, b) {
         a.getMonth() === b.getMonth() &&
         a.getDate() === b.getDate()
     );
+}
+
+function toDate(value) {
+    return value?.toDate ? value.toDate() : null;
+}
+
+export function getFirstName(fullName) {
+    if (!fullName) return "";
+
+    return String(fullName).trim().split(/\s+/)[0] || "";
+}
+
+function mount(messagesList, node) {
+    const typing = messagesList.querySelector(".typing-area");
+
+    messagesList.insertBefore(node, typing || null);
+}
+
+function scrollToBottom(messagesList, smooth) {
+    if (smooth) {
+        messagesList.scrollTo({
+            top: messagesList.scrollHeight,
+            behavior: "smooth"
+        });
+    } else {
+        messagesList.scrollTop = messagesList.scrollHeight;
+    }
 }
 
 function buildDaySeparator(date) {
@@ -26,22 +65,30 @@ function buildDaySeparator(date) {
     label.textContent = getDaySeparatorLabel(date);
 
     separator.appendChild(label);
+
     return separator;
 }
 
-function buildReplyDiv(replyTo, currentUserId, isMine) {
+function resolveReplySenderName(replyTo, currentUserId, otherUserName) {
+    if (replyTo.sender === currentUserId) {
+        return "Você";
+    }
+
+    return getFirstName(otherUserName) || "Usuário";
+}
+
+function buildReplyDiv(replyTo, currentUserId, isMine, otherUserName) {
     const replyDiv = document.createElement("div");
+
     replyDiv.className = isMine ? "reply-message mine" : "reply-message their";
 
-    const sender =
-        replyTo.sender === currentUserId
-            ? "Você"
-            : replyTo.senderName || "Usuário";
+    const sender = resolveReplySenderName(
+        replyTo,
+        currentUserId,
+        otherUserName
+    );
 
-    const content =
-        replyTo.type === "image"
-            ? "Imagem"
-            : replyTo.content || "";
+    const content = replyTo.type === "image" ? "Imagem" : replyTo.content || "";
 
     const senderSpan = document.createElement("span");
     senderSpan.className = "reply-sender";
@@ -55,6 +102,248 @@ function buildReplyDiv(replyTo, currentUserId, isMine) {
     replyDiv.appendChild(contentSpan);
 
     return replyDiv;
+}
+
+function refreshReplyNames(currentUserId) {
+    state.nodes.forEach(function (entry) {
+        if (!entry.replyDiv || !entry.message.replyTo) return;
+
+        const senderSpan = entry.replyDiv.querySelector(".reply-sender");
+
+        if (!senderSpan) return;
+
+        const name = resolveReplySenderName(
+            entry.message.replyTo,
+            currentUserId,
+            state.otherUserName
+        );
+
+        const next = `${name}: `;
+
+        if (senderSpan.textContent !== next) {
+            senderSpan.textContent = next;
+        }
+    });
+}
+
+function isImageMessage(message) {
+    return (
+        message.type === "image" ||
+        message.content?.startsWith("https://i.ibb.co/")
+    );
+}
+
+function buildBubble(message, isMine) {
+    const bubble = document.createElement("div");
+
+    if (isImageMessage(message)) {
+        bubble.classList.add(isMine ? "msg-beta-image-mine" : "msg-beta-image");
+
+        const image = document.createElement("img");
+        image.src = message.content;
+        image.className = "dm-image";
+
+        image.addEventListener("load", function () {
+            image.classList.add("loaded");
+        });
+
+        if (image.complete) {
+            image.classList.add("loaded");
+        }
+
+        bubble.appendChild(image);
+    } else {
+        bubble.classList.add(isMine ? "msg-beta-mine" : "msg-beta");
+        bubble.textContent = message.content;
+    }
+
+    return bubble;
+}
+
+function countReactions(message) {
+    return message.reactions ? Object.keys(message.reactions).length : 0;
+}
+
+function syncReactionBadge(entry, message) {
+    const count = countReactions(message);
+
+    if (entry.reactionCount === count) return;
+
+    const hadBadge = entry.reactionCount > 0;
+
+    entry.reactionCount = count;
+
+    if (count === 0) {
+        entry.reactionBadge?.remove();
+        entry.reactionBadge = null;
+        return;
+    }
+
+    if (!entry.reactionBadge) {
+        entry.reactionBadge = document.createElement("span");
+        entry.reactionBadge.className = "reaction-badge";
+        entry.bubble.appendChild(entry.reactionBadge);
+    }
+
+    entry.reactionBadge.textContent = count > 1 ? `❤️ ${count}` : "❤️";
+
+    entry.reactionBadge.classList.remove("enter", "pop");
+    void entry.reactionBadge.offsetWidth;
+    entry.reactionBadge.classList.add(hadBadge ? "pop" : "enter");
+}
+
+function syncBubbleContent(entry, message) {
+    if (isImageMessage(message)) {
+        const image = entry.bubble.querySelector("img.dm-image");
+
+        if (image && image.getAttribute("src") !== message.content) {
+            image.classList.remove("loaded");
+            image.src = message.content;
+        }
+
+        return;
+    }
+
+    const textNode = entry.bubble.firstChild;
+
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        if (textNode.nodeValue !== message.content) {
+            textNode.nodeValue = message.content ?? "";
+        }
+    } else if (message.content) {
+        entry.bubble.insertBefore(
+            document.createTextNode(message.content),
+            entry.bubble.firstChild
+        );
+    }
+}
+
+function appendMessage(messagesList, message, context) {
+    const { currentUserId, chatId, otherUserName } = context;
+
+    const isMine = message.sender === currentUserId;
+    const messageDate = toDate(message.timestamp) || new Date();
+
+    if (!state.lastDate || !isSameDay(state.lastDate, messageDate)) {
+        mount(messagesList, buildDaySeparator(messageDate));
+        state.currentSender = null;
+    }
+
+    state.lastDate = messageDate;
+
+    if (message.sender !== state.currentSender || !state.currentBox) {
+        state.currentBox = document.createElement("div");
+        state.currentBox.className = isMine ? "box mine" : "box their";
+
+        mount(messagesList, state.currentBox);
+
+        state.currentSender = message.sender;
+    }
+
+    const box = state.currentBox;
+
+    let replyDiv = null;
+
+    if (message.replyTo) {
+        replyDiv = buildReplyDiv(
+            message.replyTo,
+            currentUserId,
+            isMine,
+            otherUserName
+        );
+
+        box.appendChild(replyDiv);
+    }
+
+    const bubble = buildBubble(message, isMine);
+    box.appendChild(bubble);
+
+    const messageRef = { ...message };
+
+    const entry = {
+        box,
+        bubble,
+        replyDiv,
+        reactionBadge: null,
+        reactionCount: 0,
+        message: messageRef
+    };
+
+    syncReactionBadge(entry, message);
+
+    attachMessageGestures(bubble, messageRef, {
+        chatId,
+        isMine,
+        otherUserName: otherUserName || ""
+    });
+
+    state.nodes.set(message.id, entry);
+    state.order.push(message.id);
+
+    return entry;
+}
+
+function updateMessage(entry, message) {
+    Object.assign(entry.message, message);
+
+    syncBubbleContent(entry, message);
+    syncReactionBadge(entry, message);
+}
+
+function playEnterAnimation(nodes) {
+    if (!nodes.length) return;
+
+    nodes.forEach(function (node, i) {
+        node.classList.add("msg-enter");
+        node.style.setProperty("--msg-enter-delay", `${i * 40}ms`);
+
+        node.addEventListener(
+            "animationend",
+            function () {
+                node.classList.remove("msg-enter", "msg-enter-active");
+                node.style.removeProperty("--msg-enter-delay");
+            },
+            { once: true }
+        );
+    });
+
+    requestAnimationFrame(function () {
+        nodes.forEach(function (node) {
+            node.classList.add("msg-enter-active");
+        });
+    });
+}
+
+function resetList(messagesList) {
+
+    const typing = messagesList.querySelector(".typing-area");
+
+    messagesList.innerHTML = "";
+
+    if (typing) {
+        messagesList.appendChild(typing);
+    }
+
+    state.order = [];
+    state.nodes.clear();
+    state.currentBox = null;
+    state.currentSender = null;
+    state.lastDate = null;
+
+    footerElementRef = null;
+    footerDate = null;
+    footerType = null;
+}
+
+function needsRebuild(messages, chatId) {
+    if (chatId !== state.chatId) return true;
+    if (state.order.length > messages.length) return true;
+
+    for (let i = 0; i < state.order.length; i++) {
+        if (state.order[i] !== messages[i]?.id) return true;
+    }
+
+    return false;
 }
 
 function setFooterLabelText(labelEl, type, date) {
@@ -74,46 +363,88 @@ function startFooterRefresh() {
     }
 
     footerRefreshTimer = setInterval(() => {
-        if (!footerElementRef || !footerDate) return;
+        if (!footerElementRef || !footerDate) {
+            return;
+        }
+
         setFooterLabelText(footerElementRef, footerType, footerDate);
     }, 60000);
 }
 
-function createBubble(message, isMine) {
-    const bubble = document.createElement("div");
+function renderFooter(messagesList, messages, currentUserId) {
+    const last = messages[messages.length - 1];
+    const isMine = last && last.sender === currentUserId;
 
-    if (
-        message.type === "image" ||
-        message.content?.startsWith("https://i.ibb.co/")
-    ) {
-        bubble.classList.add(isMine ? "msg-beta-image-mine" : "msg-beta-image");
+    const isSeen = isMine && last.read === true && !!last.readAt?.toDate;
 
-        const image = document.createElement("img");
-        image.src = message.content;
-        image.className = "dm-image";
-        bubble.appendChild(image);
-    } else {
-        bubble.classList.add(isMine ? "msg-beta-mine" : "msg-beta");
-        bubble.textContent = message.content;
+    const date = isMine
+        ? isSeen
+            ? toDate(last.readAt)
+            : toDate(last.timestamp)
+        : null;
+
+    if (!date) {
+        footerElementRef?.remove();
+        footerElementRef = null;
+        footerDate = null;
+        footerType = null;
+        return;
     }
 
-    const reactionKeys = message.reactions ? Object.keys(message.reactions) : [];
-    if (reactionKeys.length > 0) {
-        const reactionBadge = document.createElement("span");
-        reactionBadge.className = "reaction-badge";
-        reactionBadge.textContent =
-            reactionKeys.length > 1 ? `❤️ ${reactionKeys.length}` : "❤️";
-        bubble.appendChild(reactionBadge);
+    const type = isSeen ? "seen" : "sent";
+    const isNew = !footerElementRef;
+
+    if (isNew) {
+        footerElementRef = document.createElement("div");
+        footerElementRef.className = "dm-seen-label";
     }
 
-    return bubble;
+    const changed =
+        footerType !== type || footerDate?.getTime() !== date.getTime();
+
+    if (changed) {
+        setFooterLabelText(footerElementRef, type, date);
+
+        if (!isNew) {
+            footerElementRef.classList.remove("dm-seen-swap");
+            void footerElementRef.offsetWidth;
+            footerElementRef.classList.add("dm-seen-swap");
+        }
+    }
+
+    footerDate = date;
+    footerType = type;
+
+    const typing = messagesList.querySelector(".typing-area");
+
+    const expectedLast = typing
+        ? typing.previousSibling
+        : messagesList.lastChild;
+
+    if (expectedLast !== footerElementRef) {
+        mount(messagesList, footerElementRef);
+    }
+
+    if (isNew) {
+        playEnterAnimation([footerElementRef]);
+    }
 }
 
 export function renderMessages(messages, chatId, otherUserName) {
     const messagesList = document.getElementById("dmMessages");
+
     if (!messagesList) return;
 
-    const NEAR_BOTTOM_THRESHOLD_PX = 100;
+    const currentUserId = auth.currentUser?.uid;
+
+    const nameChanged =
+        !!otherUserName && otherUserName !== state.otherUserName;
+
+    if (otherUserName) {
+        state.otherUserName = otherUserName;
+    }
+
+    const resolvedName = state.otherUserName;
 
     const wasNearBottom =
         messagesList.scrollHeight -
@@ -124,92 +455,51 @@ export function renderMessages(messages, chatId, otherUserName) {
     const prevScrollTop = messagesList.scrollTop;
     const prevScrollHeight = messagesList.scrollHeight;
 
-    messagesList.innerHTML = "";
+    const rebuilt = needsRebuild(messages, chatId);
 
-    const currentUserId = auth.currentUser?.uid;
+    if (rebuilt) {
+        resetList(messagesList);
+    }
 
-    let currentBox = null;
-    let currentSender = null;
-    let lastDate = null;
-
-    const lastMessageId = messages[messages.length - 1]?.id;
+    state.chatId = chatId;
 
     const chatIsOpen = document
         .querySelector(".dm-chat-area")
         ?.classList.contains("active");
 
-    footerElementRef = null;
-    footerDate = null;
-    footerType = null;
+    const context = {
+        currentUserId,
+        chatId,
+        otherUserName: resolvedName
+    };
 
-    messages.forEach(function (message, index) {
-        const isMine = message.sender === currentUserId;
-        const messageDate = message.timestamp?.toDate
-            ? message.timestamp.toDate()
-            : new Date();
+    const appended = [];
 
-        if (!lastDate || !isSameDay(lastDate, messageDate)) {
-            messagesList.appendChild(buildDaySeparator(messageDate));
-            currentSender = null;
-        }
-        lastDate = messageDate;
+    messages.forEach(function (message) {
+        const existing = state.nodes.get(message.id);
 
-        if (message.sender !== currentSender) {
-            currentBox = document.createElement("div");
-            currentBox.className = isMine ? "box mine" : "box their";
-            messagesList.appendChild(currentBox);
-            currentSender = message.sender;
+        if (existing) {
+            updateMessage(existing, message);
+            return;
         }
 
-        if (message.replyTo) {
-            currentBox.appendChild(
-                buildReplyDiv(message.replyTo, currentUserId, isMine)
-            );
-        }
-
-        const bubble = createBubble(message, isMine);
-        currentBox.appendChild(bubble);
-
-        attachMessageGestures(bubble, message, {
-            chatId,
-            isMine,
-            otherUserName: otherUserName || ""
-        });
-
-        if (message.id === lastMessageId && chatIsOpen) {
-            bubble.classList.add("message-enter");
-            requestAnimationFrame(() => {
-                bubble.classList.add("show");
-            });
-        }
-
-        if (index === messages.length - 1 && isMine) {
-            const isSeen = message.read === true && message.readAt?.toDate;
-            const footerDate2 = isSeen
-                ? message.readAt.toDate()
-                : message.timestamp?.toDate?.();
-
-            if (footerDate2) {
-                const footerLabel = document.createElement("div");
-                footerLabel.className = "dm-seen-label";
-
-                setFooterLabelText(
-                    footerLabel,
-                    isSeen ? "seen" : "sent",
-                    footerDate2
-                );
-
-                messagesList.appendChild(footerLabel);
-
-                footerElementRef = footerLabel;
-                footerDate = footerDate2;
-                footerType = isSeen ? "seen" : "sent";
-            }
-        }
+        appended.push(appendMessage(messagesList, message, context));
     });
 
+    if (nameChanged && !rebuilt) {
+        refreshReplyNames(currentUserId);
+    }
+
+    const shouldAnimate = chatIsOpen && !rebuilt && appended.length > 0;
+
+    if (shouldAnimate) {
+        playEnterAnimation(appended.map((entry) => entry.bubble));
+    }
+
+    renderFooter(messagesList, messages, currentUserId);
+
     if (wasNearBottom) {
-        messagesList.scrollTop = messagesList.scrollHeight;
+        scrollToBottom(messagesList, shouldAnimate);
     } else {
         messagesList.scrollTop =
             prevScrollTop + (messagesList.scrollHeight - prevScrollHeight);
@@ -218,82 +508,18 @@ export function renderMessages(messages, chatId, otherUserName) {
     startFooterRefresh();
 }
 
-export function appendMessages(newMessages, chatId, otherUserName) {
+export function destroyMessages() {
     const messagesList = document.getElementById("dmMessages");
-    if (!messagesList || newMessages.length === 0) return;
 
-    const currentUserId = auth.currentUser?.uid;
-
-    const distanceFromBottom =
-        messagesList.scrollHeight - messagesList.scrollTop - messagesList.clientHeight;
-    const wasNearBottom = distanceFromBottom < 150;
-
-    let currentBox = messagesList.querySelector(".box:last-of-type");
-    let currentSender = null;
-
-    if (currentBox) {
-        currentSender = currentBox.classList.contains("mine")
-            ? currentUserId
-            : "other";
+    if (messagesList) {
+        resetList(messagesList);
     }
 
-    newMessages.forEach((message) => {
-        const isMine = message.sender === currentUserId;
+    state.chatId = null;
+    state.otherUserName = "";
 
-        if (
-            !currentBox ||
-            (isMine && currentSender !== currentUserId) ||
-            (!isMine && currentSender === currentUserId)
-        ) {
-            currentBox = document.createElement("div");
-            currentBox.className = isMine ? "box mine" : "box their";
-            messagesList.appendChild(currentBox);
-            currentSender = isMine ? currentUserId : "other";
-        }
-
-        if (message.replyTo) {
-            currentBox.appendChild(
-                buildReplyDiv(message.replyTo, currentUserId, isMine)
-            );
-        }
-
-        const bubble = createBubble(message, isMine);
-        currentBox.appendChild(bubble);
-
-        attachMessageGestures(bubble, message, {
-            chatId,
-            isMine,
-            otherUserName: otherUserName || ""
-        });
-
-        bubble.classList.add("message-enter");
-        requestAnimationFrame(() => {
-            bubble.classList.add("show");
-        });
-    });
-
-    const oldFooter = messagesList.querySelector(".dm-seen-label");
-    if (oldFooter) oldFooter.remove();
-
-    const lastMsg = newMessages[newMessages.length - 1];
-    if (lastMsg && lastMsg.sender === currentUserId) {
-        const footerDate2 = lastMsg.timestamp?.toDate?.() || new Date();
-
-        const footerLabel = document.createElement("div");
-        footerLabel.className = "dm-seen-label";
-
-        setFooterLabelText(footerLabel, "sent", footerDate2);
-        messagesList.appendChild(footerLabel);
-
-        footerElementRef = footerLabel;
-        footerDate = footerDate2;
-        footerType = "sent";
-        startFooterRefresh();
-    }
-
-    if (wasNearBottom) {
-        requestAnimationFrame(() => {
-            messagesList.scrollTop = messagesList.scrollHeight;
-        });
+    if (footerRefreshTimer) {
+        clearInterval(footerRefreshTimer);
+        footerRefreshTimer = null;
     }
 }

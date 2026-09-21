@@ -1,4 +1,5 @@
 import { loadMessages } from "./loadMessages.js";
+import { destroyMessages } from "./renderMessages.js";
 import { setupTyping, stopTyping } from "./typing.js";
 import { loadTyping, stopLoadingTyping } from "./showTyping.js";
 import { markMessagesAsRead } from "./markAsRead.js";
@@ -11,9 +12,7 @@ const listPage = document.getElementById("listPage");
 const chatheaderPfp = document.getElementById("dmChatUserImg");
 const chatHeaderName = document.getElementById("dmChatUserName");
 
-
 export function openChat(user) {
-
     stopTyping();
     stopLoadingTyping();
 
@@ -22,10 +21,9 @@ export function openChat(user) {
 
     const chatId = user.dataset.chatId;
     const otherUserId = user.dataset.uid;
+    const otherUserName = userName.textContent.trim();
 
-    const messagesList = document.getElementById("dmMessages");
-
-    messagesList.innerHTML = "";
+    destroyMessages();
 
     chatArea.dataset.chatId = chatId;
 
@@ -37,7 +35,7 @@ export function openChat(user) {
 
     profileLink.href = `/profile.html?uid=${otherUserId}`;
 
-    profileLink.textContent = userName.textContent;
+    profileLink.textContent = otherUserName;
 
     chatHeaderName.appendChild(profileLink);
 
@@ -45,19 +43,19 @@ export function openChat(user) {
 
     listPage.classList.add("active");
 
-    loadMessages(chatId,userName.textContent.trim());
+    loadMessages(chatId, otherUserName);
     markMessagesAsRead(chatId, otherUserId);
     setupTyping(chatId);
     loadTyping(chatId, otherUserId);
 }
 
-
 function closeChat() {
     stopTyping();
     stopLoadingTyping();
+    destroyMessages();
+
     chatArea.classList.remove("active");
     listPage.classList.remove("active");
 }
-
 
 btnCloseChat.addEventListener("click", closeChat);

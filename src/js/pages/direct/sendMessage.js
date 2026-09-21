@@ -30,13 +30,11 @@ export async function sendMessage() {
         return;
     }
 
+    input.value = "";
+    input.dispatchEvent(new Event("input"));
+
     try {
-        const messagesRef = collection(
-            db,
-            "chats",
-            chatId,
-            "messages"
-        );
+        const messagesRef = collection(db, "chats", chatId, "messages");
 
         const replyTo = consumeReplyingTo();
 
@@ -48,29 +46,24 @@ export async function sendMessage() {
         };
 
         if (replyTo) {
+            // senderName NÃO é persistido: o nome exibido é resolvido
+            // no render a partir do nome do usuário do chat.
             messageData.replyTo = {
                 id: replyTo.id,
                 content: replyTo.content,
                 sender: replyTo.sender,
-                senderName: replyTo.senderName,
                 type: replyTo.type
             };
         }
 
         await addDoc(messagesRef, messageData);
 
-        await updateDoc(
-            doc(db, "chats", chatId),
-            {
-                lastMessage: content,
-                lastMessageTime: serverTimestamp()
-            }
-        );
-
-        input.value = "";
-        input.dispatchEvent(new Event("input"));
-
+        await updateDoc(doc(db, "chats", chatId), {
+            lastMessage: content,
+            lastMessageTime: serverTimestamp()
+        });
     } catch (error) {
+        console.error("Erro ao enviar mensagem:", error);
     }
 }
 

@@ -45,21 +45,6 @@ body {
 }
 
 /* ---------------------------------------------*/
-.dm-msg-footer {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: #666;
-  margin-top: 3px;
-  padding-right: 4px;
-  justify-content: flex-end;
-}
-
-.dm-visto   { color:#666; font-weight: bold; }
-.dm-enviado { color: #666; font-weight: bold;}
-
-/* ---------------------------------------------*/
 
 .dm-time-separator {
   display: flex;
@@ -747,6 +732,7 @@ body {
   font-size: 12px;
   color: #8a8a8a;
   text-align: right;
+  white-space: nowrap;
   margin: -6px 8px 8px;
 }
 
@@ -815,25 +801,7 @@ body {
   pointer-events: none;
   right: -6px;
   top: -14px;
-}
-
-.dm-heart-burst.show {
-  animation: dm-heart-pop 0.8s ease forwards;
-}
-
-@keyframes dm-heart-pop {
-  0% {
-      opacity: 0;
-      transform: scale(0.5) translateY(0);
-  }
-  30% {
-      opacity: 1;
-      transform: scale(1.2) translateY(-6px);
-  }
-  100% {
-      opacity: 0;
-      transform: scale(1) translateY(-20px);
-  }
+  display: none;
 }
 
 .msg-beta,
@@ -960,4 +928,185 @@ body {
 
 .dm-footer-prefix {
   font-weight: bold;
+}
+
+:root {
+  --dm-ease: cubic-bezier(0.22, 0.75, 0.3, 1);
+  --dm-enter-duration: 260ms;
+  --dm-typing-duration: 240ms;
+}
+
+.msg-enter {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transform-origin: bottom;
+  will-change: grid-template-rows, opacity, transform;
+}
+
+.msg-enter > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.msg-enter-active {
+  animation: dm-msg-in var(--dm-enter-duration) var(--dm-ease)
+      var(--msg-enter-delay, 0ms) both;
+}
+
+@keyframes dm-msg-in {
+  from {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+  }
+  to {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.box.mine .msg-enter {
+  transform: translateY(6px) translateX(8px) scale(0.98);
+}
+
+.box.their .msg-enter {
+  transform: translateY(6px) translateX(-8px) scale(0.98);
+}
+
+.dm-image {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.dm-image.loaded {
+  opacity: 1;
+}
+
+.reaction-badge.enter {
+  animation: dm-badge-in 240ms var(--dm-ease) both;
+}
+
+.reaction-badge.pop {
+  animation: dm-badge-pop 220ms var(--dm-ease) both;
+}
+
+@keyframes dm-badge-in {
+  from {
+      opacity: 0;
+      transform: scale(0.4);
+  }
+  to {
+      opacity: 1;
+      transform: scale(1);
+  }
+}
+
+@keyframes dm-badge-pop {
+  0% {
+      transform: scale(1);
+  }
+  45% {
+      transform: scale(1.22);
+  }
+  100% {
+      transform: scale(1);
+  }
+}
+
+.dm-seen-label.dm-seen-swap {
+  animation: dm-seen-swap 260ms ease both;
+}
+
+@keyframes dm-seen-swap {
+  from {
+      opacity: 0.25;
+      transform: translateY(-2px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.typing-area {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: grid-template-rows var(--dm-typing-duration) var(--dm-ease),
+      opacity 180ms ease, transform var(--dm-typing-duration) var(--dm-ease);
+  will-change: grid-template-rows, opacity;
+}
+
+.typing-area > .typing-area-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.typing-area.show {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: none;
+}
+
+.typing-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-dot {
+  animation: dm-typing-dot 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dm-typing-dot {
+  0%,
+  60%,
+  100% {
+      opacity: 0.35;
+      transform: translateY(0);
+  }
+  30% {
+      opacity: 1;
+      transform: translateY(-3px);
+  }
+}
+
+.dm-reply-preview {
+  animation: dm-reply-in 200ms var(--dm-ease) both;
+}
+
+@keyframes dm-reply-in {
+  from {
+      opacity: 0;
+      transform: translateY(8px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.dm-day-separator {
+  animation: dm-fade-in 260ms ease both;
+}
+
+@keyframes dm-fade-in {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
 }
