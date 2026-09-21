@@ -1,11 +1,11 @@
 .feelings-stories {
   width: 100%;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
   padding: 16px 38px 36px 16px;
   scrollbar-width: none;
-  height: 200px;
+  height: 210px;
   overflow-y: hidden;
 }
 
@@ -14,11 +14,11 @@
 }
 
 .feeling-item {
-  min-width: 100px;
+  min-width: 104px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100px;
+  width: 104px;
 }
 
 
@@ -36,8 +36,9 @@
   font-size: 13px;
   border-radius: 14px;
   padding: 1px;
-  max-height: 70px;
-  max-width: 100px;
+  max-height: 90px;
+  max-width: 100%;
+  min-width: 30px;
 }
 
 .humor-note {
@@ -46,9 +47,9 @@
   padding: 5px 10px;
   border-radius: 14px;
   height: 100%;
+  min-height: 40px;
   text-align: center;
   line-height: 15px;
-  max-height: 67px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -58,6 +59,11 @@
 
 .humor-note.placeholder {
   color: #666;
+}
+
+.note-prefix {
+  font-weight: bold;
+  color: #fff;
 }
 
 .user-img {
