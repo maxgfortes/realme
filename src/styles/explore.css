@@ -192,9 +192,6 @@ body {
   transition: background 0.2s;
 }
 
-.search-result-item:hover {
-  background: #252525;
-}
 
 .search-user-photo {
   width: 55px;
@@ -210,7 +207,9 @@ body {
 
 .search-user-name {
   font-weight: 600;
+  font-size: 15px;
   color: #fff;
+  text-transform: capitalize;
 }
 
 .search-user-username {
@@ -255,55 +254,6 @@ body {
 }
 
 
-.navbar-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: var(--bg-primary);
-  backdrop-filter: blur(20px);
-  z-index: 9999;
-}
-
-.navbar-bottom-content svg {
-  width: 28px;  /* ou o tamanho que você usa nos outros ícones */
-  height: 26px;
-  fill: #888; /* pega a cor do texto do link */
-}
-
-.active-bar svg{
-  fill:  #fff;
-}
-
-.navbar-bottom-content {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 100%;
-  padding-bottom: 32px;
-}
-
-.navbar-bottom a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #f8f9f9;
-  font-size: 26px;
-  padding: 8px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-
-.profile-mini {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 
 .activities {
   position: relative;
@@ -337,6 +287,7 @@ body {
 .search-area-mobile {
   padding: 12px;
   display: flex;
+  height: 62px;
 }
 
 .search-box-mobile {
@@ -357,6 +308,7 @@ body {
   padding-left: 20px;
   font-size: 16px;
   color: #cacaca !important;
+  transition: all 0.3s;
 }
 
 .search-box-mobile input::placeholder {
@@ -371,6 +323,33 @@ body {
   display: none;
 }
 
+.cancel-search {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s ease
+}
+
+.cancel-search.active {
+  width: 70px;
+}
+
+.cancel-search-btn {
+  height: 100%;
+  width: 100%;
+  font-size: 14px;
+  border: none;
+  color: #ddd;
+  font-weight: bold;
+  background: transparent;
+  padding-left: 12px;
+}
+
+.searchTitle {
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
 
 .act-big {
   padding: 12px 12px;
@@ -514,13 +493,9 @@ body {
   transition: background 0.2s;
 }
 
-.search-result-item:hover {
-  background: #252525;
-}
-
 .search-user-photo {
-  width: 55px;
-  height: 55px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -528,11 +503,6 @@ body {
 .search-user-info {
   display: flex;
   flex-direction: column;
-}
-
-.search-user-name {
-  font-weight: 600;
-  color: #fff;
 }
 
 .search-user-username {
