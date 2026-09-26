@@ -64,7 +64,10 @@ async function loadFeed() {
             feed.innerHTML = "";
         }
 
-        lastPost = postsSnapshot.docs[postsSnapshot.docs.length - 1];
+        lastPost =
+            postsSnapshot.docs[
+                postsSnapshot.docs.length - 1
+            ];
 
         const posts = postsSnapshot.docs.map(postDoc => {
             const post = postDoc.data();
@@ -76,13 +79,17 @@ async function loadFeed() {
                 creatorid: post.creatorid || "",
                 imgs: normalizeImgs(post),
                 dateText: post.create
-                    ? formatPostDate(post.create.toDate())
+                    ? formatPostDate(
+                        post.create.toDate()
+                    )
                     : ""
             };
         });
 
         const creators = await Promise.all(
-            posts.map(post => getCreator(post.creatorid))
+            posts.map(post =>
+                getCreator(post.creatorid)
+            )
         );
 
         posts.forEach(async (post, index) => {
@@ -96,35 +103,58 @@ async function loadFeed() {
                 creatorid: post.creatorid
             });
 
-            const postElement = feed.querySelector(
-                `.post-card-new[data-post-id="${post.postId}"]`
-            );
+            const postElement =
+                feed.querySelector(
+                    `.post-card-new[data-post-id="${post.postId}"]`
+                );
 
             if (!postElement) return;
 
-            const liked = await hasLikedPost(post.postId);
+            const liked =
+                await hasLikedPost(post.postId);
 
-            updateLikeIcon(postElement, liked);
-            listenPostCount(post.postId);
-            updatePostFooter(post.postId);
+            updateLikeIcon(
+                postElement,
+                liked
+            );
+
+            listenPostCount(
+                post.postId
+            );
+
+            updatePostFooter(
+                post.postId
+            );
         });
     } catch (error) {
-        console.error("Erro ao carregar feed:", error);
+        console.error(
+            "Erro ao carregar feed:",
+            error
+        );
     } finally {
         isLoading = false;
     }
 }
 
 function normalizeImgs(post) {
-    if (Array.isArray(post.imgs) && post.imgs.length) {
+    if (
+        Array.isArray(post.imgs) &&
+        post.imgs.length
+    ) {
         return post.imgs;
     }
 
-    if (typeof post.imgs === "string" && post.imgs) {
+    if (
+        typeof post.imgs === "string" &&
+        post.imgs
+    ) {
         return [{ url: post.imgs }];
     }
 
-    if (typeof post.img === "string" && post.img) {
+    if (
+        typeof post.img === "string" &&
+        post.img
+    ) {
         return [{ url: post.img }];
     }
 
@@ -132,19 +162,29 @@ function normalizeImgs(post) {
 }
 
 if (feedRow) {
-    feedRow.addEventListener("scroll", () => {
-        const distanceFromBottom =
-            feedRow.scrollHeight - feedRow.scrollTop - feedRow.clientHeight;
+    feedRow.addEventListener(
+        "scroll",
+        () => {
+            const distanceFromBottom =
+                feedRow.scrollHeight -
+                feedRow.scrollTop -
+                feedRow.clientHeight;
 
-        const scrollableHeight =
-            feedRow.scrollHeight - feedRow.clientHeight;
+            const scrollableHeight =
+                feedRow.scrollHeight -
+                feedRow.clientHeight;
 
-        const threshold = scrollableHeight * 0.3;
+            const threshold =
+                scrollableHeight * 0.3;
 
-        if (distanceFromBottom <= threshold) {
-            loadFeed();
+            if (
+                distanceFromBottom <=
+                threshold
+            ) {
+                loadFeed();
+            }
         }
-    });
+    );
 }
 
 async function getCreator(creatorid) {
@@ -158,34 +198,54 @@ async function getCreator(creatorid) {
     }
 
     try {
-        const userRef = doc(db, "users", creatorid);
-        const userSnapshot = await getDoc(userRef);
+        const userRef =
+            doc(
+                db,
+                "users",
+                creatorid
+            );
+
+        const userSnapshot =
+            await getDoc(userRef);
 
         if (!userSnapshot.exists()) {
             return defaultCreator;
         }
 
-        const userData = userSnapshot.data();
-        const name = userData.name || "";
-        const surname = userData.surname || "";
-        const alias = `${name} ${surname}`.trim();
+        const userData =
+            userSnapshot.data();
 
-        const mediaRef = doc(
-            db,
-            "users",
-            creatorid,
-            "user-infos",
-            "user-media"
-        );
+        const name =
+            userData.name || "";
 
-        const mediaSnapshot = await getDoc(mediaRef);
+        const surname =
+            userData.surname || "";
 
-        let photo = defaultCreator.photo;
+        const alias =
+            `${name} ${surname}`.trim();
+
+        const mediaRef =
+            doc(
+                db,
+                "users",
+                creatorid,
+                "user-infos",
+                "user-media"
+            );
+
+        const mediaSnapshot =
+            await getDoc(mediaRef);
+
+        let photo =
+            defaultCreator.photo;
 
         if (mediaSnapshot.exists()) {
-            const mediaData = mediaSnapshot.data();
+            const mediaData =
+                mediaSnapshot.data();
 
-            photo = mediaData.userphoto || defaultCreator.photo;
+            photo =
+                mediaData.userphoto ||
+                defaultCreator.photo;
         }
 
         return {
@@ -197,22 +257,27 @@ async function getCreator(creatorid) {
     }
 }
 
-// RENDER IMAGE
 function renderImage(img) {
     const url = img.url || "";
 
     const aspectRatio =
         img.aspectRatio ||
         (
-            img.width && img.height
+            img.width &&
+            img.height
                 ? `${img.width} / ${img.height}`
                 : "28 / 29"
         );
 
     return `
-        <div class="img-card" style="aspect-ratio: ${aspectRatio};">
+        <div
+            class="img-card"
+            style="aspect-ratio: ${aspectRatio};"
+        >
             <img
-                src="${escapeHTML(String(url))}"
+                src="${escapeHTML(
+                    String(url)
+                )}"
                 alt=""
                 loading="lazy"
             >
@@ -220,7 +285,6 @@ function renderImage(img) {
     `;
 }
 
-// RENDER POST
 function renderPost({
     feed,
     postId,
@@ -230,6 +294,16 @@ function renderPost({
     dateText,
     creatorid
 }) {
+    const safeCreatorId =
+        escapeHTML(
+            String(creatorid || "")
+        );
+
+    const profileUrl =
+        `profile.html?uid=${encodeURIComponent(
+            creatorid || ""
+        )}`;
+
     const contentHTML = content
         ? `
             <div class="post-content-text">
@@ -250,7 +324,9 @@ function renderPost({
                     <div class="post-content-media carousel">
                         <div class="carousel-track">
                             ${imgs
-                                .map(img => renderImage(img))
+                                .map(img =>
+                                    renderImage(img)
+                                )
                                 .join("")
                             }
                         </div>
@@ -264,32 +340,48 @@ function renderPost({
             data-post-id="${escapeHTML(postId)}"
         >
             <div class="post-header-new">
-                <div class="post-pfp-area post-owner-link">
+
+                <div
+                    class="post-pfp-area post-owner-link"
+                    data-profile-uid="${safeCreatorId}"
+                >
                     <div class="post-pfp">
                         <img
-                            src="${escapeHTML(creator.photo)}"
+                            src="${escapeHTML(
+                                creator.photo
+                            )}"
                             alt=""
                         >
                     </div>
                 </div>
 
-                <div class="post-header-infos post-owner-link">
+                <div class="post-header-infos">
+
                     <div class="post-author-name-area">
-                        <a class="post-author-name">
-                            ${escapeHTML(creator.name)}
+                        <a
+                            class="post-author-name post-profile-link"
+                            href="${profileUrl}"
+                            data-profile-uid="${safeCreatorId}"
+                        >
+                            ${escapeHTML(
+                                creator.name
+                            )}
                         </a>
                     </div>
 
                     <div class="post-date-new">
                         ${dateText}
                     </div>
+
                 </div>
 
                 <div class="post-more-actions">
                     <button
                         class="post-more"
-                        data-post-id="${escapeHTML(postId)}"
-                        data-creator-id="${escapeHTML(creatorid)}"
+                        data-post-id="${escapeHTML(
+                            postId
+                        )}"
+                        data-creator-id="${safeCreatorId}"
                     >
                         <svg
                             width="24"
@@ -315,6 +407,7 @@ function renderPost({
                         </svg>
                     </button>
                 </div>
+
             </div>
 
             <div class="post-content-new">
@@ -323,8 +416,10 @@ function renderPost({
             </div>
 
             <div class="post-bottom">
+
                 <div class="post-actions-area">
                     <div class="post-actions-left">
+
                         <button
                             class="post-action-btn like-btn"
                             type="button"
@@ -354,11 +449,13 @@ function renderPost({
                             >
                                 <title>Descurtir</title>
                                 <path
-                                    d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"
+                                    d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"
                                 />
                             </svg>
 
-                            <span class="like-count">0</span>
+                            <span class="like-count">
+                                0
+                            </span>
                         </button>
 
                         <button
@@ -375,8 +472,11 @@ function renderPost({
                                 />
                             </svg>
 
-                            <span class="comment-count">0</span>
+                            <span class="comment-count">
+                                0
+                            </span>
                         </button>
+
                     </div>
                 </div>
 
@@ -384,122 +484,228 @@ function renderPost({
                     <div class="post-graph-item likers-preview">
                         <div class="post-graph-text"></div>
                     </div>
-
-                    <!--<div class="post-graph-item comment-preview">
-                        <div class="post-graph-comment"></div>
-                    </div>-->
                 </div>
+
             </div>
         </div>
     `;
 
-    feed.insertAdjacentHTML("beforeend", postHTML);
+    feed.insertAdjacentHTML(
+        "beforeend",
+        postHTML
+    );
 }
 
-// DATE
 function formatPostDate(date) {
     const now = new Date();
-    const difference = Math.floor((now - date) / 1000);
+
+    const difference =
+        Math.floor(
+            (now - date) / 1000
+        );
 
     if (difference < 60) {
         return "Agora mesmo";
     }
 
-    const minutes = Math.floor(difference / 60);
+    const minutes =
+        Math.floor(
+            difference / 60
+        );
 
     if (minutes < 60) {
         return `Há ${minutes} ${
-            minutes === 1 ? "minuto" : "minutos"
+            minutes === 1
+                ? "minuto"
+                : "minutos"
         }`;
     }
 
-    const hours = Math.floor(minutes / 60);
+    const hours =
+        Math.floor(
+            minutes / 60
+        );
 
     if (hours < 24) {
         return `Há ${hours} ${
-            hours === 1 ? "hora" : "horas"
+            hours === 1
+                ? "hora"
+                : "horas"
         }`;
     }
 
-    const days = Math.floor(hours / 24);
+    const days =
+        Math.floor(
+            hours / 24
+        );
 
     if (days < 7) {
         return `Há ${days} ${
-            days === 1 ? "dia" : "dias"
+            days === 1
+                ? "dia"
+                : "dias"
         }`;
     }
 
-    const weeks = Math.floor(days / 7);
+    const weeks =
+        Math.floor(
+            days / 7
+        );
 
     if (weeks < 4) {
         return `Há ${weeks} ${
-            weeks === 1 ? "semana" : "semanas"
+            weeks === 1
+                ? "semana"
+                : "semanas"
         }`;
     }
 
-    const months = Math.floor(days / 30);
+    const months =
+        Math.floor(
+            days / 30
+        );
 
     if (months < 12) {
         return `Há ${months} ${
-            months === 1 ? "mês" : "meses"
+            months === 1
+                ? "mês"
+                : "meses"
         }`;
     }
 
-    const years = Math.floor(days / 365);
+    const years =
+        Math.floor(
+            days / 365
+        );
 
     return `Há ${years} ${
-        years === 1 ? "ano" : "anos"
+        years === 1
+            ? "ano"
+            : "anos"
     }`;
 }
 
-// ESCAPE HTML
 function escapeHTML(value) {
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
-// AUTH
-onAuthStateChanged(auth, user => {
-    if (!user) return;
-    loadFeed();
-});
+onAuthStateChanged(
+    auth,
+    user => {
+        if (!user) return;
+        loadFeed();
+    }
+);
 
-// LIKE
 if (feed) {
-    feed.addEventListener("click", async event => {
-        const likeButton = event.target.closest(".like-btn");
+    feed.addEventListener(
+        "click",
+        async event => {
+            const profileElement =
+                event.target.closest(
+                    ".post-owner-link, .post-profile-link"
+                );
 
-        if (!likeButton) return;
+            if (profileElement) {
+                event.preventDefault();
+                event.stopPropagation();
 
-        const postElement = likeButton.closest(".post-card-new");
+                const uid =
+                    profileElement.dataset.profileUid;
 
-        if (!postElement) return;
+                if (!uid) return;
 
-        const postId = postElement.dataset.postId;
-        const liked = await hasLikedPost(postId);
+                window.location.href =
+                    `profile.html?uid=${encodeURIComponent(
+                        uid
+                    )}`;
 
-        if (liked) {
-            updateLikeIcon(postElement, false);
-
-            try {
-                await unlikePost(postId);
-                updatePostFooter(postId);
-            } catch {
-                updateLikeIcon(postElement, true);
+                return;
             }
-        } else {
-            updateLikeIcon(postElement, true);
 
-            try {
-                await likePost(postId);
-                updatePostFooter(postId);
-            } catch {
-                updateLikeIcon(postElement, false);
+            const likeButton =
+                event.target.closest(
+                    ".like-btn"
+                );
+
+            if (!likeButton) return;
+
+            const postElement =
+                likeButton.closest(
+                    ".post-card-new"
+                );
+
+            if (!postElement) return;
+
+            const postId =
+                postElement.dataset.postId;
+
+            const liked =
+                await hasLikedPost(
+                    postId
+                );
+
+            if (liked) {
+                updateLikeIcon(
+                    postElement,
+                    false
+                );
+
+                try {
+                    await unlikePost(
+                        postId
+                    );
+
+                    updatePostFooter(
+                        postId
+                    );
+                } catch {
+                    updateLikeIcon(
+                        postElement,
+                        true
+                    );
+                }
+            } else {
+                updateLikeIcon(
+                    postElement,
+                    true
+                );
+
+                try {
+                    await likePost(
+                        postId
+                    );
+
+                    updatePostFooter(
+                        postId
+                    );
+                } catch {
+                    updateLikeIcon(
+                        postElement,
+                        false
+                    );
+                }
             }
         }
-    });
+    );
 }

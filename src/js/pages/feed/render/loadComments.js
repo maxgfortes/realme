@@ -29,15 +29,15 @@ export async function loadComments(postId) {
 
     commentsRow.innerHTML = "";
 
-    const postRef = doc(
-        db,
-        "posts",
-        postId
-    );
+    const postRef =
+        doc(
+            db,
+            "posts",
+            postId
+        );
 
-    const postSnapshot = await getDoc(
-        postRef
-    );
+    const postSnapshot =
+        await getDoc(postRef);
 
     if (!postSnapshot.exists()) {
         commentsRow.innerHTML = `
@@ -45,67 +45,79 @@ export async function loadComments(postId) {
                 Post não encontrado.
             </div>
         `;
+
         return;
     }
 
-    const postData = postSnapshot.data();
+    const postData =
+        postSnapshot.data();
 
     const postOwnerId =
         postData.creatorid ||
         postData.uid ||
         postData.ownerid;
 
-    const commentsRef = collection(
-        db,
-        "posts",
-        postId,
-        "coments"
-    );
+    const commentsRef =
+        collection(
+            db,
+            "posts",
+            postId,
+            "coments"
+        );
 
-    const commentsQuery = query(
-        commentsRef,
-        orderBy("create", "asc")
-    );
+    const commentsQuery =
+        query(
+            commentsRef,
+            orderBy(
+                "create",
+                "asc"
+            )
+        );
 
-    unsubscribeComments = onSnapshot(
-        commentsQuery,
-        async snapshot => {
-            commentsRow.innerHTML = "";
+    unsubscribeComments =
+        onSnapshot(
+            commentsQuery,
+            async snapshot => {
+                commentsRow.innerHTML = "";
 
-            if (snapshot.empty) {
-                commentsRow.innerHTML = `
-                    <div class="no-comments">
-                        Nenhum comentário ainda.
-                    </div>
-                `;
-                return;
-            }
+                if (snapshot.empty) {
+                    commentsRow.innerHTML = `
+                        <div class="no-comments">
+                            Nenhum comentário ainda.
+                        </div>
+                    `;
 
-            for (const commentDoc of snapshot.docs) {
-                const comment =
-                    commentDoc.data();
+                    return;
+                }
 
-                const user =
-                    await getUserData(
-                        comment.senderid
+                for (
+                    const commentDoc
+                    of snapshot.docs
+                ) {
+                    const comment =
+                        commentDoc.data();
+
+                    const user =
+                        await getUserData(
+                            comment.senderid
+                        );
+
+                    renderComment(
+                        postId,
+                        postOwnerId,
+                        commentDoc.id,
+                        comment,
+                        user
                     );
-
-                renderComment(
-                    postId,
-                    postOwnerId,
-                    commentDoc.id,
-                    comment,
-                    user
+                }
+            },
+            error => {
+                console.error(
+                    "Erro no onSnapshot dos comentários:",
+                    error
                 );
             }
-        },
-        error => {
-            console.error(
-                "Erro no onSnapshot dos comentários:",
-                error
-            );
-        }
-    );
+        );
 }
 
 export function stopCommentsListener() {
@@ -120,7 +132,8 @@ async function getUserData(uid) {
         return {
             name: "Usuário",
             surname: "",
-            userphoto: "/public/img/default.jpg"
+            userphoto:
+                "/public/img/default.jpg"
         };
     }
 
@@ -129,21 +142,22 @@ async function getUserData(uid) {
     }
 
     try {
-        const userRef = doc(
-            db,
-            "users",
-            uid
-        );
+        const userRef =
+            doc(
+                db,
+                "users",
+                uid
+            );
 
-        const userSnapshot = await getDoc(
-            userRef
-        );
+        const userSnapshot =
+            await getDoc(userRef);
 
         if (!userSnapshot.exists()) {
             const defaultUser = {
                 name: "Usuário",
                 surname: "",
-                userphoto: "/public/img/default.jpg"
+                userphoto:
+                    "/public/img/default.jpg"
             };
 
             userCache.set(
@@ -154,18 +168,22 @@ async function getUserData(uid) {
             return defaultUser;
         }
 
-        const data = userSnapshot.data();
+        const data =
+            userSnapshot.data();
 
-        const userMediaRef = doc(
-            db,
-            "users",
-            uid,
-            "user-infos",
-            "user-media"
-        );
+        const userMediaRef =
+            doc(
+                db,
+                "users",
+                uid,
+                "user-infos",
+                "user-media"
+            );
 
         const userMediaSnapshot =
-            await getDoc(userMediaRef);
+            await getDoc(
+                userMediaRef
+            );
 
         const userMediaData =
             userMediaSnapshot.exists()
@@ -173,8 +191,14 @@ async function getUserData(uid) {
                 : {};
 
         const user = {
-            name: data.name || "Usuário",
-            surname: data.surname || "",
+            name:
+                data.name ||
+                "Usuário",
+
+            surname:
+                data.surname ||
+                "",
+
             userphoto:
                 userMediaData.userphoto ||
                 "/public/img/default.jpg"
@@ -196,7 +220,8 @@ async function getUserData(uid) {
         return {
             name: "Usuário",
             surname: "",
-            userphoto: "/public/img/default.jpg"
+            userphoto:
+                "/public/img/default.jpg"
         };
     }
 }
@@ -209,7 +234,9 @@ function renderComment(
     user
 ) {
     const commentElement =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     commentElement.className =
         "comment-item";
@@ -232,18 +259,24 @@ function renderComment(
             comment.create
         );
 
+    const profileUid =
+        escapeHTML(
+            comment.senderid || ""
+        );
+
     commentElement.innerHTML = `
         <div class="comment-item-content">
 
             <div class="comment-left">
 
-                <div class="comment-pfp">
-
+                <div
+                    class="comment-pfp comment-profile-link"
+                    data-profile-uid="${profileUid}"
+                >
                     <img
                         src="${escapeHTML(user.userphoto)}"
                         alt=""
                     >
-
                 </div>
 
             </div>
@@ -252,7 +285,10 @@ function renderComment(
 
                 <div class="comment-header">
 
-                    <div class="comment-displayname">
+                    <div
+                        class="comment-displayname comment-profile-link"
+                        data-profile-uid="${profileUid}"
+                    >
                         ${escapeHTML(fullName)}
                     </div>
 
@@ -285,7 +321,6 @@ function renderComment(
                 class="item-btn delete"
                 type="button"
             >
-
                 <svg
                     viewBox="0 0 512 512"
                     xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +339,6 @@ function renderComment(
                     <g
                         id="SVGRepo_iconCarrier"
                     >
-
                         <path
                             d="M432,144,403.33,419.74A32,32,0,0,1,371.55,448H140.46a32,32,0,0,1-31.78-28.26L80,144"
                             style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"
@@ -335,10 +369,8 @@ function renderComment(
                             y2="240"
                             style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"
                         ></line>
-
                     </g>
                 </svg>
-
             </button>
 
         </div>
@@ -350,7 +382,9 @@ function renderComment(
         );
 
     commentText.textContent =
-        String(comment.content ?? "");
+        String(
+            comment.content ?? ""
+        );
 
     commentsRow.appendChild(
         commentElement
@@ -368,27 +402,40 @@ function formatCommentDate(timestamp) {
         return "agora mesmo";
     }
 
-    const date = timestamp.toDate();
-    const now = new Date();
+    const date =
+        timestamp.toDate();
+
+    const now =
+        new Date();
 
     const diff =
         now.getTime() -
         date.getTime();
 
     const seconds =
-        Math.floor(diff / 1000);
+        Math.floor(
+            diff / 1000
+        );
 
     const minutes =
-        Math.floor(seconds / 60);
+        Math.floor(
+            seconds / 60
+        );
 
     const hours =
-        Math.floor(minutes / 60);
+        Math.floor(
+            minutes / 60
+        );
 
     const days =
-        Math.floor(hours / 24);
+        Math.floor(
+            hours / 24
+        );
 
     const weeks =
-        Math.floor(days / 7);
+        Math.floor(
+            days / 7
+        );
 
     if (seconds < 60) {
         return "agora mesmo";
@@ -427,9 +474,46 @@ function formatCommentDate(timestamp) {
 
 function escapeHTML(value) {
     return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+if (commentsRow) {
+    commentsRow.addEventListener(
+        "click",
+        event => {
+            const profileElement =
+                event.target.closest(
+                    ".comment-profile-link"
+                );
+
+            if (!profileElement) return;
+
+            const uid =
+                profileElement.dataset.profileUid;
+
+            if (!uid) return;
+
+            window.location.href =
+                `profile.html?uid=${encodeURIComponent(uid)}`;
+        }
+    );
 }
