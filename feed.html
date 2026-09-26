@@ -15,13 +15,17 @@
   <meta name="theme-color" content="#0f0f0f">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="../public/img/icon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="../src/styles/base.css">
-  <link rel="stylesheet" href="../src/styles/menu-bottom.css">
-  <link rel="stylesheet" href="../src/styles/layout.css">
-  <link rel="stylesheet" href="../src/styles/root.css">
-  <link rel="stylesheet" href="../src/styles/feed-mobile.css">
-  <link rel="stylesheet" href="../src/styles/navbar-bottom.css">
+  <link rel="stylesheet" href="../src/styles/shared/base.css">
+  <link rel="stylesheet" href="../src/styles/shared/root.css">
+  <link rel="stylesheet" href="../src/styles/pages/feed/feed.css">
+  <link rel="stylesheet" href="../src/styles/shared/navbar-bottom.css">
+  <link rel="stylesheet" href="../src/styles/shared/navs-pc.css">
+  <link rel="stylesheet" href="../src/styles/shared/comments.css">
+  <link rel="stylesheet" href="./src/styles/shared/postCard.css">
+  <link rel="stylesheet" href="./src/styles/shared/eventCard.css">
+  <link rel="stylesheet" href="./src/styles/shared/sugestions.css">
+  <link rel="stylesheet" href="./src/styles/pages/feed/creationOverlay.css">
+    <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
 
   <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
@@ -39,11 +43,13 @@
 </head>
 <body>
 
-<!-- Layer de criação de post -->
+<div class="page-view">
+<div class="page-area">
+
 <div class="post-layer" id="postLayer">
   <div class="header-layer">
-    <h1 class="header">Nova publicação</h1> 
-    <button id="closeLayerBtn" class="back-post">
+    <h1>Nova publicação</h1> 
+    <button id="closeLayerBtn">
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="122.878px" height="122.88px" viewBox="0 0 122.878 122.88" enable-background="new 0 0 122.878 122.88" xml:space="preserve"><g><path d="M1.426,8.313c-1.901-1.901-1.901-4.984,0-6.886c1.901-1.902,4.984-1.902,6.886,0l53.127,53.127l53.127-53.127 c1.901-1.902,4.984-1.902,6.887,0c1.901,1.901,1.901,4.985,0,6.886L68.324,61.439l53.128,53.128c1.901,1.901,1.901,4.984,0,6.886 c-1.902,1.902-4.985,1.902-6.887,0L61.438,68.326L8.312,121.453c-1.901,1.902-4.984,1.902-6.886,0 c-1.901-1.901-1.901-4.984,0-6.886l53.127-53.128L1.426,8.313L1.426,8.313z"/></g></svg>
     </button>
   </div>
@@ -51,139 +57,444 @@
     <div class="content-row">
       <div class="np-text-area">
         <div class="np-avatar-area">
-          <img src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async">
+          <img id="creationModalPfp" src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async">
         </div>
-        <div class="np-input-area">
-          <div class="np-username">username</div>
-          <textarea class="np-text-input" placeholder="O que você está pensando?" maxlength="360" ></textarea>
+        <div class="np-input-area" id="inputArea">
+          <div class="np-username" id="creationModalDisplayName">name surname</div>
+          <textarea id="npTextInput" class="np-text-input" placeholder="O que você está pensando?" maxlength="500" ></textarea>
         </div>
       </div>
       <div class="image-preview-carrosel visible"></div>
       <div class="img-btn">
-        <button id="np-add-img">Adicionar Imagem</button>
+        <button id="npMediaInput">Adicionar Imagem</button>
       </div>
     </div>
   </div>
   <div class="sections-btn">
     <div class="sections-btns-row">
-      <button class="np-bottom-btn " id="btnMention">
+      <button class="np-bottom-btn" id="btnMention">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 439.999 511.429"><path fill-rule="nonzero" d="M342.382 237.037a175.843 175.843 0 00-6.707-3.045c-3.947-72.737-43.692-114.379-110.428-114.805-38.505-.256-72.972 15.445-94.454 48.041l36.702 25.178c15.265-23.159 39.221-28.097 56.864-28.097.203 0 .408 0 .61.003 21.973.139 38.555 6.528 49.287 18.987 7.81 9.071 13.034 21.606 15.62 37.425-19.482-3.312-40.552-4.329-63.077-3.039-63.449 3.656-104.24 40.661-101.5 92.081 1.39 26.083 14.384 48.522 36.586 63.18 18.773 12.391 42.95 18.451 68.078 17.08 33.183-1.819 59.214-14.48 77.376-37.631 13.793-17.579 22.516-40.362 26.368-69.068 15.814 9.543 27.535 22.103 34.007 37.2 11.007 25.665 11.648 67.84-22.764 102.222-30.15 30.121-66.392 43.151-121.164 43.554-60.757-.45-106.707-19.934-136.582-57.914-27.976-35.563-42.434-86.93-42.973-152.675.539-65.745 14.997-117.113 42.973-152.675 29.875-37.979 75.824-57.464 136.581-57.914 61.197.455 107.948 20.033 138.967 58.195 15.21 18.713 26.677 42.248 34.236 69.688l43.011-11.476c-9.163-33.775-23.581-62.881-43.203-87.017C357.031 25.59 298.872.519 223.935 0h-.3C148.851.518 91.343 25.683 52.709 74.794 18.331 118.498.598 179.308.002 255.534l-.002.18.002.18c.596 76.226 18.329 137.037 52.707 180.741 38.634 49.11 96.142 74.277 170.926 74.794h.3c66.487-.462 113.352-17.868 151.96-56.442 50.511-50.463 48.991-113.717 32.342-152.548-11.944-27.847-34.716-50.464-65.855-65.402zm-114.795 107.93c-27.809 1.566-56.7-10.917-58.124-37.652-1.056-19.823 14.108-41.942 59.83-44.577 5.237-.302 10.375-.45 15.422-.45 16.609 0 32.146 1.613 46.272 4.702-5.268 65.798-36.173 76.483-63.4 77.977z"/></svg>
         <span class="btn-texto">Mencionar</span>
       </button>
-      <button class="np-bottom-btn " id="btnMusic">
+      <button class="np-bottom-btn" id="btnMusic">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 104.23 122.88" style="enable-background:new 0 0 104.23 122.88" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M87.9,78.04c2.74-0.48,5.33-0.4,7.6,0.13V24.82L39.05,41.03v61.95c0.03,0.34,0.05,0.69,0.05,1.03 c0,0,0,0.01,0,0.01c0,8.34-8.75,16.62-19.55,18.49C8.76,124.37,0,119.12,0,110.77c0-8.34,8.76-16.62,19.55-18.48 c4.06-0.7,7.84-0.39,10.97,0.71l0-76.26h0.47L104.04,0v85.92c0.13,0.63,0.2,1.27,0.2,1.91c0,0,0,0,0,0.01 c0,6.97-7.32,13.89-16.33,15.44c-9.02,1.56-16.33-2.83-16.33-9.8C71.57,86.51,78.88,79.59,87.9,78.04L87.9,78.04L87.9,78.04z"/></g></svg>
         <span class="btn-texto">Musica</span>
       </button>
-      <button class="np-bottom-btn " id="btnLocal">
+      <button class="np-bottom-btn" id="btnLocal">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 117.55" style="enable-background:new 0 0 122.88 117.55" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M78.81,82.78c-4.35,4.77-9.42,9.05-15.12,12.51c-0.7,0.51-1.65,0.58-2.43,0.08 c-8.41-5.35-15.48-11.78-21.03-18.76c-7.66-9.61-12.49-20.27-14.14-30.53c-1.68-10.41-0.11-20.42,5.07-28.56 c2.04-3.22,4.65-6.15,7.83-8.68C46.3,3.01,54.65-0.06,62.96,0c8.01,0.06,15.91,3.05,22.74,9.28c2.4,2.18,4.42,4.68,6.07,7.39 c5.57,9.17,6.77,20.87,4.32,32.73c-2.41,11.71-8.41,23.62-17.28,33.35V82.78L78.81,82.78L78.81,82.78z M25.32,74.54 c1.98,0,3.59,1.61,3.59,3.59c0,1.98-1.61,3.59-3.59,3.59h-6.74l-8.88,28.67h103.22l-9.64-28.67h-5.57c-1.98,0-3.59-1.61-3.59-3.59 c0-1.98,1.61-3.59,3.59-3.59h10.7l14.46,43.01H0l13.32-43.01H25.32L25.32,74.54z M61.38,18.51c9.88,0,17.88,8.01,17.88,17.87 c0,9.88-8.01,17.88-17.88,17.88c-9.88,0-17.87-8-17.87-17.88C43.49,26.51,51.5,18.51,61.38,18.51L61.38,18.51L61.38,18.51z"/></g></svg>
         <span class="btn-texto">Localização</span>
       </button>
     </div>
-    <button class="send-post-btn" id="btn-post"><p>Publicar</p></button>
+    <button class="send-post-btn" id="sendPost"><p>Publicar</p></button>
   </div>
 </div>
 
-<!-- Post Options Layers --------------------------------------->
-<!-- Posts Add Mention Overlay -->
-<div class="add-mention-overlay" id="overlayMention">
-  <div class="add-mention-modal">
-    <div class="modal-title">Mencionar</div>
-    <div class="search-modal-area">
-      <input class="search-modal-input" type="text" name="search-mention" id="search-mention" placeholder="Buscar pessoas...">
-    </div>
-    <div class="users-list-modal">
-      <div class="users-list-modal-row"></div>
-    </div>
-    <div class="modal-footer-area">
-      <button class="modal-footer-btn" id="confirm-mention">Concluir</button>
-      <button class="modal-footer-btn secundary" id="cancel-mention">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Posts Add Music Overlay -->
-<div class="add-music-overlay" id="overlayMusic">
-  <div class="add-music-modal">
-    <div class="modal-title">Musica</div>
-    <div class="search-modal-area">
-      <input class="search-modal-input" type="text" name="search-mention" id="searchMusic" placeholder="Pesquisar músicas...">
-    </div>
-    <div class="musics-list">
-      <div class="musics-list-row" id="musicsList"></div>
-    </div>
-    <div class="modal-footer-area">
-      <button class="modal-footer-btn" id="confirm-music">Concluir</button>
-      <button class="modal-footer-btn secundary" id="cancel-music">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Posts Add Location Overlay -->
-<div class="add-local-overlay" id="overlayLocal">
-  <div class="add-local-modal">
-    <div class="modal-title">Localização</div>
-    <div class="location-input-area">
-      <textarea class="location-input" name="add-location" id="add-location" placeholder="Adicionar Localização..." maxlength="80"></textarea>
-    </div>
-    <div class="modal-footer-area">
-      <button class="modal-footer-btn" id="confirm-local">Concluir</button>
-      <button class="modal-footer-btn secundary" id="cancel-local">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- Bottom Layer -->
-<div class="menu-bottom-layer">
-  <div class="menu-bottom-container">
-    <div class="menu-bottom-box">
-      <div class="menu-options-box">
-        <button class="menu-bottom-btn critic-btn" data-action="delete">Apagar</button>
-        <button class="menu-bottom-btn" data-action="report">Denunciar</button>
-        <button class="menu-bottom-btn" data-action="archive">Arquivar</button>
+<!--<div class="bottom-menu-area">
+  <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
+  <div class="bottom-menu" id="bottomMenu">
+    <div class="bottom-menu-title">Mencionar</div>
+    <div class="bottom-menu-row">
+      <div class="bottom-menu-search-area">
+        <bottom class="menu-search-input">
+          <input id="searchUserMention" type="text" placeholder="Procurar...">
+        </bottom>
       </div>
-      <div class="menu-options-box">
-        <button class="menu-bottom-btn" data-action="cancel">Cancelar</button>
-      </div>
+      <div class="bottom-menu-list" id="usersMentionList"></div>
+    </div>
+    <div class="bottom-menu-btns-area">
+      <button class="bottom-btn cancel">Cancelar</button>
+      <button class="bottom-btn">Concluir</button>
     </div>
   </div>
 </div>
 
+<div class="bottom-menu-area">
+  <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
+  <div class="bottom-menu" id="bottomMenu">
+    <div class="bottom-menu-title">Musica</div>
+    <div class="bottom-menu-row">
+      <div class="bottom-menu-search-area">
+        <bottom class="menu-search-input">
+          <input id="searchSongs" type="text" placeholder="Pesquisar...">
+        </bottom>
+      </div>
+      <div class="bottom-menu-list" id="songsList"></div>
+    </div>
+    <div class="bottom-menu-btns-area">
+      <button class="bottom-btn cancel">Cancelar</button>
+      <button class="bottom-btn">Concluir</button>
+    </div>
+  </div>
+</div>
 
+<div class="bottom-menu-area">
+  <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
+  <div class="bottom-menu" id="bottomMenu">
+    <div class="bottom-menu-title">Localização</div>
+    <div class="bottom-menu-content">
+      <textarea name="location" id="locationInput" placeholder="Localização..."></textarea>
+    </div>
+    <div class="bottom-menu-btns-area">
+      <button class="bottom-btn cancel">Cancelar</button>
+      <button class="bottom-btn">Concluir</button>
+    </div>
+  </div>
+</div>-->
+
+
+<!--
+<div class="event-layer">
+  <div class="event-header">
+    <div class="header-block">
+      <button id="closeEvent">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+    </div>
+    <div class="header-block">
+      <div class="header-title">Evento</div>
+    </div>
+    <div class="header-block"></div>
+  </div>
+  <div class="event-body">
+    <div class="event-banner">
+      <img src="https://i.pinimg.com/736x/3e/a0/67/3ea06777e921979d09c78aa734adac0f.jpg">
+    </div>
+    <div class="event-content">
+      <div class="event-infos">
+        <div class="event-info-box">
+          <div class="event-info-header">
+            <div class="icon-area"></div>
+            <div class="event-info-title">Festa na casa da Isadora</div>
+          </div>
+          <div class="event-info-text">vamos dar uma festa na casa da isa, levem bebida e algumas coisas para comer</div>
+        </div>
+        <div class="event-info-box">
+          <div class="event-info-header">
+            <div class="icon-area">
+              <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44c0,33.93-27.51,61.44-61.44,61.44C27.51,122.88,0,95.37,0,61.44 C0,27.51,27.51,0,61.44,0L61.44,0z M52.92,30.52h7.51c1.37,0,2.5,1.13,2.5,2.5v28.94h26.41c1.38,0,2.5,1.13,2.5,2.5v7.51 c0,1.38-1.13,2.5-2.5,2.5H50.41V33.02C50.41,31.64,51.54,30.52,52.92,30.52L52.92,30.52z M61.44,13.95 c26.23,0,47.49,21.26,47.49,47.49c0,26.23-21.26,47.49-47.49,47.49c-26.23,0-47.49-21.26-47.49-47.49 C13.95,35.22,35.21,13.95,61.44,13.95L61.44,13.95z"/></g></svg>
+            </div>
+            <div class="event-info-title">Data</div>
+          </div>
+          <div class="event-info-text">6:30pm, 7 de setembro de 2026</div>
+        </div>
+        <div class="event-info-box">
+          <div class="event-info-header">
+            <div class="icon-area">
+              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105.93 122.88"><defs><style>.cls-1{fill-rule:evenodd;}</style></defs><title>map</title><path class="cls-1" d="M56.92,73.14a1.62,1.62,0,0,1-1.86.06A65.25,65.25,0,0,1,38.92,58.8,51.29,51.29,0,0,1,28.06,35.37C26.77,27.38,28,19.7,32,13.45a27,27,0,0,1,6-6.66A29.23,29.23,0,0,1,56.36,0,26,26,0,0,1,73.82,7.12a26,26,0,0,1,4.66,5.68c4.27,7,5.19,16,3.31,25.12A55.29,55.29,0,0,1,56.92,73.14Zm-19,.74V101.7l30.15,13V78.87a65.17,65.17,0,0,0,6.45-5.63v41.18l25-12.59v-56l-9.61,3.7a61.61,61.61,0,0,0,2.38-7.81l9.3-3.59A3.22,3.22,0,0,1,105.7,40a3.18,3.18,0,0,1,.22,1.16v62.7a3.23,3.23,0,0,1-2,3L72.72,122.53a3.23,3.23,0,0,1-2.92,0l-35-15.17L4.68,122.53a3.22,3.22,0,0,1-4.33-1.42A3.28,3.28,0,0,1,0,119.66V53.24a3.23,3.23,0,0,1,2.32-3.1L18.7,43.82a58.63,58.63,0,0,0,2.16,6.07L6.46,55.44v59l25-12.59V67.09a76.28,76.28,0,0,0,6.46,6.79ZM55.15,14.21A13.72,13.72,0,1,1,41.43,27.93,13.72,13.72,0,0,1,55.15,14.21Z"/></svg>
+            </div>
+            <div class="event-info-title">Localização</div>
+          </div>
+          <div class="event-info-text">Rua das palmeiras 579, jurere internacional</div>
+        </div>
+      </div>
+      <div class="event-users-row-list">
+        <div class="event-users-list">
+          <div class="event-list-title">Pessoas que vão</div>
+          <div class="event-list-row">
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="event-users-list">
+          <div class="event-list-title">Não sabem ainda</div>
+          <div class="event-list-row">
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+            <div class="user-event-box">
+              <div class="user-pfp-area">
+                <img src="./public/img/female-default.jpg">
+              </div>
+              <div class="user-event-infos">
+                <div class="user-event-name">Maximus Fortes</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="event-bottom">
+    <div class="event-actions-area">
+      <div class="event-actions">
+        <button class="event-act-btn confirm">Vou ir</button>
+        <button class="event-act-btn no">Não vou</button>
+      </div>
+      <div class="event-actions">
+        <button class="event-act-btn maybe">Não sei</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="comments-area" id="commentsArea">
+  <div class="comments-overlay" id="commentsOverlay"></div>
+  <div class="comments-container" id="commentsContainer">
+    <div class="comments-header"></div>
+    <div class="comments-row" id="commentsRow">
+      <div class="comment-item">
+        <div class="comment-left">
+          <div class="comment-pfp">
+            <img src="/public/img/default.jpg">
+          </div>
+        </div>
+        <div class="comment-right">
+          <div class="comment-header">
+            <div class="comment-displayname">Maximus Fortes</div>
+            <div class="comment-date">há 2 horas</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">Esse é o meu comentario bem bem bem grande usado para testes de desenvolvimento</div>
+          </div>
+          <button class="comment-reply">Responder</button>
+        </div>
+      </div>
+    </div>
+    <div class="comment-write-area">
+      <div class="comment-input-area" id="commentInputArea">
+        <button class="send-img-comment" id="sendImgBtn">
+          <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Adicionar foto ou vídeo</title><path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fill-rule="evenodd"></path><path d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </button>
+        <textarea class="comment-input" name="comment-input" id="commentInput" placeholder="Comentar..."></textarea>
+        <button class="send-comment" id="sendCommentBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- sempre visivel / conteudo base -->
 <div class="feed-page" id="feedPage">
-
   <div class="navbar-top" id="navbar-top">
-      <button class="top-btn" id="openPostLayerNav">
-        <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"viewBox="0 0 512 512"xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Layer_x0020_1"><path fill="#cacaca" fill-rule="nonzero" d="M154.914 0l202.172 0c42.619,0 81.357,17.421 109.425,45.489l1.202 1.306c27.36,28.002 44.287,66.208 44.287,108.119l0 202.172c0,42.619 -17.421,81.357 -45.489,109.425 -28.068,28.068 -66.806,45.489 -109.425,45.489l-202.172 0c-42.545,0 -81.268,-17.443 -109.381,-45.533 -28.112,-28.024 -45.533,-66.762 -45.533,-109.381l0 -202.172c0,-42.523 17.421,-81.231 45.489,-109.336l0.089 -0.089c28.156,-28.09 66.842,-45.489 109.336,-45.489zm79.607 126.587c0,-11.857 9.621,-21.479 21.479,-21.479 11.858,0 21.479,9.622 21.479,21.479l0 107.934 107.934 0c11.857,0 21.479,9.621 21.479,21.479 0,11.858 -9.622,21.479 -21.479,21.479l-107.934 0 0 107.934c0,11.857 -9.621,21.479 -21.479,21.479 -11.858,0 -21.479,-9.622 -21.479,-21.479l0 -107.934 -107.934 0c-11.857,0 -21.479,-9.621 -21.479,-21.479 0,-11.858 9.622,-21.479 21.479,-21.479l107.934 0 0 -107.934zm122.565 -83.629l-202.172 0c-30.828,0 -58.815,12.573 -79.055,32.813l-0.088 0.088c-20.24,20.24 -32.813,48.227 -32.813,79.055l0 202.172c0,30.762 12.603,58.756 32.901,79.055l0 0.088c20.24,20.24 48.227,32.813 79.055,32.813l202.172 0c30.762,0 58.756,-12.603 79.055,-32.901 20.298,-20.299 32.901,-48.293 32.901,-79.055l0 -202.172c0,-30.312 -12.16,-57.878 -31.802,-78.029l-1.099 -1.026c-20.299,-20.298 -48.293,-32.901 -79.055,-32.901z"/></g></svg>
-      </button>
-      <div class="logo-mobile" id="feed-toggle">RealMe</div>
-      <a href="nt.html" class="top-btn2">
-        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
-      </a>
+    <button class="top-btn" id="openPostLayerNav">
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"viewBox="0 0 512 512"xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Layer_x0020_1"><path fill="#cacaca" fill-rule="nonzero" d="M154.914 0l202.172 0c42.619,0 81.357,17.421 109.425,45.489l1.202 1.306c27.36,28.002 44.287,66.208 44.287,108.119l0 202.172c0,42.619 -17.421,81.357 -45.489,109.425 -28.068,28.068 -66.806,45.489 -109.425,45.489l-202.172 0c-42.545,0 -81.268,-17.443 -109.381,-45.533 -28.112,-28.024 -45.533,-66.762 -45.533,-109.381l0 -202.172c0,-42.523 17.421,-81.231 45.489,-109.336l0.089 -0.089c28.156,-28.09 66.842,-45.489 109.336,-45.489zm79.607 126.587c0,-11.857 9.621,-21.479 21.479,-21.479 11.858,0 21.479,9.622 21.479,21.479l0 107.934 107.934 0c11.857,0 21.479,9.621 21.479,21.479 0,11.858 -9.622,21.479 -21.479,21.479l-107.934 0 0 107.934c0,11.857 -9.621,21.479 -21.479,21.479 -11.858,0 -21.479,-9.622 -21.479,-21.479l0 -107.934 -107.934 0c-11.857,0 -21.479,-9.621 -21.479,-21.479 0,-11.858 9.622,-21.479 21.479,-21.479l107.934 0 0 -107.934zm122.565 -83.629l-202.172 0c-30.828,0 -58.815,12.573 -79.055,32.813l-0.088 0.088c-20.24,20.24 -32.813,48.227 -32.813,79.055l0 202.172c0,30.762 12.603,58.756 32.901,79.055l0 0.088c20.24,20.24 48.227,32.813 79.055,32.813l202.172 0c30.762,0 58.756,-12.603 79.055,-32.901 20.298,-20.299 32.901,-48.293 32.901,-79.055l0 -202.172c0,-30.312 -12.16,-57.878 -31.802,-78.029l-1.099 -1.026c-20.299,-20.298 -48.293,-32.901 -79.055,-32.901z"/></g></svg>
+    </button>
+    <div class="logo-mobile" id="feed-toggle">RealMe</div>
+    <a href="nt.html" class="top-btn2">
+      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
+    </a>
   </div>
 
-  <main class="welcome-container" >
+  <main class="welcome-container" id="scroll_page">
     <div class="main-content">
       <section class="welcome-box">
         <div class="user-welcome">
-          <img id="greetingPfp" src="../public/img/default.jpg" alt="Foto de perfil" loading="lazy" decoding="async">
+          <img class="greetingPfp" id="greetingPfp" src="../public/img/default.jpg" loading="lazy" decoding="async">
           <div class="user-container">
-            <h1><span id="greeting"></span> <span class="username" id="greetingUsername"></span></h1>
-              <div class="create-new-post">
-                <button class="np-btn" id="openPostLayer">
-                  Como foi o seu dia?
+            <h1><span class="greetingText" id="greeting"></span> <span class="greetingUsername" id="greetingUsername"></span></h1>
+            <div class="create-new-post">
+              <button class="np-btn" id="openPostLayer">Como foi o seu dia?</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="feedRow" id="feed">
+
+        <!-- <div class="sugestions-area">
+          <div class="card-title">Sugestões</div>
+          <div class="sugestions-row">
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+            <a class="sugestion-card" href="profile.html?userid=0c9rpJZu43RIBpwiOY1KjlFghNq1">
+              <div class="card-media">
+                <img src="../public/img/bg.jpg" class="card-banner" loading="lazy" onerror="this.src='../public/img/bg.jpg'">
+                <img src="../public/img/default.jpg" class="card-image" loading="lazy" onerror="this.src='../public/img/default.jpg'">
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="profile-username">Maximus Fortes</div>
+                </div>
+                <button class="card-add-btn">Adicionar</button>
+              </div>
+            </a>
+          </div>
+        </div> -->
+
+        <!-- <div class="messages-card">
+          <div class="card-title">Mensagens</div>
+          <div class="message-box-area">
+            <div class="messages-box">
+              <button class="message-btn">
+                <div class="message-btn-pfp-area">
+                  <img src="https://i.ibb.co/gM4xhf1Y/post-2i8mkyo3-OFd9gm-Ww-Cr-Ggr12-Xyw53-1788320524091.jpg">
+                </div>
+                <div class="message-btn-name">Maximus Fortes</div>
+                <div class="message-btn-cta">
+                  <div class="message-btn-dot">17+</div>
+                  <div class="message-btn-svg">
+                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"width="800px" height="800px" viewBox="0 0 451.846 451.847"xml:space="preserve"><g><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"/></g></svg>
+                  </div>
+                </div>
+              </button>
+              <button class="message-btn">
+                <div class="message-btn-pfp-area">
+                  <img src="https://i.ibb.co/gM4xhf1Y/post-2i8mkyo3-OFd9gm-Ww-Cr-Ggr12-Xyw53-1788320524091.jpg">
+                </div>
+                <div class="message-btn-name">Maximus Fortes</div>
+                <div class="message-btn-cta">
+                  <div class="message-btn-dot">9+</div>
+                  <div class="message-btn-svg">
+                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"width="800px" height="800px" viewBox="0 0 451.846 451.847"xml:space="preserve"><g><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"/></g></svg>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>-->
+
+        <!-- <div class="post-card-new">
+          <div class="post-header-new">
+            <div class="post-pfp-area post-owner-link">
+              <div class="post-pfp">
+                <img src="https://i.ibb.co/CsTgTdgZ/IMG-2944.jpg">
+              </div>
+            </div>
+            <div class="post-header-infos">
+              <div class="post-author-name-area"><span class="post-author-name">Maximus Fortes</span> estava com <span class="post-author-name">Matheus Nunes</span> e <span class="post-author-name">Felipe Silva</span></div>
+              <div class="post-date-new">Há 17 horas</div>
+            </div>
+            <div class="post-more-actions">
+              <button class="post-more" id="openPostMore">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="7" width="20" height="2.5" rx="1.25"></rect><rect x="2" y="15" width="15" height="2.5" rx="1.25"></rect></svg>
+              </button>
+            </div>
+          </div>
+          <div class="post-content-new">
+            <div class="post-content-text">muito TCC essa foto</div>
+            <div class="post-content-media">
+              <div class="img-card">
+                <img src="https://i.ibb.co/bxX0T3r/post-2i8mkyo3-OFd9gm-Ww-Cr-Ggr12-Xyw53-1788156106326.jpg" alt="">
+              </div>
+            </div>
+          </div>
+          <div class="post-bottom">
+            <div class="post-actions-area">
+              <div class="post-actions-left">
+                <button class="post-action-btn like-btn">
+                  <svg class="heart-outline" aria-label="Curtir" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Curtir</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                  <span class="like-count" style="transition: opacity 180ms; opacity: 1;">1</span>
+                </button>
+                <button class="post-action-btn comment-btn" id="openComments">
+                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.97 122.88"><path d="M61.44,0a61.46,61.46,0,0,1,54.91,89l6.44,25.74a5.83,5.83,0,0,1-7.25,7L91.62,115A61.43,61.43,0,1,1,61.44,0ZM96.63,26.25a49.78,49.78,0,1,0-9,77.52A5.83,5.83,0,0,1,92.4,103L109,107.77l-4.5-18a5.86,5.86,0,0,1,.51-4.34,49.06,49.06,0,0,0,4.62-11.58,50,50,0,0,0-13-47.62Z"></path></svg>
+                  <span class="comment-count">0</span>
                 </button>
               </div>
+            </div>
+            <div class="post-graph-box">
+              <div class="post-graph-item likers-preview">
+                <div class="post-graph-text">Curtido por <span>Ana Z</span></div>
+              </div>
+              <div class="post-graph-item comment-preview">
+                <div class="post-graph-comment"></div>
+              </div>
+            </div>
           </div>
-          </div>
-      </section>
-      <div id="feed"></div>
+        </div> -->
+
+      </div>
     </div>
   </main>
 
   <div class="navbar-bottom">
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
     <div class="navbar-bottom-area">
       <a href="feed.html" class="active-bar">
         <svg aria-label="Página inicial" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Página inicial</title><path d="m21.762 8.786-7-6.68a3.994 3.994 0 0 0-5.524 0l-7 6.681A4.017 4.017 0 0 0 1 11.68V19c0 2.206 1.794 4 4 4h3.005a1 1 0 0 0 1-1v-7.003a2.997 2.997 0 0 1 5.994 0V22a1 1 0 0 0 1 1H19c2.206 0 4-1.794 4-4v-7.32a4.02 4.02 0 0 0-1.238-2.894Z"></path></svg>
@@ -202,22 +513,57 @@
       </a>
     </div>
   </div>
-
+</div>
+</div>
 </div>
 
-<iframe id="yt-preview" width="0" height="0" style="display:none" allow="autoplay"></iframe>
-<script src="https://www.youtube.com/iframe_api"></script>
-<script type="module" src="../src/js/pages/feed.js"></script>
-<script type="module" src="../src/config/config.js"></script>
-<script type="module" src="../src/services/notifications.js"></script>
-<script type="module" src="../src/services/badge.js"></script>
-<script type="module" src="../src/components/modal-open.js"></script>
-<script type="module" src="../src/components/post-meta.js"></script>
-<script src="./src/services/music-search.js"></script>
-<script type="module" src="../src/components/pc-alert.js"></script>
-<script type="module" src="./src/components/navbar-badge.js"></script>
-<script type="module" src="./src/services/global-direct-nt.js"></script>
-<script type="module" src="./src/modules/auth-verification.js"></script>
+<div class="nav-pc">
+    <div class="logo-area">
+        <div class="logo-pc">RealMe</div>
+    </div>
+    <div class="search-area">
+        <div class="search-input">
+            <input type="text" name="mainSearch" id="mainSearch" placeholder="Pesquisar Amigos, Colegas, Conhecidos...">
+        </div>
+    </div>
+</div>
+
+<div class="side-nav">
+    <a href="/feed.html" class="side-bar-btn active">
+      <svg aria-label="Página inicial" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Página inicial</title><path d="m21.762 8.786-7-6.68a3.994 3.994 0 0 0-5.524 0l-7 6.681A4.017 4.017 0 0 0 1 11.68V19c0 2.206 1.794 4 4 4h3.005a1 1 0 0 0 1-1v-7.003a2.997 2.997 0 0 1 5.994 0V22a1 1 0 0 0 1 1H19c2.206 0 4-1.794 4-4v-7.32a4.02 4.02 0 0 0-1.238-2.894Z"></path></svg>
+      <span>Pagina inicial</span>
+    </a>
+    <a href="/friends.html" class="side-bar-btn">
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
+      <span>Achar Amigos</span>
+    </a>
+    <a href="/nt.html" class="side-bar-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 456.549"><path fill-rule="nonzero" d="M463.044 117.283c-10.125-26.729-28.412-47.537-50.269-60.578-13.478-8.048-28.343-13.125-43.461-14.808-14.879-1.655-30.018.007-44.284 5.407-37.461 14.189-50.601 41.912-66.522 74.028-3.422 6.887-1.964 6.964-5.893.078-17.576-30.87-33.786-63.684-70.127-75.725-12.879-4.26-26.554-5.408-40.088-3.845-13.83 1.606-27.546 6.028-40.207 12.83-25.068 13.485-45.883 36.215-55.382 64.916-31.525 95.237 83.379 188.376 170.42 258.918 12.97 10.506 25.363 20.547 36.834 30.251 15.449-13.288 32.356-26.695 49.995-40.687 87.815-69.634 195.291-154.872 158.984-250.785zm-29.173-95.842c29.483 17.589 54.094 45.531 67.663 81.351 46.924 123.973-73.479 219.471-171.871 297.485-22.829 18.11-44.418 35.228-61.078 50.41-7.626 7.478-19.85 7.894-27.969.711-13.9-12.323-31.033-26.201-49.312-41.01C94.743 332.128-32.73 228.808 7.688 106.7c12.956-39.151 41.144-70.042 75.028-88.266C99.939 9.175 118.705 3.147 137.724.943c19.337-2.232 38.983-.556 57.65 5.619 22.047 7.302 42.601 20.751 59.55 41.271 16.316-18.527 35.37-31.35 55.614-39.018 20.513-7.759 42.13-10.168 63.283-7.816 20.913 2.324 41.453 9.337 60.05 20.442z"/></svg>
+      <span>Notificações</span>
+    </a>
+    <a href="/direct.html" class="side-bar-btn">
+      <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
+      <span>Mensagens</span>
+    </a>
+    <a href="/explore.html" class="side-bar-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
+      <span>Atividades</span>
+    </a>
+    <a href="/feed.html?criar" class="side-bar-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"viewBox="0 0 512 512"xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Layer_x0020_1"><path fill="#cacaca" fill-rule="nonzero" d="M154.914 0l202.172 0c42.619,0 81.357,17.421 109.425,45.489l1.202 1.306c27.36,28.002 44.287,66.208 44.287,108.119l0 202.172c0,42.619 -17.421,81.357 -45.489,109.425 -28.068,28.068 -66.806,45.489 -109.425,45.489l-202.172 0c-42.545,0 -81.268,-17.443 -109.381,-45.533 -28.112,-28.024 -45.533,-66.762 -45.533,-109.381l0 -202.172c0,-42.523 17.421,-81.231 45.489,-109.336l0.089 -0.089c28.156,-28.09 66.842,-45.489 109.336,-45.489zm79.607 126.587c0,-11.857 9.621,-21.479 21.479,-21.479 11.858,0 21.479,9.622 21.479,21.479l0 107.934 107.934 0c11.857,0 21.479,9.621 21.479,21.479 0,11.858 -9.622,21.479 -21.479,21.479l-107.934 0 0 107.934c0,11.857 -9.621,21.479 -21.479,21.479 -11.858,0 -21.479,-9.622 -21.479,-21.479l0 -107.934 -107.934 0c-11.857,0 -21.479,-9.621 -21.479,-21.479 0,-11.858 9.622,-21.479 21.479,-21.479l107.934 0 0 -107.934zm122.565 -83.629l-202.172 0c-30.828,0 -58.815,12.573 -79.055,32.813l-0.088 0.088c-20.24,20.24 -32.813,48.227 -32.813,79.055l0 202.172c0,30.762 12.603,58.756 32.901,79.055l0 0.088c20.24,20.24 48.227,32.813 79.055,32.813l202.172 0c30.762,0 58.756,-12.603 79.055,-32.901 20.298,-20.299 32.901,-48.293 32.901,-79.055l0 -202.172c0,-30.312 -12.16,-57.878 -31.802,-78.029l-1.099 -1.026c-20.299,-20.298 -48.293,-32.901 -79.055,-32.901z"/></g></svg>
+      <span>Criar</span>
+    </a>
+    <a href="/profile.html" class="side-bar-btn">
+      <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini-side" id="nav-pic" loading="lazy" decoding="async">
+      <span>Perfil</span>
+    </a>
+    <button class="side-bar-btn">
+      <svg aria-label="Configurações" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Configurações</title><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="4" y2="4"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="12" y2="12"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="20" y2="20"></line></svg>
+      <span>Mais Opções</span>
+    </button>
+</div>
+
+<script type="module" src="../src/js/pages/feed/feed.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -229,49 +575,6 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.warn('', err));
   });
 }
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const navbar = document.querySelector('.navbar-top');
-  const container = document.querySelector('.welcome-container');
-
-  let lastY = 0;
-  let current = 0;
-
-  const START_HIDE_AT = 60;
-  const MAX = 100;
-
-  function clamp(n, min, max) {
-    return Math.max(min, Math.min(max, n));
-  }
-
-  container.addEventListener('scroll', () => {
-    const y = container.scrollTop;
-    const delta = y - lastY;
-    if (y < START_HIDE_AT) {
-      current = 0;
-      navbar.classList.remove('hidden');
-      navbar.style.transform = 'translateY(0%)';
-      lastY = y;
-      return;
-    }
-
-    if (delta > 0) {
-      current = clamp(current + 18, 0, MAX);
-    }
-
-    if (delta < 0) {
-      current = clamp(current - 18, 0, MAX);
-    }
-
-    navbar.classList.add('hidden');
-    navbar.style.transform = `translateY(-${current}%)`;
-    if (current <= 0) {
-      navbar.classList.remove('hidden');
-    }
-    lastY = y;
-  }, { passive: true });
-});
 </script>
 </body>
 </html>

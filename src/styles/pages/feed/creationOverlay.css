@@ -1,0 +1,277 @@
+/*----------- creation Overlay --------------*/
+.post-layer {
+  position: fixed;
+  background-color: var(--bg-np);
+  width: 100vw;
+  display: flex;
+  flex-direction: column ;
+  height: 100vh;
+  z-index: 999999;
+  transform: translateX(-100%); 
+  transition: transform 0.35s ease-out; 
+  border-radius: 0 22px 0 22px;
+}
+
+.post-layer.active { 
+  transform: translateX(0);
+}
+
+
+.feed-page.closed {
+  transform: translateX(100%);
+}
+
+.feed-page {
+  transition: transform 0.35s ease-out; 
+}
+
+
+/*----------- creation Overlay Header --------------*/
+.header-layer {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  padding: 1.8vh 2.8vh;
+  width: 100%;
+  justify-content: space-between;
+  position: fixed;
+  height: 60px;
+  z-index: 9999999;
+  background-color: var(--bg-np);
+}
+
+.header-layer h1 {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.header-layer button {
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  align-self: center;
+  margin-top: 0.5vh;
+}
+
+.header-layer svg {
+  height: 22px;
+  width: 22px;
+  fill: #fff;
+  transform: rotateY(180deg);
+}
+
+/*----------- creation Overlay Body ---------------*/
+
+.content-area {
+  width: 100%;
+  position: fixed;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 60px;
+}
+
+.content-row {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  padding-bottom: 120px;
+}
+
+/*---------------- Text Area -----------------------*/
+
+.np-text-area {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  padding: 18px 16px 0px;
+  border: none;
+  height: auto;
+  transition: height 0.1s ease;
+  padding-bottom: 10px;
+}
+
+.np-avatar-area {
+  display: flex;
+}
+
+.np-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #373737;
+}
+
+.np-input-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  min-height: 66px;
+  max-height: 600px;
+  height: auto;
+  transition: height 0.1s ease;
+}
+
+.np-username {
+  padding-top: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.np-text-input {
+  background: transparent;
+  padding: 0;
+  color: #dbdbdb;
+  width: 100%;
+  min-height: 42px;
+  max-height: 312px;
+  height: 42px;
+  border: none;
+  font-size: 16px;
+  resize: none;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.np-text-input:focus {
+  outline: none;
+}
+
+
+/* ----------------- images area ----------------*/
+
+
+.image-preview-carrosel{
+  display:flex;
+  padding:6px 16px;
+  gap:16px;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+
+.img-preview{
+  width:300px;
+  height: auto;
+  min-height: 100px;
+  max-height: 360px;
+  overflow:hidden;
+  flex-shrink:0;
+  position:relative;
+}
+
+.img-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  border-radius: var(--radius-md);
+}
+
+
+.img-btn button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #242424d5;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 999999;
+}
+
+
+/*------------- bottom area ------------*/
+
+.sections-btn {
+  padding: 8px;
+  padding-bottom: 46px;
+  width: 100%;
+  gap: 6px;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  bottom: 0;
+  background: var(--bg-np);
+}
+
+.sections-btns-row {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+
+/*--------- bottom area buttons ------------*/
+
+.np-bottom-btn {
+  background: transparent;
+  color: #666;
+  padding: 4px 4px;
+  font-size: 12px;
+  border: none;
+  width: 90px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+}
+
+.np-bottom-btn.disable {
+  color: #333;
+}
+
+.np-bottom-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+
+/*------------- send button -----------*/
+
+.send-post-btn {
+  background-color: var(--primary-btn);
+  color: #fff;
+  padding: 12px 26px;
+  font-weight: bold;
+  font-size: 14px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  bottom: 0;
+  transition: all 0.3s;
+}
+
+.send-post-btn.disable {
+  opacity: 0.5;
+}
