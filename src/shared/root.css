@@ -1,0 +1,153 @@
+:root {
+  /* ========== CORES PRINCIPAIS ========== */
+  --primary-color:   #4a59e2;
+  --primary-btn:   #4a59e2;
+  --text-color: #6269a4;
+
+  /* ========== CORES DE FUNDO ========== */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1C1C1C;
+  --bg-tertiary: #141414;
+  --bg-card-solid: #1f1f1f;
+  --bg-section: #06080c;
+  --bg-input: #474747;
+  --bg-hover: #3b3b3b;
+  --bg-modal: rgba(15, 15, 15, 0.70);
+  --bg-np: #0f0f0f;
+  
+  /* ========== Button Colors ========== */
+
+  --btn-primary: #4a59e2;
+  --btn-secundary: #4a59e2;
+  --btn-primary-disable: #4a59e2;
+  --btn-secundary-disable: #4a59e2;
+  --btn-transparent: transparent;
+
+  --action-btn: #ddd;
+  --action-btn-disable: #777;
+
+  
+  /* ========== Text Colors ========== */
+  --text-pure: #fff;
+  --text-primary: #f8f9f9;
+  --text-secondary: #dbdbdb;
+  --text-tertiary: #cacaca;
+  --text-muted: #aaaaaa;
+  --text-disabled: #8d8d8d;
+  --text-dark: #666;
+  --text-darker: #555;
+  --text-logo: #fff;
+
+  /* ========== Verification ========== */
+  --verified-blue: #1DA1F2;
+  
+  /* ========== Shadows ========== */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 0 20px rgba(0, 0, 0, 0.7);
+  --shadow-inset: inset 0 8px 8px -7px rgba(0, 0, 0, 0.644);
+
+  /* ========== Border Radius ========== */
+  --radius-min: 2px;
+  --radius-xsm: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
+  --radius-xxl: 20px;
+  --radius-full: 50%;
+  --radius-pill: 600px;
+  
+  /* ========== Spacing ========== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  
+  /* ========== Font Size ========== */
+  --font-1xs: 10px;
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+  --font-3xl: 28px;
+  --font-4xl: 32px;
+  
+  /* ========== Navbar ========== */
+  --navbar-height: 60px;
+  
+  /* ========== Pfp Avatars Size ========== */
+  --avatar-xs: 28px;
+  --avatar-sm: 40px;
+  --avatar-md: 48px;
+  --avatar-lg: 52px;
+  --avatar-xl: 118px;
+  
+}
+
+/* ========== SELEÇÃO DE TEXTO ========== */
+::selection {
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+}
+
+/* ========== SCROLLBAR GLOBAL ========== */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: content-box;
+}
+
+/* ========== Mobile Config ========== */
+
+*{
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+}
+
+*:focus,
+*:active{
+  outline: none;
+  box-shadow: none;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+@font-face {
+  font-family: 'RealMeFont';
+  src: url('/public/font/TitilliumWeb-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+textarea {
+  resize: none;
+  font: inherit;
+}

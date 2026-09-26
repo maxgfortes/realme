@@ -1,0 +1,293 @@
+.post-card-new {
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+.post-header-new {
+  display: flex;
+  padding: 10px;
+  gap: 10px;
+}
+
+.post-pfp-area {
+  height: 100%;
+}
+
+.post-pfp {
+  height: 44px;
+  width: 44px;
+  aspect-ratio: 1/1;
+  background: #272727;
+  border-radius: var(--radius-full);
+}
+
+.post-pfp img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+}
+
+.post-header-infos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.4;
+}
+
+.post-author-name-area {
+  font-size: 14px;
+  color: #ddd;
+}
+
+.post-author-name {
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+  white-space: nowrap;
+  text-transform: capitalize; 
+  text-decoration: none;
+}
+
+
+.post-date-new {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.post-more-actions {
+  height: 47px;
+  width: 47px;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-more {
+  background: transparent;
+  border: none;
+}
+
+.post-more svg {
+  fill: #eee;
+}
+
+.post-content-new {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+.post-content-text {
+  padding: 0px 10px;
+  font-size: 1rem;
+}
+
+.post-content-media {
+  padding: 0 10px;
+  width: 100%;
+}
+
+.post-content-media.carousel {
+  padding: 0;
+  width: 100%;
+}
+
+.carousel{
+  position:relative;
+  overflow:hidden;
+}
+
+.carousel-track{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    gap: 10px;
+    padding: 0 10px;
+}
+
+.carousel-track .img-card{
+    flex:0 0 95%;
+    scroll-snap-align:center;
+}
+
+.carousel-track img{
+  width:100%;
+  display:block;
+}
+
+
+.img-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  display: block;
+  max-height: 450px;
+}
+
+.img-card {
+  border-radius: var(--radius-md);
+  width: 100%;
+  height: auto;
+  background: #272727;
+}
+
+.post-bottom {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.post-graph-box {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px;
+  width: 100%;
+  background: #303035;
+  min-height: 38px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  z-index: 1;
+  color: #eee;
+}
+
+.post-graph-box::after {
+  content: '';
+  position: absolute;
+  background: #303035;
+  width: 22px;
+  height: 22px;
+  border-radius:var(--radius-min);
+  transform: rotate(45deg);
+  z-index: -1;
+  top: -4px;
+  left: 27px;
+}
+
+.post-graph-text span{
+  font-weight: bold;
+  font-size: 14px
+}
+
+.post-graph-text{
+  font-size: 14px;
+}
+
+.post-graph-comment {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.post-graph-comment span{
+  font-weight: bold;
+}
+
+.post-actions-area {
+  display: flex;
+  width: 100%;
+}
+
+.post-actions-left {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.post-action-btn {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  gap: 6px;
+}
+
+.post-action-btn svg {
+  width: 24px;
+}
+
+.post-action-btn span {
+  font-weight: bold;
+  color: #eee;
+  font-size: 14px;
+}
+
+.carrossel-container {
+  position: relative;
+}
+
+.carrossel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.carrossel-track .carrossel-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.carrossel-track .carrossel-slide img {
+  width: 100%;
+  display: block;
+}
+
+.carrossel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  border-radius: 90px;
+  box-shadow: 0 0 4px 6px #0f0f0f4b;
+  background: #0f0f0f4b;
+}
+
+.carrossel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.carrossel-dot.active {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+.comment-outline {
+  color: #eee;
+}
+
+.heart-outline {
+  color: #eee;
+}
+
+.heart-outline.active {
+  display: none;
+}
+
+.heart-fill {
+  color: #ff3040;
+  display: none;
+}
+
+.heart-fill.active {
+  display: flex;
+}
