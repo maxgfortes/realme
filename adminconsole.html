@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>RealMe</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="../src/styles/shared/base.css">
+  <link rel="stylesheet" href="../src/styles/shared/root.css">
+  <link rel="icon" href="../public/img/icon.png" type="image/png">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+
+  <meta property="og:site_name" content="RealMe">
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+
+<style>
+:root{
+  --bg:#0f0f0f;--card:#272727;--ink:#fff;--mute:#aaaaaa;--line:transparent;
+  --brand-ink:#fff;--ok:#178a54;--warn:#b7791f;--off:#8a869a;--bad:#d23c4a;
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  display: none;
+}
+
+header{
+  padding:18px 16px 12px;
+  position:fixed;
+  width:100%;
+  height:60px;
+  z-index:5;
+  background:var(--bg-primary);
+}
+
+h1{font-size:24px;letter-spacing:-.01em}
+main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
+
+.btn{
+  padding:12px 18px;border-radius:12px;font-weight:700;color:#fff;
+  border:none;background:var(--primary-color);
+}
+.btn.ghost{background:transparent;border:1px solid var(--mute);color:#fff}
+.btn.danger{background:var(--bad)}
+.btn:disabled{opacity:.5}
+.fab{
+  position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));
+  height:56px;padding:0 22px;border-radius:28px;box-shadow:var(--shadow);
+}
+
+.item{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+.item-top{display:flex;gap:12px}
+.thumb{
+  width:44px;height:44px;border-radius:12px;background:var(--bg);flex:none;
+  object-fit:cover;display:grid;place-items:center;font-size:1.3rem;
+}
+.item h3{font-size:1rem;overflow-wrap:anywhere}
+.item p{
+  font-size:.85rem;color:var(--mute);margin-top:4px;overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:12px;font-size:.78rem;color:var(--mute)}
+.badge{font-weight:700;padding:3px 10px;border-radius:99px;font-size:.75rem;border:1px solid currentColor}
+.on{color:var(--ok)}.soon{color:var(--warn)}.off{color:var(--off)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions .btn{flex:1;padding:10px}
+.empty{text-align:center;color:var(--mute);padding:60px 20px;line-height:1.5}
+.empty strong{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:6px}
+
+#editor{
+  position:fixed;inset:0;z-index:20;background:var(--bg);
+  display:none;flex-direction:column;overflow-y:hidden;
+}
+#editor.open{display:flex}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:calc(10px + env(safe-area-inset-top)) 12px 10px;
+  border-bottom:1px solid var(--line);background:var(--bg);
+}
+.topbar h2{font-size:1rem}
+.topbar .btn{padding:10px 16px}
+.editor-body{
+  flex:1;overflow:auto;padding:8px 16px calc(40px + env(safe-area-inset-bottom));
+  max-width:640px;width:100%;margin:0 auto;
+}
+label{display:block;font-size:.85rem;font-weight:700;margin:18px 0 6px}
+input,textarea{
+  width:100%;font:inherit;font-size:16px;padding:14px;border-radius:12px;
+  border:1px solid var(--line);background:var(--card);color:#fff;
+}
+textarea{min-height:200px;resize:vertical;line-height:1.5}
+.hint{font-size:.78rem;color:var(--mute);margin-top:5px}
+.row{display:grid;grid-template-columns:1fr;gap:0 12px;overflow-y:hidden}
+@media (min-width:520px){.row{grid-template-columns:1fr 1fr}}
+.pv-title{margin:28px 0 8px;font-size:.9rem;font-weight:700}
+.pv-frame{border-radius:0;overflow:hidden;background:var(--bg-primary)}
+.pv-empty{color:var(--mute);text-align:center;font-size:.85rem;padding:24px}
+
+.serverMessageArea{
+  width:100%;position:relative;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;max-height:500px;opacity:1;overflow:hidden;
+  transition:all .6s;background:var(--bg-primary);
+}
+.closeMessage{
+  width:28px;height:28px;border-radius:50%;border:none;display:flex;align-items:center;
+  justify-content:center;color:#fff;background:transparent;font-size:18px;
+  position:absolute;top:10px;right:10px;
+}
+.messageIconArea{display:flex;align-items:center;justify-content:center;width:100%;height:140px}
+.messageIconArea img{height:100%;width:100%;object-fit:cover}
+.textMessageArea{display:flex;flex-direction:column;gap:8px;padding:32px}
+.messageTitle{width:100%;font-size:1.3rem;font-weight:bold;color:#fff;text-align:center}
+.messageBody{width:100%;font-size:1rem;color:#999;text-align:center}
+.messageAction{width:100%;padding:0 32px 32px}
+.messageBtn{
+  width:100%;height:50px;border-radius:10px;border:none;
+  background:var(--primary-color);color:#fff;font-weight:bold;font-size:1rem;
+}
+
+#delOv{
+  position:fixed;inset:0;background:rgba(10,8,20,.55);z-index:30;
+  display:none;align-items:flex-end;justify-content:center;
+}
+#delOv.open{display:flex}
+.confirm{
+  background:var(--bg);width:100%;max-width:640px;border-radius:22px 22px 0 0;
+  padding:22px 16px calc(20px + env(safe-area-inset-bottom));
+}
+.confirm p{color:var(--mute);margin:6px 0;overflow-wrap:anywhere}
+.confirm .actions{margin-top:16px}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(20px);
+  background:#fff;color:#0f0f0f;padding:11px 18px;border-radius:12px;font-size:.88rem;
+  opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:90%;
+}
+.toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RealMe</h1>
+</header>
+<main id="list"><div class="empty">Carregando…</div></main>
+<button class="btn fab" id="btnNew" hidden>Nova mensagem</button>
+
+<div id="editor">
+  <div class="topbar">
+    <button class="btn ghost" id="btnCancel" type="button">Cancelar</button>
+    <h2 id="editorTitle">Nova mensagem</h2>
+    <button class="btn" id="btnSave" type="submit" form="form">Salvar</button>
+  </div>
+
+  <form class="editor-body" id="form" novalidate>
+    <label for="fTitle">Título</label>
+    <input id="fTitle" maxlength="80" autocomplete="off">
+
+    <label for="fBody">Texto</label>
+    <textarea id="fBody" maxlength="400"></textarea>
+    <div class="hint" id="count">0 / 400</div>
+
+    <label for="fIcon">Ícone (URL da imagem, opcional)</label>
+    <input id="fIcon" type="url" inputmode="url" placeholder="https://…" autocomplete="off">
+
+    <label for="fBtn">Texto do botão (opcional)</label>
+    <input id="fBtn" maxlength="30" autocomplete="off">
+
+    <div class="row">
+      <div><label for="fStart">Começa em</label><input id="fStart" type="datetime-local"></div>
+      <div><label for="fEnd">Termina em</label><input id="fEnd" type="datetime-local"></div>
+    </div>
+    <div class="hint" id="editHint" hidden>Editar não faz a mensagem reaparecer para quem já viu. Para isso, crie uma nova.</div>
+
+    <div class="pv-title">Preview</div>
+    <div class="pv-frame" id="preview"></div>
+  </form>
+</div>
+
+<div id="delOv">
+  <div class="confirm">
+    <h2>Apagar mensagem?</h2>
+    <p id="delName"></p>
+    <div class="hint">Essa ação não pode ser desfeita.</div>
+    <div class="actions">
+      <button class="btn ghost" id="delNo">Cancelar</button>
+      <button class="btn danger" id="delYes">Apagar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { db, auth } from "./src/config/config.js";
+import {
+  collection, getDocs, getDoc, addDoc, setDoc, deleteDoc, doc,
+  query, orderBy, Timestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const $ = id => document.getElementById(id);
+
+let messages = [];
+let editingId = null;
+let deletingId = null;
+
+function esc(text) {
+  return String(text || "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function pad(n) { return String(n).padStart(2, "0"); }
+
+function toInput(d) {
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+         "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+function fmt(d) {
+  return d.toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function toast(text) {
+  const t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+function getStatus(m) {
+  const now = new Date();
+  if (now < m.startAt) return { label: "Agendada", cls: "soon" };
+  if (now > m.endAt) return { label: "Expirada", cls: "off" };
+  return { label: "No ar", cls: "on" };
+}
+
+function renderList() {
+  if (messages.length === 0) {
+    $("list").innerHTML = `<div class="empty"><strong>Nenhuma mensagem</strong>Toque em “Nova mensagem” para criar a primeira.</div>`;
+    return;
+  }
+
+  $("list").innerHTML = messages.map(m => {
+    const s = getStatus(m);
+    const icon = m.icon
+      ? `<img class="thumb" src="${esc(m.icon)}" alt="">`
+      : `<div class="thumb">💬</div>`;
+    const btn = m.buttonText ? `<span>Botão: ${esc(m.buttonText)}</span>` : "";
+
+    return `
+      <div class="item">
+        <div class="item-top">
+          ${icon}
+          <div>
+            <h3>${esc(m.title)}</h3>
+            <p>${esc(m.body)}</p>
+          </div>
+        </div>
+        <div class="meta">
+          <span class="badge ${s.cls}">${s.label}</span>
+          <span>${fmt(m.startAt)} → ${fmt(m.endAt)}</span>
+          ${btn}
+        </div>
+        <div class="actions">
+          <button class="btn ghost" data-edit="${m.id}">Editar</button>
+          <button class="btn ghost" data-del="${m.id}">Apagar</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+$("list").addEventListener("click", e => {
+  const editId = e.target.dataset.edit;
+  const delId = e.target.dataset.del;
+  if (editId) openEditor(messages.find(m => m.id === editId));
+  if (delId) openDelete(messages.find(m => m.id === delId));
+});
+
+async function loadMessages() {
+  const q = query(collection(db, "serverMessages"), orderBy("startAt", "desc"));
+  const snap = await getDocs(q);
+
+  messages = snap.docs.map(d => {
+    const data = d.data();
+    return { ...data, id: d.id, startAt: data.startAt.toDate(), endAt: data.endAt.toDate() };
+  });
+
+  renderList();
+}
+
+function renderPreview() {
+  const title = $("fTitle").value.trim();
+  const body = $("fBody").value.trim();
+  const icon = $("fIcon").value.trim();
+  const btn = $("fBtn").value.trim();
+
+  $("count").textContent = $("fBody").value.length + " / 400";
+
+  if (!title && !body) {
+    $("preview").innerHTML = `<div class="pv-empty">Preencha título e texto para ver como fica.</div>`;
+    return;
+  }
+
+  $("preview").innerHTML = `
+    <div class="serverMessageArea">
+      <button class="closeMessage" type="button">×</button>
+      ${icon ? `<div class="messageIconArea"><img src="${esc(icon)}" alt=""></div>` : ""}
+      <div class="textMessageArea">
+        <div class="messageTitle">${esc(title)}</div>
+        <div class="messageBody">${esc(body)}</div>
+      </div>
+      ${btn ? `<div class="messageAction"><button class="messageBtn" type="button">${esc(btn)}</button></div>` : ""}
+    </div>`;
+}
+
+["fTitle", "fBody", "fIcon", "fBtn"].forEach(id => $(id).addEventListener("input", renderPreview));
+
+function openEditor(m) {
+  editingId = m ? m.id : null;
+
+  const now = new Date();
+  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  $("editorTitle").textContent = m ? "Editar mensagem" : "Nova mensagem";
+  $("editHint").hidden = !m;
+  $("fTitle").value = m ? m.title : "";
+  $("fBody").value = m ? m.body : "";
+  $("fIcon").value = m && m.icon ? m.icon : "";
+  $("fBtn").value = m && m.buttonText ? m.buttonText : "";
+  $("fStart").value = toInput(m ? m.startAt : now);
+  $("fEnd").value = toInput(m ? m.endAt : nextWeek);
+
+  renderPreview();
+  $("editor").classList.add("open");
+  $("editor").querySelector(".editor-body").scrollTop = 0;
+}
+
+function closeEditor() {
+  $("editor").classList.remove("open");
+}
+
+$("btnNew").addEventListener("click", () => openEditor(null));
+$("btnCancel").addEventListener("click", closeEditor);
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const title = $("fTitle").value.trim();
+  const body = $("fBody").value.trim();
+  const icon = $("fIcon").value.trim();
+  const buttonText = $("fBtn").value.trim();
+  const start = new Date($("fStart").value);
+  const end = new Date($("fEnd").value);
+
+  if (!title || !body) return toast("Preencha título e texto.");
+  if (isNaN(start) || isNaN(end)) return toast("Defina início e fim.");
+  if (end <= start) return toast("O fim precisa ser depois do início.");
+
+  const data = {
+    title,
+    body,
+    startAt: Timestamp.fromDate(start),
+    endAt: Timestamp.fromDate(end)
+  };
+  if (icon) data.icon = icon;
+  if (buttonText) data.buttonText = buttonText;
+
+  $("btnSave").disabled = true;
+
+  try {
+    if (editingId) {
+      await setDoc(doc(db, "serverMessages", editingId), data);
+    } else {
+      await addDoc(collection(db, "serverMessages"), data);
+    }
+    closeEditor();
+    toast(editingId ? "Mensagem atualizada." : "Mensagem criada.");
+    await loadMessages();
+  } catch (err) {
+    console.error(err);
+    toast("Erro ao salvar. Verifique as regras.");
+  }
+
+  $("btnSave").disabled = false;
+});
+
+function openDelete(m) {
+  deletingId = m.id;
+  $("delName").textContent = m.title;
+  $("delOv").classList.add("open");
+}
+
+function closeDelete() {
+  $("delOv").classList.remove("open");
+}
+
+$("delNo").addEventListener("click", closeDelete);
+$("delOv").addEventListener("click", e => { if (e.target.id === "delOv") closeDelete(); });
+
+$("delYes").addEventListener("click", async () => {
+  try {
+    await deleteDoc(doc(db, "serverMessages", deletingId));
+    closeDelete();
+    toast("Mensagem apagada.");
+    await loadMessages();
+  } catch (err) {
+    console.error(err);
+    toast("Erro ao apagar.");
+  }
+});
+
+function deny(text) {
+  $("btnNew").hidden = true;
+  $("list").innerHTML = `<div class="empty"><strong>Acesso restrito</strong>${text}</div>`;
+}
+
+onAuthStateChanged(auth, async user => {
+  if (!user) return deny("Entre na sua conta para continuar.");
+
+  try {
+    const adminDoc = await getDoc(doc(db, "admin", user.uid));
+    if (!adminDoc.exists()) return deny("Sua conta não tem permissão de administrador.");
+
+    $("btnNew").hidden = false;
+    await loadMessages();
+  } catch (err) {
+    console.error(err);
+    deny("Não foi possível verificar suas permissões.");
+  }
+});
+</script>
+</body>
+</html>
