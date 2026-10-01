@@ -4,6 +4,7 @@ import {
 import { renderLinks } from "./links.js";
 import { renderAboutMenu } from "./aboutRender.js";
 import { renderStats } from "./profileStats.js";
+import { renderMusic } from "./profileMusic.js";
 
 export function renderProfile(data) {
   renderUsername(data.user);
@@ -11,6 +12,7 @@ export function renderProfile(data) {
   renderVerified(data.user);
   renderPfp(data.media);
   renderBanner(data.media);
+  renderMusic(data.media);
   renderPronouns(data.about);
   renderBio(data.moreInfos);
   renderLinks(data.links);

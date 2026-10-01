@@ -15,6 +15,7 @@ import { loadPostStats } from "./profileStats.js";
 import { loadPostsGrid } from "./postsGrid.js";
 import { loadWall } from "./wall.js";
 import { showProfileNotFound } from "./profileNotFound.js";
+import { stopMusic } from "./profileMusic.js";
 
 function renderCachedProfile() {
   const uid = getCachedProfileUid();
@@ -28,7 +29,10 @@ function renderCachedProfile() {
 }
 
 async function openProfile(uid) {
-  if (state.profileUserId !== uid) state.profileData = createEmptyProfileData();
+  if (state.profileUserId !== uid) {
+    state.profileData = createEmptyProfileData();
+    stopMusic();
+  }
 
   state.profileUserId = uid;
   state.isOwnProfile = uid === state.currentUserId;
