@@ -6,12 +6,14 @@
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="../src/styles/profile.css">
-  <link rel="stylesheet" href="../src/styles/base.css">
-  <link rel="stylesheet" href="../src/styles/root.css">
-  <link rel="stylesheet" href="../src/styles/timeline.css">
-  <link rel="stylesheet" href="../src/styles/navbar-bottom.css">
-  <link rel="stylesheet" href="../src/styles/feed-mobile.css">
+  <link rel="stylesheet" href="../src/styles/pages/profile/profile.css">
+  <link rel="stylesheet" href="../src/styles/pages/profile/side-menu.css">
+  <link rel="stylesheet" href="../src/styles/pages/profile/wall.css">
+  <link rel="stylesheet" href="../src/styles/pages/profile/about-menu.css">
+  <link rel="stylesheet" href="../src/styles/shared/base.css">
+  <link rel="stylesheet" href="../src/styles/shared/root.css">
+  <link rel="stylesheet" href="../src/styles/shared/navbar-bottom.css">
+  <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
   <link rel="stylesheet" href="../src/styles/menu-bottom.css">
   <link rel="icon" href="../public/img/icon.png" type="image/png">
   <meta name="theme-color" content="#0f0f0f">
@@ -33,350 +35,444 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
-
-<style>
-.more-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  bottom: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-.more-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-  height: 100vh;
-}
-.more-info-modal {
-  transform: translateY(100%);
-  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
-}
-.more-overlay.active .more-info-modal {
-  transform: translateY(0);
-}
-.scroll-fade-top,
-.scroll-fade-bottom {
-  position: sticky;
-  left: 0; right: 0;
-  width: 100%;
-  height: 52px;
-  pointer-events: none;
-  z-index: 10;
-  flex-shrink: 0;
-  display: block;
-}
-.scroll-fade-top {
-  top: 0;
-  background: linear-gradient(to bottom, #212327 0%, transparent 100%);
-  margin-bottom: -52px;
-}
-.scroll-fade-bottom {
-  bottom: 0;
-  background: linear-gradient(to top, #212327 0%, transparent 100%);
-  margin-top: -52px;
-}
-    
-.more-overlay {
-  position: fixed;
-  background-color: var(--bg-modal);
-  z-index: 999999;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 100vw;
-  height: 100vh;
-}
-
-.more-info-modal {
-  background-color: #212327;
-  bottom: 0 !important;
-  height: 86vh;
-  width: 100% !important;
-  border-radius: 32px 32px 0 0;
-  padding: 0 22px;
-}
-</style>
 </head>
 <body>
 
-<div class="more-overlay">
-  <div class="more-info-modal">
-    <div class="header-area">
-      <div class="drag-area">
-        <div class="graber"></div>
-      </div>
-      <div class="header-libs">
-          <div class="btn-edit-header">
-            <button class="btn-edit-area" id="cancel-edit" style="display: none;">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div class="more-info-header">
-            <p>Sobre <span id="username-modal"></span></p>
-          </div>
-          <div class="btn-edit-header">
-            <button class="btn-edit-area btn-edit" id="open-edit">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button class="btn-edit-area" id="save-view-mode" style="display: none;">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="scroll-content">
-      <div class="view-mode">
-      <div class="scroll-fade-top"></div>
-
-      <div class="basic-info-container">
-        <div class="safe-area-top"></div>
-        <div class="info-header">Informações básicas</div>
-        <div class="infos-box">
-          <div class="info-label modal-info-nome">Nome: <span></span></div>
-          <div class="info-label modal-info-genero">Gênero: <span></span></div>
-          <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
-          <div class="info-label modal-info-estado-civil">Relacionamento: <span></span></div>
-          <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
-          <div class="info-label modal-info-buscando">Buscando por: <span></span></div>
-          <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
-        </div>
-      </div>
-
-      <div class="interests-container">
-        <div class="interests-header">Visão geral</div>
-        <div class="infos-box modal-info-overview"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Meu estilo</div>
-        <div class="infos-box modal-info-style"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Minha personalidade</div>
-        <div class="infos-box modal-info-personality"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Músicas</div>
-        <div class="infos-box modal-info-music"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Filmes e Séries</div>
-        <div class="infos-box modal-info-movies"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Livros</div>
-        <div class="infos-box modal-info-books"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Personagens</div>
-        <div class="infos-box modal-info-characters"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Comidas e Bebidas</div>
-        <div class="infos-box modal-info-foods"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Hobbies</div>
-        <div class="infos-box modal-info-hobbies"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Jogos favoritos</div>
-        <div class="infos-box modal-info-games"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Outros gostos</div>
-        <div class="infos-box modal-info-others"><div class="info-label"><span></span></div></div>
-      </div>
-      <div class="safe-area"></div>
-      <div class="scroll-fade-bottom"></div>
-      </div>
-      <div class="edit-mode">
-      <div class="scroll-fade-top"></div>
-
-      <div class="basic-info-container">
-        <div class="safe-area-top"></div>
-        <div class="info-header">Informações básicas</div>
-        <div class="infos-box">
-          <div class="info-label modal-info-nome">Nome: <span></span></div>
-          <div class="info-label modal-info-genero">Gênero: <span></span></div>
-          <div class="info-label modal-info-aniversario">Aniversário: <span id="modal-birthday"></span></div>
-          <div class="info-label modal-info-estado-civil">Status Civil: <span></span></div>
-          <div class="info-label modal-info-entrou">Entrou em: <span id="modal-entered-at"></span></div>
-          <div class="info-label modal-info-buscando">Buscando por:</div>
-          <textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea>
-          <div class="info-label modal-info-localizacao">Mora em: <span></span></div>
-        </div>
-      </div>
-
-      <div class="interests-container">
-        <div class="interests-header">Visão geral</div>
-        <div class="infos-box modal-info-overview"><div class="info-label"><textarea placeholder="Conte um pouco sobre quem você é" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Meu estilo</div>
-        <div class="infos-box modal-info-style"><div class="info-label"><textarea placeholder="Como você descreve seu estilo?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Minha personalidade</div>
-        <div class="infos-box modal-info-personality"><div class="info-label"><textarea placeholder="O que voce esta buscando?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Músicas</div>
-        <div class="infos-box modal-info-music"><div class="info-label"><textarea placeholder="Quais musicas fazem você ser quem é?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Filmes e Séries</div>
-        <div class="infos-box modal-info-movies"><div class="info-label"><textarea placeholder="Quais filmes e series são a sua cara?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Livros</div>
-        <div class="infos-box modal-info-books"><div class="info-label"><textarea placeholder="Conte um pouco sobre seus livros?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Personagens</div>
-        <div class="infos-box modal-info-characters"><div class="info-label"><textarea placeholder="Qual personagem ou pessoa você mais gosta?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Comidas e Bebidas</div>
-        <div class="infos-box modal-info-foods"><div class="info-label"><textarea placeholder="Quais comidas você ama?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Hobbies</div>
-        <div class="infos-box modal-info-hobbies"><div class="info-label"><textarea placeholder="O que você faz para passar o tempo?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Jogos favoritos</div>
-        <div class="infos-box modal-info-games"><div class="info-label"><textarea placeholder="O que você mais gosta de jogar?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="interests-container">
-        <div class="interests-header">Outros gostos</div>
-        <div class="infos-box modal-info-others"><div class="info-label"><textarea placeholder="Quais são os seus outros gostos?" maxlength="160" class="edit-input"></textarea></div></div>
-      </div>
-      <div class="safe-area"></div>
-      <div class="scroll-fade-bottom"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- overlay Send Wall-->
-<div class="wall-send-overlay" id="wall-modal">
-  <div class="wall-modal">
-    <div class="modal-wall-grab">
-      <div class="graber"></div>
-    </div>
-    <div class="user-header">
-      <div class="pfp-modal-wall">
-        <img src="../public/img/default.jpg" alt="Foto de perfil">
-      </div>
-      <div class="user-info-modal-wall">
-        <div class="username-modal-wall">username</div>
-      </div>
-    </div>
-    <div class="input-modal-wall">
-      <textarea name="wall-input" id="wall-input" class="wall-modal-input" placeholder="Escreva algo..."></textarea>
-    </div>
-    <div class="modal-wall-btns">
-      <button class="send-wall-btn" id="enviarWall">Enviar</button>
-      <button class="cancel-wall-btn" id="cancelarWall">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Menu Lateral -->
-<div class="menu-overlay" id="menuOverlay">
-  <div class="side-menu">
-
+<!--- side menu -->
+<div class="side-menu" id="sideMenu">
     <div class="menu-header">
-      <button class="close-menu" id="closeMenu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
-      </button>
-      <h3>Configurações e atividade</h3>
-      <button class="close-menu none">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
-      </button>
+        <div class="header-block">
+            <button class="close-menu" id="closeSettingsBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+            </button>
+        </div>
+        <div class="header-block">
+            <div class="header-title">Configurações e atividade</div>
+        </div>
+        <div class="header-block"></div>
     </div>
 
     <div class="menu-items">
-      <div class="section-title">Conta</div>
-      <div class="menu-conjunt">
-        <a href="edit.html" class="menu-item-link edit">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#f8f9f9"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12.5L17.75 3.75C18.4404 3.05964 19.5596 3.05964 20.25 3.75V3.75C20.9404 4.44036 20.9404 5.55964 20.25 6.25L15.5 11L11.5 15H9Z" stroke="#f8f9f9" stroke-width="1.8719999999999999" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-          <span>Editar Perfil</span>
-        </a>
-      </div>
+        <div class="section-title">Perfil</div>
+        <div class="menu-conjunt">
+            <a href="edit.html" class="menu-item-link edit">
+                <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="M15.5 6.5a3.5 3.5 0 1 0-7 0 3.5 3.5 0 0 0 7 0Zm2 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Zm-5.5 7c3.955 0 7.465 1.88 9.552 4.77 1.015 1.406.219 3.252-1.361 3.69-1.705.473-4.518 1.04-8.192 1.04-3.67 0-6.488-.57-8.2-1.046-1.587-.44-2.356-2.295-1.351-3.686 2.086-2.89 5.597-4.768 9.551-4.768Zm0 2c-3.32 0-6.223 1.575-7.93 3.939a.332.332 0 0 0-.046.324.44.44 0 0 0 .308.264C5.898 20.462 8.537 21 12 21c3.467 0 6.1-.536 7.657-.968a.46.46 0 0 0 .32-.27.327.327 0 0 0-.045-.322C18.225 17.076 15.32 15.5 12 15.5Z" fill="currentColor"></path></svg>
+                <span>Editar Perfil</span>
+            </a>
+            <a href="#" id="shareMyProfileBtn" class="menu-item-link">
+                <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
+                <span>Compartilhar Meu Perfil</span>
+            </a>
+        </div>
 
-      <div class="section-title">Notificações</div>
-      <div class="menu-conjunt">
-        <a href="#" class="menu-item-link" id="btn-toggle-notif">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 17H20L18.5951 15.5951C18.2141 15.2141 18 14.6973 18 14.1585V11C18 8.38757 16.3304 6.16509 14 5.34142V5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5V5.34142C7.66962 6.16509 6 8.38757 6 11V14.1585C6 14.6973 5.78595 15.2141 5.40493 15.5951L4 17H9M15 17H9M15 17V18C15 19.6569 13.6569 21 12 21C10.3431 21 9 19.6569 9 18V17" stroke="#f8f9f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span id="notif-menu-label">Ativar Notificações</span>
-        </a>
-      </div>
+        <div class="section-title">Notificações</div>
+        <div class="menu-conjunt">
+            <a href="#" class="menu-item-link" id="btn-toggle-notif">
+                <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="m21.306 14.019-.484-.852A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.971 3.971 0 0 0-6.51.002 7.95 7.95 0 0 0-4.74 7.323 6.337 6.337 0 0 1-.83 3.175l-.468.823a4.001 4.001 0 0 0 3.476 5.983h1.96a3.98 3.98 0 0 0 7.716 0h1.964a4.004 4.004 0 0 0 3.482-5.982Zm-9.304 6.983a1.993 1.993 0 0 1-1.722-1.001h3.444a1.993 1.993 0 0 1-1.722 1.001Zm7.554-3.997a1.986 1.986 0 0 1-1.732.996H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.337 8.337 0 0 0 1.093-4.174 5.962 5.962 0 0 1 3.781-5.584.996.996 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.984 1.984 0 0 1-.01 1.998Z"></path></svg>
+                <span id="notif-menu-label">Ativar Notificações</span>
+            </a>
+        </div>
 
-      <div class="section-title">Mais opções</div>
-      <div class="menu-conjunt">
-        <a href="#" class="menu-item-link">
-          <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
-          <span>Compartilhar Meu Perfil</span>
-        </a>
-        <a href="/welcome.html" class="menu-item-link">
-          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title>ionicons-v5-l</title><path d="M478.33,433.6l-90-218a22,22,0,0,0-40.67,0l-90,218a22,22,0,1,0,40.67,16.79L316.66,406H419.33l18.33,44.39A22,22,0,0,0,458,464a22,22,0,0,0,20.32-30.4ZM334.83,362,368,281.65,401.17,362Z"></path><path d="M267.84,342.92a22,22,0,0,0-4.89-30.7c-.2-.15-15-11.13-36.49-34.73,39.65-53.68,62.11-114.75,71.27-143.49H330a22,22,0,0,0,0-44H214V70a22,22,0,0,0-44,0V90H54a22,22,0,0,0,0,44H251.25c-9.52,26.95-27.05,69.5-53.79,108.36-31.41-41.68-43.08-68.65-43.17-68.87a22,22,0,0,0-40.58,17c.58,1.38,14.55,34.23,52.86,83.93.92,1.19,1.83,2.35,2.74,3.51-39.24,44.35-77.74,71.86-93.85,80.74a22,22,0,1,0,21.07,38.63c2.16-1.18,48.6-26.89,101.63-85.59,22.52,24.08,38,35.44,38.93,36.1a22,22,0,0,0,30.75-4.9Z"></path></g></svg>
-          <span>Idioma</span>
-        </a>
-      </div>
+        <div class="section-title">Mais opções</div>
+        <div class="menu-conjunt">
+            <a href="/adminconsole.html" class="menu-item-link">
+                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title>ionicons-v5-l</title><path d="M478.33,433.6l-90-218a22,22,0,0,0-40.67,0l-90,218a22,22,0,1,0,40.67,16.79L316.66,406H419.33l18.33,44.39A22,22,0,0,0,458,464a22,22,0,0,0,20.32-30.4ZM334.83,362,368,281.65,401.17,362Z"></path><path d="M267.84,342.92a22,22,0,0,0-4.89-30.7c-.2-.15-15-11.13-36.49-34.73,39.65-53.68,62.11-114.75,71.27-143.49H330a22,22,0,0,0,0-44H214V70a22,22,0,0,0-44,0V90H54a22,22,0,0,0,0,44H251.25c-9.52,26.95-27.05,69.5-53.79,108.36-31.41-41.68-43.08-68.65-43.17-68.87a22,22,0,0,0-40.58,17c.58,1.38,14.55,34.23,52.86,83.93.92,1.19,1.83,2.35,2.74,3.51-39.24,44.35-77.74,71.86-93.85,80.74a22,22,0,1,0,21.07,38.63c2.16-1.18,48.6-26.89,101.63-85.59,22.52,24.08,38,35.44,38.93,36.1a22,22,0,0,0,30.75-4.9Z"></path></g></svg>
+                <span>Idioma</span>
+            </a>
+            <a href="/about.html" class="menu-item-link">
+                <svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="M3.642 16.11V6.033a1.192 1.192 0 0 1 1.192-1.192h13.433a1.192 1.192 0 0 1 1.192 1.192m-5.343 13.125H3.778A1.778 1.778 0 0 1 2 17.38v-1.27h11.917" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M22 17.832v.16a1.322 1.322 0 0 1-.121.7.826.826 0 0 1-.343.345 1.316 1.316 0 0 1-.7.121h-2.755a1.315 1.315 0 0 1-.7-.121.826.826 0 0 1-.343-.344 1.321 1.321 0 0 1-.12-.7V10.2a1.321 1.321 0 0 1 .12-.7.826.826 0 0 1 .344-.344 1.315 1.315 0 0 1 .699-.122h2.755a1.315 1.315 0 0 1 .7.122.826.826 0 0 1 .343.343A1.322 1.322 0 0 1 22 10.2v7.632Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span>Sobre</span>
+            </a>
+            <a href="/terms.html" class="menu-item-link">
+                <svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="M3 13.5a9 9 0 0 0 18 0V4.488A17.848 17.848 0 0 1 12 1.5a17.848 17.848 0 0 1-9 2.988Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="m11.283 7.925-.934 2.094-2.403.277a.785.785 0 0 0-.425 1.372l1.808 1.572-.523 2.342a.785.785 0 0 0 1.177.839L12 15.18l2.017 1.241a.785.785 0 0 0 1.177-.84l-.523-2.341 1.808-1.572a.785.785 0 0 0-.425-1.372l-2.403-.277-.934-2.094a.785.785 0 0 0-1.434 0Z" fill-rule="evenodd"></path></svg>
+                <span>Termos e uso</span>
+            </a>
+            <a href="/updates.html" class="menu-item-link">
+                <svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="M8 12a1 1 0 0 0-1 1v3a1 1 0 1 0 2 0v-3a1 1 0 0 0-1-1Zm8-3a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0v-6a1 1 0 0 0-1-1Zm-4-2a1 1 0 0 0-1 1v8a1 1 0 1 0 2 0V8a1 1 0 0 0-1-1Z"></path><path d="M18.44 1H5.567a4.565 4.565 0 0 0-4.56 4.56v12.873a4.565 4.565 0 0 0 4.56 4.56H18.44a4.565 4.565 0 0 0 4.56-4.56V5.56A4.565 4.565 0 0 0 18.44 1ZM21 18.433a2.563 2.563 0 0 1-2.56 2.56H5.567a2.563 2.563 0 0 1-2.56-2.56V5.56A2.563 2.563 0 0 1 5.568 3H18.44A2.563 2.563 0 0 1 21 5.56v12.873Z"></path></svg>
+                <span>Historico de atualizações</span>
+            </a>
+        </div>
 
-      <div class="section-title">Entrar</div>
-      <div class="menu-conjunt">
-        <a href="#" class="menu-item-link login">
-          <span>Entrar</span>
-        </a>
-        <a href="#" class="menu-item-link logoff">
-          <span>Sair</span>
-        </a>
+        <div class="section-title">Entrar</div>
+        <div class="menu-conjunt">
+            <a href="#" id="loginBtn" class="menu-item-link login">
+                <span>Entrar</span>
+            </a>
+            <a href="#" id="logoutBtn" class="menu-item-link logoff">
+                <span>Sair</span>
+            </a>
+        </div>
+        <div class="side-menu-footer">
+            <div class="footer-content-area">
+                <div class="footer-text-item">2026© RealMe desenvolvido por maxgfortes.</div>
+                <div class="footer-text-item">Todos os direitos reservados.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- more menu -->
+<div class="about-menu-area" id="aboutMenuArea">
+  <div class="about-menu-overlay" id="aboutMenuOverlay"></div>
+  <div class="about-menu" id="aboutMenu">
+    <div class="about-menu-header">
+      <div class="about-menu-header-boxes">
+        <button class="about-menu-btn sec" id="cancelAboutBtn"><div class="about-menu-icon"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 0 41 34" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-33.751953125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M5.629 1.654C5.436 1.439 5.436 1.139 5.629.924C5.844.709 6.166.709 6.359.924L21.592 16.156L36.803.924C37.018.709 37.318.709 37.533.924C37.748 1.139 37.748 1.439 37.533 1.654L22.322 16.887L37.533 32.098C37.748 32.313 37.748 32.613 37.533 32.828C37.318 33.043 37.018 33.043 36.803 32.828L21.592 17.617L6.359 32.828C6.166 33.043 5.844 33.043 5.629 32.828C5.436 32.613 5.436 32.313 5.629 32.098L20.861 16.887Z"/></g></svg></div></button>
+      </div>
+      <div class="about-menu-header-boxes">
+        <div class="about-menu-title" id="aboutMenuTitle">Sobre maxgfortes</div>
+      </div>
+      <div class="about-menu-header-boxes right">
+        <button class="about-menu-btn active" id="editAboutBtn">
+          <div class="about-menu-icon"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 45 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-46.62109375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M44.365 40.283L45.461 41.379C46.063 41.98 46.084 42.496 45.525 43.033L45.482 43.076C44.988 43.570 44.408 43.527 43.850 42.969L42.775 41.895ZM21.678 18.949L24.320 20.281L43.184 39.145L41.637 40.735L22.752 21.871L21.377 19.250C21.270 19.057 21.484 18.863 21.678 18.949ZM11 3.051H35.600C39.230 3.051 41.143 5.006 41.143 8.572V31.389L40.090 30.336V8.615C40.090 5.650 38.436 4.104 35.557 4.104H11.043C8.078 4.104 6.531 5.650 6.531 8.615V33.129C6.531 36.115 8.078 37.662 11.043 37.662H32.828L33.881 38.715H11C7.391 38.715 5.479 36.781 5.479 33.193V8.572C5.479 4.963 7.391 3.051 11 3.051Z"/></g></svg></div>
+        </button>
+        <button class="about-menu-btn sec" id="saveAboutBtn"><div class="about-menu-icon"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="0 0 44.5 38.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-38.306640625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M16.951 1.805C17.166 1.805 17.273 1.891 17.381 2.020L39.166 35.600C39.252 35.771 39.295 35.879 39.295 35.943C39.295 36.266 39.059 36.502 38.736 36.502C38.521 36.502 38.393 36.416 38.307 36.266L16.930 3.287L6.531 15.082C6.402 15.254 6.273 15.361 6.037 15.361C5.715 15.361 5.479 15.125 5.479 14.803C5.479 14.674 5.521 14.545 5.672 14.395L16.457 2.020C16.607 1.848 16.736 1.805 16.951 1.805Z"/></g></svg></div></button>
+      </div>
+    </div>
+    <div class="about-menu-content active" id="aboutContent">
+      <div class="about-menu-section">
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Logo" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="5 0 47 32.5" width="24"><title>Logo</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-32.419921875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.8" d="M5.994140625,0.408203125C6.294921875,0.408203125 6.423828125,0.537109375 6.552734375,0.837890625L10.720703125,11.6015625L25.416015625,11.6015625L29.583984375,0.837890625C29.734375,0.537109375 29.86328125,0.408203125 30.142578125,0.408203125C30.46484375,0.408203125 30.658203125,0.580078125 30.658203125,0.90234375C30.658203125,1.009765625 30.63671875,1.138671875 30.59375,1.267578125L18.712890625,31.5390625C18.60546875,31.796875 18.43359375,32.01171875 18.08984375,32.01171875C17.74609375,32.01171875 17.53125,31.83984375 17.4453125,31.5390625L5.564453125,1.267578125C5.5,1.138671875 5.478515625,1.009765625 5.478515625,0.90234375C5.478515625,0.580078125 5.693359375,0.408203125 5.994140625,0.408203125ZM11.0859375,12.568359375L18.025390625,30.37890625L18.111328125,30.37890625L25.05078125,12.568359375ZM41.916015625,0.515625C45.93359375,0.515625 49.478515625,2.728515625 50.509765625,5.951171875L50.53125,5.951171875L50.53125,1.052734375C50.53125,0.708984375 50.74609375,0.515625 51.025390625,0.515625C51.34765625,0.515625 51.5625,0.708984375 51.5625,1.052734375L51.5625,15.791015625C51.5625,20.49609375 48.640625,23.482421875 43.69921875,23.482421875C39.423828125,23.482421875 36.587890625,21.505859375 35.53515625,18.1328125C35.427734375,17.724609375 35.298828125,17.23046875 35.298828125,16.9296875C35.298828125,16.650390625 35.53515625,16.45703125 35.814453125,16.45703125C36.115234375,16.45703125 36.287109375,16.650390625 36.330078125,16.951171875C37.0390625,20.3671875 39.6171875,22.537109375 43.677734375,22.537109375C47.99609375,22.537109375 50.53125,19.787109375 50.53125,15.748046875L50.53125,13.685546875L42.3671875,13.10546875C37.16796875,12.740234375 34.525390625,10.44140625 34.525390625,6.74609375C34.525390625,3.05078125 37.576171875,0.515625 41.916015625,0.515625ZM41.9375,1.4609375C38.28515625,1.4609375 35.556640625,3.673828125 35.556640625,6.83203125C35.556640625,9.775390625 37.833984375,11.7734375 42.560546875,12.16015625L50.53125,12.783203125L50.53125,9.0234375C50.53125,4.962890625 46.62109375,1.4609375 41.9375,1.4609375Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Nome: <span class="about-item-content">Maximus Fortes</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 63 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-45.1171875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M45.740 23.053C50.445 23.053 54.033 27.070 54.033 32.313C54.033 37.211 50.359 41.379 45.740 41.379C41.100 41.379 37.361 37.211 37.426 32.313C37.426 27.070 41.014 23.053 45.740 23.053ZM20.990 22.580C25.115 22.580 28.230 26.061 28.230 30.637C28.230 34.912 25.029 38.521 20.990 38.521C16.973 38.521 13.729 34.912 13.793 30.637C13.793 26.061 16.887 22.580 20.990 22.580ZM8.250 3.738H27.371C24.986 5.006 26.469 11.494 31.303 15.684C28.939 17.746 25.566 19.293 20.947 19.293C11.408 19.293 5.479 12.461 5.479 6.338C5.479 4.447 6.488 3.738 8.250 3.738ZM31.066 3.738H60.285C62.283 3.738 63.465 4.340 63.465 6.188C63.465 11.645 56.633 19.186 45.676 19.186C34.719 19.186 27.887 11.645 27.887 6.188C27.887 4.340 29.068 3.738 31.066 3.738Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Genero: <span class="about-item-content">Masculino</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="5 4 43 42" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-50.251953125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M26.619 4.297C26.705 4.297 26.791 4.297 26.855 4.318H39.016C41.83 4.318 43.592 6.059 43.592 8.895V26.125H44.365C46.127 26.125 47.223 27.328 47.223 29.09V32.398C47.223 34.16 46.127 35.363 44.365 35.363H34.676C37.533 36.395 39.102 38.393 39.102 40.477C39.102 43.742 36.76 45.955 33.258 45.955C29.756 45.955 27.264 43.721 26.34 39.896C25.438 43.721 22.924 45.955 19.443 45.955C15.941 45.955 13.6 43.742 13.6 40.477C13.6 38.393 15.039 36.395 17.896 35.363H8.336C6.574 35.363 5.479 34.16 5.479 32.398V29.09C5.479 27.328 6.574 26.125 8.336 26.125H9.109V8.895C9.109 6.059 10.85 4.318 13.686 4.318H25.846C25.91 4.297 25.996 4.297 26.082 4.297ZM22.924 35.363C18.24 35.363 16.049 38.285 16.049 40.756C16.049 42.561 17.574 43.85 19.422 43.85C22.945 43.85 25.158 40.82 25.158 35.814V35.363H22.924ZM29.777 35.363H27.543V35.814C27.543 40.82 29.734 43.85 33.258 43.85C35.127 43.85 36.652 42.561 36.652 40.756C36.652 38.285 34.182 35.363 29.777 35.363ZM8.314 34.311H24.986V27.178H8.314C7.197 27.178 6.531 27.951 6.531 29.09V32.398C6.531 33.537 7.197 34.311 8.314 34.311ZM44.365 34.311C45.504 34.311 46.17 33.537 46.17 32.398V29.09C46.17 27.951 45.504 27.178 44.365 27.178H27.715V34.311H44.365ZM10.162 26.104H24.986V5.307H13.75C11.43 5.307 10.162 6.574 10.162 8.895V26.104ZM42.539 26.104V8.895C42.539 6.574 41.271 5.307 38.951 5.307H27.715V26.104H42.539Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Aniversario: <span class="about-item-content">05 de outubro</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Curtir" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Curtir</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+            </div>
+            <div class="about-item-label">Relacionamento: <span class="about-item-content">Namorando</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Conteúdo programado" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Conteúdo programado</title><rect fill="none" height="18.669" rx="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" x="2" y="3.331"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="2" x2="22" y1="7.778" y2="7.778"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="6.666" x2="6.666" y1="2" y2="4.665"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="17.555" x2="17.555" y1="2" y2="4.667"></line><circle cx="12" cy="12.666" r="1.001"></circle><circle cx="12" cy="17.112" r="1.001"></circle><circle cx="17" cy="12.666" r="1.001"></circle><circle cx="17" cy="17.112" r="1.001"></circle><circle cx="7" cy="12.666" r="1.001"></circle><circle cx="7" cy="17.112" r="1.001"></circle></svg>
+            </div>
+            <div class="about-item-label">Entrou em: <span class="about-item-content">Outubro de 2025</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 3 45.5 46.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Mora em: <span class="about-item-content">Florianopolis sc</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Pesquisa" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Pesquisa</title><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="16.511" x2="22" y1="16.511" y2="22"></line></svg>
+            </div>
+            <div class="about-item-label">Buscando por: <span class="about-item-content">Novas amizades em jurere internacional</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="about-menu-section">
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 7 51 55" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-69.22265625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M31.775 39.123C36.480 39.123 40.068 43.141 40.068 48.383C40.068 53.281 36.395 57.449 31.775 57.449C27.135 57.449 23.418 53.281 23.461 48.383C23.461 43.141 27.049 39.123 31.775 39.123ZM31.711 35.256C26.984 35.256 23.010 33.859 20.045 31.818C23.225 29.691 25.352 26.082 25.352 22.000C25.352 21.270 25.266 20.518 25.137 19.809H46.320C48.318 19.809 49.500 20.410 49.500 22.258C49.500 27.715 42.689 35.256 31.711 35.256ZM13.514 11.773C19.100 11.773 23.719 16.371 23.719 22.000C23.719 27.586 19.100 32.205 13.514 32.205C7.928 32.205 3.287 27.586 3.287 22.000C3.287 16.371 7.928 11.773 13.514 11.773ZM13.535 15.061C13.041 15.061 12.719 15.469 12.719 15.898V21.205H7.691C7.262 21.205 6.875 21.506 6.875 22.021C6.875 22.537 7.262 22.838 7.691 22.838H12.719V28.123C12.719 28.574 13.041 28.939 13.535 28.939C14.029 28.939 14.352 28.574 14.352 28.123V22.838H19.357C19.809 22.838 20.174 22.537 20.174 22.021C20.174 21.506 19.809 21.205 19.357 21.205H14.352V15.898C14.352 15.469 14.029 15.061 13.535 15.061Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Visão geral: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Musica: <span class="about-item-content">Musicas aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 58 46" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-52.03515625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M9.518 13.664H54.871C57.535 13.664 58.889 15.018 58.889 17.703V42.711C58.889 45.375 57.535 46.750 54.871 46.750H9.518C6.832 46.750 5.479 45.375 5.479 42.711V17.703C5.479 15.018 6.832 13.664 9.518 13.664ZM9.582 14.717C7.563 14.717 6.531 15.705 6.531 17.746V42.646C6.531 44.688 7.563 45.697 9.582 45.697H54.785C56.826 45.697 57.836 44.688 57.836 42.646V17.746C57.836 15.705 56.826 14.717 54.785 14.717ZM47.137 6.660C47.137 7.434 46.600 8.014 45.805 8.014H18.326C17.553 8.014 16.994 7.434 16.994 6.660C16.994 5.865 17.553 5.285 18.326 5.285H45.805C46.600 5.285 47.137 5.865 47.137 6.660Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Filmes e series: <span class="about-item-content">Filmes e series aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 1 46 39" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-40.94921875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M26.018 34.934C25.760 35.900 21.506 38.5 16.006 38.5C10.527 38.5 5.457 35.707 5.479 34.203V3.029C5.479 2.686 5.715 2.449 6.059 2.449C6.381 2.449 6.617 2.557 6.682 2.707C7.219 3.803 10.785 6.188 16.006 6.188C21.248 6.188 24.793 3.846 25.330 2.707C25.416 2.557 25.652 2.449 26.018 2.449C26.383 2.449 26.619 2.557 26.705 2.707C27.242 3.846 30.787 6.188 36.029 6.188C41.250 6.188 44.816 3.803 45.354 2.707C45.418 2.557 45.654 2.449 45.977 2.449C46.320 2.449 46.557 2.686 46.557 3.029V34.203C46.578 35.707 41.508 38.5 36.029 38.5C30.529 38.5 26.275 35.900 26.018 34.934ZM6.531 33.816C6.531 34.912 10.785 37.490 16.006 37.490C21.227 37.490 25.502 34.912 25.480 33.816V4.211C23.805 6.188 20.174 7.197 16.006 7.197C11.859 7.197 8.229 6.188 6.531 4.211V33.816ZM45.504 33.816V4.211C43.807 6.188 40.176 7.197 36.029 7.197C31.861 7.197 28.230 6.188 26.533 4.211V33.816C26.533 34.912 30.809 37.490 36.029 37.490C41.229 37.490 45.504 34.912 45.504 33.816Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Livros: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 85 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-45.1171875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M45.740 23.053C50.445 23.053 54.033 27.070 54.033 32.313C54.033 37.211 50.359 41.379 45.740 41.379C41.100 41.379 37.361 37.211 37.426 32.313C37.426 27.070 41.014 23.053 45.740 23.053ZM20.990 22.580C25.115 22.580 28.230 26.061 28.230 30.637C28.230 34.912 25.029 38.521 20.990 38.521C16.973 38.521 13.729 34.912 13.793 30.637C13.793 26.061 16.887 22.580 20.990 22.580ZM70.469 22.580C74.572 22.580 77.666 26.061 77.666 30.637C77.666 34.912 74.508 38.521 70.469 38.521C66.430 38.521 63.229 34.912 63.229 30.637C63.229 26.061 66.344 22.580 70.469 22.580ZM8.250 3.738H27.371C24.986 5.006 26.469 11.494 31.303 15.684C28.939 17.746 25.566 19.293 20.947 19.293C11.408 19.293 5.479 12.461 5.479 6.338C5.479 4.447 6.488 3.738 8.250 3.738ZM83.209 3.738C84.971 3.738 85.980 4.447 85.980 6.338C85.980 12.461 80.072 19.293 70.512 19.293C65.893 19.293 62.520 17.746 60.178 15.684C64.990 11.494 66.473 5.006 64.088 3.738H83.209ZM31.066 3.738H60.285C62.283 3.738 63.465 4.340 63.465 6.188C63.465 11.645 56.633 19.186 45.676 19.186C34.719 19.186 27.887 11.645 27.887 6.188C27.887 4.340 29.068 3.738 31.066 3.738Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Personagens: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="2 5 43 53" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-62.69140625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M22.408 45.697C22.494 45.697 22.537 45.719 22.580 45.826C23.074 49.564 23.225 49.844 27.178 50.467C27.328 50.510 27.371 50.553 27.371 50.660C27.371 50.768 27.328 50.832 27.178 50.854C23.268 51.648 23.482 51.928 22.580 55.494C22.537 55.602 22.494 55.623 22.408 55.623C22.344 55.623 22.279 55.602 22.258 55.494C21.355 51.928 21.656 51.648 17.639 50.854C17.510 50.832 17.467 50.768 17.467 50.660C17.467 50.553 17.510 50.510 17.639 50.467C21.656 49.672 21.699 49.564 22.258 45.826C22.279 45.719 22.344 45.697 22.408 45.697ZM11.623 31.389C11.773 31.389 11.859 31.475 11.902 31.646C12.869 37.426 12.783 37.211 18.648 38.371C18.777 38.414 18.885 38.479 18.885 38.650C18.885 38.801 18.777 38.887 18.648 38.908C12.783 40.090 12.869 39.875 11.902 45.654C11.859 45.826 11.773 45.891 11.623 45.891C11.494 45.891 11.387 45.826 11.365 45.654C10.398 39.896 10.570 40.090 4.619 38.908C4.490 38.887 4.383 38.801 4.383 38.650C4.383 38.479 4.490 38.414 4.619 38.371C10.570 37.189 10.398 37.404 11.365 31.646C11.387 31.475 11.494 31.389 11.623 31.389ZM26.189 7.068C26.576 7.068 26.791 7.305 26.813 7.605C28.016 20.990 29.240 21.850 42.131 22.924C42.453 22.945 42.668 23.160 42.668 23.482C42.668 23.805 42.453 24.020 42.131 24.041C29.240 25.115 28.016 25.975 26.813 39.359C26.791 39.660 26.576 39.896 26.189 39.896C25.803 39.896 25.588 39.660 25.566 39.359C24.363 25.975 23.139 25.115 10.270 24.041C9.926 24.020 9.711 23.805 9.711 23.482C9.711 23.160 9.926 22.945 10.270 22.924C23.096 21.398 24.170 20.969 25.566 7.605C25.588 7.305 25.803 7.068 26.189 7.068Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Comidas e bebidas: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 48 50" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-54.828125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M13.063 6.188C13.428 5.908 13.879 5.908 14.545 6.402L26.920 15.426L39.273 6.402C39.939 5.908 40.391 5.908 40.777 6.188C41.143 6.445 41.314 6.875 41.035 7.713L36.287 22.236L48.705 31.217C49.371 31.711 49.500 32.162 49.371 32.592C49.242 33.021 48.877 33.322 48.018 33.322L32.721 33.279L28.016 47.846C27.736 48.641 27.371 48.920 26.920 48.920C26.469 48.920 26.082 48.641 25.803 47.846L21.119 33.279L5.822 33.322C4.963 33.322 4.576 33.021 4.447 32.592C4.318 32.162 4.447 31.711 5.113 31.217L17.531 22.236L12.783 7.713C12.504 6.875 12.676 6.445 13.063 6.188Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Hobbies: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="2 1 64 40" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-42.32421875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M10.871 2.857C12.977 2.857 15.104 3.803 16.758 5.801L20.926 10.850C21.592 11.645 22.193 11.945 22.988 11.945H44.494C45.289 11.945 45.912 11.645 46.557 10.850L50.725 5.801C52.379 3.803 54.527 2.857 56.611 2.857C60.822 2.857 63.637 5.715 63.637 10.033C63.637 11.967 63.121 14.223 62.262 17.080C60.951 21.506 58.674 27.414 56.375 32.270C54.699 35.771 53.904 37.061 49.973 37.963C45.654 38.951 39.982 39.467 33.752 39.467C27.500 39.467 21.828 38.951 17.510 37.963C13.578 37.061 12.783 35.771 11.107 32.270C8.809 27.414 6.531 21.506 5.221 17.080C4.361 14.223 3.846 11.967 3.846 10.033C3.846 5.715 6.660 2.857 10.871 2.857ZM16.865 25.566C16.865 25.846 17.102 26.082 17.424 26.082H23.160V32.119C23.160 32.420 23.396 32.656 23.676 32.656C23.977 32.656 24.213 32.420 24.213 32.119V26.082H29.949C30.271 26.082 30.508 25.846 30.508 25.566C30.508 25.287 30.271 25.029 29.949 25.029H24.213V19.014C24.213 18.713 23.977 18.455 23.676 18.455C23.396 18.455 23.160 18.713 23.160 19.014V25.029H17.424C17.102 25.029 16.865 25.287 16.865 25.566ZM44.365 28.875C44.365 30.336 45.482 31.410 46.900 31.410C48.318 31.410 49.457 30.336 49.457 28.875C49.457 27.457 48.318 26.361 46.900 26.361C45.482 26.361 44.365 27.457 44.365 28.875ZM37.383 22.301C37.383 23.740 38.500 24.836 39.939 24.836C41.357 24.836 42.475 23.740 42.475 22.301C42.475 20.883 41.357 19.787 39.939 19.787C38.500 19.787 37.383 20.883 37.383 22.301Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Jogos: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 1 43 42" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-44.236328125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.025 24.105H40.283C42.088 24.105 43.076 24.900 43.076 26.877V38.135C43.076 40.111 42.088 40.906 40.283 40.906H29.025C27.221 40.906 26.254 40.111 26.254 38.135V26.877C26.254 24.900 27.221 24.105 29.025 24.105ZM8.250 24.105H19.529C21.313 24.105 22.301 24.900 22.301 26.877V38.135C22.301 40.111 21.313 40.906 19.529 40.906H8.250C6.467 40.906 5.479 40.111 5.479 38.135V26.877C5.479 24.900 6.467 24.105 8.250 24.105ZM8.250 3.330H19.529C21.313 3.330 22.301 4.146 22.301 6.102V17.381C22.301 19.336 21.313 20.131 19.529 20.131H8.250C6.467 20.131 5.479 19.336 5.479 17.381V6.102C5.479 4.146 6.467 3.330 8.250 3.330ZM29.025 3.330H40.283C42.088 3.330 43.076 4.146 43.076 6.102V17.381C43.076 19.336 42.088 20.131 40.283 20.131H29.025C27.221 20.131 26.254 19.336 26.254 17.381V6.102C26.254 4.146 27.221 3.330 29.025 3.330Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Outros gostos: <span class="about-item-content">Visão geral aqui!</span></div>
+          </div>
+        </div>
       </div>
     </div>
 
-  </div>
-</div>
-
-<!-- Timeline -->
-<div class="timeline-overlay" id="timeline-overlay">
-  <div class="timeline">
-    <div class="timeline-header">
-      <div class="area-header">
-        <div class="timeline-btn">
-          <button>Fechar</button>
+    <div class="about-menu-content" id="aboutContentEdit">
+      <div class="about-menu-section">
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Logo" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="5 0 47 32.5" width="24"><title>Logo</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-32.419921875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.8" d="M5.994140625,0.408203125C6.294921875,0.408203125 6.423828125,0.537109375 6.552734375,0.837890625L10.720703125,11.6015625L25.416015625,11.6015625L29.583984375,0.837890625C29.734375,0.537109375 29.86328125,0.408203125 30.142578125,0.408203125C30.46484375,0.408203125 30.658203125,0.580078125 30.658203125,0.90234375C30.658203125,1.009765625 30.63671875,1.138671875 30.59375,1.267578125L18.712890625,31.5390625C18.60546875,31.796875 18.43359375,32.01171875 18.08984375,32.01171875C17.74609375,32.01171875 17.53125,31.83984375 17.4453125,31.5390625L5.564453125,1.267578125C5.5,1.138671875 5.478515625,1.009765625 5.478515625,0.90234375C5.478515625,0.580078125 5.693359375,0.408203125 5.994140625,0.408203125ZM11.0859375,12.568359375L18.025390625,30.37890625L18.111328125,30.37890625L25.05078125,12.568359375ZM41.916015625,0.515625C45.93359375,0.515625 49.478515625,2.728515625 50.509765625,5.951171875L50.53125,5.951171875L50.53125,1.052734375C50.53125,0.708984375 50.74609375,0.515625 51.025390625,0.515625C51.34765625,0.515625 51.5625,0.708984375 51.5625,1.052734375L51.5625,15.791015625C51.5625,20.49609375 48.640625,23.482421875 43.69921875,23.482421875C39.423828125,23.482421875 36.587890625,21.505859375 35.53515625,18.1328125C35.427734375,17.724609375 35.298828125,17.23046875 35.298828125,16.9296875C35.298828125,16.650390625 35.53515625,16.45703125 35.814453125,16.45703125C36.115234375,16.45703125 36.287109375,16.650390625 36.330078125,16.951171875C37.0390625,20.3671875 39.6171875,22.537109375 43.677734375,22.537109375C47.99609375,22.537109375 50.53125,19.787109375 50.53125,15.748046875L50.53125,13.685546875L42.3671875,13.10546875C37.16796875,12.740234375 34.525390625,10.44140625 34.525390625,6.74609375C34.525390625,3.05078125 37.576171875,0.515625 41.916015625,0.515625ZM41.9375,1.4609375C38.28515625,1.4609375 35.556640625,3.673828125 35.556640625,6.83203125C35.556640625,9.775390625 37.833984375,11.7734375 42.560546875,12.16015625L50.53125,12.783203125L50.53125,9.0234375C50.53125,4.962890625 46.62109375,1.4609375 41.9375,1.4609375Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Nome: <span class="about-item-content">Maximus Fortes</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 63 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-45.1171875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M45.740 23.053C50.445 23.053 54.033 27.070 54.033 32.313C54.033 37.211 50.359 41.379 45.740 41.379C41.100 41.379 37.361 37.211 37.426 32.313C37.426 27.070 41.014 23.053 45.740 23.053ZM20.990 22.580C25.115 22.580 28.230 26.061 28.230 30.637C28.230 34.912 25.029 38.521 20.990 38.521C16.973 38.521 13.729 34.912 13.793 30.637C13.793 26.061 16.887 22.580 20.990 22.580ZM8.250 3.738H27.371C24.986 5.006 26.469 11.494 31.303 15.684C28.939 17.746 25.566 19.293 20.947 19.293C11.408 19.293 5.479 12.461 5.479 6.338C5.479 4.447 6.488 3.738 8.250 3.738ZM31.066 3.738H60.285C62.283 3.738 63.465 4.340 63.465 6.188C63.465 11.645 56.633 19.186 45.676 19.186C34.719 19.186 27.887 11.645 27.887 6.188C27.887 4.340 29.068 3.738 31.066 3.738Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Genero: <span class="about-item-content">Masculino</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="5 4 43 42" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-50.251953125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M26.619 4.297C26.705 4.297 26.791 4.297 26.855 4.318H39.016C41.83 4.318 43.592 6.059 43.592 8.895V26.125H44.365C46.127 26.125 47.223 27.328 47.223 29.09V32.398C47.223 34.16 46.127 35.363 44.365 35.363H34.676C37.533 36.395 39.102 38.393 39.102 40.477C39.102 43.742 36.76 45.955 33.258 45.955C29.756 45.955 27.264 43.721 26.34 39.896C25.438 43.721 22.924 45.955 19.443 45.955C15.941 45.955 13.6 43.742 13.6 40.477C13.6 38.393 15.039 36.395 17.896 35.363H8.336C6.574 35.363 5.479 34.16 5.479 32.398V29.09C5.479 27.328 6.574 26.125 8.336 26.125H9.109V8.895C9.109 6.059 10.85 4.318 13.686 4.318H25.846C25.91 4.297 25.996 4.297 26.082 4.297ZM22.924 35.363C18.24 35.363 16.049 38.285 16.049 40.756C16.049 42.561 17.574 43.85 19.422 43.85C22.945 43.85 25.158 40.82 25.158 35.814V35.363H22.924ZM29.777 35.363H27.543V35.814C27.543 40.82 29.734 43.85 33.258 43.85C35.127 43.85 36.652 42.561 36.652 40.756C36.652 38.285 34.182 35.363 29.777 35.363ZM8.314 34.311H24.986V27.178H8.314C7.197 27.178 6.531 27.951 6.531 29.09V32.398C6.531 33.537 7.197 34.311 8.314 34.311ZM44.365 34.311C45.504 34.311 46.17 33.537 46.17 32.398V29.09C46.17 27.951 45.504 27.178 44.365 27.178H27.715V34.311H44.365ZM10.162 26.104H24.986V5.307H13.75C11.43 5.307 10.162 6.574 10.162 8.895V26.104ZM42.539 26.104V8.895C42.539 6.574 41.271 5.307 38.951 5.307H27.715V26.104H42.539Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Aniversario: <span class="about-item-content">05 de outubro</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Curtir" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Curtir</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+            </div>
+            <div class="about-item-label">Relacionamento: <span class="about-item-content">Namorando</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Conteúdo programado" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Conteúdo programado</title><rect fill="none" height="18.669" rx="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" x="2" y="3.331"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="2" x2="22" y1="7.778" y2="7.778"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="6.666" x2="6.666" y1="2" y2="4.665"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="17.555" x2="17.555" y1="2" y2="4.667"></line><circle cx="12" cy="12.666" r="1.001"></circle><circle cx="12" cy="17.112" r="1.001"></circle><circle cx="17" cy="12.666" r="1.001"></circle><circle cx="17" cy="17.112" r="1.001"></circle><circle cx="7" cy="12.666" r="1.001"></circle><circle cx="7" cy="17.112" r="1.001"></circle></svg>
+            </div>
+            <div class="about-item-label">Entrou em: <span class="about-item-content">Outubro de 2025</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area muted">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 3 45.5 46.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>
+            </div>
+            <div class="about-item-label">Mora em: <span class="about-item-content">Florianopolis sc</span></div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-icon-area">
+              <div class="about-menu-icon">
+                <svg aria-label="Pesquisa" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Pesquisa</title><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="16.511" x2="22" y1="16.511" y2="22"></line></svg>
+              </div>
+            </div>
+            <div class="about-item-label">
+              <span>Buscando por:</span>
+              <textarea class="about-item-content" placeholder="Amizades, relacionamentos..." maxlength="400"></textarea>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="area-header">
-        <div class="timeline-header-info">
-          <div class="timeline-title">Posts</div>
-          <div class="timeline-username" id="timeline-username"></div>
+      <div class="about-menu-section">
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 7 51 55" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-69.22265625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M31.775 39.123C36.480 39.123 40.068 43.141 40.068 48.383C40.068 53.281 36.395 57.449 31.775 57.449C27.135 57.449 23.418 53.281 23.461 48.383C23.461 43.141 27.049 39.123 31.775 39.123ZM31.711 35.256C26.984 35.256 23.010 33.859 20.045 31.818C23.225 29.691 25.352 26.082 25.352 22.000C25.352 21.270 25.266 20.518 25.137 19.809H46.320C48.318 19.809 49.500 20.410 49.500 22.258C49.500 27.715 42.689 35.256 31.711 35.256ZM13.514 11.773C19.100 11.773 23.719 16.371 23.719 22.000C23.719 27.586 19.100 32.205 13.514 32.205C7.928 32.205 3.287 27.586 3.287 22.000C3.287 16.371 7.928 11.773 13.514 11.773ZM13.535 15.061C13.041 15.061 12.719 15.469 12.719 15.898V21.205H7.691C7.262 21.205 6.875 21.506 6.875 22.021C6.875 22.537 7.262 22.838 7.691 22.838H12.719V28.123C12.719 28.574 13.041 28.939 13.535 28.939C14.029 28.939 14.352 28.574 14.352 28.123V22.838H19.357C19.809 22.838 20.174 22.537 20.174 22.021C20.174 21.506 19.809 21.205 19.357 21.205H14.352V15.898C14.352 15.469 14.029 15.061 13.535 15.061Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Visão geral:</span>
+              <textarea class="about-item-content" placeholder="Sua visão geral..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Musica:</span>
+              <textarea class="about-item-content" placeholder="Suas musicas..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 58 46" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-52.03515625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M9.518 13.664H54.871C57.535 13.664 58.889 15.018 58.889 17.703V42.711C58.889 45.375 57.535 46.750 54.871 46.750H9.518C6.832 46.750 5.479 45.375 5.479 42.711V17.703C5.479 15.018 6.832 13.664 9.518 13.664ZM9.582 14.717C7.563 14.717 6.531 15.705 6.531 17.746V42.646C6.531 44.688 7.563 45.697 9.582 45.697H54.785C56.826 45.697 57.836 44.688 57.836 42.646V17.746C57.836 15.705 56.826 14.717 54.785 14.717ZM47.137 6.660C47.137 7.434 46.600 8.014 45.805 8.014H18.326C17.553 8.014 16.994 7.434 16.994 6.660C16.994 5.865 17.553 5.285 18.326 5.285H45.805C46.600 5.285 47.137 5.865 47.137 6.660Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Filmes e series:</span>
+            <textarea class="about-item-content" placeholder="O que você gosta de assistir?..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 1 46 39" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-40.94921875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M26.018 34.934C25.760 35.900 21.506 38.5 16.006 38.5C10.527 38.5 5.457 35.707 5.479 34.203V3.029C5.479 2.686 5.715 2.449 6.059 2.449C6.381 2.449 6.617 2.557 6.682 2.707C7.219 3.803 10.785 6.188 16.006 6.188C21.248 6.188 24.793 3.846 25.330 2.707C25.416 2.557 25.652 2.449 26.018 2.449C26.383 2.449 26.619 2.557 26.705 2.707C27.242 3.846 30.787 6.188 36.029 6.188C41.250 6.188 44.816 3.803 45.354 2.707C45.418 2.557 45.654 2.449 45.977 2.449C46.320 2.449 46.557 2.686 46.557 3.029V34.203C46.578 35.707 41.508 38.5 36.029 38.5C30.529 38.5 26.275 35.900 26.018 34.934ZM6.531 33.816C6.531 34.912 10.785 37.490 16.006 37.490C21.227 37.490 25.502 34.912 25.480 33.816V4.211C23.805 6.188 20.174 7.197 16.006 7.197C11.859 7.197 8.229 6.188 6.531 4.211V33.816ZM45.504 33.816V4.211C43.807 6.188 40.176 7.197 36.029 7.197C31.861 7.197 28.230 6.188 26.533 4.211V33.816C26.533 34.912 30.809 37.490 36.029 37.490C41.229 37.490 45.504 34.912 45.504 33.816Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Livros:</span>
+              <textarea class="about-item-content" placeholder="Seus livros..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 85 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-45.1171875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M45.740 23.053C50.445 23.053 54.033 27.070 54.033 32.313C54.033 37.211 50.359 41.379 45.740 41.379C41.100 41.379 37.361 37.211 37.426 32.313C37.426 27.070 41.014 23.053 45.740 23.053ZM20.990 22.580C25.115 22.580 28.230 26.061 28.230 30.637C28.230 34.912 25.029 38.521 20.990 38.521C16.973 38.521 13.729 34.912 13.793 30.637C13.793 26.061 16.887 22.580 20.990 22.580ZM70.469 22.580C74.572 22.580 77.666 26.061 77.666 30.637C77.666 34.912 74.508 38.521 70.469 38.521C66.430 38.521 63.229 34.912 63.229 30.637C63.229 26.061 66.344 22.580 70.469 22.580ZM8.250 3.738H27.371C24.986 5.006 26.469 11.494 31.303 15.684C28.939 17.746 25.566 19.293 20.947 19.293C11.408 19.293 5.479 12.461 5.479 6.338C5.479 4.447 6.488 3.738 8.250 3.738ZM83.209 3.738C84.971 3.738 85.980 4.447 85.980 6.338C85.980 12.461 80.072 19.293 70.512 19.293C65.893 19.293 62.520 17.746 60.178 15.684C64.990 11.494 66.473 5.006 64.088 3.738H83.209ZM31.066 3.738H60.285C62.283 3.738 63.465 4.340 63.465 6.188C63.465 11.645 56.633 19.186 45.676 19.186C34.719 19.186 27.887 11.645 27.887 6.188C27.887 4.340 29.068 3.738 31.066 3.738Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Personagens:</span>
+              <textarea class="about-item-content" placeholder="Seus personagens favoritos..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="2 5 43 53" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-62.69140625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M22.408 45.697C22.494 45.697 22.537 45.719 22.580 45.826C23.074 49.564 23.225 49.844 27.178 50.467C27.328 50.510 27.371 50.553 27.371 50.660C27.371 50.768 27.328 50.832 27.178 50.854C23.268 51.648 23.482 51.928 22.580 55.494C22.537 55.602 22.494 55.623 22.408 55.623C22.344 55.623 22.279 55.602 22.258 55.494C21.355 51.928 21.656 51.648 17.639 50.854C17.510 50.832 17.467 50.768 17.467 50.660C17.467 50.553 17.510 50.510 17.639 50.467C21.656 49.672 21.699 49.564 22.258 45.826C22.279 45.719 22.344 45.697 22.408 45.697ZM11.623 31.389C11.773 31.389 11.859 31.475 11.902 31.646C12.869 37.426 12.783 37.211 18.648 38.371C18.777 38.414 18.885 38.479 18.885 38.650C18.885 38.801 18.777 38.887 18.648 38.908C12.783 40.090 12.869 39.875 11.902 45.654C11.859 45.826 11.773 45.891 11.623 45.891C11.494 45.891 11.387 45.826 11.365 45.654C10.398 39.896 10.570 40.090 4.619 38.908C4.490 38.887 4.383 38.801 4.383 38.650C4.383 38.479 4.490 38.414 4.619 38.371C10.570 37.189 10.398 37.404 11.365 31.646C11.387 31.475 11.494 31.389 11.623 31.389ZM26.189 7.068C26.576 7.068 26.791 7.305 26.813 7.605C28.016 20.990 29.240 21.850 42.131 22.924C42.453 22.945 42.668 23.160 42.668 23.482C42.668 23.805 42.453 24.020 42.131 24.041C29.240 25.115 28.016 25.975 26.813 39.359C26.791 39.660 26.576 39.896 26.189 39.896C25.803 39.896 25.588 39.660 25.566 39.359C24.363 25.975 23.139 25.115 10.270 24.041C9.926 24.020 9.711 23.805 9.711 23.482C9.711 23.160 9.926 22.945 10.270 22.924C23.096 21.398 24.170 20.969 25.566 7.605C25.588 7.305 25.803 7.068 26.189 7.068Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Comidas e bebidas:</span>
+              <textarea class="about-item-content" placeholder="Suas comidas favoritas..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 48 50" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-54.828125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M13.063 6.188C13.428 5.908 13.879 5.908 14.545 6.402L26.920 15.426L39.273 6.402C39.939 5.908 40.391 5.908 40.777 6.188C41.143 6.445 41.314 6.875 41.035 7.713L36.287 22.236L48.705 31.217C49.371 31.711 49.500 32.162 49.371 32.592C49.242 33.021 48.877 33.322 48.018 33.322L32.721 33.279L28.016 47.846C27.736 48.641 27.371 48.920 26.920 48.920C26.469 48.920 26.082 48.641 25.803 47.846L21.119 33.279L5.822 33.322C4.963 33.322 4.576 33.021 4.447 32.592C4.318 32.162 4.447 31.711 5.113 31.217L17.531 22.236L12.783 7.713C12.504 6.875 12.676 6.445 13.063 6.188Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Hobbies:</span>
+              <textarea class="about-item-content" placeholder="Seus hobbies..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="2 1 64 40" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-42.32421875)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M10.871 2.857C12.977 2.857 15.104 3.803 16.758 5.801L20.926 10.850C21.592 11.645 22.193 11.945 22.988 11.945H44.494C45.289 11.945 45.912 11.645 46.557 10.850L50.725 5.801C52.379 3.803 54.527 2.857 56.611 2.857C60.822 2.857 63.637 5.715 63.637 10.033C63.637 11.967 63.121 14.223 62.262 17.080C60.951 21.506 58.674 27.414 56.375 32.270C54.699 35.771 53.904 37.061 49.973 37.963C45.654 38.951 39.982 39.467 33.752 39.467C27.500 39.467 21.828 38.951 17.510 37.963C13.578 37.061 12.783 35.771 11.107 32.270C8.809 27.414 6.531 21.506 5.221 17.080C4.361 14.223 3.846 11.967 3.846 10.033C3.846 5.715 6.660 2.857 10.871 2.857ZM16.865 25.566C16.865 25.846 17.102 26.082 17.424 26.082H23.160V32.119C23.160 32.420 23.396 32.656 23.676 32.656C23.977 32.656 24.213 32.420 24.213 32.119V26.082H29.949C30.271 26.082 30.508 25.846 30.508 25.566C30.508 25.287 30.271 25.029 29.949 25.029H24.213V19.014C24.213 18.713 23.977 18.455 23.676 18.455C23.396 18.455 23.160 18.713 23.160 19.014V25.029H17.424C17.102 25.029 16.865 25.287 16.865 25.566ZM44.365 28.875C44.365 30.336 45.482 31.410 46.900 31.410C48.318 31.410 49.457 30.336 49.457 28.875C49.457 27.457 48.318 26.361 46.900 26.361C45.482 26.361 44.365 27.457 44.365 28.875ZM37.383 22.301C37.383 23.740 38.500 24.836 39.939 24.836C41.357 24.836 42.475 23.740 42.475 22.301C42.475 20.883 41.357 19.787 39.939 19.787C38.500 19.787 37.383 20.883 37.383 22.301Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Jogos:</span>
+              <textarea class="about-item-content" placeholder="O que você anda jogando?..." maxlength="400"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="about-menu-item">
+          <div class="about-menu-item-area">
+            <div class="about-menu-icon">
+              <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 1 43 42" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-44.236328125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.025 24.105H40.283C42.088 24.105 43.076 24.900 43.076 26.877V38.135C43.076 40.111 42.088 40.906 40.283 40.906H29.025C27.221 40.906 26.254 40.111 26.254 38.135V26.877C26.254 24.900 27.221 24.105 29.025 24.105ZM8.250 24.105H19.529C21.313 24.105 22.301 24.900 22.301 26.877V38.135C22.301 40.111 21.313 40.906 19.529 40.906H8.250C6.467 40.906 5.479 40.111 5.479 38.135V26.877C5.479 24.900 6.467 24.105 8.250 24.105ZM8.250 3.330H19.529C21.313 3.330 22.301 4.146 22.301 6.102V17.381C22.301 19.336 21.313 20.131 19.529 20.131H8.250C6.467 20.131 5.479 19.336 5.479 17.381V6.102C5.479 4.146 6.467 3.330 8.250 3.330ZM29.025 3.330H40.283C42.088 3.330 43.076 4.146 43.076 6.102V17.381C43.076 19.336 42.088 20.131 40.283 20.131H29.025C27.221 20.131 26.254 19.336 26.254 17.381V6.102C26.254 4.146 27.221 3.330 29.025 3.330Z"/></g></svg>
+            </div>
+            <div class="about-item-label">
+              <span>Outros gostos:</span>
+              <textarea class="about-item-content" placeholder="Seus outros gostos..." maxlength="400"></textarea>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="area-header"></div>
     </div>
-    <div class="timeline-posts" id="timeline-posts"></div>
   </div>
 </div>
 
+
+<div class="friends-overlay" id="friendsOverlay">
+  <div class="friends-header">
+    <button class="friends-back" id="closeFriendsBtn">
+      <svg viewBox="0 0 298 512" xmlns="http://www.w3.org/2000/svg"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16L12.23 285.39c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7L100.27 256.08 285.77 441z"/></svg>
+    </button>
+    <span class="friends-title" id="friendsTitle">Amigos</span>
+    <span class="friends-spacer"></span>
+  </div>
+  <div class="friends-list" id="friendsList"></div>
+</div>
+
+<div class="toast-area">
+  <div class="toast-box">
+    <div class="toast-icon-area">
+      <div class="toast-icon">
+        <svg class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" x1="11.914" x2="11.914" y1="15.195" y2="2"></line><polyline fill="none" points="16.013 11.095 11.914 15.195 7.814 11.095" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" x1="3.277" x2="20.55" y1="22" y2="22"></line></svg>
+      </div>
+    </div>
+    <div class="toast-body">Informações salvas com sucesso.</div>
+  </div>
+</div>
+
+<div class="profile-page" id="profilePage">
 <!-- Nav Topo -->
 <nav class="navbar-top">
   <div class="top-left">
     <button onclick="window.history.back()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
     </button>
-    <h2 id="headername">usuario</h2><span class="verificado"><i class="fas fa-check-circle"></i></span>
+    <div class="headername" id="headername"><span id="headernameText"></span>
+      <span class="verificado">
+        <svg class="verificadoSvg" fill="rgb(0, 149, 246)" height="18" role="img" viewBox="0 0 40 40" width="18"><path d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill-rule="evenodd"></path></svg>
+      </span>
+    </div>
   </div>
   <div class="top-right">
-    <a id="open-settings-btn">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95"><g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0 C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105 C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0 c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
-    </a>
+    <button id="openSettingsBtn">
+      <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Configurações</title><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="4" y2="4"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="12" y2="12"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="3" x2="21" y1="20" y2="20"></line></svg>
+    </button>
   </div>
 </nav>
 
@@ -388,61 +484,43 @@
   <div class="profile-header">
     <div class="full-header">
       <div class="pfp">
-        <div class="pfp-border">
-          <img src="../public/img/default.jpg" alt="Foto de perfil" class="profile-pic" />
-        </div>
+        <div class="pfp-border"></div>
       </div>
       <div class="profile-info-block">
         <div class="name-line">
-          <h2 class="profile-name" id="displayname">username</h2>
-          <div class="handle" id="username"></div>
+          <div class="profile-name" id="displayname"></div>
+          <div class="pronom"></div>
         </div>
         <div class="profile-stats">
-          <div class="stat-item">
-            <span class="stat-count" id="amigosCount">0</span>
+          <div class="stat-item" id="openFriendsBtn">
+            <span class="stat-count" id="friendsCount">0</span>
             <span class="stat-label">amigos</span>
           </div>
           <div class="stat-item">
-            <span class="stat-count" id="seguidoresCount">0</span>
+            <span class="stat-count" id="postsCount">0</span>
             <span class="stat-label">posts</span>
           </div>
           <div class="stat-item">
-            <span class="stat-count" id="seguindoCount">0</span>
+            <span class="stat-count" id="photosCount">0</span>
             <span class="stat-label">fotos</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="bio">
-      <p id="bio"></p>
-    </div>
-
-    <div class="music">
-      <button id="btnPauseMusic" class="iframe-btn" aria-label="Tocar música do perfil">
-        <div class="svg-music" id="pause">
-          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve"><g><path d="M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44 c-11.12,11.12-26.48,18-43.44,18c-16.97,0-32.33-6.88-43.44-18C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18 C29.11,6.88,44.47,0,61.44,0L61.44,0z M42.3,39.47h13.59v43.95l-13.59,0V39.47L42.3,39.47L42.3,39.47z M66.99,39.47h13.59v43.95 l-13.59,0V39.47L66.99,39.47L66.99,39.47z M97.42,25.46c-9.21-9.21-21.93-14.9-35.98-14.9c-14.05,0-26.78,5.7-35.98,14.9 c-9.21,9.21-14.9,21.93-14.9,35.98s5.7,26.78,14.9,35.98c9.21,9.21,21.93,14.9,35.98,14.9c14.05,0,26.78-5.7,35.98-14.9 c9.21-9.21,14.9-21.93,14.9-35.98S106.63,34.66,97.42,25.46L97.42,25.46z"/></g></svg>
-        </div>
-        <div class="svg-music active" id="play">
-          <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 512"><path fill-rule="nonzero" d="M255.99 0c70.68 0 134.7 28.66 181.02 74.98C483.33 121.3 512 185.31 512 256c0 70.68-28.67 134.69-74.99 181.01C390.69 483.33 326.67 512 255.99 512S121.3 483.33 74.98 437.01C28.66 390.69 0 326.68 0 256c0-70.67 28.66-134.7 74.98-181.02C121.3 28.66 185.31 0 255.99 0zm77.4 269.81c13.75-8.88 13.7-18.77 0-26.63l-110.27-76.77c-11.19-7.04-22.89-2.9-22.58 11.72l.44 154.47c.96 15.86 10.02 20.21 23.37 12.87l109.04-75.66zm79.35-170.56c-40.1-40.1-95.54-64.92-156.75-64.92-61.21 0-116.63 24.82-156.74 64.92-40.1 40.11-64.92 95.54-64.92 156.75 0 61.22 24.82 116.64 64.92 156.74 40.11 40.11 95.53 64.93 156.74 64.93 61.21 0 116.65-24.82 156.75-64.93 40.11-40.1 64.93-95.52 64.93-156.74 0-61.22-24.82-116.64-64.93-156.75z"/></svg>
-        </div>
-      </button>
-      <div class="music-bars">
-        <div class="music-bar"></div>
-        <div class="music-bar"></div>
-        <div class="music-bar"></div>
-      </div>
-      <span id="musicTitle"></span>
-    </div>
+    <div class="bio" id="bio"></div>
     
-    <div class="view-more">Ver mais sobre <span id="view-more-username"></span></div>
+    <div class="view-more" id="openViewMoreBtn">Ver mais sobre <span id="viewMoreDisplayname"></span></div>
 
     <div class="actions-btn">
-      <button class="action-btn pf">Adicionar</button>
-      <button class="action-btn sugestions">Mensagens</button>
-      <!------------------------------------------------->
-      <button class="action-btn mypf">Editar</button>
-      <button class="action-btn share">Compartilhar perfil</button>
+      <div class="act-btns-area" id="actBtnsVisitor">
+        <button class="action-btn primary" id="sendRequestBtn">Adicionar</button>
+        <button class="action-btn" id="sendMessageBtn">Mensagens</button>
+      </div>
+      <div class="act-btns-area hidden" id="actBtnsOwner">
+        <a href="/edit.html" class="action-btn">Editar</a>
+        <button class="action-btn" id="shareProfile">Compartilhar perfil</button>
+      </div>
     </div>
   </div>
   <div id="music-player"></div>
@@ -450,14 +528,18 @@
   <div class="main-profile">
     <div class="profile-menu-area" id="profileMenu">
       <div class="profile-menu">
-        <button class="menu-item active" data-tab="0"><i class="fa-solid fa-address-card"></i><p>Feed</p></button>
-        <button class="menu-item" data-tab="1">
-          <svg aria-label="Marcados" class="x1lliihq x1n2onr6 x1cp0k07" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
+        <button class="menu-item active" data-profile-tab="0">
+          <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Posts</title><rect height="6" rx="1" ry="1" width="4.667" x="3" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="3" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="3" y="17"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="17"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="17"></rect></svg>
         </button>
-        <button class="menu-item" data-tab="2"><i class="fas fa-link"></i></button>
+        <button class="menu-item" data-profile-tab="1">
+          <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
+        </button>
+        <button class="menu-item" data-profile-tab="2">
+          <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="16"><title>Ícone de link</title><path d="m9.726 5.123 1.228-1.228a6.47 6.47 0 0 1 9.15 9.152l-1.227 1.227m-4.603 4.603-1.228 1.228a6.47 6.47 0 0 1-9.15-9.152l1.227-1.227" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="8.471" x2="15.529" y1="15.529" y2="8.471"></line></svg>
+        </button>
       </div>
       <div class="menu-select">
-        <div class="slider">
+        <div class="slider" id="menuSlider">
           <div class="slide"></div>
         </div>
       </div>
@@ -465,33 +547,35 @@
   </div>
 
   <div class="profile-body">
-    <div class="tabs-container">
+    <div class="tabs-container" id="tabsContainer">
       <!-- Posts/Timeline -->
-      <div class="tab visao-tab">
-        <div id="muralPosts"></div>
+      <div class="profile-tab">
+        <div class="mural-posts" id="muralPosts">
+          <div class="post-preview"></div>
+          <div class="post-preview"></div>
+          <div class="post-preview"></div>
+          <div class="post-preview"></div>
+          <div class="post-preview"></div>
+          <div class="post-preview"></div>
+        </div>
+        <div id="postsSentinel"></div>
       </div>
       <!-- Wall/Mural -->
-      <div class="tab gostos-tab">
+      <div class="profile-tab">
         <div class="send-wall">
-          <div class="pfp-send-wall" id="pfp-user">
-            <img src="../public/img/default.jpg" alt="foto de perfil">
-          </div>
+          <div class="pfp-send-wall" id="pfp-user"></div>
           <div class="input-send-wall">Escreva algo...</div>
         </div>
-        <div class="wall-feed" id="wall-feed">
-        </div>
+        <div class="wall-feed" id="wallFeed"></div>
       </div>
       <!-- Links -->
-      <div class="tab links-tab">
-        <div class="about-container"></div>
+      <div class="profile-tab">
+        <div id="linksTab"></div>
       </div>
     </div>
   </div>
-
 </div>
 
-
-<!-- Nav-bottom -->
 <div class="navbar-bottom">
   <div class="navbar-bottom-area">
     <a href="feed.html">
@@ -511,241 +595,87 @@
     </a>
   </div>
 </div>
+</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const menuOverlay = document.getElementById('menuOverlay');
-  const openMenuBtns = document.querySelectorAll('[id="open-settings-btn"]');
-  const closeMenuBtn = document.getElementById('closeMenu');
+<template id="postImageTemplate">
+  <div class="post-preview"></div>
+</template>
 
-  openMenuBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (menuOverlay) menuOverlay.classList.add('active');
-    });
-  });
+<template id="postTextTemplate">
+  <div class="post-preview">
+    <div class="post-preview-text-container">
+      <p class="post-preview-text"></p>
+    </div>
+  </div>
+</template>
 
-  if (closeMenuBtn) {
-    closeMenuBtn.addEventListener('click', () => {
-      if (menuOverlay) menuOverlay.classList.remove('active');
-    });
-  }
+<template id="emptyPostsTemplate">
+  <div class="empty-state">
+    <div class="icon-area"><div class="icon-place">
+      <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Posts</title><rect height="6" rx="1" ry="1" width="4.667" x="3" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="1"></rect><rect height="6" rx="1" ry="1" width="4.667" x="3" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="9"></rect><rect height="6" rx="1" ry="1" width="4.667" x="3" y="17"></rect><rect height="6" rx="1" ry="1" width="4.667" x="16.333" y="17"></rect><rect height="6" rx="1" ry="1" width="4.667" x="9.667" y="17"></rect></svg>
+        
+    </div></div>
+    <h3>Nenhum post ainda</h3>
+    <p>Esse usuário ainda não fez nenhum post.</p>
+  </div>
+</template>
 
-  if (menuOverlay) {
-    menuOverlay.addEventListener('click', (e) => {
-      if (e.target === menuOverlay) {
-        menuOverlay.classList.remove('active');
-      }
-    });
-  }
+<template id="emptyWallTemplate">
+  <div class="empty-state">
+    <div class="icon-area"><div class="icon-place">
+      <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
+    </div></div>
+    <h3>Mural vazio</h3>
+    <p>Nenhuma atividade ainda.</p>
+  </div>
+</template>
 
+<template id="emptyLinksTemplate">
+  <div class="empty-state">
+    <div class="icon-area"><div class="icon-place">
+      <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="16"><title>Ícone de link</title><path d="m9.726 5.123 1.228-1.228a6.47 6.47 0 0 1 9.15 9.152l-1.227 1.227m-4.603 4.603-1.228 1.228a6.47 6.47 0 0 1-9.15-9.152l1.227-1.227" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="8.471" x2="15.529" y1="15.529" y2="8.471"></line></svg>
+    </div></div>
+    <h3>Nenhum link ainda</h3>
+    <p>Esse usuário ainda não adicionou nenhum link.</p>
+  </div>
+</template>
 
-  const profileMenu = document.getElementById('profileMenu');
-  const menuPlaceholder = document.querySelector('.menu-placeholder');
-  const navbarHeight = 60;
-  let menuOriginalTop = 0;
+<template id="emptyFriendsTemplate">
+  <div class="empty-state">
+    <h4>Nenhum amigo ainda</h4>
+  </div>
+</template>
 
-  window.addEventListener('load', () => {
-    menuOriginalTop = profileMenu.offsetTop;
-  });
+<template id="linkItemTemplate">
+  <a class="link-item" target="_blank" rel="noopener noreferrer">
+    <div class="link-icon"><i></i></div>
+    <div class="link-body">
+      <div class="link-title"></div>
+      <div class="link-username"></div>
+    </div>
+  </a>
+</template>
 
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (scrollTop >= menuOriginalTop - navbarHeight) {
-      profileMenu.classList.add('sticky');
-      menuPlaceholder.classList.add('active');
-    } else {
-      profileMenu.classList.remove('sticky');
-      menuPlaceholder.classList.remove('active');
-    }
-  });
+<template id="friendRowTemplate">
+  <div class="friend-row">
+    <div class="friend-avatar-area"></div>
+    <div class="friend-info">
+      <div class="friend-username"></div>
+      <div class="friend-name"></div>
+    </div>
+    <button class="friend-action"></button>
+  </div>
+</template>
 
-  const buttons = document.querySelectorAll('.profile-menu .menu-item');
-  const tabsContainer = document.querySelector('.tabs-container');
-  const slider = document.querySelector('.slider');
-  const profileBody = document.querySelector('.profile-body');
-  let currentTab = 0;
-  const totalTabs = 3;
+<template id="profileNotFoundTemplate">
+  <div class="empty-state error-state">
+    <h3>Erro</h3>
+    <p>Perfil não encontrado. Verifique o username.</p>
+    <a href="feed.html" class="back-home">Voltar ao início</a>
+  </div>
+</template>
 
-  function changeTab(index) {
-    if (index < 0 || index >= totalTabs || currentTab === index) return;
-    
-    currentTab = index;
-
-    buttons.forEach(btn => btn.classList.remove('active'));
-    buttons[index].classList.add('active');
-
-    slider.style.transform = `translateX(${index * 100}%)`;
-
-    tabsContainer.style.transform = `translateX(-${index * 33.333}%)`;
-  }
-
-  buttons.forEach((button, index) => {
-    button.addEventListener('click', () => {
-      changeTab(index);
-    });
-  });
-
-  let touchStartX = 0;
-  let touchEndX = 0;
-  let touchStartY = 0;
-  let touchEndY = 0;
-  const minSwipeDistance = 50;
-
-  profileBody.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-  }, { passive: true });
-
-  profileBody.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
-    handleSwipe();
-  }, { passive: true });
-
-  function handleSwipe() {
-    const diffX = touchStartX - touchEndX;
-    const diffY = Math.abs(touchStartY - touchEndY);
-
-    if (Math.abs(diffX) > minSwipeDistance && diffY < 100) {
-      if (diffX > 0) {
-        changeTab(currentTab + 1);
-      } else {
-        changeTab(currentTab - 1);
-      }
-    }
-  }
-
-  let isDragging = false;
-  let dragStartX = 0;
-  let dragStartY = 0;
-
-  profileBody.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    dragStartX = e.clientX;
-    dragStartY = e.clientY;
-    profileBody.style.cursor = 'grabbing';
-  });
-
-  profileBody.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-  });
-
-  profileBody.addEventListener('mouseup', (e) => {
-    if (!isDragging) return;
-    isDragging = false;
-    profileBody.style.cursor = 'default';
-    
-    const diffX = dragStartX - e.clientX;
-    const diffY = Math.abs(dragStartY - e.clientY);
-    
-    if (Math.abs(diffX) > minSwipeDistance && diffY < 100) {
-      if (diffX > 0) {
-        changeTab(currentTab + 1);
-      } else {
-        changeTab(currentTab - 1);
-      }
-    }
-  });
-
-  profileBody.addEventListener('mouseleave', () => {
-    isDragging = false;
-    profileBody.style.cursor = 'default';
-  });
-
-  const moreOverlay = document.querySelector('.more-overlay');
-  const moreModal   = document.querySelector('.more-info-modal');
-  const viewMoreBtn = document.querySelector('.view-more');
-  const dragArea    = document.querySelector('.header-area');
-
-  function openMoreModal() {
-    moreOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeMoreModal() {
-    moreModal.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
-    moreModal.style.transform  = 'translateY(100%)';
-    moreOverlay.style.opacity  = '0';
-    setTimeout(() => {
-      moreOverlay.classList.remove('active');
-      moreModal.style.transform  = '';
-      moreModal.style.transition = '';
-      moreOverlay.style.opacity  = '';
-      document.body.style.overflow = '';
-    }, 400);
-  }
-
-  if (viewMoreBtn) viewMoreBtn.addEventListener('click', openMoreModal);
-
-  moreOverlay.addEventListener('click', (e) => {
-    if (e.target === moreOverlay) closeMoreModal();
-  });
-
-  let _dragStartY = 0, _dragCurY = 0, _dragging = false;
-
-  dragArea.addEventListener('touchstart', (e) => {
-    _dragStartY = e.touches[0].clientY;
-    _dragging = true;
-    moreModal.style.transition = 'none';
-  }, { passive: true });
-
-  dragArea.addEventListener('touchmove', (e) => {
-    if (!_dragging) return;
-    _dragCurY = e.touches[0].clientY;
-    const diff = _dragCurY - _dragStartY;
-    if (diff > 0) moreModal.style.transform = `translateY(${diff}px)`;
-  }, { passive: true });
-
-  dragArea.addEventListener('touchend', () => {
-    if (!_dragging) return;
-    _dragging = false;
-    const diff = _dragCurY - _dragStartY;
-    if (diff > 80) {
-      closeMoreModal();
-    } else {
-      moreModal.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-      moreModal.style.transform  = 'translateY(0)';
-    }
-  });
-
-  let _mouseStart = 0, _mouseDragging = false;
-
-  dragArea.addEventListener('mousedown', (e) => {
-    _mouseStart = e.clientY;
-    _mouseDragging = true;
-    moreModal.style.transition = 'none';
-    document.addEventListener('mousemove', _onMouseMove);
-    document.addEventListener('mouseup',   _onMouseUp);
-  });
-
-  function _onMouseMove(e) {
-    if (!_mouseDragging) return;
-    const diff = e.clientY - _mouseStart;
-    if (diff > 0) moreModal.style.transform = `translateY(${diff}px)`;
-  }
-
-  function _onMouseUp(e) {
-    if (!_mouseDragging) return;
-    _mouseDragging = false;
-    document.removeEventListener('mousemove', _onMouseMove);
-    document.removeEventListener('mouseup',   _onMouseUp);
-    const diff = e.clientY - _mouseStart;
-    if (diff > 80) {
-      closeMoreModal();
-    } else {
-      moreModal.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-      moreModal.style.transform  = 'translateY(0)';
-    }
-  }
-}); 
-</script>
-<script type="module" src="../src/js/pages/profiles.js"></script>
-<script src="https://www.youtube.com/iframe_api"></script>
-<script type="module" src="../src/modules/auth-verification.js"></script>
-<script type="module" src="../src/components/pc-alert.js"></script>
-<script type="module" src="./src/components/navbar-badge.js"></script>
-<script type="module" src="./src/services/global-direct-nt.js"></script>
+<!-- <script src="https://www.youtube.com/iframe_api"></script> -->
+<script type="module" src="./src/js/pages/profile/profile.js" ></script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+.send-wall {
+    display: flex;
+    height: 76px;
+    width: 100%;
+}
+
+.pfp-send-wall {
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1/1;
+    padding: 16px;
+}
+
+.pfp-send-wall img {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background: #272727;
+}
+
+.input-send-wall {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: #cacaca;
+    font-weight: 15px;
+    padding: 10px 10px 10px 0;
+}
