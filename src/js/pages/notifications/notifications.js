@@ -116,10 +116,25 @@ function createNotification(
         notification.id;
 
 
-    const message =
+    let message =
         getNotificationMessage(
             notification.type
         );
+
+
+    if (notification.type === "comment") {
+
+        message = `
+            <span class="notification-action">
+                comentou na sua publicação:
+            </span>
+
+            <span class="notification-comment">
+                "${notification.message}"
+            </span>
+        `;
+    }
+
 
 
     const date =
@@ -128,33 +143,33 @@ function createNotification(
         );
 
 
-    let preview = "";
+        let preview = "";
 
+        if (post) {
 
-    if (post) {
+            if (post.imgs) {
 
-        if (post.imgs) {
+                if (post && post.imgs && post.imgs.length > 0) {
 
-            if (post.imgs.length > 0) {
+                    preview = `
+                        <div class="notification-social">
 
-                preview = `
-                    <div class="notification-social">
+                            <div class="post-preview">
 
-                        <div class="post-preview">
+                                <img
+                                    src="${post.imgs[0].url}"
+                                    alt="Publicação"
+                                    onerror="this.parentElement.style.display='none'"
+                                >
 
-                            <img
-                                src="${post.imgs[0]}"
-                                alt="Publicação"
-                                onerror="this.parentElement.style.display='none'"
-                            >
+                            </div>
 
                         </div>
+                    `;
+                }
 
-                    </div>
-                `;
             }
         }
-    }
 
 
     let actions = "";
@@ -162,8 +177,8 @@ function createNotification(
     if (notification.type === "friend_request") {
         actions = `
             <div class="notification-friend-actions">
-                <button class="friend-accept-btn" type="button">Aceitar</button>
-                <button class="friend-decline-btn" type="button">Recusar</button>
+                <button class="friend-request-btn" type="button">Aceitar</button>
+                <button class="friend-request-btn sec" type="button">×</button>
             </div>
         `;
     }
@@ -198,9 +213,9 @@ function createNotification(
                         ${date}
                     </span>
 
-                    ${actions}
-
                 </div>
+
+                ${actions}
 
             </div>
 
@@ -246,10 +261,10 @@ function createNotification(
     if (notification.type === "friend_request") {
 
         const acceptButton =
-            item.querySelector(".friend-accept-btn");
+            item.querySelector(".friend-request-btn");
 
         const declineButton =
-            item.querySelector(".friend-decline-btn");
+            item.querySelector(".friend-request-btn.sec");
 
         acceptButton.addEventListener("click", async function() {
             acceptButton.disabled = true;
@@ -444,10 +459,6 @@ function loadNotifications(uid) {
         renderResolvedNotifications(cached, uid);
     }
 
-    // A velocidade vem do cache local (renderiza na hora) e da resolução
-    // em paralelo abaixo — um único listener em tempo real, sem trocar
-    // de inscrição no meio do caminho, que é frágil e pode deixar o
-    // real-time "travado" dependendo do timing do Firestore.
     subscribeNotifications(uid);
 }
 
@@ -514,6 +525,7 @@ function subscribeNotifications(uid) {
             async function(result) {
 
                 const notifications = [];
+                
 
 
                 for (
@@ -533,6 +545,8 @@ function subscribeNotifications(uid) {
                         ...notificationData
 
                     };
+
+                    console.log("NOTIFICAÇÃO:", notification);
 
 
                     if (
@@ -555,9 +569,6 @@ function subscribeNotifications(uid) {
                     notifications.push(notification);
                 }
 
-
-                // Resolve usuário/post de todas as notificações em
-                // paralelo, em vez de um por um.
                 const resolvedList =
                     await Promise.all(
                         notifications.map(resolveNotification)
