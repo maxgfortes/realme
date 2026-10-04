@@ -295,6 +295,15 @@
     word-break: break-word;
 }
 
+.no-comments {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
 @media (hover: hover) {
     .comment-item-options .item-btn.delete:hover {
         background: #e82f25;
