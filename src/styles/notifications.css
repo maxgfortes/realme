@@ -15,7 +15,6 @@
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: center;
   gap: 6px;
   text-wrap: nowrap;
 }
@@ -51,6 +50,8 @@
 .notifications-container {
   transform: translate(0);
   transition: all 0.3s;
+  width: 100%;
+  height: 100%;
 }
 
 .notifications-container.hidden {
@@ -153,10 +154,11 @@
   fill: #fff;
 }
 
+
 .friend-requests-container {
   position: fixed;
   background: var(--bg-primary);
-  height: 100vh;
+  height: 100%;
   width: 100%;
   top: 0;
   left: 0;
@@ -397,6 +399,7 @@
   display: flex;
   align-items: center;
   padding: 12px 12px 12px 0;
+  gap: 4px;
 }
 
 .notification-social {
@@ -474,3 +477,25 @@ body {
   font-weight: normal;
 }
 
+.notification-friend-actions {
+  display: flex;
+}
+
+.notification-friend-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.friend-request-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  background: var(--primary-btn);
+}
+
+.friend-request-btn.sec {
+  background: #272727;
+}
