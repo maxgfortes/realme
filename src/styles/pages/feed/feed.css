@@ -5,6 +5,11 @@ body.scroll-locked {
 body {
   overflow: hidden;
 }
+
+.feed-page {
+  position: relative;
+}
+
 /* --------------------- Navbar superior ------------------*/
 .logo-mobile {
   color: #cacaca;
@@ -18,7 +23,7 @@ body {
 }
 
 .navbar-top {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -87,6 +92,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   height: 100vh;
+  overscroll-behavior-y: contain;
 }
 
 .welcome-box {
@@ -252,7 +258,13 @@ body {
   display: none;
 }
 
+.main-content {
+  background: var(--bg-primary);
+}
 
+
+
+/*
 @media (min-width: 800px) {
   
   .welcome-container {
@@ -349,7 +361,7 @@ body {
   }
   
 
-}
+} */
 
 
 
@@ -391,3 +403,59 @@ body {
   font-size: 14px;
   color: #999;
 }
+
+
+
+
+
+
+
+
+#scroll_page {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  overscroll-behavior-y: contain;
+  will-change: transform;
+}
+
+#ptrHook {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 15px;
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#ptrHook .ptr-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#ptrHook .ptr-seta {
+  transition: transform .2s ease;
+  transform: scale(0.9);
+}
+
+#ptrHook[data-estado="preaction"] .ptr-seta {
+  transform: rotate(180deg);
+}
+
+#ptrHook .ptr-gif {
+  display: none;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+#ptrHook[data-estado="action"] .ptr-seta { display: none; }
+#ptrHook[data-estado="action"] .ptr-gif { display: block; }

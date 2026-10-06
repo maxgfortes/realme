@@ -274,6 +274,27 @@ async function loadFeed() {
     }
 }
 
+/*
+ * Usado pelo pull-to-refresh: zera a paginação e os caches
+ * e carrega o feed do começo. Os posts antigos continuam na tela
+ * até os novos chegarem (o loadFeed limpa o #feed só nesse momento).
+ */
+export async function refreshFeed() {
+    while (isLoading) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    lastPost = null;
+    hasMorePosts = true;
+    feedStarted = false;
+    eventsUpperBound = null;
+    creatorIdsPromise = null;
+    creatorCache.clear();
+    userNameCache.clear();
+
+    await loadFeed();
+}
+
 function normalizeImgs(post) {
     if (Array.isArray(post.imgs) && post.imgs.length) {
         return post.imgs;
