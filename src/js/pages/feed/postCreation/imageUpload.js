@@ -216,7 +216,7 @@ function compressImage(file) {
   });
 }
 
-async function uploadOne(file) {
+export async function uploadOne(file) {
   if (file.type === 'image/gif') {
 
     const dimensions = await getImageDimensions(file);
@@ -323,4 +323,102 @@ export function onImagesChanged(callback) {
     'images-changed',
     callback
   );
+}
+
+
+
+const BANNER_MAX_WIDTH = 1280;
+const BANNER_MAX_BYTES = 500 * 1024;
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Não foi possível carregar a imagem'));
+    };
+
+    img.src = url;
+  });
+}
+
+function canvasToBlob(canvas, quality) {
+  return new Promise((resolve) => {
+    canvas.toBlob(resolve, 'image/jpeg', quality);
+  });
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function compressBanner(file) {
+  const img = await loadImage(file);
+
+  let width = Math.min(img.naturalWidth, BANNER_MAX_WIDTH);
+  let height = Math.round(width * (img.naturalHeight / img.naturalWidth));
+
+  let blob = null;
+
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#0f0f0f';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    for (let quality = 0.85; quality >= 0.4; quality -= 0.1) {
+      blob = await canvasToBlob(canvas, quality);
+
+      if (blob.size <= BANNER_MAX_BYTES) {
+        return { blob, width, height };
+      }
+    }
+
+    width = Math.round(width * 0.85);
+    height = Math.round(height * 0.85);
+  }
+
+  return { blob, width, height };
+}
+
+export async function uploadBanner(file) {
+  const { blob, width, height } = await compressBanner(file);
+
+  const formData = new FormData();
+  formData.append('image', await blobToBase64(blob));
+
+  const response = await fetch(
+    `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+    { method: 'POST', body: formData }
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error?.message || 'Erro ao enviar banner');
+  }
+
+  return {
+    url: data.data.url,
+    width,
+    height,
+    fileSize: blob.size
+  };
 }

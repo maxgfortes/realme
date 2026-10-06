@@ -12,6 +12,11 @@ import "/src/js/pages/feed/postCreation/postCreation.js";
 import "/src/js/pages/feed/postCreation/progressBar.js";
 
 
+// event creation
+import "/src/js/pages/feed/eventCreation/loadBannerPreview.js";
+import "./eventCreation/eventCreation.js";
+
+
 import "/src/js/pages/feed/postSystem/inputSize.js";
 // import "/src/js/pages/feed/postSystem/openComments.js";
 
@@ -19,4 +24,3 @@ import "/src/js/pages/feed/utils/serverMessage.js";
 import "/src/js/pages/feed/navbarAnimation.js";
 
 import "/src/js/pages/feed/render/postsRender.js";
-

@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="./src/styles/shared/eventCard.css">
   <link rel="stylesheet" href="./src/styles/shared/sugestions.css">
   <link rel="stylesheet" href="./src/styles/pages/feed/creationOverlay.css">
-    <link rel="stylesheet" href="./src/styles/shared/menu-bottom.css">
+    <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
 
   <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
@@ -48,58 +48,156 @@
 
 <div class="post-layer" id="postLayer">
   <div class="header-layer">
-    <h1>Nova publicação</h1> 
-    <button id="closeLayerBtn">
+    <div class="create-type-area">
+      <div class="create-type-pill">
+        <button class="create-type-btn active" id="createPost">Post</button>
+        <button class="create-type-btn" id="createEvent">Evento</button>
+      </div>
+    </div>
+    <button id="closeLayerBtn" class="close-layer-btn">
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="122.878px" height="122.88px" viewBox="0 0 122.878 122.88" enable-background="new 0 0 122.878 122.88" xml:space="preserve"><g><path d="M1.426,8.313c-1.901-1.901-1.901-4.984,0-6.886c1.901-1.902,4.984-1.902,6.886,0l53.127,53.127l53.127-53.127 c1.901-1.902,4.984-1.902,6.887,0c1.901,1.901,1.901,4.985,0,6.886L68.324,61.439l53.128,53.128c1.901,1.901,1.901,4.984,0,6.886 c-1.902,1.902-4.985,1.902-6.887,0L61.438,68.326L8.312,121.453c-1.901,1.902-4.984,1.902-6.886,0 c-1.901-1.901-1.901-4.984,0-6.886l53.127-53.128L1.426,8.313L1.426,8.313z"/></g></svg>
     </button>
   </div>
-  <div class="content-area">
-    <div class="content-row">
-      <div class="np-text-area">
-        <div class="np-avatar-area">
-          <img id="creationModalPfp" src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async">
+  <div class="create-area active" id="createPostArea">
+    <div class="content-area">
+      <div class="content-row">
+        <div class="np-text-area">
+          <div class="np-avatar-area">
+            <img id="creationModalPfp" src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async">
+          </div>
+          <div class="np-input-area" id="inputArea">
+            <div class="np-username" id="creationModalDisplayName"></div>
+            <textarea id="npTextInput" class="np-text-input" placeholder="O que você está pensando?" maxlength="500" ></textarea>
+          </div>
         </div>
-        <div class="np-input-area" id="inputArea">
-          <div class="np-username" id="creationModalDisplayName">name surname</div>
-          <textarea id="npTextInput" class="np-text-input" placeholder="O que você está pensando?" maxlength="500" ></textarea>
+        <div class="image-preview-carrosel visible"></div>
+        <div class="img-btn">
+          <button id="npMediaInput">Adicionar Imagens</button>
         </div>
       </div>
-      <div class="image-preview-carrosel visible"></div>
-      <div class="img-btn">
-        <button id="npMediaInput">Adicionar Imagem</button>
+    </div>
+    <div class="sections-btn">
+      <div class="sections-btns-row">
+        <div class="btns-row">
+          <button class="np-bottom-btn" id="btnMention">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 46 54"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-61.037109375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="2.5" d="M 3.845703125,30.744140625 C 3.845703125,17.251953125 12.998046875,7.77734375 26.08203125,7.77734375 C 30.078125,7.77734375 33.21484375,8.056640625 34.890625,8.615234375 C 35.255859375,8.72265625 35.44921875,8.873046875 35.44921875,9.15234375 C 35.44921875,9.453125 35.27734375,9.646484375 34.955078125,9.646484375 C 34.611328125,9.646484375 34.224609375,9.474609375 33.7734375,9.388671875 C 31.96875,9.044921875 29.240234375,8.765625 26.060546875,8.765625 C 13.599609375,8.765625 4.8984375,17.83203125 4.8984375,30.765625 C 4.8984375,43.140625 13.96484375,52.25 26.25390625,52.25 C 38.478515625,52.25 47.05078125,44.0859375 47.05078125,32.44140625 C 47.05078125,24.40625 44.408203125,19.765625 39.853515625,19.765625 C 36.501953125,19.765625 34.4609375,22.322265625 34.4609375,26.46875 L 34.4609375,41.20703125 C 34.4609375,41.55078125 34.24609375,41.787109375 33.923828125,41.787109375 C 33.623046875,41.787109375 33.408203125,41.55078125 33.408203125,41.20703125 L 33.408203125,36.1796875 L 33.30078125,36.1796875 C 32.3125,39.6171875 29.326171875,41.787109375 25.609375,41.787109375 C 20.044921875,41.787109375 16.263671875,37.103515625 16.263671875,30.228515625 C 16.263671875,23.4609375 20.044921875,18.841796875 25.609375,18.841796875 C 29.34765625,18.841796875 31.92578125,20.861328125 33.30078125,24.771484375 L 33.408203125,24.771484375 C 33.9453125,20.990234375 36.3515625,18.755859375 39.875,18.755859375 C 45.07421875,18.755859375 48.103515625,23.76171875 48.103515625,32.419921875 C 48.103515625,44.6875 39.14453125,53.259765625 26.275390625,53.259765625 C 13.27734375,53.259765625 3.845703125,43.763671875 3.845703125,30.744140625 Z M 25.587890625,19.8515625 C 20.775390625,19.8515625 17.359375,24.1484375 17.359375,30.228515625 C 17.359375,36.265625 20.861328125,40.798828125 25.587890625,40.798828125 C 30.400390625,40.798828125 33.408203125,36.888671875 33.408203125,30.615234375 C 33.408203125,24.10546875 30.29296875,19.8515625 25.587890625,19.8515625 Z"/></g></svg>
+            <span class="btn-texto">Mencionar</span>
+          </button>
+          <button class="np-bottom-btn" id="btnMusic">
+            <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>
+            <span class="btn-texto">Musica</span>
+          </button>
+          <button class="np-bottom-btn" id="btnLocal">
+            <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1.5 3.5 44.5 45.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>
+            <span class="btn-texto">Localização</span>
+          </button>
+        </div>
+      </div>
+      <div class="send-post-btn-area">
+        <button class="send-post-btn" id="sendPost">Publicar</button>
       </div>
     </div>
   </div>
-  <div class="sections-btn">
-    <div class="sections-btns-row">
-      <button class="np-bottom-btn" id="btnMention">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 46 54"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-61.037109375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="2.5" d="M 3.845703125,30.744140625 C 3.845703125,17.251953125 12.998046875,7.77734375 26.08203125,7.77734375 C 30.078125,7.77734375 33.21484375,8.056640625 34.890625,8.615234375 C 35.255859375,8.72265625 35.44921875,8.873046875 35.44921875,9.15234375 C 35.44921875,9.453125 35.27734375,9.646484375 34.955078125,9.646484375 C 34.611328125,9.646484375 34.224609375,9.474609375 33.7734375,9.388671875 C 31.96875,9.044921875 29.240234375,8.765625 26.060546875,8.765625 C 13.599609375,8.765625 4.8984375,17.83203125 4.8984375,30.765625 C 4.8984375,43.140625 13.96484375,52.25 26.25390625,52.25 C 38.478515625,52.25 47.05078125,44.0859375 47.05078125,32.44140625 C 47.05078125,24.40625 44.408203125,19.765625 39.853515625,19.765625 C 36.501953125,19.765625 34.4609375,22.322265625 34.4609375,26.46875 L 34.4609375,41.20703125 C 34.4609375,41.55078125 34.24609375,41.787109375 33.923828125,41.787109375 C 33.623046875,41.787109375 33.408203125,41.55078125 33.408203125,41.20703125 L 33.408203125,36.1796875 L 33.30078125,36.1796875 C 32.3125,39.6171875 29.326171875,41.787109375 25.609375,41.787109375 C 20.044921875,41.787109375 16.263671875,37.103515625 16.263671875,30.228515625 C 16.263671875,23.4609375 20.044921875,18.841796875 25.609375,18.841796875 C 29.34765625,18.841796875 31.92578125,20.861328125 33.30078125,24.771484375 L 33.408203125,24.771484375 C 33.9453125,20.990234375 36.3515625,18.755859375 39.875,18.755859375 C 45.07421875,18.755859375 48.103515625,23.76171875 48.103515625,32.419921875 C 48.103515625,44.6875 39.14453125,53.259765625 26.275390625,53.259765625 C 13.27734375,53.259765625 3.845703125,43.763671875 3.845703125,30.744140625 Z M 25.587890625,19.8515625 C 20.775390625,19.8515625 17.359375,24.1484375 17.359375,30.228515625 C 17.359375,36.265625 20.861328125,40.798828125 25.587890625,40.798828125 C 30.400390625,40.798828125 33.408203125,36.888671875 33.408203125,30.615234375 C 33.408203125,24.10546875 30.29296875,19.8515625 25.587890625,19.8515625 Z"/></g></svg>
-        <span class="btn-texto">Mencionar</span>
-      </button>
-      <button class="np-bottom-btn" id="btnMusic">
-        <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>
-        <span class="btn-texto">Musica</span>
-      </button>
-      <button class="np-bottom-btn" id="btnLocal">
-        <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1.5 3.5 44.5 45.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>
-        <span class="btn-texto">Localização</span>
-      </button>
+  <div class="create-area" id="createEventArea">
+    <div class="event-disabled-overlay">
+      <div class="event-disabled-title">Indisponivel no momento</div>
+      <div class="event-disabled-sub">Os eventos estão temporariamente Indisponiveis.</div>
     </div>
-    <button class="send-post-btn" id="sendPost"><p>Publicar</p></button>
+    <div class="event-banner" id="eventBanner">
+      <div class="event-banner-icon">Banner</div>
+    </div>
+    <input type="file" id="eventBannerInput" accept="image/*" hidden />
+    <div class="event-row">
+      <div class="event-item">
+        <div class="event-create-label">Titulo do evento</div>
+        <textarea class="event-create-input" name="" id="eventTitleInput" placeholder="Escolha um nome para o evento"rows="1"></textarea>
+      </div>
+      <div class="event-item">
+        <div class="event-create-label">Descrição</div>
+        <textarea class="event-create-input" name="" id="eventDescriptionInput" placeholder="Descreva seu evento"rows="1"></textarea>
+      </div>
+      <div class="event-item">
+        <div class="event-create-label">Localização</div>
+        <textarea class="event-create-input" name="" id="eventLocationInput" placeholder="Onde seu evento vai ser?"rows="1" ></textarea>
+      </div>
+      <div class="event-item">
+        <div class="event-create-label">Data</div>
+        <input type="datetime-local" id="eventDateInput">
+      </div>
+    </div>
+    <div class="sections-btn">
+      <div class="sections-btns-row">
+        <div class="event-create-alert">Ao criar um evento ele ficara publico para todos os seus amigos.</div>
+      </div>
+      <div class="send-post-btn-area">
+        <button class="send-post-btn" id="sendEvent">Publicar</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!--<div class="bottom-menu-area">
+<div class="bottom-menu-area">
   <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
   <div class="bottom-menu" id="bottomMenu">
     <div class="bottom-menu-title">Mencionar</div>
     <div class="bottom-menu-row">
       <div class="bottom-menu-search-area">
-        <bottom class="menu-search-input">
+        <div class="menu-search-input">
           <input id="searchUserMention" type="text" placeholder="Procurar...">
-        </bottom>
+        </div>
       </div>
-      <div class="bottom-menu-list" id="usersMentionList"></div>
+      <div class="bottom-menu-list" id="usersMentionList">
+        <div class="list-row">
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+          <div class="mention-item">
+            <div class="mention-pfp">
+              <img src="./public/img/default.jpg">
+            </div>
+            <div class="mention-name">Maximus Fortes</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="bottom-menu-btns-area">
       <button class="bottom-btn cancel">Cancelar</button>
@@ -132,14 +230,14 @@
   <div class="bottom-menu" id="bottomMenu">
     <div class="bottom-menu-title">Localização</div>
     <div class="bottom-menu-content">
-      <textarea name="location" id="locationInput" placeholder="Localização..."></textarea>
+      <textarea name="location" id="locationInput" placeholder="Adicione uma localização..."></textarea>
     </div>
     <div class="bottom-menu-btns-area">
       <button class="bottom-btn cancel">Cancelar</button>
       <button class="bottom-btn">Concluir</button>
     </div>
   </div>
-</div>-->
+</div>
 
 
 <!--
@@ -281,6 +379,16 @@
           <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"></path></svg>
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="bottom-menu-area" id="likesMenuArea">
+  <div class="bottom-menu-overlay" id="likesMenuOverlay"></div>
+  <div class="bottom-menu" id="likesMenu">
+    <div class="bottom-menu-title">Curtido por</div>
+    <div class="bottom-menu-list" id="likesList">
     </div>
   </div>
 </div>
@@ -466,6 +574,41 @@
               </div>
               <div class="post-graph-item comment-preview">
                 <div class="post-graph-comment"></div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- <div class="post-card-new">
+          <div class="post-header-new">
+            <div class="post-pfp-area post-owner-link">
+              <div class="post-pfp">
+                <img src="https://i.ibb.co/CsTgTdgZ/IMG-2944.jpg">
+              </div>
+            </div>
+            <div class="post-header-infos">
+              <div class="post-author-name-area"><span class="post-author-name">Maximus Fortes</span> criou um evento</div>
+              <div class="post-date-new">Há 17 minutos</div>
+            </div>
+            <div class="post-more-actions">
+              <button class="post-more" id="openPostMore">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="7" width="20" height="2.5" rx="1.25"></rect><rect x="2" y="15" width="15" height="2.5" rx="1.25"></rect></svg>
+              </button>
+            </div>
+          </div>
+          <div class="event-card-area">
+            <div class="event-card">
+              <div class="event-card-top">
+                <div class="event-card-icon-area">
+                  <svg width="24px" height="24px" viewBox="0 0 52.958984375 44.236328125"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-44.236328125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1" d="M11,3.330078125L41.958984375,3.330078125C45.568359375,3.330078125 47.48046875,5.28515625 47.48046875,8.8515625L47.48046875,35.384765625C47.48046875,38.951171875 45.568359375,40.90625 41.958984375,40.90625L11,40.90625C7.390625,40.90625 5.478515625,38.994140625 5.478515625,35.384765625L5.478515625,8.8515625C5.478515625,5.2421875 7.390625,3.330078125 11,3.330078125ZM11.064453125,4.3828125C8.078125,4.3828125 6.53125,5.9296875 6.53125,8.89453125L6.53125,27.349609375C6.53125,30.3359375 8.078125,31.8828125 11.064453125,31.8828125L41.89453125,31.8828125C44.7734375,31.8828125 46.427734375,30.3359375 46.427734375,27.349609375L46.427734375,8.89453125C46.427734375,5.9296875 44.7734375,4.3828125 41.89453125,4.3828125ZM22.064453125,24.427734375L23.310546875,24.427734375C23.826171875,24.427734375 23.890625,24.470703125 23.890625,24.96484375L23.890625,26.232421875C23.890625,26.705078125 23.826171875,26.76953125 23.310546875,26.76953125L22.064453125,26.76953125C21.548828125,26.76953125 21.484375,26.705078125 21.484375,26.232421875L21.484375,24.96484375C21.484375,24.470703125 21.548828125,24.427734375 22.064453125,24.427734375ZM29.626953125,24.427734375L30.89453125,24.427734375C31.41015625,24.427734375 31.453125,24.470703125 31.453125,24.96484375L31.453125,26.232421875C31.453125,26.705078125 31.41015625,26.76953125 30.89453125,26.76953125L29.626953125,26.76953125C29.111328125,26.76953125 29.068359375,26.705078125 29.068359375,26.232421875L29.068359375,24.96484375C29.068359375,24.470703125 29.111328125,24.427734375 29.626953125,24.427734375ZM37.2109375,24.427734375L38.478515625,24.427734375C38.994140625,24.427734375 39.037109375,24.470703125 39.037109375,24.96484375L39.037109375,26.232421875C39.037109375,26.705078125 38.994140625,26.76953125 38.478515625,26.76953125L37.2109375,26.76953125C36.6953125,26.76953125 36.65234375,26.705078125 36.65234375,26.232421875L36.65234375,24.96484375C36.65234375,24.470703125 36.6953125,24.427734375 37.2109375,24.427734375ZM14.48046875,16.951171875L15.748046875,16.951171875C16.263671875,16.951171875 16.306640625,17.015625 16.306640625,17.48828125L16.306640625,18.755859375C16.306640625,19.25 16.263671875,19.29296875 15.748046875,19.29296875L14.48046875,19.29296875C13.96484375,19.29296875 13.921875,19.25 13.921875,18.755859375L13.921875,17.48828125C13.921875,17.015625 13.96484375,16.951171875 14.48046875,16.951171875ZM22.064453125,16.951171875L23.310546875,16.951171875C23.826171875,16.951171875 23.890625,17.015625 23.890625,17.48828125L23.890625,18.755859375C23.890625,19.25 23.826171875,19.29296875 23.310546875,19.29296875L22.064453125,19.29296875C21.548828125,19.29296875 21.484375,19.25 21.484375,18.755859375L21.484375,17.48828125C21.484375,17.015625 21.548828125,16.951171875 22.064453125,16.951171875ZM29.626953125,16.951171875L30.89453125,16.951171875C31.41015625,16.951171875 31.453125,17.015625 31.453125,17.48828125L31.453125,18.755859375C31.453125,19.25 31.41015625,19.29296875 30.89453125,19.29296875L29.626953125,19.29296875C29.111328125,19.29296875 29.068359375,19.25 29.068359375,18.755859375L29.068359375,17.48828125C29.068359375,17.015625 29.111328125,16.951171875 29.626953125,16.951171875ZM37.2109375,16.951171875L38.478515625,16.951171875C38.994140625,16.951171875 39.037109375,17.015625 39.037109375,17.48828125L39.037109375,18.755859375C39.037109375,19.25 38.994140625,19.29296875 38.478515625,19.29296875L37.2109375,19.29296875C36.6953125,19.29296875 36.65234375,19.25 36.65234375,18.755859375L36.65234375,17.48828125C36.65234375,17.015625 36.6953125,16.951171875 37.2109375,16.951171875ZM14.48046875,9.49609375L15.748046875,9.49609375C16.263671875,9.49609375 16.306640625,9.5390625 16.306640625,10.033203125L16.306640625,11.30078125C16.306640625,11.7734375 16.263671875,11.837890625 15.748046875,11.837890625L14.48046875,11.837890625C13.96484375,11.837890625 13.921875,11.7734375 13.921875,11.30078125L13.921875,10.033203125C13.921875,9.5390625 13.96484375,9.49609375 14.48046875,9.49609375ZM22.064453125,9.49609375L23.310546875,9.49609375C23.826171875,9.49609375 23.890625,9.5390625 23.890625,10.033203125L23.890625,11.30078125C23.890625,11.7734375 23.826171875,11.837890625 23.310546875,11.837890625L22.064453125,11.837890625C21.548828125,11.837890625 21.484375,11.7734375 21.484375,11.30078125L21.484375,10.033203125C21.484375,9.5390625 21.548828125,9.49609375 22.064453125,9.49609375ZM29.626953125,9.49609375L30.89453125,9.49609375C31.41015625,9.49609375 31.453125,9.5390625 31.453125,10.033203125L31.453125,11.30078125C31.453125,11.7734375 31.41015625,11.837890625 30.89453125,11.837890625L29.626953125,11.837890625C29.111328125,11.837890625 29.068359375,11.7734375 29.068359375,11.30078125L29.068359375,10.033203125C29.068359375,9.5390625 29.111328125,9.49609375 29.626953125,9.49609375Z"/></g></svg>
+                </div>
+                <div class="event-card-info">
+                  <div class="event-card-label">Evento</div>
+                  <div class="event-card-title">Aniversario do Maximus</div>
+                </div>
+              </div>
+              <div class="event-card-bottom">
+                <div class="event-card-graph"><span>Maximus Fortes</span>, <span>Anastasia Fortes</span> e <span>outras 7</span> pessoas vão </div>
               </div>
             </div>
           </div>
