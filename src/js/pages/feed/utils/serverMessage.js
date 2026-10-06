@@ -74,7 +74,7 @@ onAuthStateChanged(auth, async (user) => {
         `
         : "";
 
-    document.getElementById("feed").insertAdjacentHTML(
+    document.getElementById("server-messages").insertAdjacentHTML(
         "afterbegin",
         `
             <div class="serverMessageArea">
