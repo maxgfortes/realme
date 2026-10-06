@@ -1,5 +1,5 @@
 import { clearInputs } from './postCreation.js';
-import { clearEventInputs } from '../eventCreation/eventCreation.js';
+// import { clearEventInputs } from '../eventCreation/eventCreation.js';
 
 
 const openBtn = document.getElementById('openPostLayerNav');
