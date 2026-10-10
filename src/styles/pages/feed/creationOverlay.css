@@ -1,6 +1,6 @@
 /*----------- creation Overlay --------------*/
 .post-layer {
-  position: absolute;
+  position: fixed;
   background-color: var(--bg-np);
   width: 100vw;
   display: flex;

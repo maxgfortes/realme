@@ -30,7 +30,6 @@
   height: 42px;
   width: 42px;
   text-decoration: none;
-  position: relative;
 }
 
 .navbar-bottom-area svg {
@@ -75,27 +74,8 @@
   transition: width 0.3s ease;
 }
 
-/*@media (min-width: 800px) {
+@media (min-width: 800px) {
   .navbar-bottom {
     display: none;
   }
-}*/
-
-.navbar-bottom-area a.direct-dot::after {
-  content: "";
-  position: absolute;
-  bottom: 8px;
-  right: 0px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: red;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s;
-  border: 3px solid var(--bg-primary);
-}
-
-html.has-unread-dm .navbar-bottom-area a::after {
-  opacity: 1;
 }

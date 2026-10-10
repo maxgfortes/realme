@@ -6,13 +6,9 @@
     display: none;
 }
 
-.desktop-message {
-    display: none;
-}
-
 @media (min-width: 800px) {
 
-    /* .nav-pc {
+    .nav-pc {
         position: fixed;
         display: flex;
         top: 0;
@@ -125,43 +121,6 @@
         width: 100%;
         height: 100%;
         display: flex;
-    } */
-
-    .page-view {
-        width: 100%;
-        height: 100%;
-        display: flex;
-    }
-
-    .page-area {
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .desktop-message {
-        width: 100%;
-        height: 100vh;
-        background: var(--bg-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 20px;
-        border-left: 1px solid #272727;
-    }
-
-    .desktop-msg-logo-area {
-        font-size: 42px;
-        font-weight: bold;
-        padding: 6px;
-        font-family: Arial, "Helvetica Neue", Helvetica, Arial;
-        letter-spacing: -0.01em;
-    }
-
-    .desktop-msg-body {
-        max-width: 480px;
-        text-align: center;
-        color: #999;
     }
 
 }

@@ -613,7 +613,7 @@ body {
   display: flex;
   align-items: center;
   gap: .4rem;
-  padding: 20px 22px;
+  padding: .45rem .85rem;
   border: none;
   height: 100%;
   background: #e53e3e;
@@ -623,13 +623,6 @@ body {
   cursor: pointer;
   letter-spacing: .02em;
 }
-
-.act-delete-btn svg {
-  width: 34px;
-  height: 34px;
-  stroke: #fff;
-}
-
 .act-delete-btn:active {
   opacity: .8;
 }

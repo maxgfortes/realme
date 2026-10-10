@@ -54,7 +54,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
 .navbar-top svg {
@@ -64,7 +63,6 @@ body {
 }
 
 .top-btn2{
-  position: relative;
   background: transparent;
   border: none;
   height: 100%;
@@ -461,23 +459,3 @@ body {
 
 #ptrHook[data-estado="action"] .ptr-seta { display: none; }
 #ptrHook[data-estado="action"] .ptr-gif { display: block; }
-
-
-
-.top-btn2::after {
-    content: "";
-    position: absolute;
-    top: 14px;
-    right: 10px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 3px solid var(--bg-primary);
-    background: red;
-    opacity: 0;pointer-events: none;
-    transition: all 0.3s;
-}
-
-html.has-unread-notif .top-btn2::after {
-    opacity: 1;
-}
