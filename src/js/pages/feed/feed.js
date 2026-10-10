@@ -1,6 +1,9 @@
 import "/src/shared/nav-pic.js";
 import "/src/js/pages/feed/utils/greeting.js";
 // import "/src/js/pages/feed/loading-feed.js";
+import"/src/shared/pullRefreshPage.js";
+import"/src/shared/directDot.js";
+import"/src/shared/ntDot.js";
 
 
 // post creation

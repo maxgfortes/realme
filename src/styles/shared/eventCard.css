@@ -4,6 +4,10 @@
   width: 40px;
 }
 
+.event-card-icon-area img {
+  height: 42px;
+}
+
 .event-card-area {
   padding: 0 10px;
   padding-bottom: 20px;
