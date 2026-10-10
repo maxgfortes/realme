@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="../src/styles/shared/base.css">
   <link rel="stylesheet" href="../src/styles/shared/root.css">
   <link rel="stylesheet" href="../src/styles/shared/navbar-bottom.css">
+  <link rel="stylesheet" href="../src/styles/shared/postCard.css">
+  <link rel="stylesheet" href="../src/styles/shared/comments.css">
   <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
   <link rel="stylesheet" href="../src/styles/menu-bottom.css">
   <link rel="icon" href="../public/img/icon.png" type="image/png">
@@ -92,6 +94,7 @@
                 <span>Historico de atualizações</span>
             </a>
         </div>
+        
 
         <div class="section-title">Entrar</div>
         <div class="menu-conjunt">
@@ -587,6 +590,56 @@
       <!-- Links -->
       <div class="profile-tab">
         <div id="linksTab"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="timeline" class="timeline">
+  <div class="timeline-header">
+    <div class="header-block">
+      <button id="timelineBack">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+    </div>
+    <div class="header-block">
+      <div class="timeline-title">
+        <span class="timeline-label">Posts</span>
+        <h2 id="timelineName" class="timeline-name"></h2>
+      </div>
+    </div>
+    <div class="header-block"></div>
+  </div>
+  <div class="timeline-body">
+      <div id="timelineRow" class="timeline-row"></div>
+  </div>
+</div>
+
+<div class="bottom-menu-area" id="likesMenuArea">
+  <div class="bottom-menu-overlay" id="likesMenuOverlay"></div>
+  <div class="bottom-menu" id="likesMenu">
+    <div class="bottom-menu-title">Curtido por</div>
+    <div class="bottom-menu-list" id="likesList">
+    </div>
+  </div>
+</div>
+
+<div class="comments-area" id="commentsArea">
+  <div class="comments-overlay" id="commentsOverlay"></div>
+  <div class="comments-container" id="commentsContainer">
+    <div class="comments-header"></div>
+    <div class="comments-row-area">
+      <div class="comments-row" id="commentsRow"></div>
+    </div>
+    <div class="comment-write-area">
+      <div class="comment-input-area" id="commentInputArea">
+        <button class="send-img-comment" id="sendImgBtn">
+          <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Adicionar foto ou vídeo</title><path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fill-rule="evenodd"></path><path d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </button>
+        <textarea class="comment-input" name="comment-input" id="commentInput" placeholder="Comentar..."></textarea>
+        <button class="send-comment" id="sendCommentBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"></path></svg>
+        </button>
       </div>
     </div>
   </div>
