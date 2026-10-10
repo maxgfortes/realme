@@ -31,21 +31,32 @@ import {
 import { enableSwipe } from "./swipe.js";
 
 
-const notificationsList =
-    document.querySelector("#notifications-list");
+const notificationsList = document.querySelector("#notifications-list");
 
 
-const defaultAvatar =
-    "../public/img/default.jpg";
-
+const defaultAvatar = "../public/img/default.jpg";
 
 const posts = {};
 
+const pageSize = 50;
 
-const fullPageSize = 50;
+const maxAgeDays = 30;
 
 
 let unsubscribeNotifications = null;
+
+let currentLimit = pageSize;
+
+let hasMore = false;
+
+let isLoadingMore = false;
+
+let subscriptionToken = 0;
+
+let sentinelObserver = null;
+
+
+const unreadIds = new Set();
 
 
 function renderEmpty() {
@@ -110,6 +121,13 @@ function createNotification(
     item.classList.add(
         "notification-item"
     );
+
+
+    if (unreadIds.has(notification.id)) {
+        item.classList.add(
+            "unread"
+        );
+    }
 
 
     item.dataset.notificationId =
@@ -322,7 +340,7 @@ function saveNotificationsCache(uid, resolvedList) {
         );
 
     } catch (error) {
-        console.log("notifications.js: não consegui salvar o cache de notificações.", error);
+        console.log("notifications.js: não foi possivel salvar o cache.", error);
     }
 }
 
@@ -354,7 +372,7 @@ function loadNotificationsCache(uid) {
         });
 
     } catch (error) {
-        console.log("notifications.js: não consegui ler o cache de notificações.", error);
+        console.log("notifications.js: não foi possivel ler o cache", error);
         return null;
     }
 }
@@ -389,6 +407,9 @@ async function resolveNotification(notification) {
 
 
 function renderResolvedNotifications(resolvedList, uid) {
+
+    sentinelObserver?.disconnect();
+    sentinelObserver = null;
 
     notificationsList.innerHTML = "";
 
@@ -448,10 +469,65 @@ function renderResolvedNotifications(resolvedList, uid) {
             );
         }
     }
+
+
+    watchSentinel(uid);
+}
+
+
+function loadMore(uid) {
+
+    if (!hasMore || isLoadingMore) {
+        return;
+    }
+
+    isLoadingMore = true;
+
+    currentLimit += pageSize;
+
+    subscribeNotifications(uid);
+}
+
+
+/*
+ * Elemento invisível no fim da lista: quando aparece na tela
+ * (o usuário chegou perto do fim), carrega mais notificações.
+ * Funciona em qualquer container de scroll.
+ */
+function watchSentinel(uid) {
+
+    if (!hasMore) {
+        return;
+    }
+
+    const sentinel =
+        document.createElement("div");
+
+    sentinel.classList.add(
+        "notifications-sentinel"
+    );
+
+    sentinel.style.height = "60px";
+
+    notificationsList.appendChild(sentinel);
+
+    sentinelObserver =
+        new IntersectionObserver(function(entries) {
+
+            if (entries[0].isIntersecting) {
+                loadMore(uid);
+            }
+        });
+
+    sentinelObserver.observe(sentinel);
 }
 
 
 function loadNotifications(uid) {
+
+    currentLimit = pageSize;
+    hasMore = false;
+    isLoadingMore = false;
 
     const cached = loadNotificationsCache(uid);
 
@@ -470,7 +546,7 @@ function subscribeNotifications(uid) {
 
 
     date.setDate(
-        date.getDate() - 60
+        date.getDate() - maxAgeDays
     );
 
 
@@ -509,7 +585,7 @@ function subscribeNotifications(uid) {
                 "desc"
             ),
 
-            limit(fullPageSize)
+            limit(currentLimit)
         );
 
 
@@ -517,6 +593,9 @@ function subscribeNotifications(uid) {
         unsubscribeNotifications();
         unsubscribeNotifications = null;
     }
+
+
+    const token = ++subscriptionToken;
 
 
     unsubscribeNotifications =
@@ -546,9 +625,6 @@ function subscribeNotifications(uid) {
 
                     };
 
-                    console.log("NOTIFICAÇÃO:", notification);
-
-
                     if (
                         notification.createdAt
                     ) {
@@ -559,6 +635,8 @@ function subscribeNotifications(uid) {
 
 
                     if (!notification.read) {
+                        unreadIds.add(notification.id);
+
                         updateDoc(
                             doc(db, "notifications", notification.id),
                             { read: true }
@@ -575,9 +653,21 @@ function subscribeNotifications(uid) {
                     );
 
 
+                if (token !== subscriptionToken) {
+                    return;
+                }
+
+
+                // se veio menos que o limite, não tem mais nada pra carregar
+                hasMore = result.size >= currentLimit;
+
+                isLoadingMore = false;
+
+
                 renderResolvedNotifications(resolvedList, uid);
 
-                saveNotificationsCache(uid, resolvedList);
+                // o cache guarda só a primeira página
+                saveNotificationsCache(uid, resolvedList.slice(0, pageSize));
             }
         );
 }

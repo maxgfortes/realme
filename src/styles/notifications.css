@@ -320,6 +320,9 @@
   background: var(--bg-primary);
 }
 
+.notification-item.unread .notification-item-content {
+  background: rgb(32, 32, 34);
+}
 .notification-item-content {
   position: relative;
   z-index: 2;
