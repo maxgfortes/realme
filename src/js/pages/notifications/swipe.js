@@ -1,4 +1,4 @@
-const swipeWidth = 90;
+const swipeWidth = 75;
 
 let openedItem = null;
 

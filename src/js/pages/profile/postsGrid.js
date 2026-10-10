@@ -1,17 +1,19 @@
 import { db } from "./firebase.js";
 import { getDocs, collection, query, where, orderBy, limit, startAfter } from "./firestore.js";
-import { openProfileTimeline } from "../../../components/posts.js";
+import { openProfileTimeline, closeProfileTimeline } from "./timeline.js";
 import { $, select, cloneTemplate } from "./dom.js";
 import { state } from "./state.js";
 import { POSTS_PER_PAGE } from "./constants.js";
 import { createPostPreview } from "./postPreview.js";
 
 let gridUserId = null;
+let gridSession = 0;
 let lastSnapshot = null;
-let loading = false;
+let pagePromise = null;
 let finished = false;
 let observer = null;
 let loadedPosts = [];
+let timelineSent = 0; // quantos posts de loadedPosts a timeline já recebeu
 
 function buildQuery() {
   const constraints = [
@@ -41,11 +43,13 @@ function watchSentinel() {
   observer.observe(sentinel);
 }
 
-async function loadNextPage() {
-  if (loading || finished) return [];
-  loading = true;
-
+async function fetchNextPage() {
+  const session = gridSession;
   const result = await getDocs(buildQuery());
+
+  // o perfil mudou enquanto buscava
+  if (session !== gridSession) return [];
+
   const newPosts = result.docs.map(postDoc => ({
     id: postDoc.id,
     userid: gridUserId,
@@ -57,7 +61,6 @@ async function loadNextPage() {
 
   lastSnapshot = result.docs.at(-1) ?? lastSnapshot;
   finished = result.size < POSTS_PER_PAGE;
-  loading = false;
 
   if (!loadedPosts.length) renderEmptyState();
   if (!finished) watchSentinel();
@@ -65,13 +68,33 @@ async function loadNextPage() {
   return newPosts;
 }
 
+// quem chamar durante uma busca em andamento recebe a mesma busca
+function loadNextPage() {
+  if (finished) return Promise.resolve([]);
+
+  pagePromise ??= fetchNextPage().finally(() => {
+    pagePromise = null;
+  });
+
+  return pagePromise;
+}
+
+// entrega à timeline tudo que ela ainda não recebeu (inclusive o que o grid
+// carregou sozinho enquanto a timeline estava aberta)
 async function loadMoreForTimeline() {
-  const newPosts = await loadNextPage();
-  return newPosts.length ? newPosts : null;
+  await loadNextPage();
+
+  const fresh = loadedPosts.slice(timelineSent);
+  timelineSent = loadedPosts.length;
+
+  return fresh.length ? fresh : null;
 }
 
 function openTimeline(postId) {
   const startIndex = loadedPosts.findIndex(post => post.id === postId);
+
+  timelineSent = loadedPosts.length;
+
   openProfileTimeline([...loadedPosts], startIndex, state.profileUsername, loadMoreForTimeline);
 }
 
@@ -87,11 +110,15 @@ function startObserver() {
 }
 
 export function loadPostsGrid(uid) {
+  closeProfileTimeline();
+
   gridUserId = uid;
+  gridSession++;
   lastSnapshot = null;
-  loading = false;
+  pagePromise = null;
   finished = false;
   loadedPosts = [];
+  timelineSent = 0;
 
   $("muralPosts").replaceChildren();
   startObserver();

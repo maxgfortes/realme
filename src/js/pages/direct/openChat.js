@@ -12,6 +12,8 @@ const listPage = document.getElementById("listPage");
 const chatheaderPfp = document.getElementById("dmChatUserImg");
 const chatHeaderName = document.getElementById("dmChatUserName");
 
+const chatFromUrl = new URLSearchParams(location.search).get("chatid");
+
 export function openChat(user) {
     stopTyping();
     stopLoadingTyping();
@@ -48,6 +50,23 @@ export function openChat(user) {
     setupTyping(chatId);
     loadTyping(chatId, otherUserId);
 }
+
+function openChatFromUrl() {
+    if (!chatFromUrl) return;
+
+    const user = document.querySelector(
+        `[data-chat-id="${CSS.escape(chatFromUrl)}"]`
+    );
+
+    if (user) {
+        openChat(user);
+        return;
+    }
+
+    setTimeout(openChatFromUrl, 100);
+}
+
+openChatFromUrl();
 
 function closeChat() {
     stopTyping();
