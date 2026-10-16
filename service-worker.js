@@ -1,5 +1,5 @@
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
 firebase.initializeApp({
   apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
@@ -10,29 +10,50 @@ firebase.initializeApp({
   appId: "1:306331636603:web:c0ae0bd22501803995e3de"
 });
 
-
 const messaging = firebase.messaging();
 
+const DEFAULT_ICON = "/public/img/icon.png";
+
 messaging.onBackgroundMessage((payload) => {
-  const { title, body, url } = payload.data || {};
-  self.registration.showNotification(title || "RealMe", {
-    body: body || "Você tem uma nova notificação",
-    icon: "/public/img/icon.png",
-    badge: "/public/img/icon.png",
-    data: { url: url || "/feed.html" },
+  if (payload.notification) return;
+
+  const d = payload.data || {};
+
+  return self.registration.showNotification(d.title || "RealMe", {
+    body: d.body || "Você tem uma nova notificação",
+    icon: d.icon || DEFAULT_ICON,
+    badge: d.badge || DEFAULT_ICON,
+    tag: d.tag || undefined,
+    renotify: Boolean(d.tag),
+    vibrate: [100, 50, 100],
+    data: { url: d.url || "/feed.html" },
   });
 });
 
+function safeTarget(rawUrl) {
+  try {
+    const url = new URL(rawUrl || "/feed.html", self.location.origin);
+    return url.origin === self.location.origin ? url.href : `${self.location.origin}/feed.html`;
+  } catch {
+    return `${self.location.origin}/feed.html`;
+  }
+}
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const target = new URL(event.notification.data?.url || "/feed.html", self.location.origin).href;
+
+  const target = safeTarget(event.notification.data?.url);
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((wins) => {
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (wins) => {
       for (const w of wins) {
         if (w.url.startsWith(self.location.origin) && "focus" in w) {
-          w.navigate(target);
-          return w.focus();
+          try {
+            const navigated = await w.navigate(target);
+            return (navigated || w).focus();
+          } catch {
+            break;
+          }
         }
       }
       return clients.openWindow(target);
@@ -40,7 +61,7 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-const CACHE = "realme-version-1.0"
+const CACHE = "realme-version-1.0.1";
 const PRECACHE = ["/", "/feed.html", "/public/img/icon.png"];
 
 self.addEventListener("install", (event) => {
@@ -60,6 +81,11 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function cachePut(req, res) {
+  const copy = res.clone();
+  caches.open(CACHE).then((c) => c.put(req, copy));
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -70,11 +96,22 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
+          if (res.ok) cachePut(req, res);
           return res;
         })
         .catch(() => caches.match(req).then((r) => r || caches.match("/feed.html")))
+    );
+    return;
+  }
+
+  if (req.destination === "script" || req.destination === "style") {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) cachePut(req, res);
+          return res;
+        })
+        .catch(() => caches.match(req))
     );
     return;
   }
@@ -83,10 +120,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cached) => {
       const network = fetch(req)
         .then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
+          if (res.ok) cachePut(req, res);
           return res;
         })
         .catch(() => cached);

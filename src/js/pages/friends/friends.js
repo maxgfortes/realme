@@ -6,3 +6,4 @@ import "/src/shared/desktopAlert.js";
 
 import "/src/js/pages/friends/openOptions.js";
 import "/src/js/pages/friends/inputSize.js";
+import "/src/js/pages/friends/search.js";
