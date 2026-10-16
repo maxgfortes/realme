@@ -780,29 +780,33 @@ exports.sugestaoSexta = onSchedule(
 // 9. BUSCA DE PESSOAS
 //   • searchIndex/{uid}: índice mantido por triggers (só o servidor lê/escreve)
 //   • searchPeople (callable): modos "search" | "profiles" | "random"
-//   • backfillSearchIndex (callable, só admin): indexa usuários existentes
+//       search + similar:true   → "igual a mim": campos, idade e local aproximados
+//       search + filters:{...}  → busca específica: só o que foi digitado, sem idade
+//   • o índice se completa sozinho (ensureSearchIndex) e backfillSearchIndex
+//     (admin) existe para forçar
 // ============================================================
 
-// Onde cada informação mora (primeiro campo não vazio vence). Os campos são
-// procurados em TODOS os documentos de users/{uid}/user-infos e em users/{uid}.
+// Onde cada informação mora: o primeiro campo não vazio, em qualquer documento
+// de users/{uid}/user-infos (about, likes, user-media...) ou em users/{uid}.
 const SEARCH_FIELDS = {
   styles:      { keys: ["styles"],                                              weight: 1   },
   personality: { keys: ["personality"],                                         weight: 1   },
-  dreams:      { keys: ["dreams"],                                              weight: 1   },
-  music:       { keys: ["music"],                                               weight: 1   },
   characters:  { keys: ["characters"],                                          weight: 1   },
+  music:       { keys: ["music"],                                               weight: 1   },
   hobbies:     { keys: ["hobbies"],                                             weight: 1   },
   location:    { keys: ["location", "localizacao"],                             weight: 1.5 },
-  lookingFor:  { keys: ["lookingFor", "lookingfor", "buscandoPor", "buscando"], weight: 1.2 },
+  lookingFor:  { keys: ["searching"],                                           weight: 1.2 }, // "Buscando por" (user-infos/about)
 };
 
-const AGE_WEIGHT          = 0.8;
-const AGE_TOLERANCE_YEARS = 8;   // diferença de idade que zera a nota de idade
-const SEARCH_FIRST_PAGE   = 50;  // cold start
-const SEARCH_NEXT_PAGE    = 20;  // páginas seguintes
-const SEARCH_QUEUE_MAX    = 300; // fila ranqueada devolvida ao cliente
-const SEARCH_POOL_QUERY   = 250; // candidatos por query
-const SEARCH_MAX_STEMS    = 60;  // 2 queries array-contains-any (30 cada)
+const SEARCH_SCHEMA         = 3;    // sobe quando o formato do índice muda (3: campo searching)
+const SEARCH_PAGE           = 24;   // pessoas por pedido
+const SEARCH_QUEUE_MAX      = 300;  // fila ranqueada devolvida ao cliente
+const SEARCH_POOL_PER_QUERY = 120;  // candidatos por prefixo de palavra
+const SEARCH_MAX_PREFIXES   = 16;
+const SEARCH_MAX_TOKENS     = 15;   // palavras por campo buscado
+const SEARCH_HEAL_BATCH     = 60;   // usuários indexados por busca, se faltar índice
+const AGE_WEIGHT            = 0.8;
+const AGE_TOLERANCE_YEARS   = 8;    // diferença de idade que zera a nota de idade
 
 const SEARCH_STOPWORDS = new Set([
   "para", "com", "que", "uma", "uns", "umas", "das", "dos", "nas", "nos", "por",
@@ -817,7 +821,7 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
-// stemming simples: tira "s" final e corta em 6 letras (gato/gatos, jogar/jogando)
+// stemming simples: tira "s" final e corta em 6 letras (gato/gatos)
 function stemToken(token) {
   let t = token;
   if (t.length > 3 && t.endsWith("s")) t = t.slice(0, -1);
@@ -859,7 +863,8 @@ function ageFromMillis(ms) {
   return age >= 0 && age < 130 ? age : null;
 }
 
-async function buildSearchIndexDoc(uid) {
+// ── Leitura do perfil (vale para o índice e para o "igual a mim") ──
+async function readProfile(uid) {
   const [userSnap, infosSnap] = await Promise.all([
     db.doc(`users/${uid}`).get(),
     db.collection(`users/${uid}/user-infos`).get(),
@@ -874,32 +879,49 @@ async function buildSearchIndexDoc(uid) {
     }
   });
 
+  const texts = {};
+  for (const [field, cfg] of Object.entries(SEARCH_FIELDS)) {
+    texts[field] = pickField(flat, userData, cfg.keys);
+  }
+  texts.overview = pickField(flat, userData, ["overview"]);
+
+  return { userData, flat, texts };
+}
+
+const safeUrl = (v) => (typeof v === "string" && v && v.length < 2000 ? v : "");
+
+async function buildSearchIndexDoc(uid) {
+  const profile = await readProfile(uid);
+  if (!profile) return null;
+
+  const { userData, flat, texts } = profile;
   const fields = {};
   const all = new Set();
-  let location = "";
 
-  for (const [field, cfg] of Object.entries(SEARCH_FIELDS)) {
-    const text = pickField(flat, userData, cfg.keys);
-    if (field === "location") location = text.slice(0, 80);
-    const tokens = tokenize(text);
+  for (const field of Object.keys(SEARCH_FIELDS)) {
+    const tokens = tokenize(texts[field]);
     if (tokens.length) {
       fields[field] = tokens.slice(0, 40);
       tokens.forEach(t => all.add(t));
     }
   }
+  // "overview" não é um filtro, mas ajuda a achar palavras em outro campo
+  tokenize(texts.overview).slice(0, 60).forEach(t => all.add(t));
 
-  const birthMs = userData.nascimento?.toMillis?.() ?? null;
-  const photo = [flat.userphoto, userData.userphoto]
-    .find(p => typeof p === "string" && p && p.length < 2000) || "";
+  const tokens   = [...all].slice(0, 150);
+  const birthMs  = userData.nascimento?.toMillis?.() ?? null;
 
   return {
+    schema:    SEARCH_SCHEMA,
     uid,
     username:  userData.username || "",
     name:      buildFullName(userData, userData.username || ""),
-    photo,
-    location,
+    photo:     safeUrl(flat.userphoto)   || safeUrl(userData.userphoto),
+    banner:    safeUrl(flat.headerphoto) || safeUrl(userData.headerphoto),
+    location:  texts.location.slice(0, 80),
     fields,
-    tokens:    [...all].slice(0, 150),
+    tokens,
+    prefixes:  [...new Set(tokens.map(t => t.slice(0, 4)))], // acha palavras parecidas
     birthMs,
     birthYear: birthMs != null ? new Date(birthMs).getUTCFullYear() : null,
     updatedAt: FieldValue.serverTimestamp(),
@@ -918,7 +940,7 @@ async function rebuildSearchIndex(uid) {
 
 const SEARCH_USER_KEYS = [
   "username", "name", "surname", "displayName", "displayname",
-  "nascimento", "userphoto", "location", "localizacao",
+  "nascimento", "userphoto", "headerphoto", "location", "localizacao",
 ];
 
 exports.onSearchIndexUserWritten = onDocumentWritten(
@@ -950,6 +972,45 @@ exports.onSearchIndexInfoWritten = onDocumentWritten(
   }
 );
 
+async function inChunks(items, size, fn) {
+  for (let i = 0; i < items.length; i += size) {
+    await Promise.all(items.slice(i, i + size).map(fn));
+  }
+}
+
+// Completa o índice sozinho: se há usuários sem índice (ou em formato antigo),
+// indexa um lote a cada busca até fechar a conta. Sem isso, só apareceriam
+// usuários cujo perfil mudou depois do deploy.
+async function ensureSearchIndex() {
+  const [users, indexed] = await Promise.all([
+    db.collection("users").count().get(),
+    db.collection("searchIndex").where("schema", "==", SEARCH_SCHEMA).count().get(),
+  ]);
+
+  if (users.data().count - indexed.data().count <= 0) return;
+
+  const metaRef = db.doc("searchMeta/backfill");
+  const meta    = await metaRef.get();
+  const cursor  = meta.exists ? meta.data().cursor || "" : "";
+
+  let q = db.collection("users").orderBy(FieldPath.documentId()).select().limit(SEARCH_HEAL_BATCH);
+  if (cursor) q = q.startAfter(cursor);
+
+  const snap = await q.get();
+  const ids  = snap.docs.map(d => d.id);
+
+  if (ids.length) {
+    const current = await db.getAll(...ids.map(id => db.doc(`searchIndex/${id}`)));
+    const stale   = ids.filter((id, i) => !current[i].exists || current[i].data().schema !== SEARCH_SCHEMA);
+    await inChunks(stale, 20, id => rebuildSearchIndex(id).catch(err => console.error("[heal]", id, err)));
+  }
+
+  await metaRef.set({
+    cursor:    ids.length === SEARCH_HEAL_BATCH ? ids[ids.length - 1] : "",
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+}
+
 // ── Helpers da busca ─────────────────────────────────────────
 
 // amigos + pedidos pendentes (nos dois sentidos) + o próprio usuário
@@ -967,11 +1028,12 @@ async function getExcludedUids(uid) {
   return excluded;
 }
 
+// texto livre → { campo: [palavras] } (só campos preenchidos)
 function sanitizeFilters(raw) {
   const out = {};
   if (!raw || typeof raw !== "object") return out;
   for (const field of Object.keys(SEARCH_FIELDS)) {
-    const tokens = tokenize(fieldText(raw[field]).slice(0, 200));
+    const tokens = tokenize(fieldText(raw[field]).slice(0, 300)).slice(0, SEARCH_MAX_TOKENS);
     if (tokens.length) out[field] = tokens;
   }
   return out;
@@ -982,8 +1044,45 @@ function sanitizeAge(value) {
   return Number.isFinite(n) && n >= 13 && n <= 100 ? n : null;
 }
 
-// Nota 0–100. Cada campo buscado vale pelo peso; achar a palavra no campo
-// certo vale 100%, em outro campo do perfil vale 40%. Idade é aproximada.
+// apenas uma troca, inserção ou remoção de letra
+function withinOneEdit(a, b) {
+  if (a === b) return true;
+  const la = a.length;
+  const lb = b.length;
+  if (Math.abs(la - lb) > 1) return false;
+
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+
+  while (i < la && j < lb) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++edits > 1) return false;
+    if (la > lb) i++;
+    else if (lb > la) j++;
+    else { i++; j++; }
+  }
+  return edits + (la - i) + (lb - j) <= 1;
+}
+
+// 1 = igual · 0.85 = erro de digitação · 0.75 = mesmo começo (jogar/jogando) · 0
+function tokenSimilarity(a, b) {
+  if (a === b) return 1;
+  const min = Math.min(a.length, b.length);
+  if (min < 4) return 0;
+
+  if (min >= 5 && Math.abs(a.length - b.length) <= 1 && withinOneEdit(a, b)) return 0.85;
+
+  let common = 0;
+  while (common < min && a[common] === b[common]) common++;
+  if (common >= 4 && common >= min * 0.6) return 0.75;
+
+  return 0;
+}
+
+// Nota 0–100. Cada palavra buscada vale pela melhor palavra parecida no mesmo
+// campo do perfil (achar em outro campo vale 40%). Campo vazio no perfil do
+// candidato dá 0 naquele campo, mas não tira os pontos dos outros.
 function scoreCandidate(index, filters, age) {
   const own    = index.fields || {};
   const allSet = new Set(index.tokens || []);
@@ -991,16 +1090,28 @@ function scoreCandidate(index, filters, age) {
   let total = 0;
 
   for (const [field, tokens] of Object.entries(filters)) {
-    const weight   = SEARCH_FIELDS[field].weight;
-    const fieldSet = new Set(own[field] || []);
-    let same = 0;
-    let any  = 0;
+    const ownTokens = own[field] || [];
+    const ownSet    = new Set(ownTokens);
+    let fieldSum = 0;
+
     for (const t of tokens) {
-      if (fieldSet.has(t)) same++;
-      if (allSet.has(t))   any++;
+      let best = ownSet.has(t) ? 1 : 0;
+
+      if (best < 1) {
+        for (const o of ownTokens) {
+          const s = tokenSimilarity(t, o);
+          if (s > best) best = s;
+          if (best >= 0.85) break;
+        }
+      }
+      if (allSet.has(t)) best = Math.max(best, 0.4);
+
+      fieldSum += best;
     }
+
+    const weight = SEARCH_FIELDS[field].weight;
     total += weight;
-    sum   += weight * Math.max(same / tokens.length, 0.4 * (any / tokens.length));
+    sum   += weight * (fieldSum / tokens.length);
   }
 
   if (age != null) {
@@ -1020,32 +1131,31 @@ function toCard(index, score = null) {
     username: index.username || "",
     name:     index.name || index.username || "Usuário",
     photo:    index.photo || "",
+    banner:   index.banner || "",
     location: index.location || "",
     age:      ageFromMillis(index.birthMs),
     score:    score == null ? null : Math.round(score),
   };
 }
 
+// candidatos: quem tem palavra com o mesmo começo (4 letras) + idade próxima
 async function fetchSearchPool(filters, age) {
-  const seen  = new Set();
-  const stems = [];
+  const seen = new Set();
+  const prefixes = [];
+
   Object.entries(filters)
     .sort((a, b) => SEARCH_FIELDS[b[0]].weight - SEARCH_FIELDS[a[0]].weight)
     .forEach(([, tokens]) => tokens.forEach(t => {
-      if (!seen.has(t)) { seen.add(t); stems.push(t); }
+      const p = t.slice(0, 4);
+      if (!seen.has(p)) { seen.add(p); prefixes.push(p); }
     }));
 
-  const limited = stems.slice(0, SEARCH_MAX_STEMS);
-  const queries = [];
-
-  for (let i = 0; i < limited.length; i += 30) {
-    queries.push(
-      db.collection("searchIndex")
-        .where("tokens", "array-contains-any", limited.slice(i, i + 30))
-        .limit(SEARCH_POOL_QUERY)
-        .get()
-    );
-  }
+  const queries = prefixes.slice(0, SEARCH_MAX_PREFIXES).map(p =>
+    db.collection("searchIndex")
+      .where("prefixes", "array-contains", p)
+      .limit(SEARCH_POOL_PER_QUERY)
+      .get()
+  );
 
   if (age != null) {
     const year = new Date().getUTCFullYear() - age;
@@ -1095,17 +1205,20 @@ function sanitizeUidList(value, max) {
   return [...new Set(value.filter(u => typeof u === "string" && u && u.length <= 128))].slice(0, max);
 }
 
-const CALLABLE_CORS = IS_EMULATOR ? true : ["https://socialrealme.com"];
+const CALLABLE_CORS = IS_EMULATOR
+  ? true
+  : ["https://socialrealme.com", /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/];
 
 exports.searchPeople = onCall(
   {
     region: "us-central1",
     cors: CALLABLE_CORS,
     maxInstances: 20,
-    timeoutSeconds: 30,
+    timeoutSeconds: 60,
     memory: "512MiB",
   },
   async (request) => {
+   try {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "LOGIN_REQUIRED");
 
@@ -1129,20 +1242,44 @@ exports.searchPeople = onCall(
     const excluded = await getExcludedUids(uid);
     sanitizeUidList(data.exclude, 400).forEach(u => excluded.add(u));
 
-    // ── random: preenche o fim da lista (nota baixa) ──
+    // ── random: completa o fim da lista (nota 0) ──
     if (mode === "random") {
-      const people = await randomPeople(SEARCH_NEXT_PAGE, excluded);
+      const people = await randomPeople(SEARCH_PAGE, excluded);
       return { people: people.map(p => toCard(p, 0)) };
     }
 
     // ── search ──
-    const filters = sanitizeFilters(data.filters);
-    const age     = sanitizeAge(data.age);
+    await ensureSearchIndex().catch(err => console.warn("[ensureSearchIndex]", err.message));
 
-    // sem nenhum critério: 50 pessoas variadas
+    // Sem nada digitado, a busca é "pessoas parecidas com você".
+    let similar = data.similar === true;
+    let filters = {};
+    let age     = null;
+    let me      = null;
+
+    if (!similar) {
+      filters = sanitizeFilters(data.filters);   // específica: só o digitado, sem idade
+      if (!Object.keys(filters).length) similar = true;
+    }
+
+    if (similar) {                                // igual a mim: campos + idade + local
+      const mine = await readProfile(uid);
+      if (mine) {
+        filters = sanitizeFilters(mine.texts);
+        age     = sanitizeAge(ageFromMillis(mine.userData.nascimento?.toMillis?.()));
+
+        const fields = {};
+        for (const field of Object.keys(SEARCH_FIELDS)) {
+          if (mine.texts[field]) fields[field] = mine.texts[field];
+        }
+        me = { fields, age };
+      }
+    }
+
+    // ninguém tem nada para comparar: ordem aleatória
     if (!Object.keys(filters).length && age == null) {
-      const people = await randomPeople(SEARCH_FIRST_PAGE, excluded);
-      return { people: people.map(p => toCard(p, 0)), queue: [], matched: false };
+      const people = await randomPeople(SEARCH_PAGE, excluded);
+      return { people: people.map(p => toCard(p, 0)), queue: [], matched: false, me };
     }
 
     const pool = await fetchSearchPool(filters, age);
@@ -1155,27 +1292,35 @@ exports.searchPeople = onCall(
     }
     ranked.sort((a, b) => b.score - a.score || (a.index.uid < b.index.uid ? -1 : 1));
 
-    const first = ranked.slice(0, SEARCH_FIRST_PAGE);
+    const first = ranked.slice(0, SEARCH_PAGE);
     const queue = ranked
-      .slice(SEARCH_FIRST_PAGE, SEARCH_FIRST_PAGE + SEARCH_QUEUE_MAX)
+      .slice(SEARCH_PAGE, SEARCH_PAGE + SEARCH_QUEUE_MAX)
       .map(r => ({ uid: r.index.uid, score: Math.round(r.score) }));
 
     const people = first.map(r => toCard(r.index, r.score));
 
-    // poucos parecidos: completa os 50 com pessoas variadas (nota 0, no fim)
-    if (people.length < SEARCH_FIRST_PAGE) {
+    // poucos parecidos: completa com pessoas variadas (nota 0, no fim)
+    if (people.length < SEARCH_PAGE) {
       first.forEach(r => excluded.add(r.index.uid));
-      const extra = await randomPeople(SEARCH_FIRST_PAGE - people.length, excluded);
+      const extra = await randomPeople(SEARCH_PAGE - people.length, excluded);
       extra.forEach(p => people.push(toCard(p, 0)));
     }
 
-    return { people, queue, matched: true };
+    return { people, queue, matched: true, me };
+   } catch (err) {
+    if (err instanceof HttpsError) throw err;
+
+    // aparece em: firebase functions:log --only searchPeople
+    console.error("[searchPeople]", err);
+    throw new HttpsError("internal", "SEARCH_FAILED");
+   }
   }
 );
 
-// Indexa usuários que já existiam. Só quem tem admin/{uid}. Chame em lotes:
+// Força a indexação de todos (só quem tem admin/{uid}). Em lotes:
 //   backfillSearchIndex({ cursor: null }) → { processed, nextCursor }
-// repita com o nextCursor até ele vir null.
+// repita com o nextCursor até ele vir null. Normalmente não é preciso:
+// a busca já completa o índice sozinha.
 exports.backfillSearchIndex = onCall(
   {
     region: "us-central1",
@@ -1191,8 +1336,8 @@ exports.backfillSearchIndex = onCall(
     const adminSnap = await db.doc(`admin/${uid}`).get();
     if (!adminSnap.exists) throw new HttpsError("permission-denied", "ADMIN_ONLY");
 
-    const data   = request.data || {};
-    const batch  = Math.min(Math.max(Number(data.limit) || 300, 1), 500);
+    const data  = request.data || {};
+    const batch = Math.min(Math.max(Number(data.limit) || 300, 1), 500);
 
     let q = db.collection("users").orderBy(FieldPath.documentId()).limit(batch);
     if (typeof data.cursor === "string" && data.cursor) q = q.startAfter(data.cursor);
@@ -1200,13 +1345,9 @@ exports.backfillSearchIndex = onCall(
     const snap = await q.get();
     const ids  = snap.docs.map(d => d.id);
 
-    for (let i = 0; i < ids.length; i += 10) {
-      await Promise.all(
-        ids.slice(i, i + 10).map(id =>
-          rebuildSearchIndex(id).catch(err => console.error("[backfill]", id, err))
-        )
-      );
-    }
+    await inChunks(ids, 10, id =>
+      rebuildSearchIndex(id).catch(err => console.error("[backfill]", id, err))
+    );
 
     return {
       processed:  ids.length,

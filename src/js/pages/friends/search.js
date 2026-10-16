@@ -1,4 +1,4 @@
-import { auth, app } from "/src/config/config.js";
+import { auth, app, db } from "/src/config/config.js";
 
 import {
   onAuthStateChanged
@@ -10,18 +10,35 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
 import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
   setCurrentUserId,
   coletarFiltros,
-  coletarIdade
+  preencherFiltros
 } from "/src/js/pages/friends/filters-state.js";
 
 import {
   closeSearch
 } from "/src/js/pages/friends/filters-modal.js";
 
-const NEXT_PAGE = 20;
-const LOAD_MARGIN = "600px 0px";
-const CACHE_KEY = "friends_seen_v1";
+
+// ==============================
+// O front não categoriza nada:
+// pede o feed de busca ao servidor e renderiza na ordem em que ele manda.
+//   • cold start e "Igual a mim"  → { similar: true }
+//   • "Buscar"                    → { filters: { campo: "texto digitado" } }
+// ==============================
+
+const PAGE_SIZE = 24;     // pessoas por pedido (o servidor devolve 24 por vez)
+const LOAD_AT = 0.7;      // pede mais ao passar de 70% do scroll
+const MAX_AUTO = 6;       // pedidos seguidos sem o usuário rolar (evita laço)
+
+const CACHE_KEY = "friends_seen_v2";
 const CACHE_TTL = 6 * 60 * 60 * 1000;
 const CACHE_MAX_PEOPLE = 100;
 const CACHE_MAX_QUEUE = 150;
@@ -32,11 +49,15 @@ const functions = getFunctions(app, "us-central1");
 const searchPeople = httpsCallable(functions, "searchPeople");
 
 const listaAmigos = document.querySelector(".friends-list");
-const btnBuscar = document.querySelector(".search-btn");
 
-const sentinela = document.createElement("div");
-sentinela.className = "friends-sentinel";
-sentinela.style.cssText = "grid-column:1/-1;width:100%;height:1px;pointer-events:none;";
+// são dois botões .search-btn: "Igual a mim" (.sec) e "Buscar"
+const btnIgualAMim = document.querySelector(".search-btn.sec");
+const btnBuscar = document.querySelector(".search-btn:not(.sec)");
+
+
+// ==============================
+// ESTADO
+// ==============================
 
 const estado = {
   pessoas: [],
@@ -49,14 +70,13 @@ const estado = {
 };
 
 let usuarioRolou = false;
+let autoSeguidas = 0;
+let chaveAtual = "";
 
-document.addEventListener(
-  "scroll",
-  () => {
-    usuarioRolou = true;
-  },
-  { capture: true, passive: true }
-);
+
+// ==============================
+// CACHE (últimas pessoas vistas)
+// ==============================
 
 function lerCache() {
   try {
@@ -66,13 +86,8 @@ function lerCache() {
 
     const cache = JSON.parse(raw);
 
-    if (!cache || cache.uid !== auth.currentUser?.uid) {
-      return null;
-    }
-
-    if (Date.now() - cache.ts > CACHE_TTL) {
-      return null;
-    }
+    if (!cache || cache.uid !== auth.currentUser?.uid) return null;
+    if (Date.now() - cache.ts > CACHE_TTL) return null;
 
     return cache;
   } catch (_) {
@@ -94,26 +109,28 @@ function salvarCache(chave, pessoas, fila) {
       })
     );
   } catch (_) {
+    // storage cheio ou bloqueado: segue sem cache
   }
 }
 
-function persistirEstado(chave) {
-  salvarCache(chave, estado.pessoas, estado.fila);
+function persistirEstado() {
+  salvarCache(chaveAtual, estado.pessoas, estado.fila);
 }
 
-function montarRequisicao() {
-  const age = coletarIdade();
 
-  return {
-    filters: coletarFiltros(),
-    age: age ?? null
-  };
-}
+// ==============================
+// SERVIDOR
+// ==============================
 
 async function chamar(payload) {
   const resposta = await searchPeople(payload);
   return resposta.data || {};
 }
+
+
+// ==============================
+// RENDER
+// ==============================
 
 function esc(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, (c) => ({
@@ -126,61 +143,50 @@ function esc(valor) {
 }
 
 function fotoSegura(url) {
-  return /^(https?:\/\/|data:image\/)/i.test(url || "")
-    ? url
-    : "";
+  return /^(https?:\/\/|data:image\/)/i.test(url || "") ? url : "";
 }
 
-function cardHTML(pessoa) {
-  const nome = pessoa.name || pessoa.username || "Usuário";
-  const foto = fotoSegura(pessoa.photo);
+const IMG_BANNER_PADRAO = "../public/img/bg.jpg";
+const IMG_FOTO_PADRAO = "../public/img/default.jpg";
 
-  const meta = [
-    Number.isFinite(pessoa.age) ? `${pessoa.age} anos` : "",
-    pessoa.location || ""
-  ]
-    .filter(Boolean)
-    .join(" · ");
+function cardHTML(pessoa) {
+  const username = pessoa.username || "";
+  const nome = pessoa.name || username || "Usuário";
+  const foto = fotoSegura(pessoa.photo);
+  const banner = fotoSegura(pessoa.banner) || foto;
 
   return `
-    <div
-      class="friend-card"
+    <a
+      class="user"
+      href="profile.html?userid=${encodeURIComponent(pessoa.uid)}"
       data-uid="${esc(pessoa.uid)}"
+      data-username="${esc(username)}"
       data-score="${Number(pessoa.score) || 0}"
     >
-
-      <div class="friend-card-photo">
-        ${
-          foto
-            ? `
-              <img
-                src="${esc(foto)}"
-                alt="${esc(nome)}"
-                loading="lazy"
-                decoding="async"
-              >
-            `
-            : `
-              <div class="friend-photo-placeholder">
-                ${esc(nome.charAt(0).toUpperCase())}
-              </div>
-            `
-        }
+      <div class="card-media">
+        <img
+          src="${esc(banner || IMG_BANNER_PADRAO)}"
+          class="card-banner"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='${IMG_BANNER_PADRAO}'"
+        >
+        <img
+          src="${esc(foto || IMG_FOTO_PADRAO)}"
+          alt="${esc(nome)}"
+          class="card-image"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='${IMG_FOTO_PADRAO}'"
+        >
       </div>
-
-      <div class="friend-card-info">
-        <div class="friend-card-name">
-          ${esc(nome)}
+      <div class="user-name">
+        <div class="card-info">
+          <div class="profile-username"><p>${esc(username || nome)}</p></div>
         </div>
-
-        ${
-          meta
-            ? `<div class="friend-card-meta">${esc(meta)}</div>`
-            : ""
-        }
+        <button class="follow-btn${pessoa.sent ? " sent" : ""}" type="button"${pessoa.sent ? " disabled" : ""}>
+          ${pessoa.sent ? "Enviado" : "Adicionar"}
+        </button>
       </div>
-
-    </div>
+    </a>
   `;
 }
 
@@ -194,7 +200,6 @@ function renderizar(pessoas) {
   }
 
   listaAmigos.innerHTML = pessoas.map(cardHTML).join("");
-  listaAmigos.appendChild(sentinela);
 }
 
 function anexar(pessoas) {
@@ -202,14 +207,7 @@ function anexar(pessoas) {
 
   listaAmigos.querySelector(".empty-search")?.remove();
 
-  if (!sentinela.isConnected) {
-    listaAmigos.appendChild(sentinela);
-  }
-
-  sentinela.insertAdjacentHTML(
-    "beforebegin",
-    pessoas.map(cardHTML).join("")
-  );
+  listaAmigos.insertAdjacentHTML("beforeend", pessoas.map(cardHTML).join(""));
 }
 
 function mostrarLoadingLeve() {
@@ -226,14 +224,65 @@ function mostrarErro() {
     '<div class="empty-search">Não foi possível buscar agora. Tente novamente.</div>';
 }
 
-listaAmigos?.addEventListener("click", (e) => {
-  const card = e.target.closest(".friend-card");
 
-  if (card?.dataset.uid) {
-    window.location.href =
-      `profile.html?uid=${encodeURIComponent(card.dataset.uid)}`;
+// ==============================
+// "ADICIONAR" (pedido de amizade) — o card inteiro leva ao perfil
+// ==============================
+
+async function adicionar(uid, botao) {
+  const eu = auth.currentUser?.uid;
+
+  if (!eu || !uid || eu === uid) return;
+
+  botao.disabled = true;
+  botao.textContent = "Enviando...";
+
+  try {
+    const ref = doc(db, "friendRequests", `${eu}_${uid}`);
+
+    if (!(await getDoc(ref)).exists()) {
+      await setDoc(ref, {
+        from: eu,
+        to: uid,
+        status: "pending",
+        createdAt: serverTimestamp()
+      });
+    }
+
+    botao.textContent = "Enviado";
+    botao.classList.add("sent");
+
+    const pessoa = estado.pessoas.find((p) => p.uid === uid);
+
+    if (pessoa) {
+      pessoa.sent = true;
+      persistirEstado();
+    }
+  } catch (error) {
+    console.error("Erro ao enviar pedido de amizade:", error);
+
+    botao.disabled = false;
+    botao.textContent = "Adicionar";
   }
+}
+
+listaAmigos?.addEventListener("click", (e) => {
+  const botao = e.target.closest(".follow-btn");
+
+  if (!botao) return; // fora do botão, o link do card abre o perfil
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (botao.disabled) return;
+
+  adicionar(botao.closest(".user")?.dataset.uid, botao);
 });
+
+
+// ==============================
+// ESTADO + HISTÓRICO
+// ==============================
 
 function aplicarEstado(pessoas, fila) {
   estado.pessoas = pessoas.slice();
@@ -247,31 +296,40 @@ function aplicarEstado(pessoas, fila) {
 function registrarVistos(pessoas) {
   const recentes = new Set(estado.historico);
 
-  pessoas.forEach((p) => {
-    recentes.add(p.uid);
-  });
+  pessoas.forEach((p) => recentes.add(p.uid));
 
   estado.historico = [...recentes].slice(-HISTORY_MAX);
 }
 
-async function buscar({ explicita = false } = {}) {
+
+// ==============================
+// BUSCA (inicial / igual a mim / específica)
+// ==============================
+
+async function buscar({ tipo = "inicial" } = {}) {
   const versao = ++estado.versao;
-  const req = montarRequisicao();
+
+  const req = tipo === "especifica"
+    ? { filters: coletarFiltros() }
+    : { similar: true };
+
   const chave = JSON.stringify(req);
 
-  if (explicita) {
+  chaveAtual = chave;
+  autoSeguidas = 0;
+
+  if (tipo !== "inicial") {
     usuarioRolou = false;
 
     window.scrollTo({ top: 0 });
 
-    if (listaAmigos) {
-      listaAmigos.scrollTop = 0;
-    }
+    if (listaAmigos) listaAmigos.scrollTop = 0;
   }
 
+  // Cold start: pinta na hora o que você viu por último e atualiza em seguida
   let pintouCache = false;
 
-  if (!explicita) {
+  if (tipo === "inicial") {
     const cache = lerCache();
 
     if (cache && cache.key === chave && cache.people?.length) {
@@ -285,23 +343,25 @@ async function buscar({ explicita = false } = {}) {
     }
   }
 
-  if (!pintouCache) {
-    mostrarLoadingLeve();
-  }
+  if (!pintouCache) mostrarLoadingLeve();
 
   estado.carregando = true;
 
   try {
-    const dados = await chamar({
-      mode: "search",
-      ...req
-    });
+    const dados = await chamar({ mode: "search", ...req });
 
     if (versao !== estado.versao) return;
 
     const pessoas = dados.people || [];
     const fila = dados.queue || [];
 
+    // "Igual a mim": mostra seus dados nos inputs equivalentes
+    if (tipo === "similar" && dados.me?.fields) {
+      preencherFiltros(dados.me.fields);
+    }
+
+    // o usuário já está rolando a lista em cache: não troca nada na frente
+    // dele, só guarda o resultado novo para a próxima abertura
     if (pintouCache && usuarioRolou) {
       salvarCache(chave, pessoas, fila);
       return;
@@ -311,47 +371,40 @@ async function buscar({ explicita = false } = {}) {
 
     renderizar(estado.pessoas);
 
-    persistirEstado(chave);
-
+    persistirEstado();
   } catch (error) {
-    console.error("Erro na busca:", error);
+    console.error("Erro na busca:", error.code, error.message, error.details);
 
-    if (!pintouCache && versao === estado.versao) {
-      mostrarErro();
-    }
-
+    if (!pintouCache && versao === estado.versao) mostrarErro();
   } finally {
     if (versao === estado.versao) {
       estado.carregando = false;
 
-      requestAnimationFrame(verificarSentinela);
+      agendarVerificacao();
     }
   }
 }
 
+
+// ==============================
+// CARREGAR MAIS (24 por pedido, ao passar de 70% do scroll)
+// ==============================
+
 async function carregarMais() {
-  if (
-    estado.carregando ||
-    estado.acabou ||
-    !estado.pessoas.length
-  ) {
-    return;
-  }
+  if (estado.carregando || estado.acabou || !estado.pessoas.length) return;
 
   estado.carregando = true;
+  autoSeguidas++;
 
   const versao = estado.versao;
-  const chave = JSON.stringify(montarRequisicao());
 
   try {
     let novas = [];
 
     if (estado.fila.length) {
-      const lote = estado.fila.splice(0, NEXT_PAGE);
-
-      const scores = new Map(
-        lote.map((item) => [item.uid, item.score])
-      );
+      // próximos da fila: o servidor já ordenou, do mais para o menos parecido
+      const lote = estado.fila.splice(0, PAGE_SIZE);
+      const scores = new Map(lote.map((item) => [item.uid, item.score]));
 
       const dados = await chamar({
         mode: "profiles",
@@ -362,34 +415,24 @@ async function carregarMais() {
         ...p,
         score: scores.get(p.uid) ?? p.score
       }));
-
     } else {
+      // acabaram os parecidos: o servidor completa com pessoas variadas
       const exclude = [
-        ...new Set([
-          ...estado.vistos,
-          ...estado.historico
-        ])
+        ...new Set([...estado.vistos, ...estado.historico])
       ].slice(-400);
 
-      const dados = await chamar({
-        mode: "random",
-        exclude
-      });
+      const dados = await chamar({ mode: "random", exclude });
 
       novas = dados.people || [];
 
-      if (novas.length < NEXT_PAGE) {
-        estado.acabou = true;
-      }
+      if (novas.length < PAGE_SIZE) estado.acabou = true;
     }
 
     if (versao !== estado.versao) return;
 
     novas = novas.filter((p) => !estado.vistos.has(p.uid));
 
-    novas.forEach((p) => {
-      estado.vistos.add(p.uid);
-    });
+    novas.forEach((p) => estado.vistos.add(p.uid));
 
     estado.pessoas.push(...novas);
 
@@ -397,53 +440,103 @@ async function carregarMais() {
 
     anexar(novas);
 
-    persistirEstado(chave);
-
+    persistirEstado();
   } catch (error) {
-    console.error("Erro ao carregar mais pessoas:", error);
-
+    console.error("Erro ao carregar mais pessoas:", error.code, error.message, error.details);
   } finally {
     if (versao === estado.versao) {
       estado.carregando = false;
 
-      requestAnimationFrame(verificarSentinela);
+      agendarVerificacao();
     }
   }
 }
 
-function verificarSentinela() {
-  if (!sentinela.isConnected) return;
 
-  const topo = sentinela.getBoundingClientRect().top;
+// ==============================
+// SCROLL: 70%
+// ==============================
 
-  if (topo < window.innerHeight + 600) {
-    carregarMais();
+// o que rola pode ser a janela ou um contêiner (.grid-view, .friends-list...)
+function encontrarScroller() {
+  let el = listaAmigos;
+
+  while (el && el !== document.body && el !== document.documentElement) {
+    const overflowY = getComputedStyle(el).overflowY;
+
+    if ((overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight) {
+      return el;
+    }
+
+    el = el.parentElement;
   }
+
+  return document.scrollingElement || document.documentElement;
 }
 
-if ("IntersectionObserver" in window) {
-  new IntersectionObserver(
-    (entradas) => {
-      if (entradas.some((e) => e.isIntersecting)) {
-        carregarMais();
-      }
-    },
-    { rootMargin: LOAD_MARGIN }
-  ).observe(sentinela);
+function progressoDoScroll() {
+  const el = encontrarScroller();
 
-} else {
-  document.addEventListener(
-    "scroll",
-    verificarSentinela,
-    { capture: true, passive: true }
-  );
+  if (!el.scrollHeight) return 1;
+
+  return (el.scrollTop + el.clientHeight) / el.scrollHeight;
 }
 
-btnBuscar?.addEventListener("click", () => {
+function verificarScroll() {
+  // lista escondida (filtros abertos): não adianta pedir mais
+  if (!listaAmigos || !listaAmigos.offsetParent) return;
+
+  if (usuarioRolou === false && autoSeguidas >= MAX_AUTO) return;
+
+  if (progressoDoScroll() >= LOAD_AT) carregarMais();
+}
+
+let verificacaoPendente = false;
+
+function agendarVerificacao() {
+  if (verificacaoPendente) return;
+
+  verificacaoPendente = true;
+
+  requestAnimationFrame(() => {
+    verificacaoPendente = false;
+    verificarScroll();
+  });
+}
+
+document.addEventListener(
+  "scroll",
+  () => {
+    usuarioRolou = true;
+    autoSeguidas = 0;
+
+    agendarVerificacao();
+  },
+  { capture: true, passive: true }
+);
+
+
+// ==============================
+// BOTÕES
+// ==============================
+
+// "Igual a mim": preenche os inputs com o seu perfil e busca com idade e
+// localização aproximadas
+btnIgualAMim?.addEventListener("click", () => {
   closeSearch();
-  buscar({ explicita: true });
+  buscar({ tipo: "similar" });
 });
 
+// "Buscar": só o que está nos inputs, sem idade
+btnBuscar?.addEventListener("click", () => {
+  closeSearch();
+  buscar({ tipo: "especifica" });
+});
+
+
+// ==============================
+// AUTENTICAÇÃO / COLD START
+// ==============================
 
 let iniciou = false;
 
@@ -462,5 +555,5 @@ onAuthStateChanged(auth, (user) => {
 
   iniciou = true;
 
-  buscar();
+  buscar({ tipo: "inicial" });
 });
