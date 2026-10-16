@@ -13,118 +13,211 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 const DEFAULT_ICON = "/public/img/icon.png";
+const DEFAULT_URL = "/feed.html";
+
+const CACHE = "realme-version-1.0.2";
+const PRECACHE = [
+  "/",
+  "/feed.html",
+  DEFAULT_ICON
+];
 
 messaging.onBackgroundMessage((payload) => {
+
   if (payload.notification) return;
 
   const d = payload.data || {};
 
-  return self.registration.showNotification(d.title || "RealMe", {
-    body: d.body || "Você tem uma nova notificação",
-    icon: d.icon || DEFAULT_ICON,
-    badge: d.badge || DEFAULT_ICON,
-    tag: d.tag || undefined,
-    renotify: Boolean(d.tag),
-    vibrate: [100, 50, 100],
-    data: { url: d.url || "/feed.html" },
-  });
+  return self.registration.showNotification(
+    d.title || "RealMe",
+    {
+      body: d.body || "Você tem uma nova notificação",
+      icon: d.icon || DEFAULT_ICON,
+      badge: d.badge || DEFAULT_ICON,
+      tag: d.tag || undefined,
+      renotify: Boolean(d.tag),
+      data: {
+        url: safeTarget(d.url || DEFAULT_URL)
+      }
+    }
+  );
 });
 
 function safeTarget(rawUrl) {
   try {
-    const url = new URL(rawUrl || "/feed.html", self.location.origin);
-    return url.origin === self.location.origin ? url.href : `${self.location.origin}/feed.html`;
+    const url = new URL(
+      rawUrl || DEFAULT_URL,
+      self.location.origin
+    );
+
+    if (url.origin !== self.location.origin) {
+      return new URL(DEFAULT_URL, self.location.origin).href;
+    }
+
+    return url.href;
   } catch {
-    return `${self.location.origin}/feed.html`;
+    return new URL(DEFAULT_URL, self.location.origin).href;
   }
 }
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const target = safeTarget(event.notification.data?.url);
+  const target = safeTarget(
+    event.notification.data?.url || DEFAULT_URL
+  );
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (wins) => {
-      for (const w of wins) {
-        if (w.url.startsWith(self.location.origin) && "focus" in w) {
+    clients.matchAll({
+      type: "window",
+      includeUncontrolled: true
+    }).then(async (windows) => {
+      for (const win of windows) {
+        if (
+          new URL(win.url).origin === self.location.origin &&
+          "focus" in win
+        ) {
           try {
-            const navigated = await w.navigate(target);
-            return (navigated || w).focus();
+            const navigated = await win.navigate(target);
+            return (navigated || win).focus();
           } catch {
+
             break;
           }
         }
       }
+
       return clients.openWindow(target);
     })
   );
 });
 
-const CACHE = "realme-version-1.0.1";
-const PRECACHE = ["/", "/feed.html", "/public/img/icon.png"];
-
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) =>
-      Promise.all(PRECACHE.map((url) => cache.add(url).catch(() => {})))
-    )
+    caches.open(CACHE).then(async (cache) => {
+      await Promise.all(
+        PRECACHE.map(async (url) => {
+          try {
+            await cache.add(url);
+          } catch (error) {
+            console.warn("Não foi possível armazenar:", url, error);
+          }
+        })
+      );
+    })
   );
+
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith("realme-version-") && key !== CACHE)
+            .map((key) => caches.delete(key))
+        )
+      )
       .then(() => self.clients.claim())
   );
 });
 
-function cachePut(req, res) {
-  const copy = res.clone();
-  caches.open(CACHE).then((c) => c.put(req, copy));
+function isCacheableRequest(request, url) {
+  if (request.method !== "GET") return false;
+  if (url.origin !== self.location.origin) return false;
+
+  if (request.mode === "navigate") return false;
+  if (url.pathname.startsWith("/api/")) return false;
+
+  return [
+    "script",
+    "style",
+    "image",
+    "font"
+  ].includes(request.destination);
 }
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  const url = new URL(req.url);
-
-  if (req.method !== "GET" || url.origin !== self.location.origin) return;
-
-  if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res.ok) cachePut(req, res);
-          return res;
-        })
-        .catch(() => caches.match(req).then((r) => r || caches.match("/feed.html")))
-    );
+async function cachePut(request, response) {
+  if (!response || !response.ok || response.type === "opaque") {
     return;
   }
 
-  if (req.destination === "script" || req.destination === "style") {
+  const cache = await caches.open(CACHE);
+  await cache.put(request, response.clone());
+}
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  if (request.method !== "GET" || url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (request.mode === "navigate") {
     event.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res.ok) cachePut(req, res);
-          return res;
-        })
-        .catch(() => caches.match(req))
+      fetch(request).catch(async () => {
+        if (url.pathname === "/") {
+          const cached = await caches.match("/");
+          if (cached) return cached;
+        }
+
+        if (url.pathname === "/feed.html") {
+          const cached = await caches.match("/feed.html");
+          if (cached) return cached;
+        }
+
+        return new Response(
+          "Você está offline. Verifique sua conexão e tente novamente.",
+          {
+            status: 503,
+            headers: {
+              "Content-Type": "text/plain; charset=utf-8"
+            }
+          }
+        );
+      })
     );
+
+    return;
+  }
+
+  if (!isCacheableRequest(request, url)) {
     return;
   }
 
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res.ok) cachePut(req, res);
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
+    caches.match(request).then(async (cached) => {
+      const networkPromise = fetch(request).then((response) => {
+        if (response.ok) {
+          event.waitUntil(cachePut(request, response));
+        }
+
+        return response;
+      });
+
+      if (cached) {
+        event.waitUntil(
+          networkPromise
+            .then(() => undefined)
+            .catch(() => undefined)
+        );
+
+        return cached;
+      }
+
+      try {
+        return await networkPromise;
+      } catch {
+        return new Response("Recurso indisponível offline.", {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        });
+      }
     })
   );
 });

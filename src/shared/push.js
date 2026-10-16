@@ -19,10 +19,29 @@ import { app, db } from "/src/config/config.js";
 const VAPID_KEY = "BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg";
 const DEFAULT_ICON = "/public/img/icon.png";
 const SAVE_EVERY_MS = 24 * 60 * 60 * 1000;
-
-const modal = document.getElementById("pushModal");
+const CLOSE_MS = 300;
 
 let listening = false;
+
+/* ---------- Modal ---------- */
+
+function openModal(modal) {
+  modal.style.display = "";
+  void modal.offsetWidth; // força reflow pra transição disparar
+
+  modal.classList.add("active");
+  modal.querySelector(".push-box-overlay")?.classList.add("active");
+  modal.querySelector(".push-modal-box")?.classList.add("active");
+}
+
+function closeModal(modal) {
+  modal.querySelector(".push-box-overlay")?.classList.remove("active");
+  modal.querySelector(".push-modal-box")?.classList.remove("active");
+
+  setTimeout(() => modal.classList.remove("active"), CLOSE_MS);
+}
+
+/* ---------- Token ---------- */
 
 async function saveToken(uid) {
   const swReg = await navigator.serviceWorker.register("/service-worker.js");
@@ -35,7 +54,10 @@ async function saveToken(uid) {
     serviceWorkerRegistration: swReg,
   });
 
-  if (!token) return;
+  if (!token) {
+    console.warn("[push] getToken retornou vazio");
+    return;
+  }
 
   const marker = `${uid}:${token}`;
   const savedAt = Number(localStorage.getItem("fcmTokenSavedAt") || 0);
@@ -78,38 +100,51 @@ async function saveToken(uid) {
   });
 }
 
+/* ---------- Init ---------- */
+
 export async function initPush(uid) {
-  if (!(await isSupported()) || !("Notification" in window)) return;
+  const supported = await isSupported().catch(() => false);
+  if (!supported || !("Notification" in window)) return;
 
-  if (Notification.permission === "granted") return saveToken(uid);
+  // já liberou: só garante o token salvo
+  if (Notification.permission === "granted") {
+    return saveToken(uid).catch((e) => console.error("[push] saveToken falhou", e));
+  }
 
+  // bloqueou no navegador: não adianta mostrar
   if (Notification.permission === "denied") return;
 
+  // já mostrou o modal uma vez
   if (localStorage.getItem("pushPrompted")) return;
 
+  const modal = document.getElementById("pushModal");
   if (!modal) return;
-
-  modal.classList.add("active");
 
   const enableBtn = document.getElementById("pushEnableBtn");
   const laterBtn = document.getElementById("pushLaterBtn");
 
+  openModal(modal);
+  localStorage.setItem("pushPrompted", "1"); // salva que mostrou
+
   if (enableBtn) {
     enableBtn.onclick = async () => {
-      const result = await Notification.requestPermission();
-      modal.classList.remove("active");
-      localStorage.setItem("pushPrompted", "1");
-      if (result === "granted") await saveToken(uid);
+      closeModal(modal);
+
+      try {
+        const result = await Notification.requestPermission();
+        if (result === "granted") await saveToken(uid);
+      } catch (e) {
+        console.error("[push] erro ao ativar", e);
+      }
     };
   }
 
   if (laterBtn) {
-    laterBtn.onclick = () => {
-      modal.classList.remove("active");
-      localStorage.setItem("pushPrompted", "1");
-    };
+    laterBtn.onclick = () => closeModal(modal);
   }
 }
+
+/* ---------- Remove ---------- */
 
 export async function removePush(uid) {
   try {

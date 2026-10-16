@@ -31,7 +31,7 @@ function renderNotificationState() {
 
 async function saveFcmToken() {
   const { getMessaging, getToken } = await import(MESSAGING_URL);
-  const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+  const registration = await navigator.serviceWorker.register("/service-worker.js");
   const token = await getToken(getMessaging(app), {
     vapidKey: VAPID_KEY,
     serviceWorkerRegistration: registration,
