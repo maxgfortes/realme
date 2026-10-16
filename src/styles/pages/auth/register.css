@@ -1,0 +1,380 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+}
+
+body {
+  display: flex;
+}
+
+.auth-art-area {
+  display: none;
+}
+
+.register-body {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 100dvh;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.step1,
+.step2 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.step1 {
+  z-index: 888;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0);
+}
+
+.step1.active {
+  transform: translateX(-20%);
+}
+
+.step2 {
+  z-index: 999;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.step2.active {
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+.error-message-area {
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  padding-bottom: 120px;
+  transition: transform 0.3s ease;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+.error-message-area.active {
+  transform: translateY(0);
+}
+
+.error-message {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  color: #aaa;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #272727;
+  text-align: center;
+}
+
+.create-area {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.info-area1 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 0 10px;
+  flex-shrink: 0;
+}
+
+.logo-area {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 0;
+  font-size: 1.8rem;
+  color: #bbb;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.logo-area span {
+  font-weight: bold;
+  color: #fff;
+}
+
+.page-title {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: #aaa;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.inputs-area {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input input,
+.input select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  background-color: #333;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  line-height: normal;
+  color: #fff;
+}
+
+.input input:focus,
+.input select:focus {
+  outline: none;
+}
+
+.btn-area {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.btn-area button {
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  font-size: 1rem;
+  color: #fff;
+  background: var(--primary-btn);
+  border-radius: 12px;
+  font-weight: bold;
+  padding: 18px;
+}
+
+.more {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  padding-bottom: 60px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.alert1 {
+  font-size: 1rem;
+  color: #bbb;
+  text-align: center;
+}
+
+a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.info-area2 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 12px;
+  background: var(--bg-primary);
+  z-index: 1001;
+}
+
+.nav-top button {
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.nav-top svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.tab-area {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 60px 0 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  scrollbar-width: none;
+}
+
+.tab-area::-webkit-scrollbar {
+  display: none;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.input select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+}
+
+.input select option {
+  background: #333;
+  color: #fff;
+}
+
+input[type="date"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  color-scheme: dark;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1f1f1;
+  -webkit-box-shadow: 0 0 0 1000px #333 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+@media (min-width: 800px) {
+  .auth-art-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background: #272727;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .auth-art {
+    padding: 20px;
+  }
+
+  .auth-art img {
+    width: 100%;
+    max-width: 620px;
+    height: auto;
+  }
+}

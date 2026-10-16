@@ -1,0 +1,178 @@
+
+.card-title {
+    padding: 10px 12px;
+    width: 100%;
+    font-weight: bold;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.sugestions-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    padding-top: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 10px;
+}
+
+.sugestion-card {
+    height: 200px;
+    aspect-ratio: 7/8;
+    background: #272727;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+}
+
+.card-body {
+    width: 100%;
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.card-media {
+    position: relative;
+    width: 100%;
+    height: 70px;
+}
+
+.card-banner {
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-image {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    left: 50%;
+    transform: translate(-50%);
+    top: 14px;
+    border: 6px solid #272727;
+    background: #333;
+}
+
+.card-add-btn {
+    background: var(--primary-btn);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 10px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: bold;
+    width: 100%;
+}
+
+.card-info {
+    width: 100%;
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+
+
+.message-card {
+    display: flex;
+    width: 1005;
+}
+
+.message-box-area {
+    padding: 0 10px 20px;
+}
+
+.messages-box {
+    display: flex;
+    flex-direction: column;
+    background: #272727;
+    border-radius: var(--radius-md);
+}
+
+.message-btn {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #373737;
+    height: 65px;
+    display: flex;
+    align-items: center;
+}
+
+.message-btn:last-child {
+    border: none;
+}
+
+.message-btn-pfp-area {
+    height: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.message-btn-pfp-area img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: #333;
+}
+
+.message-btn-name {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: #eee;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.message-btn-cta {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    align-items: center;
+    height: 100%;
+}
+
+.message-btn-dot {
+    background: var(--primary-btn);
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    color: #fff;
+}
+
+.message-btn-svg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #ddd;
+}
+
+.message-btn-svg svg{
+    height: 12px;
+    width: 12px;
+    fill: #ddd;
+}

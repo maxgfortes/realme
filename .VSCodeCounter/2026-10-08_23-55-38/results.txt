@@ -1,0 +1,244 @@
+Date : 2026-10-08 23:55:38
+Directory : c:\Users\User\Desktop\realme-main
+Total : 184 files,  35499 codes, 1175 comments, 5635 blanks, all 42309 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |        134 |     15,025 |        527 |      3,727 |     19,279 |
+| PostCSS    |         28 |      7,967 |        266 |      1,357 |      9,590 |
+| JSON       |          5 |      7,812 |          0 |          3 |      7,815 |
+| HTML       |         17 |      4,695 |        382 |        548 |      5,625 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                    | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                       |        184 |     35,499 |      1,175 |      5,635 |     42,309 |
+| . (Files)                                                                               |         23 |      5,350 |        438 |        622 |      6,410 |
+| functions                                                                               |          4 |      8,330 |         41 |        148 |      8,519 |
+| src                                                                                     |        157 |     21,819 |        696 |      4,865 |     27,380 |
+| src\components                                                                          |          9 |      2,881 |        223 |        470 |      3,574 |
+| src\config                                                                              |          2 |         79 |          7 |         16 |        102 |
+| src\js                                                                                  |        110 |      9,376 |        187 |      2,767 |     12,330 |
+| src\js\pages                                                                            |        110 |      9,376 |        187 |      2,767 |     12,330 |
+| src\js\pages (Files)                                                                    |          4 |      1,194 |         67 |        242 |      1,503 |
+| src\js\pages\auth                                                                       |          3 |        455 |         49 |        202 |        706 |
+| src\js\pages\direct                                                                     |         22 |      2,027 |         12 |        694 |      2,733 |
+| src\js\pages\direct (Files)                                                             |         21 |      1,927 |         12 |        644 |      2,583 |
+| src\js\pages\direct\sendImage                                                           |          1 |        100 |          0 |         50 |        150 |
+| src\js\pages\feed                                                                       |         26 |      2,754 |         10 |        746 |      3,510 |
+| src\js\pages\feed (Files)                                                               |          2 |         46 |          5 |         16 |         67 |
+| src\js\pages\feed\eventCreation                                                         |          2 |         90 |          0 |         27 |        117 |
+| src\js\pages\feed\postCreation                                                          |          7 |        440 |          0 |        152 |        592 |
+| src\js\pages\feed\postSystem                                                            |          3 |         51 |          0 |         15 |         66 |
+| src\js\pages\feed\render                                                                |         10 |      1,909 |          5 |        467 |      2,381 |
+| src\js\pages\feed\utils                                                                 |          2 |        218 |          0 |         69 |        287 |
+| src\js\pages\friends                                                                    |          7 |        579 |         45 |        208 |        832 |
+| src\js\pages\notifications                                                              |          9 |        905 |          4 |        350 |      1,259 |
+| src\js\pages\profile                                                                    |         39 |      1,462 |          0 |        325 |      1,787 |
+| src\services                                                                            |          6 |      1,382 |         13 |        222 |      1,617 |
+| src\shared                                                                              |          2 |        134 |          0 |         33 |        167 |
+| src\styles                                                                              |         28 |      7,967 |        266 |      1,357 |      9,590 |
+| src\styles (Files)                                                                      |          8 |      2,603 |         19 |        460 |      3,082 |
+| src\styles\pages                                                                        |         11 |      4,247 |        113 |        705 |      5,065 |
+| src\styles\pages\auth                                                                   |          2 |        604 |          0 |         73 |        677 |
+| src\styles\pages\direct                                                                 |          2 |      1,275 |          3 |        213 |      1,491 |
+| src\styles\pages\feed                                                                   |          2 |        870 |        110 |        157 |      1,137 |
+| src\styles\pages\friends                                                                |          1 |        374 |          0 |         50 |        424 |
+| src\styles\pages\profile                                                                |          4 |      1,124 |          0 |        212 |      1,336 |
+| src\styles\shared                                                                       |          9 |      1,117 |        134 |        192 |      1,443 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\User\Desktop\realme-main\404.html                                              | HTML       |        103 |          0 |         13 |        116 |
+| c:\Users\User\Desktop\realme-main\about.html                                            | HTML       |        271 |          0 |         41 |        312 |
+| c:\Users\User\Desktop\realme-main\adminconsole.html                                     | HTML       |        386 |          0 |         64 |        450 |
+| c:\Users\User\Desktop\realme-main\counters.html                                         | HTML       |        252 |          0 |         34 |        286 |
+| c:\Users\User\Desktop\realme-main\direct.html                                           | HTML       |        141 |          3 |          9 |        153 |
+| c:\Users\User\Desktop\realme-main\edit.html                                             | HTML       |        311 |          0 |         48 |        359 |
+| c:\Users\User\Desktop\realme-main\explore.html                                          | HTML       |         77 |          0 |          7 |         84 |
+| c:\Users\User\Desktop\realme-main\feed.html                                             | HTML       |        329 |        362 |         24 |        715 |
+| c:\Users\User\Desktop\realme-main\firebase-messaging-sw.js                              | JavaScript |         99 |          1 |         17 |        117 |
+| c:\Users\User\Desktop\realme-main\firebase.json                                         | JSON       |         40 |          0 |          1 |         41 |
+| c:\Users\User\Desktop\realme-main\firestore.indexes.json                                | JSON       |        146 |          0 |          0 |        146 |
+| c:\Users\User\Desktop\realme-main\friends.html                                          | HTML       |        118 |          0 |          4 |        122 |
+| c:\Users\User\Desktop\realme-main\functions\index.js                                    | JavaScript |        359 |         41 |         63 |        463 |
+| c:\Users\User\Desktop\realme-main\functions\indexCREATEACC.js                           | JavaScript |        447 |          0 |         83 |        530 |
+| c:\Users\User\Desktop\realme-main\functions\package-lock.json                           | JSON       |      7,501 |          0 |          1 |      7,502 |
+| c:\Users\User\Desktop\realme-main\functions\package.json                                | JSON       |         23 |          0 |          1 |         24 |
+| c:\Users\User\Desktop\realme-main\index.html                                            | HTML       |        195 |          0 |         14 |        209 |
+| c:\Users\User\Desktop\realme-main\index.js                                              | JavaScript |        149 |         55 |         37 |        241 |
+| c:\Users\User\Desktop\realme-main\login.html                                            | HTML       |         94 |          0 |         15 |        109 |
+| c:\Users\User\Desktop\realme-main\manifest.json                                         | JSON       |        102 |          0 |          0 |        102 |
+| c:\Users\User\Desktop\realme-main\nt.html                                               | HTML       |         87 |          0 |          3 |         90 |
+| c:\Users\User\Desktop\realme-main\profile.html                                          | HTML       |        658 |          7 |         32 |        697 |
+| c:\Users\User\Desktop\realme-main\profileOld.html                                       | HTML       |        667 |         10 |         71 |        748 |
+| c:\Users\User\Desktop\realme-main\register.html                                         | HTML       |        171 |          0 |         35 |        206 |
+| c:\Users\User\Desktop\realme-main\service-worker.js                                     | JavaScript |        119 |          0 |         19 |        138 |
+| c:\Users\User\Desktop\realme-main\src\components\activitie-creator.js                   | JavaScript |        159 |         67 |         26 |        252 |
+| c:\Users\User\Desktop\realme-main\src\components\activities-render.js                   | JavaScript |        714 |         70 |        130 |        914 |
+| c:\Users\User\Desktop\realme-main\src\components\feeling-notes.js                       | JavaScript |        325 |          0 |         88 |        413 |
+| c:\Users\User\Desktop\realme-main\src\components\modal-open.js                          | JavaScript |         47 |          0 |         15 |         62 |
+| c:\Users\User\Desktop\realme-main\src\components\navbar-badge.js                        | JavaScript |        127 |          4 |         15 |        146 |
+| c:\Users\User\Desktop\realme-main\src\components\notes.js                               | JavaScript |        411 |         30 |         67 |        508 |
+| c:\Users\User\Desktop\realme-main\src\components\pc-alert.js                            | JavaScript |         47 |          0 |          2 |         49 |
+| c:\Users\User\Desktop\realme-main\src\components\post-meta.js                           | JavaScript |        148 |         11 |         33 |        192 |
+| c:\Users\User\Desktop\realme-main\src\components\posts.js                               | JavaScript |        903 |         41 |         94 |      1,038 |
+| c:\Users\User\Desktop\realme-main\src\config\auth.js                                    | JavaScript |         63 |          7 |         13 |         83 |
+| c:\Users\User\Desktop\realme-main\src\config\config.js                                  | JavaScript |         16 |          0 |          3 |         19 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\activitie-creator.js                     | JavaScript |        159 |         67 |         26 |        252 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\auth\login.js                            | JavaScript |         61 |          0 |         23 |         84 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\auth\register.js                         | JavaScript |        332 |         48 |        167 |        547 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\auth\signup.js                           | JavaScript |         62 |          1 |         12 |         75 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\deleteMessage.js                  | JavaScript |         49 |          0 |         10 |         59 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\direct.js                         | JavaScript |         11 |          0 |          7 |         18 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\formatRelativeTime.js             | JavaScript |         53 |          0 |         20 |         73 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\getUser.js                        | JavaScript |         39 |          0 |         13 |         52 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\inputSize.js                      | JavaScript |          8 |          0 |          2 |         10 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\loadList.js                       | JavaScript |        501 |          5 |        133 |        639 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\loadMessages.js                   | JavaScript |        134 |          0 |         92 |        226 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\loadPageHeader.js                 | JavaScript |         59 |          0 |         12 |         71 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\markAsRead.js                     | JavaScript |         32 |          0 |          8 |         40 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\messageFooter.js                  | JavaScript |         64 |          0 |         38 |        102 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\messageGestures.js                | JavaScript |        127 |          0 |         36 |        163 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\openChat.js                       | JavaScript |         54 |          0 |         26 |         80 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\reactMessage.js                   | JavaScript |         34 |          0 |          6 |         40 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\renderMessages.js                 | JavaScript |        392 |          0 |        133 |        525 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\renderUsers.js                    | JavaScript |         24 |          0 |          5 |         29 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\replyPreview.js                   | JavaScript |         52 |          0 |         17 |         69 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\replyState.js                     | JavaScript |         40 |          5 |         10 |         55 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\searchUsers.js                    | JavaScript |         10 |          0 |          2 |         12 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\sendImage\sendImage.js            | JavaScript |        100 |          0 |         50 |        150 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\sendMessage.js                    | JavaScript |         52 |          2 |         16 |         70 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\showTyping.js                     | JavaScript |        107 |          0 |         34 |        141 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\direct\typing.js                         | JavaScript |         85 |          0 |         24 |        109 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\edit.js                                  | JavaScript |        593 |          0 |        131 |        724 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\explore-search.js                        | JavaScript |        211 |          0 |         55 |        266 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\eventCreation\eventCreation.js      | JavaScript |         61 |          0 |         11 |         72 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\eventCreation\loadBannerPreview.js  | JavaScript |         29 |          0 |         16 |         45 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\feed.js                             | JavaScript |         14 |          5 |          9 |         28 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\navbarAnimation.js                  | JavaScript |         32 |          0 |          7 |         39 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\imageUpload.js         | JavaScript |        304 |          0 |        120 |        424 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\inputSize.js           | JavaScript |          7 |          0 |          2 |          9 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\open-creation-modal.js | JavaScript |         42 |          0 |         10 |         52 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\openCreationOptions.js | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\postCreation.js        | JavaScript |         56 |          0 |         12 |         68 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\progressBar.js         | JavaScript |         10 |          0 |          2 |         12 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postCreation\setupPostCreation.js   | JavaScript |         21 |          0 |          5 |         26 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postSystem\inputSize.js             | JavaScript |          7 |          0 |          2 |          9 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postSystem\openComments.js          | JavaScript |         18 |          0 |          4 |         22 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\postSystem\postOptions.js           | JavaScript |         26 |          0 |          9 |         35 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\deletePost.js                | JavaScript |        103 |          0 |         12 |        115 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\likePost.js                  | JavaScript |         61 |          0 |         26 |         87 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\loadComments.js              | JavaScript |        448 |          0 |         71 |        519 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\openComments.js              | JavaScript |         77 |          0 |         26 |        103 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\openLikes.js                 | JavaScript |        167 |          0 |         37 |        204 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\postCounters.js              | JavaScript |         32 |          0 |         18 |         50 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\postFooter.js                | JavaScript |         97 |          0 |         51 |        148 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\postsRender.js               | JavaScript |        573 |          5 |        134 |        712 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\sendComment.js               | JavaScript |         49 |          0 |         17 |         66 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\render\swipeComments.js             | JavaScript |        302 |          0 |         75 |        377 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\utils\greeting.js                   | JavaScript |         83 |          0 |         18 |        101 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\feed\utils\serverMessage.js              | JavaScript |        135 |          0 |         51 |        186 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\filters-modal.js                 | JavaScript |        153 |         20 |         73 |        246 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\filters-state.js                 | JavaScript |         16 |          0 |          4 |         20 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\friends-old.js                   | JavaScript |          3 |          0 |          0 |          3 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\friends.js                       | JavaScript |          3 |          0 |          1 |          4 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\inputSize.js                     | JavaScript |          7 |          0 |          1 |          8 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\openOptions.js                   | JavaScript |         16 |          0 |          4 |         20 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\friends\search.js                        | JavaScript |        381 |         25 |        125 |        531 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\deleteNotification.js      | JavaScript |         12 |          0 |          5 |         17 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\formatDate.js              | JavaScript |         24 |          0 |          3 |         27 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\friendRequests.js          | JavaScript |        126 |          4 |         48 |        178 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\getUser.js                 | JavaScript |         52 |          0 |         23 |         75 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\groupByDay.js              | JavaScript |         58 |          0 |         25 |         83 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\notificationMessages.js    | JavaScript |         30 |          0 |         10 |         40 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\notifications.js           | JavaScript |        432 |          0 |        176 |        608 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\openRequests.js            | JavaScript |         14 |          0 |          4 |         18 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\notifications\swipe.js                   | JavaScript |        157 |          0 |         56 |        213 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\aboutFields.js                   | JavaScript |         42 |          0 |          5 |         47 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\aboutMenu.js                     | JavaScript |         64 |          0 |         19 |         83 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\aboutRender.js                   | JavaScript |         55 |          0 |         13 |         68 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\auth.js                          | JavaScript |         27 |          0 |          7 |         34 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\chat.js                          | JavaScript |         18 |          0 |          4 |         22 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\confirmAlert.js                  | JavaScript |         54 |          0 |          2 |         56 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\constants.js                     | JavaScript |          4 |          0 |          1 |          5 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\dom.js                           | JavaScript |         17 |          0 |          5 |         22 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\firebase.js                      | JavaScript |         14 |          0 |          3 |         17 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\firestore.js                     | JavaScript |         16 |          0 |          1 |         17 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\format.js                        | JavaScript |         36 |          0 |          7 |         43 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\friendRequests.js                | JavaScript |         43 |          0 |         11 |         54 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\friendsList.js                   | JavaScript |        107 |          0 |         28 |        135 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\friendship.js                    | JavaScript |         38 |          0 |         10 |         48 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\links.js                         | JavaScript |         33 |          0 |          8 |         41 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\notifications.js                 | JavaScript |         47 |          0 |         14 |         61 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\postImages.js                    | JavaScript |         22 |          0 |          6 |         28 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\postPreview.js                   | JavaScript |         20 |          0 |          5 |         25 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\postsGrid.js                     | JavaScript |         80 |          0 |         19 |         99 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profile.js                       | JavaScript |          8 |          0 |          3 |         11 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileBoot.js                   | JavaScript |         56 |          0 |         11 |         67 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileButtons.js                | JavaScript |         15 |          0 |          4 |         19 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileCache.js                  | JavaScript |         52 |          0 |         14 |         66 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileHeader.js                 | JavaScript |         33 |          0 |          8 |         41 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileListener.js               | JavaScript |         58 |          0 |         10 |         68 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileListeners.js              | JavaScript |         68 |          0 |         12 |         80 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileMusic.js                  | JavaScript |        130 |          0 |         21 |        151 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileNotFound.js               | JavaScript |          4 |          0 |          2 |          6 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileRender.js                 | JavaScript |         20 |          0 |          2 |         22 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileResolver.js               | JavaScript |         44 |          0 |         10 |         54 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileStats.js                  | JavaScript |         30 |          0 |          7 |         37 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\profileTabs.js                   | JavaScript |         16 |          0 |          6 |         22 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\share.js                         | JavaScript |         10 |          0 |          4 |         14 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\sideBar.js                       | JavaScript |         23 |          0 |          7 |         30 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\socialNetworks.js                | JavaScript |         27 |          0 |          2 |         29 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\state.js                         | JavaScript |         24 |          0 |          4 |         28 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\toast.js                         | JavaScript |          9 |          0 |          3 |         12 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\userData.js                      | JavaScript |         32 |          0 |          8 |         40 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\profile\wall.js                          | JavaScript |         66 |          0 |         19 |         85 |
+| c:\Users\User\Desktop\realme-main\src\js\pages\utilities.js                             | JavaScript |        231 |          0 |         30 |        261 |
+| c:\Users\User\Desktop\realme-main\src\services\badge.js                                 | JavaScript |         52 |          4 |         10 |         66 |
+| c:\Users\User\Desktop\realme-main\src\services\global-direct-nt.js                      | JavaScript |        361 |          0 |         33 |        394 |
+| c:\Users\User\Desktop\realme-main\src\services\music-search.js                          | JavaScript |        136 |          0 |         34 |        170 |
+| c:\Users\User\Desktop\realme-main\src\services\notifications-old.js                     | JavaScript |        456 |          0 |         82 |        538 |
+| c:\Users\User\Desktop\realme-main\src\services\notifications-push.js                    | JavaScript |        325 |          5 |         53 |        383 |
+| c:\Users\User\Desktop\realme-main\src\services\nt-badge.js                              | JavaScript |         52 |          4 |         10 |         66 |
+| c:\Users\User\Desktop\realme-main\src\shared\nav-pic.js                                 | JavaScript |         46 |          0 |         13 |         59 |
+| c:\Users\User\Desktop\realme-main\src\shared\pullRefreshPage.js                         | JavaScript |         88 |          0 |         20 |        108 |
+| c:\Users\User\Desktop\realme-main\src\styles\edit.css                                   | PostCSS    |        281 |          0 |         50 |        331 |
+| c:\Users\User\Desktop\realme-main\src\styles\eventsPage.css                             | PostCSS    |        184 |          1 |         31 |        216 |
+| c:\Users\User\Desktop\realme-main\src\styles\explore.css                                | PostCSS    |        657 |         11 |        118 |        786 |
+| c:\Users\User\Desktop\realme-main\src\styles\index.css                                  | PostCSS    |        577 |          7 |        117 |        701 |
+| c:\Users\User\Desktop\realme-main\src\styles\music-modal.css                            | PostCSS    |        248 |          0 |         43 |        291 |
+| c:\Users\User\Desktop\realme-main\src\styles\notifications.css                          | PostCSS    |        439 |          0 |         62 |        501 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\auth\login.css                       | PostCSS    |        266 |          0 |         31 |        297 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\auth\register.css                    | PostCSS    |        338 |          0 |         42 |        380 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\direct\direct.css                    | PostCSS    |        960 |          3 |        149 |      1,112 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\direct\feeling-notes.css             | PostCSS    |        315 |          0 |         64 |        379 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\feed\creationOverlay.css             | PostCSS    |        572 |          8 |         96 |        676 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\feed\feed.css                        | PostCSS    |        298 |        102 |         61 |        461 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\friends\friends.css                  | PostCSS    |        374 |          0 |         50 |        424 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\profile\about-menu.css               | PostCSS    |        204 |          0 |         28 |        232 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\profile\profile.css                  | PostCSS    |        788 |          0 |        159 |        947 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\profile\side-menu.css                | PostCSS    |        106 |          0 |         22 |        128 |
+| c:\Users\User\Desktop\realme-main\src\styles\pages\profile\wall.css                     | PostCSS    |         26 |          0 |          3 |         29 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\base.css                            | PostCSS    |         30 |          0 |          3 |         33 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\comments.css                        | PostCSS    |        277 |          0 |         41 |        318 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\eventCard.css                       | PostCSS    |         42 |          0 |          8 |         50 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\menu-bottom.css                     | PostCSS    |        145 |          0 |         23 |        168 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\navbar-bottom.css                   | PostCSS    |         66 |          6 |          9 |         81 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\navs-pc.css                         | PostCSS    |         43 |        114 |         12 |        169 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\postCard.css                        | PostCSS    |        246 |          0 |         47 |        293 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\root.css                            | PostCSS    |        114 |         14 |         25 |        153 |
+| c:\Users\User\Desktop\realme-main\src\styles\shared\sugestions.css                      | PostCSS    |        154 |          0 |         24 |        178 |
+| c:\Users\User\Desktop\realme-main\src\styles\timeline.css                               | PostCSS    |         69 |          0 |         14 |         83 |
+| c:\Users\User\Desktop\realme-main\src\styles\welcome.css                                | PostCSS    |        148 |          0 |         25 |        173 |
+| c:\Users\User\Desktop\realme-main\terms.html                                            | HTML       |        490 |          0 |         73 |        563 |
+| c:\Users\User\Desktop\realme-main\updates.html                                          | HTML       |        345 |          0 |         61 |        406 |
+| Total                                                                                   |            |     35,499 |      1,175 |      5,635 |     42,309 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

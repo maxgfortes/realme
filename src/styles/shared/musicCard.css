@@ -1,0 +1,123 @@
+
+.music-card-area {
+  padding: 0 10px;
+  max-width: 500px;
+}
+
+.music-card {
+    background: #272727;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.music-card-top {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.music-cover-area {
+    display: flex;
+    aspect-ratio: 1/1;
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+}
+
+.music-cover {
+    background: #444;
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    background-image: url("https://f4.bcbits.com/img/a2383768177_5.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.music-info {
+    width: 100%;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 10px 10px 10px 0;
+    box-sizing: border-box;
+}
+
+.music-name {
+    font-weight: bold;
+    font-size: 14px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-card-bottom {
+    padding: 0 10px 10px 10px;
+}
+
+.music-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.music-controls-top {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+}
+
+.music-controls-bottom {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.music-track {
+    width: 100%;
+    height: 6px;
+    background: #444;
+    border-radius: 999px;
+}
+
+.music-tracker {
+    width: 0;
+    height: 100%;
+    background: #aaa;
+    border-radius: 999pc;
+}
+
+.music-control {
+    height: 42px;
+    width: 42px;
+    aspect-ratio: 1/1;
+    border: none;
+    color: #fff;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-control:first-child {
+    display: none;
+}
+
+.music-control.hidden {
+    display: none;
+}
+
+.music-control svg {
+    height: 26px;
+    width: 26px;
+}

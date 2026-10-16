@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>RealMe</title>
+  <link rel="icon" href="./src/icon/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="theme-color" content="0f0f0f0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./src/icon/icon.png" />
+  <link rel="stylesheet" href="./src/styles/pages/auth/register.css" />
+  <link rel="stylesheet" href="./src/styles/shared/root.css" />
+  <link rel="stylesheet" href="./src/styles/shared/base.css"/>
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+
+  <meta property="og:site_name" content="RealMe">
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem está ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem realmente importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+</head>
+
+<body>
+
+<div class="auth-art-area">
+  <div class="auth-art">
+    <img src="./public/img/conections.png">
+  </div>
+</div>
+
+<div class="register-body">
+  <div class="error-message-area" id="errorMessageArea">
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <form class="form-area">
+
+    <div class="step1" id="tabOne">
+      <div class="create-area">
+
+        <div class="info-area1">
+          <div class="logo-area">
+            <p>Crie sua conta no <span>RealMe</span></p>
+          </div>
+
+          <div class="page-title">
+            Crie sua conta no RealMe e conecte-se com seus amigos por perto
+          </div>
+        </div>
+
+        <div class="inputs-area">
+
+          <div class="input">
+            <label for="email">E-mail</label>
+            <input
+              type="text"
+              id="inputEmail"
+              name="email"
+              placeholder="email@exemplo.com"
+              required
+            />
+          </div>
+
+          <div class="input">
+            <label for="password">Senha</label>
+            <input
+              type="password"
+              id="inputPassword"
+              name="password"
+              placeholder="Crie uma senha"
+              required
+              minlength="6"
+            />
+          </div>
+
+        </div>
+
+        <div class="btn-area">
+          <button type="button" id="nextBtn" class="continuar-btn">
+            Continuar
+          </button>
+        </div>
+
+      </div>
+
+      <div class="more">
+        <div class="alert1">
+          Já tem uma conta?
+          <a href="./login.html">Entrar</a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="step2" id="tabTwo">
+
+      <div class="nav-top">
+        <button type="button" id="backBtn" class="voltar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
+            <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
+          </svg>
+          <span>Voltar</span>
+        </button>
+      </div>
+
+      <div class="tab-area">
+
+        <div class="info-area2">
+          <div class="logo-area">
+            <span>RealMe</span>
+          </div>
+
+          <div class="page-title">
+            Quase lá! Termine de configurar sua conta para começar
+          </div>
+        </div>
+
+        <div class="inputs-area">
+
+          <div class="input">
+            <label for="name">Nome</label>
+            <input
+              type="text"
+              id="nome"
+              name="name"
+              placeholder="Seu nome"
+              required
+            />
+          </div>
+
+          <div class="input">
+            <label for="surname">Sobrenome</label>
+            <input
+              type="text"
+              id="sobrenome"
+              name="surname"
+              placeholder="Seu sobrenome"
+              required
+            />
+          </div>
+
+          <div class="input">
+            <label for="username">Nome de usuário</label>
+            <input
+              type="text"
+              id="usuario"
+              name="username"
+              placeholder="Escolha um nome de usuário"
+              required
+            />
+          </div>
+
+          <div class="input">
+            <label for="gender">Gênero</label>
+
+            <div class="select-wrapper">
+              <select id="genero" name="gender" required>
+                <option value="" disabled selected>
+                  Selecione seu gênero
+                </option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input">
+            <label for="birthdate">Data de nascimento</label>
+            <input
+              type="date"
+              id="nascimento"
+              name="birthdate"
+              required
+            />
+          </div>
+
+        </div>
+
+        <div class="btn-area">
+          <button class="create-btn" type="submit">
+            Criar conta
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script type="module" src="/src/js/pages/auth/register.js"></script>
+
+</body>
+</html>

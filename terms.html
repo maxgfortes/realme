@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>RealMe</title>
+  <link rel="icon" href="./public/img/icon.png" type="image/png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="theme-color" content="#0f0f0f">
+  <link rel="stylesheet" href="./src/styles/root.css">
+
+  <meta property="og:site_name" content="RealMe">
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com as pessoas ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+</head>
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+  background: #0f0f0f;
+  color: #ffffff;
+  overflow: hidden;
+  --webkit-scrollbar: none;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-pc {
+  position: fixed;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #0f0f0f;
+  height: 67px;
+}
+
+.nav-mobile {
+    display: none;
+    position: fixed;
+    width: 100%;
+    align-items: center;
+    height: 60px;
+    background: #0f0f0f;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-mobile svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+}
+
+.logo {
+    font-size: 1.9rem;
+    font-weight: bold;
+    padding: 6px;
+    font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+    letter-spacing: -0.01em;
+}
+
+.main-section {
+    width: 100%;
+    height: 100vh;
+    padding: 60px 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.terms-area {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 100%;
+    max-width: 940px;
+    padding: 20px;
+    padding-bottom: 120px;
+    height: 100%;
+    overflow: auto;
+}
+
+.footer-area {
+    padding: 20px;
+    height: 100px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.footer-block {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.links {
+    display: flex;
+    gap: 20px;
+}
+
+.links a {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.copy p {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.socials {
+    display: flex;
+    gap: 15px;
+    display: none;
+}
+
+.socials a {
+    color: #aaa;
+    font-size: 1.2rem;
+}
+
+.header-block {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+.header-block button {
+    height: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #f8f9f9;
+}
+
+.header-block svg {
+    height: 20px;
+    width: 20px;
+    fill: #f8f9f9;
+}
+
+.header-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f0f0f;
+    height: 60px;
+    position: fixed;
+    width: 100%;
+}
+
+.terms-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.terms-title {
+    font-weight: bold;
+    color: #fff;
+    font-size: 22px;
+}
+
+.terms-sub {
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+}
+
+.terms-sub2 {
+    font-weight: bold;
+    color: #fff;
+    font-size: 16px;
+}
+
+.terms-body{
+    color: #bbb;
+    font-size: 16px;
+}
+
+.terms-body span{
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+@media (max-width: 700px) {
+    .nav-pc {
+        display: none;
+    }
+    .nav-mobile {
+        display: flex;
+    }
+    .updates-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+    
+    .footer-area {
+        display:  none;
+    }
+}
+
+</style>
+<body>
+    <nav class="nav-pc">
+        <div class="logo">RealMe</div>
+    </nav>
+
+    <nav class="nav-mobile">
+        <div class="menu-header">
+            <div class="header-block">
+                <button class="close-menu" onclick="history.back()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+                </button>
+            </div>
+            <div class="header-block">
+                <div class="header-title">Termos e condições</div>
+            </div>
+            <div class="header-block"></div>
+        </div>
+    </nav>
+
+    <main class="main-section">
+        <div class="terms-area">
+            <div class="terms-item">
+                <div class="terms-title">TERMOS DE USO E CONDIÇÕES</div>
+                <div class="terms-sub2">Última atualização: 02/10/2026 2:00am UTC -3:00</div>
+                <div class="terms-body">Bem-vindo ao Realme.</div>
+                <div class="terms-body">Estes Termos de Uso e Condições (“Termos”) estabelecem as regras aplicáveis ao acesso e à utilização da plataforma Realme (“Realme”, “Plataforma”, “Serviço ou “nós”), incluindo seus recursos, funcionalidades, páginas, sistemas de comunicação e demais serviços disponibilizados pela plataforma.</div>
+                <div class="terms-body">Ao criar uma conta, acessar ou utilizar o Realme, você declara que leu, compreendeu e concorda com estes Termos. Caso não concorde com qualquer de suas disposições, você não deverá criar ou utilizar uma conta no Realme.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">1. DEFINIÇÕES</div>
+                <div class="terms-body">Para fins destes Termos:</div>
+                <div class="terms-body"><span>1.1.</span> Usuário: qualquer pessoa que acesse ou utilize o Realme.</div>
+                <div class="terms-body"><span>1.2.</span> Conta: cadastro individual criado pelo usuário para utilização dos recursos do Realme.</div>
+                <div class="terms-body"><span>1.3.</span> Publicação: qualquer conteúdo disponibilizado por um usuário na Plataforma, incluindo textos, imagens, vídeos, comentários, informações e demais materiais.</div>
+                <div class="terms-body"><span>1.4.</span> Conteúdo: todo material, informação ou dado disponibilizado na Plataforma por usuários ou pelo próprio Realme.</div>
+                <div class="terms-body"><span>1.5.</span> Perfil: página associada à conta de um usuário, contendo informações disponibilizadas pelo próprio usuário ou geradas pelo funcionamento da Plataforma.</div>
+                <div class="terms-body"><span>1.6.</span> Mural: espaço do perfil destinado a publicações, mensagens ou interações realizadas por amigos, conforme as funcionalidades disponíveis no Realme.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">2. ELEGIBILIDADE E IDADE MÍNIMA</div>
+                <div class="terms-body"><span>2.1.</span> Para criar uma conta no Realme, o usuário deverá ter 13 (treze) anos ou mais, ou a idade mínima exigida pela legislação aplicável em seu país ou região, caso seja superior.</div>
+                <div class="terms-body"><span>2.2.</span> O usuário declara que as informações fornecidas durante o cadastro são verdadeiras, completas e atualizadas.</div>
+                <div class="terms-body"><span>2.3.</span> O usuário não poderá criar uma conta utilizando informações falsas, identidade de terceiros ou informações destinadas a induzir outros usuários ou o Realme a erro.</div>
+                <div class="terms-body"><span>2.4.</span> Quando exigido pela legislação aplicável, a utilização do Realme por menores de idade poderá estar sujeita a autorização ou consentimento de seus pais ou responsáveis legais.</div>
+                <div class="terms-body"><span>2.5.</span> O Realme poderá adotar medidas razoáveis para verificar o cumprimento dos requisitos de idade quando houver indícios de que uma conta não atende aos requisitos estabelecidos neste documento.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">3. CRIAÇÃO E SEGURANÇA DA CONTA</div>
+                <div class="terms-body"><span>3.1.</span> Cada usuário deverá manter suas credenciais de acesso em segurança e não deverá compartilhá-las com terceiros.</div>
+                <div class="terms-body"><span>3.2.</span> O usuário é responsável pelas atividades realizadas por meio de sua conta, salvo quando demonstrado que o acesso ocorreu sem sua autorização por falha atribuível ao Realme.</div>
+                <div class="terms-body"><span>3.3.</span> É proibido vender, alugar, transferir ou ceder uma conta do Realme a outra pessoa sem autorização expressa.</div>
+                <div class="terms-body"><span>3.4.</span> Caso o usuário suspeite de acesso não autorizado à sua conta, deverá comunicar o fato ao Realme assim que possível.</div>
+                <div class="terms-body"><span>3.5.</span> O usuário não poderá utilizar a conta de outra pessoa sem autorização.</div>
+
+                <div class="terms-body"><strong>3.6. Identidade e nome do usuário</strong></div>
+                <div class="terms-body">O usuário deverá utilizar, no cadastro e em seu perfil, seu nome real e verdadeiro, correspondente à sua identidade.</div>
+                <div class="terms-body">É expressamente proibido:</div>
+                <div class="terms-body">• Utilizar nome falso, inventado ou fictício com a finalidade de ocultar a identidade;</div>
+                <div class="terms-body">• Utilizar o nome de outra pessoa sem autorização;</div>
+                <div class="terms-body">• Fazer-se passar por outra pessoa, organização ou entidade;</div>
+                <div class="terms-body">• Utilizar informações de identidade falsas, enganosas ou deliberadamente incompletas;</div>
+                <div class="terms-body">• Criar uma conta com a finalidade de representar falsamente a identidade de terceiros.</div>
+                <div class="terms-body">O Realme poderá solicitar a alteração de um nome que viole esta regra e, quando necessário, poderá restringir ou suspender a conta até que as informações sejam corrigidas.</div>
+                <div class="terms-body">A utilização de apelidos, abreviações ou variações do nome poderá ser permitida desde que não tenha como finalidade ocultar a identidade real do usuário ou induzir terceiros a erro.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">4. PRIVACIDADE E VISIBILIDADE DAS INFORMAÇÕES</div>
+                <div class="terms-body"><span>4.1.</span> O Realme foi desenvolvido como uma plataforma social. Dessa forma, determinadas informações e atividades poderão ser visíveis a outros usuários de acordo com as funcionalidades disponíveis.</div>
+                <div class="terms-body"><span>4.2.</span> Salvo indicação diferente nas configurações da Plataforma, as publicações realizadas pelo usuário poderão ser visualizadas por outros usuários do Realme.</div>
+                <div class="terms-body"><span>4.3.</span> O usuário reconhece que qualquer informação publicada voluntariamente em áreas públicas ou acessíveis a outros usuários poderá ser visualizada, copiada, reproduzida ou compartilhada por terceiros.</div>
+                <div class="terms-body"><span>4.4.</span> O Realme não recomenda a publicação de informações pessoais excessivamente detalhadas ou que possam comprometer a segurança do usuário.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">5. INFORMAÇÕES PÚBLICAS DO PERFIL</div>
+                <div class="terms-body"><span>5.1.</span> De acordo com a configuração atual do Realme, as seguintes informações poderão ser disponibilizadas publicamente para outros usuários:</div>
+                <div class="terms-body">• Nome completo;</div>
+                <div class="terms-body">• Dia e mês de nascimento;</div>
+                <div class="terms-body">• Lista de amigos;</div>
+                <div class="terms-body">• Gênero;</div>
+                <div class="terms-body">• Estado civil;</div>
+                <div class="terms-body">• Local onde reside;</div>
+                <div class="terms-body">• Gostos e interesses;</div>
+                <div class="terms-body">• Pronomes.</div>
+                <div class="terms-body"><span>5.2.</span> O usuário é responsável por verificar as informações disponibilizadas em seu perfil antes de publicá-las.</div>
+                <div class="terms-body"><span>5.3.</span> O usuário não deverá inserir informações pessoais de terceiros sem autorização, quando tal autorização for necessária.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">6. PUBLICAÇÕES</div>
+                <div class="terms-body"><span>6.1.</span> O usuário permanece responsável pelo conteúdo que publica no Realme.</div>
+                <div class="terms-body"><span>6.2.</span> O usuário deverá possuir os direitos, autorizações ou permissões necessários para publicar qualquer conteúdo que disponibilize na Plataforma.</div>
+                <div class="terms-body"><span>6.3.</span> O usuário não poderá utilizar o Realme para publicar conteúdo ilegal, fraudulento, enganoso, abusivo ou que viole estes Termos.</div>
+                <div class="terms-body"><span>6.4.</span> O usuário poderá excluir suas próprias publicações quando essa funcionalidade estiver disponível.</div>
+                <div class="terms-body"><span>6.5.</span> A exclusão de uma publicação não garante necessariamente a eliminação de cópias, capturas de tela, reproduções ou conteúdos anteriormente compartilhados por terceiros.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">7. MURAL E INTERAÇÕES</div>
+                <div class="terms-body"><span>7.1.</span> Somente usuários que sejam amigos poderão mencionar ou escrever no mural de determinado usuário, conforme as funcionalidades atualmente disponibilizadas pelo Realme.</div>
+                <div class="terms-body"><span>7.2.</span> O usuário poderá utilizar os mecanismos disponíveis para bloquear ou restringir outros usuários.</div>
+                <div class="terms-body"><span>7.3.</span> Caso uma pessoa mencione o usuário em uma publicação e, posteriormente, ambos deixem de ser amigos, a menção poderá permanecer visível na publicação original.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">8. MENSAGENS</div>
+                <div class="terms-body"><span>8.1.</span> Qualquer usuário do Realme poderá enviar mensagens a outro usuário, salvo quando houver bloqueio ou outra restrição aplicável.</div>
+                <div class="terms-body"><span>8.2.</span> O usuário não deverá utilizar o sistema de mensagens para assediar, ameaçar, intimidar, enganar ou importunar outras pessoas.</div>
+                <div class="terms-body"><span>8.3.</span> É proibido utilizar o sistema de mensagens para realizar spam, golpes, phishing ou divulgação abusiva de conteúdo.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">9. BLOQUEIO DE USUÁRIOS</div>
+                <div class="terms-body"><span>9.1.</span> O usuário poderá bloquear outro usuário por meio das funcionalidades disponibilizadas pelo Realme.</div>
+                <div class="terms-body"><span>9.2.</span> Após o bloqueio, o usuário bloqueado não poderá, por meio de sua conta bloqueada:</div>
+                <div class="terms-body">• Visualizar o perfil do usuário que realizou o bloqueio, quando tecnicamente aplicável;</div>
+                <div class="terms-body">• Visualizar sua lista de amigos;</div>
+                <div class="terms-body">• Visualizar determinadas atividades;</div>
+                <div class="terms-body">• Enviar mensagens ao usuário que realizou o bloqueio.</div>
+                <div class="terms-body"><span>9.3.</span> O bloqueio não necessariamente remove conteúdos ou interações anteriormente publicados, especialmente quando tais conteúdos envolverem terceiros.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">10. CONTEÚDO PROIBIDO</div>
+                <div class="terms-body">É expressamente proibido utilizar o Realme para publicar, transmitir, solicitar, promover ou distribuir conteúdos que violem a legislação aplicável ou estes Termos.</div>
+                <div class="terms-body">Entre outros, são proibidos:</div>
+
+                <div class="terms-body"><strong>10.1. Nudez e conteúdo sexual</strong></div>
+                <div class="terms-body">É proibida a publicação de imagens, vídeos ou outros conteúdos que apresentem nudez explícita ou conteúdo sexual explícito, independentemente de serem reais ou fictícios.</div>
+
+                <div class="terms-body"><strong>10.2. Conteúdo sexual envolvendo menores</strong></div>
+                <div class="terms-body">É estritamente proibida qualquer forma de conteúdo sexual, sugestivo ou exploratório envolvendo menores de idade.</div>
+                <div class="terms-body">Essa proibição inclui representações reais, fictícias, ilustradas, geradas digitalmente ou de qualquer outra natureza.</div>
+
+                <div class="terms-body"><strong>10.3. Exploração e abuso infantil</strong></div>
+                <div class="terms-body">É proibido qualquer conteúdo que incentive, facilite, normalize ou represente exploração ou abuso sexual de menores.</div>
+
+                <div class="terms-body"><strong>10.4. Violência</strong></div>
+                <div class="terms-body">É proibida a publicação de conteúdo que incentive ou glorifique violência contra outras pessoas.</div>
+
+                <div class="terms-body"><strong>10.5. Automutilação e suicídio</strong></div>
+                <div class="terms-body">É proibido incentivar, instruir, promover ou glorificar automutilação ou suicídio.</div>
+                <div class="terms-body">Conteúdos relacionados a experiências pessoais, prevenção ou busca de ajuda poderão ser tratados de maneira diferente, desde que não promovam ou incentivem tais práticas.</div>
+
+                <div class="terms-body"><strong>10.6. Gore e violência gráfica</strong></div>
+                <div class="terms-body">É proibida a publicação de conteúdo excessivamente gráfico ou destinado principalmente a causar choque por meio da representação de ferimentos graves, mutilações ou violência extrema.</div>
+
+                <div class="terms-body"><strong>10.7. Discurso de ódio</strong></div>
+                <div class="terms-body">É proibido atacar, ameaçar, desumanizar ou incentivar violência ou discriminação contra pessoas ou grupos com base em características protegidas pela legislação aplicável.</div>
+
+                <div class="terms-body"><strong>10.8. Spam</strong></div>
+                <div class="terms-body">É proibido utilizar o Realme para enviar ou publicar conteúdo repetitivo, excessivo ou não solicitado com finalidade de divulgação abusiva.</div>
+
+                <div class="terms-body"><strong>10.9. Fraudes e golpes</strong></div>
+                <div class="terms-body">É proibido utilizar a Plataforma para aplicar golpes, obter vantagem indevida, praticar fraude, phishing, engenharia social ou induzir terceiros a fornecer informações confidenciais.</div>
+
+                <div class="terms-body"><strong>10.10. Impersonação</strong></div>
+                <div class="terms-body">É proibido fingir ser outra pessoa, organização ou entidade com a finalidade de enganar, prejudicar ou obter vantagem indevida.</div>
+
+                <div class="terms-body"><strong>10.11. Atividades ilegais</strong></div>
+                <div class="terms-body">É proibido utilizar o Realme para promover, facilitar ou organizar atividades que violem a legislação aplicável.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">11. PROPRIEDADE INTELECTUAL</div>
+                <div class="terms-body"><span>11.1.</span> A marca Realme, seu nome, identidade visual, logotipos, software, código, interface, design, elementos gráficos e demais componentes da Plataforma pertencem ao Realme ou aos respectivos titulares de direitos.</div>
+                <div class="terms-body"><span>11.2.</span> É proibido copiar, modificar, distribuir, comercializar, reproduzir ou explorar qualquer parte do Realme sem autorização.</div>
+                <div class="terms-body"><span>11.3.</span> O usuário mantém, quando aplicável, os direitos sobre o conteúdo que cria e publica.</div>
+                <div class="terms-body"><span>11.4.</span> Ao publicar conteúdo no Realme, o usuário concede à Plataforma uma licença necessária para hospedar, armazenar, processar, reproduzir e disponibilizar esse conteúdo dentro das funcionalidades do Serviço.</div>
+                <div class="terms-body"><span>11.5.</span> Essa licença não transfere automaticamente a propriedade do conteúdo para o Realme.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">12. MODERAÇÃO DE CONTEÚDO</div>
+                <div class="terms-body"><span>12.1.</span> O Realme poderá analisar, restringir, remover ou limitar a distribuição de conteúdos que violem estes Termos ou a legislação aplicável.</div>
+                <div class="terms-body"><span>12.2.</span> Dependendo da gravidade da violação, poderão ser adotadas medidas como:</div>
+                <div class="terms-body">• Remoção de conteúdo;</div>
+                <div class="terms-body">• Restrição temporária de funcionalidades;</div>
+                <div class="terms-body">• Suspensão temporária da conta;</div>
+                <div class="terms-body">• Suspensão permanente da conta;</div>
+                <div class="terms-body">• Bloqueio de determinadas funcionalidades;</div>
+                <div class="terms-body">• Outras medidas necessárias para proteger a Plataforma e seus usuários.</div>
+                <div class="terms-body"><span>12.3.</span> O Realme poderá adotar medidas imediatas quando houver risco à segurança de usuários, à integridade da Plataforma ou quando houver obrigação legal.</div>
+                <div class="terms-body"><span>12.4.</span> Quando apropriado, o usuário poderá contestar determinadas medidas de moderação por meio dos canais disponibilizados pelo Realme.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">13. DENÚNCIAS</div>
+                <div class="terms-body"><span>13.1.</span> O Realme poderá disponibilizar mecanismos para que usuários denunciem conteúdos ou contas que violem estes Termos.</div>
+                <div class="terms-body"><span>13.2.</span> Denúncias deverão ser realizadas de boa-fé e conter informações suficientes para permitir a análise do caso.</div>
+                <div class="terms-body"><span>13.3.</span> É proibido utilizar o sistema de denúncias de forma deliberadamente abusiva ou fraudulenta.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">14. EXPLORAÇÃO DE FALHAS E VULNERABILIDADES</div>
+                <div class="terms-body"><span>14.1.</span> É proibido explorar vulnerabilidades, falhas ou comportamentos inesperados do Realme para obter vantagens, acesso não autorizado ou informações que não deveriam estar disponíveis.</div>
+                <div class="terms-body"><span>14.2.</span> Também é proibido:</div>
+                <div class="terms-body">• Tentar obter acesso não autorizado a contas;</div>
+                <div class="terms-body">• Contornar mecanismos de segurança;</div>
+                <div class="terms-body">• Interferir no funcionamento da Plataforma;</div>
+                <div class="terms-body">• Realizar ataques contra servidores ou sistemas;</div>
+                <div class="terms-body">• Extrair dados de maneira não autorizada;</div>
+                <div class="terms-body">• Utilizar falhas para prejudicar outros usuários.</div>
+                <div class="terms-body"><span>14.3.</span> Caso o usuário identifique uma vulnerabilidade, deverá comunicá-la imediatamente a um desenvolvedor ou responsável autorizado pelo Realme.</div>
+                <div class="terms-body"><span>14.4.</span> O usuário deverá evitar explorar a vulnerabilidade além do necessário para demonstrar sua existência.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">15. DISPONIBILIDADE DO SERVIÇO</div>
+                <div class="terms-body"><span>15.1.</span> O Realme buscará manter a Plataforma disponível e funcional, mas não garante que o Serviço estará permanentemente livre de interrupções, erros ou indisponibilidade.</div>
+                <div class="terms-body"><span>15.2.</span> O Serviço poderá ficar temporariamente indisponível para manutenção, atualizações, correções, melhorias ou por circunstâncias fora do controle do Realme.</div>
+                <div class="terms-body"><span>15.3.</span> Funcionalidades poderão ser adicionadas, alteradas, suspensas ou removidas ao longo do tempo.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">16. EXCLUSÃO DA CONTA</div>
+                <div class="terms-body"><span>16.1.</span> No momento, o Realme não disponibiliza ao usuário uma função para excluir permanentemente sua própria conta.</div>
+                <div class="terms-body"><span>16.2.</span> Caso essa funcionalidade seja disponibilizada futuramente, poderão ser estabelecidos procedimentos específicos para a solicitação de exclusão.</div>
+                <div class="terms-body"><span>16.3.</span> A indisponibilidade da exclusão da conta não impede o exercício de direitos que sejam garantidos ao usuário pela legislação aplicável.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">17. PROTEÇÃO DE DADOS E PRIVACIDADE</div>
+                <div class="terms-body"><span>17.1.</span> O tratamento de dados pessoais realizado pelo Realme deverá observar a legislação aplicável e as regras estabelecidas em sua Política de Privacidade.</div>
+                <div class="terms-body"><span>17.2.</span> A Política de Privacidade deverá informar, conforme aplicável, quais dados são coletados, para quais finalidades são utilizados, como são armazenados e quais direitos podem ser exercidos pelos titulares.</div>
+                <div class="terms-body"><span>17.3.</span> O usuário deverá consultar a Política de Privacidade antes de utilizar o Serviço.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">18. RESPONSABILIDADES DO USUÁRIO</div>
+                <div class="terms-body">O usuário compromete-se a:</div>
+                <div class="terms-body"><span>18.1.</span> Utilizar o Realme de maneira lícita e responsável.</div>
+                <div class="terms-body"><span>18.2.</span> Respeitar os demais usuários.</div>
+                <div class="terms-body"><span>18.3.</span> Não tentar comprometer a segurança ou funcionamento da Plataforma.</div>
+                <div class="terms-body"><span>18.4.</span> Não utilizar informações obtidas no Realme para prejudicar, ameaçar ou assediar terceiros.</div>
+                <div class="terms-body"><span>18.5.</span> Manter suas informações de cadastro atualizadas.</div>
+                <div class="terms-body"><span>18.6.</span> Respeitar os direitos autorais, direitos de imagem, privacidade e demais direitos de terceiros.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">19. LIMITAÇÃO DE RESPONSABILIDADE</div>
+                <div class="terms-body"><span>19.1.</span> O Realme não se responsabiliza por conteúdos publicados por usuários, salvo quando houver responsabilidade legal atribuível à Plataforma.</div>
+                <div class="terms-body"><span>19.2.</span> O usuário reconhece que interações realizadas com outros usuários ocorrem sob sua própria responsabilidade.</div>
+                <div class="terms-body"><span>19.3.</span> O Realme não garante a identidade, idade, localização, intenção ou veracidade das informações fornecidas por outros usuários.</div>
+                <div class="terms-body"><span>19.4.</span> O usuário deve exercer cautela ao interagir com pessoas que conheceu por meio da Plataforma e não deve compartilhar informações sensíveis ou realizar encontros presenciais sem considerar os riscos envolvidos.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">20. ALTERAÇÕES DESTES TERMOS</div>
+                <div class="terms-body"><span>20.1.</span> O Realme poderá atualizar estes Termos para refletir alterações na Plataforma, na legislação, nas funcionalidades oferecidas ou nas práticas do Serviço.</div>
+                <div class="terms-body"><span>20.2.</span> Quando houver alterações relevantes, o Realme poderá comunicar os usuários por meios razoáveis disponíveis na Plataforma.</div>
+                <div class="terms-body"><span>20.3.</span> A utilização continuada do Serviço após a entrada em vigor das alterações poderá significar a aceitação dos novos Termos, quando permitido pela legislação aplicável.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">21. VIOLAÇÕES DESTES TERMOS</div>
+                <div class="terms-body"><span>21.1.</span> O descumprimento destes Termos poderá resultar em medidas de moderação, incluindo advertência, remoção de conteúdo, restrição de funcionalidades, suspensão ou encerramento da conta.</div>
+                <div class="terms-body"><span>21.2.</span> A medida aplicada deverá considerar, quando apropriado, a natureza, gravidade e recorrência da violação.</div>
+                <div class="terms-body"><span>21.3.</span> Quando exigido pela legislação, determinadas informações poderão ser preservadas ou fornecidas às autoridades competentes mediante solicitação legal válida.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">22. DISPOSIÇÕES GERAIS</div>
+                <div class="terms-body"><span>22.1.</span> A eventual ausência de aplicação imediata de qualquer disposição destes Termos não significa renúncia ao direito de aplicá-la posteriormente.</div>
+                <div class="terms-body"><span>22.2.</span> Caso alguma disposição destes Termos seja considerada inválida ou inexequível, as demais disposições permanecerão em vigor na medida permitida pela legislação aplicável.</div>
+                <div class="terms-body"><span>22.3.</span> Estes Termos devem ser interpretados em conjunto com a Política de Privacidade e demais políticas oficiais do Realme.</div>
+                <div class="terms-body"><span>22.4.</span> Em caso de conflito entre estes Termos e uma disposição legal obrigatória aplicável ao usuário, prevalecerá a disposição legal na extensão necessária.</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-title">23. CONTATO</div>
+                <div class="terms-body">Para dúvidas, denúncias, solicitações relacionadas à conta, comunicação de vulnerabilidades ou outras questões relacionadas ao Realme, o usuário deverá utilizar os canais oficiais disponibilizados pela Plataforma.</div>
+                <div class="terms-body">E-mail de contato: socialrealme@gmail.com</div>
+                <div class="terms-body">Responsável pelo serviço: Maximus Fortes</div>
+                <div class="terms-body">Data de entrada em vigor: 02/10/2026 2:00am UTC -3:00</div>
+            </div>
+
+            <div class="terms-item">
+                <div class="terms-body">Ao criar ou utilizar uma conta no Realme, você declara que leu e compreendeu estes Termos de Uso e Condições e que concorda em cumpri-los, respeitando também a legislação aplicável.</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-area">
+        <div class="footer-block">
+            <div class="links">
+                <a href="https://www.socialrealme.com">Home</a>
+                <a href="https://www.socialrealme.com/login">Login</a>
+                <a href="https://www.socialrealme.com/register">Register</a>
+                <a href="https://www.socialrealme.com/profile">Profile</a>
+            </div>
+        </div>
+        <div class="footer-block">
+            <div class="copy">
+                <p>&copy; 2026 RealMe. All rights reserved.</p>
+            </div>
+        </div>
+        <div class="footer-block">
+            <div class="socials">
+                <a href="https://www.tiktok.com/@socialrealme" ><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/socialrealme" ><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

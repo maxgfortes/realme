@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>RealMe</title>
+  <link rel="icon" href="../public/img/icon.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RealMe" />
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <link rel="apple-touch-icon" href="../public/img/icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../src/styles/shared/root.css" />
+  <link rel="stylesheet" href="../src/styles/shared/base.css" />
+  <link rel="stylesheet" href="../src/styles/pages/auth/login.css" />
+
+  <meta property="og:site_name" content="RealMe">
+  <meta property="og:title" content="RealMe">
+  <meta property="og:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem está ao seu redor.">
+  <meta property="og:url" content="https://socialrealme.com">
+  <meta property="og:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <meta property="og:image:alt" content="Logo e identidade visual do RealMe">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RealMe">
+  <meta name="twitter:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem realmente importa no RealMe.">
+  <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+</head>
+
+<body>
+  <div class="auth-art-area">
+    <div class="auth-art">
+      <img src="../public/img/conections.png" alt="RealMe">
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="error-message-area" id="errorMessageArea">
+      <div class="error-message" id="errorMessage"></div>
+    </div>
+
+    <div class="step1">
+      <div class="create-area">
+
+        <div class="info-area1">
+          <div class="logo-area">
+            <p>Entre no <span>RealMe</span></p>
+          </div>
+
+          <div class="page-title">
+            Bem-vindo de volta! Entre para continuar na sua conta do RealMe.
+          </div>
+        </div>
+
+        <form>
+          <div class="inputs-area">
+
+            <div class="input">
+              <label for="inputEmail">E-mail</label>
+              <input
+                type="email"
+                id="inputEmail"
+                name="email"
+                placeholder="Seu e-mail"
+              />
+            </div>
+
+            <div class="input">
+              <label for="inputPassword">Senha</label>
+              <input
+                type="password"
+                id="inputPassword"
+                name="senha"
+                placeholder="Sua senha"
+              />
+            </div>
+
+          </div>
+
+          <div class="btn-area">
+            <button id="loginBtn" type="submit">Entrar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="more">
+        <div class="forgot-password">
+          <button type="button" id="forgetPassword">
+            Esqueceu sua senha?
+          </button>
+        </div>
+
+        <div class="alert1">
+          Ainda não tem uma conta?
+          <a href="register.html">Criar conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/js/pages/auth/login.js"></script>
+</body>
+</html>
