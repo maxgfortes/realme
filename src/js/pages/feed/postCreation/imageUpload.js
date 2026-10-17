@@ -47,7 +47,6 @@ function renderPreviews() {
   );
 }
 
-
 mediaButton?.addEventListener('click', async () => {
   const files = await selectMediaFiles(selectedFiles.length);
 
@@ -57,7 +56,6 @@ mediaButton?.addEventListener('click', async () => {
 
   renderPreviews();
 });
-
 
 previewArea?.addEventListener('click', (event) => {
   const removeBtn = event.target.closest('.remove-image');
@@ -324,8 +322,6 @@ export function onImagesChanged(callback) {
     callback
   );
 }
-
-
 
 const BANNER_MAX_WIDTH = 1280;
 const BANNER_MAX_BYTES = 500 * 1024;

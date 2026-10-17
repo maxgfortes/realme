@@ -644,8 +644,6 @@ function collectLinks() {
   return links;
 }
 
-
-
 fields.username.addEventListener("input", () => {
   fields.username.value = fields.username.value
     .toLowerCase()

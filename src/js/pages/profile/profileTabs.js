@@ -4,7 +4,6 @@ const menu = document.querySelector(".profile-menu");
 const tabsContainer = $("tabsContainer");
 const menuSlider = $("menuSlider");
 
-
 let currentTab = 0;
 
 const getItems = () => [...menu.querySelectorAll(".menu-item")];
@@ -48,7 +47,6 @@ export function addTab(iconSVG, panel) {
   layoutTabs();
 }
 
-// Remove uma aba (botão + painel) e reorganiza as que sobraram.
 export function removeTab(panel) {
   const index = getTabs().indexOf(panel);
   if (index === -1) return;
@@ -59,13 +57,11 @@ export function removeTab(panel) {
 
   panel.remove();
 
-  // as abas depois da removida sobem uma posição
   getItems().forEach(item => {
     const n = Number(item.dataset.profileTab);
     if (n > index) item.dataset.profileTab = n - 1;
   });
 
-  // se você estava nela, vai para a anterior
   if (currentTab === index) currentTab = Math.max(0, index - 1);
   else if (currentTab > index) currentTab--;
 

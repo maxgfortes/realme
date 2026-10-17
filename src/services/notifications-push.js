@@ -14,8 +14,6 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 const VAPID_KEY = "BMo3jh0D8qPPpaLywdvKZNiJfhi0RGtpvNkzSVsWD5ivJDvdjuvD4eGeRlRkyb59VcUG-PVhT2qSdrRcRO4qivg";
 
-// ─── Detecção de plataforma ──────────────────────────────────
-
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
@@ -31,8 +29,6 @@ function isSafari() {
 function supportsNotifications() {
   return "Notification" in window && "serviceWorker" in navigator;
 }
-
-// ─── Storage helpers ────────────────────────────────────────
 
 const STORAGE_KEY = "fcm_notif_dismissed";
 
@@ -52,8 +48,6 @@ function shouldAskAgain() {
   const dias3 = 3 * 24 * 60 * 60 * 1000;
   return Date.now() - dismissedAt > dias3;
 }
-
-// ─── Modal de contexto (antes do popup nativo) ───────────────
 
 function mostrarModalPermissao() {
   return new Promise((resolve) => {
@@ -234,8 +228,6 @@ function mostrarModalBloqueado() {
   overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
 }
 
-// ─── Registro do token FCM ───────────────────────────────────
-
 export async function registerPushNotifications(uid) {
   if (!supportsNotifications()) {
     console.log("[FCM] Notificações não suportadas neste navegador.");
@@ -306,8 +298,6 @@ async function _registrarToken(uid) {
     console.error("[FCM] Erro ao registrar token:", err);
   }
 }
-
-// ─── Mensagens em foreground (toast) ────────────────────────
 
 export function listenForegroundMessages() {
   onMessage(messaging, (payload) => {

@@ -46,8 +46,6 @@ export async function sendMessage() {
         };
 
         if (replyTo) {
-            // senderName NÃO é persistido: o nome exibido é resolvido
-            // no render a partir do nome do usuário do chat.
             messageData.replyTo = {
                 id: replyTo.id,
                 content: replyTo.content,

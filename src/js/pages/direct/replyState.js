@@ -5,17 +5,12 @@ function notify() {
     listeners.forEach((callback) => callback(currentReply));
 }
 
-/** "Maria Clara Souza" -> "Maria" */
 function getFirstName(fullName) {
     if (!fullName) return "";
 
     return String(fullName).trim().split(/\s+/)[0] || "";
 }
 
-/**
- * senderName é usado apenas na barra de preview, em memória.
- * Ele não entra no documento salvo no Firestore (ver sendMessage.js).
- */
 export function setReplyingTo(message, senderName) {
     const isImage =
         message.type === "image" ||

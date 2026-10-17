@@ -12,12 +12,10 @@ import {
 
 import { renderMessages } from "./renderMessages.js";
 
-
 let messages = [];
 let oldestMessage = null;
 let loadingMore = false;
 let hasMoreMessages = true;
-
 
 export function loadMessages(chatId, otherUserName) {
 
@@ -30,7 +28,6 @@ export function loadMessages(chatId, otherUserName) {
     loadingMore = false;
     hasMoreMessages = true;
 
-
     const messagesRef = collection(
         db,
         "chats",
@@ -38,20 +35,17 @@ export function loadMessages(chatId, otherUserName) {
         "messages"
     );
 
-
     const messagesQuery = query(
         messagesRef,
         orderBy("timestamp", "desc"),
         limit(100)
     );
 
-
     onSnapshot(
         messagesQuery,
         function(snapshot) {
 
             messages = [];
-
 
             snapshot.forEach(function(messageDoc) {
 
@@ -62,9 +56,7 @@ export function loadMessages(chatId, otherUserName) {
 
             });
 
-
             messages.reverse();
-
 
             if (snapshot.docs.length > 0) {
 
@@ -72,7 +64,6 @@ export function loadMessages(chatId, otherUserName) {
                     snapshot.docs[snapshot.docs.length - 1];
 
             }
-
 
             hasMoreMessages = snapshot.size === 100;
 
@@ -84,7 +75,6 @@ export function loadMessages(chatId, otherUserName) {
     );
 }
 
-
 async function loadMoreMessages(chatId, otherUserName) {
 
     if (
@@ -95,25 +85,20 @@ async function loadMoreMessages(chatId, otherUserName) {
         return;
     }
 
-
     const messagesList =
         document.getElementById("dmMessages");
-
 
     if (!messagesList) {
         return;
     }
 
-
     loadingMore = true;
-
 
     const oldHeight =
         messagesList.scrollHeight;
 
     const oldTop =
         messagesList.scrollTop;
-
 
     const messagesRef = collection(
         db,
@@ -122,7 +107,6 @@ async function loadMoreMessages(chatId, otherUserName) {
         "messages"
     );
 
-
     const messagesQuery = query(
         messagesRef,
         orderBy("timestamp", "desc"),
@@ -130,15 +114,12 @@ async function loadMoreMessages(chatId, otherUserName) {
         limit(100)
     );
 
-
     try {
 
         const snapshot =
             await getDocs(messagesQuery);
 
-
         const olderMessages = [];
-
 
         snapshot.forEach(function(messageDoc) {
 
@@ -149,22 +130,18 @@ async function loadMoreMessages(chatId, otherUserName) {
 
         });
 
-
         olderMessages.reverse();
-
 
         messages = [
             ...olderMessages,
             ...messages
         ];
 
-
         if (snapshot.size < 100) {
 
             hasMoreMessages = false;
 
         }
-
 
         if (snapshot.docs.length > 0) {
 
@@ -173,21 +150,17 @@ async function loadMoreMessages(chatId, otherUserName) {
 
         }
 
-
         renderMessages(messages, chatId, otherUserName);
-
 
         requestAnimationFrame(function() {
 
             const newHeight =
                 messagesList.scrollHeight;
 
-
             messagesList.scrollTop =
                 oldTop + (newHeight - oldHeight);
 
         });
-
 
     } catch (error) {
 
@@ -198,21 +171,17 @@ async function loadMoreMessages(chatId, otherUserName) {
 
     }
 
-
     loadingMore = false;
 }
-
 
 function setupScroll(chatId, otherUserName) {
 
     const messagesList =
         document.getElementById("dmMessages");
 
-
     if (!messagesList) {
         return;
     }
-
 
     messagesList.onscroll = function() {
 

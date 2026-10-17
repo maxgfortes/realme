@@ -5,7 +5,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-
 const greetingPfp = document.getElementById('greetingPfp');
 const greeting = document.getElementById('greeting');
 const displayNameElement = document.getElementById('greetingUsername');

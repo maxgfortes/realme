@@ -58,7 +58,6 @@ function getDayLabel(date) {
     return "Há " + diffYears + " anos";
 }
 
-
 export function groupByDay(notifications) {
 
     const groups = {};

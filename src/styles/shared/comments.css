@@ -2,7 +2,7 @@
     position: fixed;
     height: 100vh;
     width: 100%;
-    z-index: 999999;
+    z-index: var(--z-999999);
     top: 0;
     left: 0;
     pointer-events: none;
@@ -32,12 +32,12 @@
     left: 0;
     height: 200px;
     width: 100%;
-    background: #212327;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.247);
-    border-radius: 20px 20px 0 0;
+    background: var(--color-bg-sheet);
+    box-shadow: var(--shadow-sheet);
+    border-radius: var(--radius-20) var(--radius-20) 0 0;
     min-height: 400px;
     transform: translateY(120%);
-    transition: transform 0.3s ease;
+    transition: var(--transition-transform);
     height: 75%;
 }
 
@@ -46,13 +46,13 @@
 }
 
 .comments-header {
-    padding: 9px 20px;
+    padding: var(--space-9) var(--space-20);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1rem;
+    color: var(--color-text-pure);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-1rem);
 }
 
 .comments-header::after {
@@ -60,11 +60,11 @@
     position: absolute;
     height: 4px;
     width: 40px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     top: 6px;
     left: 50%;
     transform: translateX(-50%);
-    background: #474747;
+    background: var(--color-bg-input);
 }
 
 .comment-write-area {
@@ -73,24 +73,24 @@
     bottom: 0;
     left: 0;
     display: flex;
-    padding: 10px 10px 30px 10px;
-    background: #212327;
-    z-index: 9999;
+    padding: var(--space-10) var(--space-10) var(--space-30) var(--space-10);
+    background: var(--color-bg-sheet);
+    z-index: var(--z-9999);
 }
 
 .comment-input-area {
   width: 100%;
   min-height: 50px;
   max-height: 120px;
-  padding: 4px;
+  padding: var(--space-4);
   display: flex;
-  border-radius: 26px;
-  gap: 4px;
+  border-radius: var(--radius-26);
+  gap: var(--space-4);
   align-items: flex-end;
-  background: #171718;
+  background: var(--color-bg-slate-9);
   height: auto;
-  transition: height 0.1s ease;
-  z-index: 9999;
+  transition: var(--transition-height-fast);
+  z-index: var(--z-9999);
 }
 
 .comment-input {
@@ -100,10 +100,10 @@
   height: 42px;
   border: none;
   border-radius: 0;
-  padding: 10px 0;
+  padding: var(--space-10) 0;
   background: transparent;
-  color: #fff;
-  font-size: 16px;
+  color: var(--color-text-pure);
+  font-size: var(--font-size-16);
   resize: none;
   overflow-y: auto;
 }
@@ -112,43 +112,43 @@
   background: transparent;
   height: 42px;
   width: 42px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #999;
+  color: var(--color-text-subtle);
 }
 
 .img-btn svg{
   height: 22px;
   width: 22px;
-  fill: #999;
-  stroke: #999;
-  color: #999;
+  fill: var(--color-icon-gray-60);
+  stroke: var(--color-icon-gray-60);
+  color: var(--color-text-subtle);
 }
 
 .send-comment {
-  background: #007bff;
+  background: var(--color-bg-blue-50);
   border: none;
   width: 52px;
   height: 42px;
   align-items: center;
-  border-radius: 9999px;
-  transition: background-color 0.2s;
+  border-radius: var(--radius-pill);
+  transition: var(--transition-background-color);
   flex-shrink: 0;
 }
 
 .send-comment:active {
-  background-color: #007bff;
+  background-color: var(--color-bg-blue-50);
 }
 
 .send-comment svg {
   width: 16px;
   height: 16px;
-  fill: #fff;
-  stroke: #fff;
+  fill: var(--color-icon-white);
+  stroke: var(--color-icon-white);
 }
 
 .comments-row {
@@ -172,73 +172,72 @@
 }
 
 .comment-pfp {
-    padding: 10px;
+    padding: var(--space-10);
 }
 
 .comment-pfp img {
     width: 40px;
     border-radius: var(--radius-full);
-    background: #18191b;
+    background: var(--color-bg-slate-10);
 }
 
 .comment-right {
-    padding: 12px 8px 8px 4px;
+    padding: var(--space-12) var(--space-8) var(--space-8) var(--space-4);
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-2);
 }
 
 .comment-header {
     display: flex;
     width: 100%;
-    gap: 8px;
+    gap: var(--space-8);
 }
 
 .comment-displayname {
-    color: #fff;
-    font-weight: bold;
-    font-size: 0.9rem;
+    color: var(--color-text-pure);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-0-9rem);
 }
 
 .comment-date {
-    font-size: 0.8rem;
-    color: #999;
+    font-size: var(--font-size-0-8rem);
+    color: var(--color-text-subtle);
 }
 
 .comment-body {
     width: 100%;
-    font-size: 0.9rem;
-    color: #dfdfdf;
+    font-size: var(--font-size-0-9rem);
+    color: var(--color-text-gray-87b);
 }
 
 .comment-reply {
     background: transparent;
-    padding: 6px 6px;
+    padding: var(--space-6) var(--space-6);
     text-align: left;
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #777;
+    font-size: var(--font-size-0-8rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-gray-47);
     border: none;
 }
-
 
 .comment-item {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: #212327;
+    background: var(--color-bg-sheet);
 }
 
 .comment-item-content {
     position: relative;
-    z-index: 2;
+    z-index: var(--z-2);
     display: flex;
     width: 100%;
     transform: translateX(0);
     touch-action: pan-y;
     will-change: transform;
-    background: #212327;
-    padding: 0 4px;
+    background: var(--color-bg-sheet);
+    padding: 0 var(--space-4);
 }
 
 .comment-item-options {
@@ -269,9 +268,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ff3b30;
+    background: var(--color-bg-red-59);
     cursor: pointer;
-    color: #fff;
+    color: var(--color-on-accent);
 }
 
 .comment-item-options .item-btn.delete svg {
@@ -305,10 +304,9 @@
 
 @media (hover: hover) {
     .comment-item-options .item-btn.delete:hover {
-        background: #e82f25;
+        background: var(--color-bg-red-53);
     }
 }
-
 
 .no-comments {
     height: 300px;
@@ -316,6 +314,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: #999;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-subtle);
 }

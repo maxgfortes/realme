@@ -21,7 +21,7 @@ import { openChat } from "./openChat.js";
 const usersList = document.getElementById("dmUsersList");
 
 const messageListeners = new Map();
-const userDataCache = new Map(); // uid -> { fullName, userPfp }, em memória
+const userDataCache = new Map();
 const DEFAULT_PFP = "./public/img/default.jpg";
 const LIST_CACHE_PREFIX = "dmUsersListCache_";
 let firstLoad = true;
@@ -144,7 +144,6 @@ async function getUserData(uid) {
             "user-media"
         );
 
-        // as duas leituras não dependem uma da outra, então rodam em paralelo
         const [userSnap, photoSnap] = await Promise.all([
             getDoc(userRef),
             getDoc(photoRef)
@@ -500,8 +499,6 @@ async function loadUsers(snapshot) {
 
     finishFlip(firstPositions);
 
-    // atualiza o cache local com os dados mais recentes (nomes/fotos já
-    // resolvidos ficam em userDataCache, então isso é praticamente grátis)
     saveListCache(users);
 }
 
@@ -596,8 +593,6 @@ onAuthStateChanged(
 
         firstLoad = true;
 
-        // mostra o que já tinha salvo localmente na hora (zero delay);
-        // se não tiver nada em cache ainda, cai pro skeleton normal
         const hasCache = renderFromCache();
 
         if (!hasCache) {

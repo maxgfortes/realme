@@ -26,17 +26,9 @@ import {
   closeSearch
 } from "/src/js/pages/friends/filters-modal.js";
 
-
-// ==============================
-// O front não categoriza nada:
-// pede o feed de busca ao servidor e renderiza na ordem em que ele manda.
-//   • cold start e "Igual a mim"  → { similar: true }
-//   • "Buscar"                    → { filters: { campo: "texto digitado" } }
-// ==============================
-
-const PAGE_SIZE = 24;     // pessoas por pedido (o servidor devolve 24 por vez)
-const LOAD_AT = 0.7;      // pede mais ao passar de 70% do scroll
-const MAX_AUTO = 6;       // pedidos seguidos sem o usuário rolar (evita laço)
+const PAGE_SIZE = 24;
+const LOAD_AT = 0.7;
+const MAX_AUTO = 6;
 
 const CACHE_KEY = "friends_seen_v2";
 const CACHE_TTL = 6 * 60 * 60 * 1000;
@@ -50,14 +42,8 @@ const searchPeople = httpsCallable(functions, "searchPeople");
 
 const listaAmigos = document.querySelector(".friends-list");
 
-// são dois botões .search-btn: "Igual a mim" (.sec) e "Buscar"
 const btnIgualAMim = document.querySelector(".search-btn.sec");
 const btnBuscar = document.querySelector(".search-btn:not(.sec)");
-
-
-// ==============================
-// ESTADO
-// ==============================
 
 const estado = {
   pessoas: [],
@@ -72,11 +58,6 @@ const estado = {
 let usuarioRolou = false;
 let autoSeguidas = 0;
 let chaveAtual = "";
-
-
-// ==============================
-// CACHE (últimas pessoas vistas)
-// ==============================
 
 function lerCache() {
   try {
@@ -116,20 +97,10 @@ function persistirEstado() {
   salvarCache(chaveAtual, estado.pessoas, estado.fila);
 }
 
-
-// ==============================
-// SERVIDOR
-// ==============================
-
 async function chamar(payload) {
   const resposta = await searchPeople(payload);
   return resposta.data || {};
 }
-
-
-// ==============================
-// RENDER
-// ==============================
 
 function esc(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, (c) => ({
@@ -223,11 +194,6 @@ function mostrarErro() {
     '<div class="empty-search">Não foi possível buscar agora. Tente novamente.</div>';
 }
 
-
-// ==============================
-// "ADICIONAR" (pedido de amizade) — o card inteiro leva ao perfil
-// ==============================
-
 async function adicionar(uid, botao) {
   const eu = auth.currentUser?.uid;
 
@@ -268,7 +234,7 @@ async function adicionar(uid, botao) {
 listaAmigos?.addEventListener("click", (e) => {
   const botao = e.target.closest(".follow-btn");
 
-  if (!botao) return; // fora do botão, o link do card abre o perfil
+  if (!botao) return;
 
   e.preventDefault();
   e.stopPropagation();
@@ -277,11 +243,6 @@ listaAmigos?.addEventListener("click", (e) => {
 
   adicionar(botao.closest(".user")?.dataset.uid, botao);
 });
-
-
-// ==============================
-// ESTADO + HISTÓRICO
-// ==============================
 
 function aplicarEstado(pessoas, fila) {
   estado.pessoas = pessoas.slice();
@@ -299,11 +260,6 @@ function registrarVistos(pessoas) {
 
   estado.historico = [...recentes].slice(-HISTORY_MAX);
 }
-
-
-// ==============================
-// BUSCA (inicial / igual a mim / específica)
-// ==============================
 
 async function buscar({ tipo = "inicial" } = {}) {
   const versao = ++estado.versao;
@@ -325,7 +281,6 @@ async function buscar({ tipo = "inicial" } = {}) {
     if (listaAmigos) listaAmigos.scrollTop = 0;
   }
 
-  // Cold start: pinta na hora o que você viu por último e atualiza em seguida
   let pintouCache = false;
 
   if (tipo === "inicial") {
@@ -354,13 +309,10 @@ async function buscar({ tipo = "inicial" } = {}) {
     const pessoas = dados.people || [];
     const fila = dados.queue || [];
 
-    // "Igual a mim": mostra seus dados nos inputs equivalentes
     if (tipo === "similar" && dados.me?.fields) {
       preencherFiltros(dados.me.fields);
     }
 
-    // o usuário já está rolando a lista em cache: não troca nada na frente
-    // dele, só guarda o resultado novo para a próxima abertura
     if (pintouCache && usuarioRolou) {
       salvarCache(chave, pessoas, fila);
       return;
@@ -384,11 +336,6 @@ async function buscar({ tipo = "inicial" } = {}) {
   }
 }
 
-
-// ==============================
-// CARREGAR MAIS (24 por pedido, ao passar de 70% do scroll)
-// ==============================
-
 async function carregarMais() {
   if (estado.carregando || estado.acabou || !estado.pessoas.length) return;
 
@@ -401,7 +348,6 @@ async function carregarMais() {
     let novas = [];
 
     if (estado.fila.length) {
-      // próximos da fila: o servidor já ordenou, do mais para o menos parecido
       const lote = estado.fila.splice(0, PAGE_SIZE);
       const scores = new Map(lote.map((item) => [item.uid, item.score]));
 
@@ -415,7 +361,6 @@ async function carregarMais() {
         score: scores.get(p.uid) ?? p.score
       }));
     } else {
-      // acabaram os parecidos: o servidor completa com pessoas variadas
       const exclude = [
         ...new Set([...estado.vistos, ...estado.historico])
       ].slice(-400);
@@ -451,12 +396,6 @@ async function carregarMais() {
   }
 }
 
-
-// ==============================
-// SCROLL: 70%
-// ==============================
-
-// o que rola pode ser a janela ou um contêiner (.grid-view, .friends-list...)
 function encontrarScroller() {
   let el = listaAmigos;
 
@@ -482,7 +421,6 @@ function progressoDoScroll() {
 }
 
 function verificarScroll() {
-  // lista escondida (filtros abertos): não adianta pedir mais
   if (!listaAmigos || !listaAmigos.offsetParent) return;
 
   if (usuarioRolou === false && autoSeguidas >= MAX_AUTO) return;
@@ -514,28 +452,15 @@ document.addEventListener(
   { capture: true, passive: true }
 );
 
-
-// ==============================
-// BOTÕES
-// ==============================
-
-// "Igual a mim": preenche os inputs com o seu perfil e busca com idade e
-// localização aproximadas
 btnIgualAMim?.addEventListener("click", () => {
   closeSearch();
   buscar({ tipo: "similar" });
 });
 
-// "Buscar": só o que está nos inputs, sem idade
 btnBuscar?.addEventListener("click", () => {
   closeSearch();
   buscar({ tipo: "especifica" });
 });
-
-
-// ==============================
-// AUTENTICAÇÃO / COLD START
-// ==============================
 
 let iniciou = false;
 

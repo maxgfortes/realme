@@ -17,14 +17,14 @@
     display: flex;
     height: 100%;
     aspect-ratio: 1/1;
-    padding: 16px;
+    padding: var(--space-16);
 }
 
 .pfp-send-wall img {
     height: 100%;
     width: 100%;
-    border-radius: 50%;
-    background: #272727;
+    border-radius: var(--radius-circle);
+    background: var(--color-bg-surface);
 }
 
 .input-send-wall {
@@ -32,11 +32,10 @@
     height: 100%;
     display: flex;
     align-items: center;
-    color: #cacaca;
+    color: var(--color-text-tertiary);
     font-weight: 15px;
-    padding: 10px 10px 10px 0;
+    padding: var(--space-10) var(--space-10) var(--space-10) 0;
 }
-
 
 .wall-post-creation-area {
     height: 100%;
@@ -44,7 +43,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99990;
+    z-index: var(--z-99990);
     display: flex;
     opacity: 1;
     pointer-events: none;
@@ -62,7 +61,7 @@
     background: var(--bg-modal);
     pointer-events: none;
     opacity: 0;
-    transition: all 0.3s;
+    transition: var(--transition-all);
 }
 
 .wall-post-creation-overlay.active {
@@ -76,11 +75,11 @@
     left: 0;
     height: 87%;
     width: 100%;
-    border-radius: 20px 20px 0 0;
-    background: #212327;
+    border-radius: var(--radius-20) var(--radius-20) 0 0;
+    background: var(--color-bg-sheet);
     pointer-events: all;
     transform: translateY(100%);
-    transition: all 0.3s;
+    transition: var(--transition-all);
 }
 
 .wall-post-creation.active {
@@ -92,11 +91,11 @@
     content: '';
     height: 4px;
     width: 80px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    background: #444;
+    background: var(--color-bg-gray-27);
     top: 6px;
     display: block;
     width: 40px;
@@ -126,12 +125,12 @@
 .wall-np-text-area {
   width: 100%;
   display: flex;
-  gap: 12px;
-  padding: 18px 16px 0px;
+  gap: var(--space-12);
+  padding: var(--space-18) var(--space-16) 0px;
   border: none;
   height: auto;
-  transition: height 0.1s ease;
-  padding-bottom: 10px;
+  transition: var(--transition-height-fast);
+  padding-bottom: var(--space-10);
 }
 
 .wall-np-avatar-area {
@@ -141,9 +140,9 @@
 .wall-np-avatar {
   width: 54px;
   height: 54px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
-  border: 1px solid #373737;
+  border: 1px solid var(--color-border-subtle);
 }
 
 .wall-np-input-area {
@@ -154,74 +153,72 @@
   min-height: 66px;
   max-height: 600px;
   height: auto;
-  transition: height 0.1s ease;
+  transition: var(--transition-height-fast);
 }
 
 .wall-np-username {
-  padding-top: 12px;
-  font-weight: bold;
-  color: #fff;
+  padding-top: var(--space-12);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
 }
 
 .wall-np-text-input {
   background: transparent;
   padding: 0;
-  color: #dbdbdb;
+  color: var(--color-text-secondary);
   width: 100%;
   min-height: 42px;
   max-height: 312px;
   height: 42px;
   border: none;
-  font-size: 16px;
+  font-size: var(--font-size-16);
   resize: none;
   overflow-y: auto;
-  padding-bottom: 20px;
-  font-family: Arial, Helvetica, sans-serif;
+  padding-bottom: var(--space-20);
+  font-family: var(--font-family-primary);
 }
 
 .wall-np-text-input:focus {
   outline: none;
 }
 
-
 .wall-sections-btn {
-  padding-bottom: 46px;
+  padding-bottom: var(--space-46);
   width: 100%;
   display: flex;
   position: fixed;
   align-items: center;
   bottom: 0;
-  background: #212327;
+  background: var(--color-bg-sheet);
   height: 110px;
 }
 
 .wall-sections-btns-row {
   display: flex;
   position: relative;
-  gap: 20px;
+  gap: var(--space-20);
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-
 .send-wall-btn-area {
   height: 100%;
   width: 100%;
-  padding: 14px;
+  padding: var(--space-14);
 }
 
 .send-wall-btn {
   background-color: var(--primary-btn);
-  color: #fff;
-  padding: 12px 26px;
-  font-weight: bold;
-  font-size: 14px;
+  color: var(--color-on-accent);
+  padding: var(--space-12) var(--space-26);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-14);
   height: 42px;
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   border: none;
   bottom: 0;
-  transition: all 0.3s;
+  transition: var(--transition-all);
   width: 100%;
 }
 
@@ -229,12 +226,10 @@
   opacity: 0.5;
 }
 
-
-
 .wall-image-preview-carrosel{
   display:flex;
-  padding:6px 16px;
-  gap:16px;
+  padding:var(--space-6) var(--space-16);
+  gap:var(--space-16);
   overflow-x:auto;
   overflow-y:hidden;
 }
@@ -268,27 +263,27 @@
 .wall-img-btn button {
   background: transparent;
   border: none;
-  color: #fff;
-  font-weight: bold;
-  font-size: 16px;
+  color: var(--color-text-pure);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-16);
   align-items: center;
   justify-content: center;
-  padding: 10px 28px;
+  padding: var(--space-10) var(--space-28);
 }
 
 .wall-remove-image {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #242424d5;
+  background-color: var(--color-bg-gray-14-a84);
   border: none;
-  color: #fff;
-  border-radius: 50%;
+  color: var(--color-text-pure);
+  border-radius: var(--radius-circle);
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  z-index: 999999;
+  font-size: var(--font-size-14);
+  z-index: var(--z-999999);
 }

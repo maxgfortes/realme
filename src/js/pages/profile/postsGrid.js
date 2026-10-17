@@ -114,7 +114,6 @@ async function fetchNextPage() {
   const session = gridSession;
   const result = await getDocs(buildQuery());
 
-  // o perfil mudou enquanto buscava
   if (session !== gridSession) return [];
 
   const newPosts = result.docs
@@ -137,7 +136,6 @@ async function fetchNextPage() {
   return newPosts;
 }
 
-// quem chamar durante uma busca em andamento recebe a mesma busca
 function loadNextPage() {
   if (finished) return Promise.resolve([]);
 

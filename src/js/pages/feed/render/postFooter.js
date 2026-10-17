@@ -12,7 +12,6 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
 const likerNameCache = new Map();
 
 export function getLikersName(uid) {
@@ -40,7 +39,6 @@ async function fetchLikerName(uid) {
 
     return `${name} ${surname}`.trim();
 }
-
 
 async function getPostLikers(postId) {
 
@@ -74,7 +72,6 @@ async function getPostLikers(postId) {
     };
 }
 
-
 export function renderLikersFooter(postElement, names, total) {
 
     const footerText = postElement.querySelector(
@@ -99,11 +96,9 @@ export function renderLikersFooter(postElement, names, total) {
 
     footerText.append(firstUser);
 
-
     if (total === 1) {
         return;
     }
-
 
     if (total === 2) {
 
@@ -120,7 +115,6 @@ export function renderLikersFooter(postElement, names, total) {
         return;
     }
 
-
     footerText.append(
         document.createTextNode(", ")
     );
@@ -131,14 +125,12 @@ export function renderLikersFooter(postElement, names, total) {
 
     footerText.append(secondUser);
 
-
     const others = document.createTextNode(
         ` e outras ${total - 2} pessoas`
     );
 
     footerText.append(others);
 }
-
 
 export async function updatePostFooter(postId) {
 

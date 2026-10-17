@@ -32,7 +32,7 @@ const GROUPING_WINDOW = 6 * 60 * 60 * 1000;
 const DEFAULT_PHOTO   = '../public/img/default.jpg';
 
 const ACTIVITIES_CACHE_KEY = 'xact_cache_v2';
-const ACTIVITIES_CACHE_TTL = 2 * 60 * 1000;
+const ACTIVITIES_CACHE_TTL = 1 * 60 * 1000;
 
 function lerCacheAtividades(uid) {
   try {
@@ -836,7 +836,6 @@ window.recarregarAtividades = async function () {
     console.error('[activities-render] Erro ao recarregar:', err);
   }
 };
-
 
 const FILTER_TYPES = {
   'Todos':          null,

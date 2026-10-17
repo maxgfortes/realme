@@ -10,6 +10,7 @@ import "./notifications.js";
 import "./profileTabs.js";
 import "./profileButtons.js";
 import "./friendsList.js";
+import "./themeSettings.js";
 import { startProfile } from "./profileBoot.js";
 
 startProfile();

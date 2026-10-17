@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Arial, Helvetica, Arial, sans-serif;
+  font-family: var(--font-family-primary);
   background: var(--bg-primary) !important;
   overflow-y: auto;
   overflow-x: hidden;

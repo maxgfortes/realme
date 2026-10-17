@@ -52,7 +52,6 @@ const errorMessage =
 
 let creatingAccount = false;
 
-
 function openNextStep() {
     tabOne.classList.add("active");
     tabTwo.classList.add("active");
@@ -62,8 +61,6 @@ function backStep() {
     tabOne.classList.remove("active");
     tabTwo.classList.remove("active");
 }
-
-
 
 function validateEmail() {
     const emailRegex =
@@ -136,8 +133,6 @@ function validateBirthDate(date) {
     return age >= 13;
 }
 
-
-
 function showError(message) {
     errorMessageArea.classList.add("active");
 
@@ -151,7 +146,6 @@ function showError(message) {
     }, 6000);
 }
 
-
 function showLoading(loading) {
     creatingAccount = loading;
 
@@ -160,8 +154,6 @@ function showLoading(loading) {
             loading;
     }
 }
-
-
 
 function validateOpenTab() {
     const email =
@@ -200,7 +192,6 @@ function validateOpenTab() {
     openNextStep();
 }
 
-
 async function createAccount(event) {
 
     event.preventDefault();
@@ -234,7 +225,6 @@ async function createAccount(event) {
     const gender =
         inputGender.value;
 
-
     if (
         email === "" ||
         password === "" ||
@@ -250,7 +240,6 @@ async function createAccount(event) {
 
         return;
     }
-
 
     if (!validateEmail()) {
         showError(
@@ -342,7 +331,6 @@ async function createAccount(event) {
 
                     break;
 
-
                 case "EMAIL_ALREADY_IN_USE":
 
                     showError(
@@ -350,7 +338,6 @@ async function createAccount(event) {
                     );
 
                     break;
-
 
                 case "INVALID_EMAIL":
 
@@ -360,7 +347,6 @@ async function createAccount(event) {
 
                     break;
 
-
                 case "INVALID_BIRTH_DATE":
 
                     showError(
@@ -368,7 +354,6 @@ async function createAccount(event) {
                     );
 
                     break;
-
 
                 case "INVALID_USERNAME":
 
@@ -378,7 +363,6 @@ async function createAccount(event) {
 
                     break;
 
-
                 case "INVALID_NAME":
 
                     showError(
@@ -386,7 +370,6 @@ async function createAccount(event) {
                     );
 
                     break;
-
 
                 case "INVALID_SURNAME":
 
@@ -396,7 +379,6 @@ async function createAccount(event) {
 
                     break;
 
-
                 case "WEAK_PASSWORD":
 
                     showError(
@@ -404,7 +386,6 @@ async function createAccount(event) {
                     );
 
                     break;
-
 
                 case "UNDERAGE":
 
@@ -414,7 +395,6 @@ async function createAccount(event) {
 
                     break;
 
-
                 case "RATE_LIMITED":
 
                     showError(
@@ -422,7 +402,6 @@ async function createAccount(event) {
                     );
 
                     break;
-
 
                 default:
 
@@ -444,7 +423,6 @@ async function createAccount(event) {
         window.location.href =
             "feed.html";
 
-
     } catch (error) {
 
         console.error(
@@ -461,7 +439,6 @@ async function createAccount(event) {
         showLoading(false);
     }
 }
-
 
 nextBtn.addEventListener(
     "click",

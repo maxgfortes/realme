@@ -24,7 +24,6 @@ let cancelBtn = null;
 function createAlert() {
     if (overlay) return;
 
-    // ids próprios para não colidir com o alerta de posts (deletePost.js)
     document.body.insertAdjacentHTML("beforeend", `
         <div class="overlay-alert" id="overlayEventAlert">
             <div class="alert-box">
@@ -77,11 +76,6 @@ function closeAlert() {
     actionType = null;
 }
 
-/*
- * Apagar o doc do evento NÃO apaga as subcoleções. Por isso as listas de
- * presença são limpas primeiro (com o evento ainda existindo, pois as regras
- * consultam o evento) e só depois o evento é removido.
- */
 async function deleteAttendance(eventId) {
     for (const listName of ATTENDANCE_LISTS) {
         const snapshot = await getDocs(collection(db, "events", eventId, listName));
@@ -144,7 +138,6 @@ function setupAlert() {
         } catch (error) {
             console.error("Erro ao apagar evento:", error);
 
-            // mantém o alerta aberto para tentar de novo
             text.textContent = "Não foi possível apagar o evento. Tente novamente.";
             confirmBtn.textContent = "Tentar de novo";
         } finally {

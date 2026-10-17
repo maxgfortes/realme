@@ -11,7 +11,6 @@ import {
 
 import "./dbClickLike.js";
 
-
 export function likePost(postId) {
 
     const user = auth.currentUser;
@@ -32,7 +31,6 @@ export function likePost(postId) {
     });
 }
 
-
 export function unlikePost(postId) {
 
     const user = auth.currentUser;
@@ -50,7 +48,6 @@ export function unlikePost(postId) {
 
     return deleteDoc(likeRef);
 }
-
 
 export async function hasLikedPost(postId) {
 

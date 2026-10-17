@@ -1,10 +1,3 @@
-/*
- * Helper dos menus de baixo (.bottom-menu-area): menções, música e localização.
- *
- * O HTML tem três blocos com os mesmos ids (bottomMenuOverlay / bottomMenu),
- * então cada menu é encontrado a partir de um elemento único que está dentro
- * dele (`content`), sem usar esses ids.
- */
 
 export function escapeHTML(value) {
     return String(value ?? "")
@@ -44,7 +37,6 @@ export function setupBottomMenu({ trigger, content, onOpen, onConfirm, onCancel,
         menu?.classList.remove("active");
         overlay?.classList.remove("active");
 
-        // mesmo padrão do menu de curtidas: a área some depois da animação
         closeTimer = setTimeout(() => area.classList.remove("active"), 300);
 
         onClose?.();

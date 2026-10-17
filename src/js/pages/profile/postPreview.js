@@ -9,7 +9,6 @@ const MULTI_IMAGE_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="
 
 const MUSIC_ICON = `<svg class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="16" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 5.479 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.805 5.479 23.826Z"/></g></svg>`;
 
-/* ---------- música ---------- */
 function getYouTubeId(url = "") {
   const match = String(url).match(
     /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/
@@ -32,7 +31,6 @@ function getMusicCover(post) {
   return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
 }
 
-/* ---------- badges ---------- */
 function createBadge(svg, extraClass = "") {
   const badge = document.createElement("span");
 
@@ -42,7 +40,6 @@ function createBadge(svg, extraClass = "") {
   return badge;
 }
 
-/* ---------- previews ---------- */
 function createImagePreview(source, badge, extraClass = "") {
   const preview = cloneTemplate("postImageTemplate");
   const image = createImage(source, "post-preview-img");
@@ -74,8 +71,6 @@ function createTextPreview(content = "") {
 
   return preview;
 }
-
-/* ---------- post preview ---------- */
 
 function createVideoPreview(source, badge) {
   const preview = cloneTemplate("postImageTemplate");

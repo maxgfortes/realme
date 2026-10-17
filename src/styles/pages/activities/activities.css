@@ -8,28 +8,28 @@ body {
   flex-direction: column;
   align-items: center;
   align-self: center;
-  padding-top: 30px;
+  padding-top: var(--space-30);
   border: none !important;
 }
 
 .end-feed p {
-  color: #474747;
-  font-size: 14px;
-  padding-top: 8px;
+  color: var(--color-text-gray-28);
+  font-size: var(--font-size-14);
+  padding-top: var(--space-8);
   border: none !important;
 }
 
 .act-big {
-  padding: 8px;
+  padding: var(--space-8);
   display: flex;
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 .act-doble {
   display: flex;
 }
 .act-small {
-  padding: 8px;
+  padding: var(--space-8);
   height: 20vh;
   width: 50%;
   display: block;
@@ -51,25 +51,25 @@ body {
 .img-profile img {
   width: 53px;
   height: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background-size: cover;
   backdrop-filter: blur(8px);
 }
 
 .profile-photos {
   display: flex;
-  z-index: 9 !important;
+  z-index: var(--z-9) !important;
 }
 .pfps {
   width: 53px;
   height: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background-size: cover;
 }
 
 .user-img1{
   left: 0;
-  z-index: 2;
+  z-index: var(--z-2);
 }
 
 .image img{
@@ -80,7 +80,7 @@ body {
 
 .user-img2 {
   left: 28px;
-  z-index: 1;
+  z-index: var(--z-1);
   margin-left: -20px;
   padding: 0px;
 }
@@ -88,51 +88,50 @@ body {
 .act-header img {
   height: 53px;
   width: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
 }
 
 .user-info {
-  padding: 0px 8px;
+  padding: 0px var(--space-8);
   align-content: center;
   display: none;
 }
 
 .act-udisplay {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .act-username {
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 
 .act-content {
-  padding: 4px;
-  font-size: 17px;
-  color: #cacaca;
+  padding: var(--space-4);
+  font-size: var(--font-size-17);
+  color: var(--color-text-tertiary);
   display: flex;
   align-items: center;
   align-self: center;
 }
 
-
 .act-content-small {
-  font-size: 17px;
-  color: #cacaca;
+  font-size: var(--font-size-17);
+  color: var(--color-text-tertiary);
   display: block;
   align-items: center;
   align-self: center;
-  padding: 8px;
+  padding: var(--space-8);
 }
 
 .act-content span {
-  font-weight: bold;
-  color: #d8d8d8;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-gray-85);
 }
 
 .act-content-small span {
-  font-weight: bold;
-  color: #d8d8d8;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-gray-85);
 }
 
 .act-small {
@@ -141,12 +140,12 @@ body {
 
 .act-header {
   float: left;
-  margin-right: 20px;
+  margin-right: var(--space-20);
 }
 
 .act-content p {
   margin: 0;
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 #searchResults {
@@ -155,7 +154,7 @@ body {
   width: 100vw;
   background: var(--bg-primary);
   backdrop-filter: blur(8px);
-  border-radius:  0px 0px 12px 12px;
+  border-radius:  0px 0px var(--radius-12) var(--radius-12);
   translate: 0px -4px;
   list-style: none;
   padding: 0;
@@ -163,7 +162,7 @@ body {
   margin: 0;
   display: none;
   overflow-y: auto;
-  z-index: 9999999;
+  z-index: var(--z-9999999);
   overflow-x: hidden;
   padding-bottom: 10rem;
 }
@@ -173,11 +172,10 @@ body {
 }
 
 #searchResults li {
-  padding: 14px 16px;
+  padding: var(--space-14) var(--space-16);
   cursor: pointer;
   transition: background 0.2s ease;
 }
-
 
 #searchResults::-webkit-scrollbar {
   display: none;
@@ -186,17 +184,16 @@ body {
 .search-result-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--space-12);
+  padding: var(--space-12);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: var(--transition-background);
 }
-
 
 .search-user-photo {
   width: 55px;
   height: 55px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
 }
 
@@ -206,38 +203,38 @@ body {
 }
 
 .search-user-name {
-  font-weight: 600;
-  font-size: 15px;
-  color: #fff;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-15);
+  color: var(--color-text-pure);
   text-transform: capitalize;
 }
 
 .search-user-username {
-  font-size: 13px;
-  color: #888;
+  font-size: var(--font-size-13);
+  color: var(--color-text-gray-53);
 }
 
 .no-results {
-  padding: 15px;
+  padding: var(--space-15);
   text-align: center;
-  color: #666;
+  color: var(--color-text-gray-40);
 }
 
 .search-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 20px;
-  color: #888;
+  gap: var(--space-10);
+  padding: var(--space-20);
+  color: var(--color-text-gray-53);
 }
 
 .spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid #333;
-  border-top-color: #ddd;
-  border-radius: 50%;
+  border: 3px solid var(--color-border-default);
+  border-top-color: var(--color-border-gray-87);
+  border-radius: var(--radius-circle);
   animation: spin 0.8s linear infinite;
 }
 
@@ -246,14 +243,12 @@ body {
 }
 
 .search-user-photo.lazy-load {
-  transition: opacity 0.3s ease;
+  transition: var(--transition-opacity);
 }
 
 .search-user-photo.lazy-load.loaded {
   opacity: 1;
 }
-
-
 
 .activities {
   position: relative;
@@ -273,19 +268,19 @@ body {
   flex-direction: column;
   align-items: center;
   align-self: center;
-  padding-top: 30px;
+  padding-top: var(--space-30);
   border: none !important;
 }
 
 .end-feed p {
-  color: #474747;
-  font-size: 14px;
-  padding-top: 8px;
+  color: var(--color-text-gray-28);
+  font-size: var(--font-size-14);
+  padding-top: var(--space-8);
   border: none !important;
 }
 
 .search-area-mobile {
-  padding: 12px;
+  padding: var(--space-12);
   display: flex;
   height: 62px;
 }
@@ -294,9 +289,9 @@ body {
   border-radius: 0.875rem;
   height: 4.6vh;
   min-height: 38px;
-  background-color: #2c2c2c;
+  background-color: var(--color-bg-gray-17);
   width: 100%;
-  color: #cacaca !important;
+  color: var(--color-text-tertiary) !important;
   display: flex;
 }
 
@@ -305,14 +300,14 @@ body {
   width: 100%;
   background-color: transparent;
   border: none;
-  padding-left: 20px;
-  font-size: 16px;
-  color: #cacaca !important;
-  transition: all 0.3s;
+  padding-left: var(--space-20);
+  font-size: var(--font-size-16);
+  color: var(--color-text-tertiary) !important;
+  transition: var(--transition-all);
 }
 
 .search-box-mobile input::placeholder {
-  color: #cacaca !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 .search-box-mobile input:focus {
@@ -326,7 +321,7 @@ body {
 .cancel-search {
   width: 0;
   overflow: hidden;
-  transition: width 0.3s ease
+  transition: var(--transition-width)
 }
 
 .cancel-search.active {
@@ -336,23 +331,23 @@ body {
 .cancel-search-btn {
   height: 100%;
   width: 100%;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   border: none;
-  color: #ddd;
-  font-weight: bold;
+  color: var(--color-text-soft);
+  font-weight: var(--font-weight-bold);
   background: transparent;
-  padding-left: 12px;
+  padding-left: var(--space-12);
 }
 
 .searchTitle {
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
+  padding: var(--space-16);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
 }
 
 .act-big {
-  padding: 12px 12px;
+  padding: var(--space-12) var(--space-12);
   display: flex;
 }
 
@@ -360,7 +355,7 @@ body {
   display: flex;
 }
 .act-small {
-  padding: 8px;
+  padding: var(--space-8);
   height: 20vh;
   min-height: 180px;
   width: 50%;
@@ -383,25 +378,25 @@ body {
 .img-profile img {
   width: 53px;
   height: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background-size: cover;
   backdrop-filter: blur(8px);
 }
 
 .profile-photos {
   display: flex;
-  z-index: 99 !important;
+  z-index: var(--z-99) !important;
 }
 .pfps {
   width: 53px;
   height: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background-size: cover;
 }
 
 .user-img1{
   left: 0;
-  z-index: 2;
+  z-index: var(--z-2);
 }
 
 .image img{
@@ -411,64 +406,60 @@ body {
 }
 
 .user-img2 {
-  left: 28px; /* ajuste este valor para mais ou menos sobreposição */
-  z-index: 1;
+  left: 28px;
+  z-index: var(--z-1);
   margin-left: -20px;
   padding: 0px;
 }
 
-
-
 .act-header img {
   height: 53px;
   width: 53px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
 }
 
 .user-info {
-  padding: 0px 8px;
+  padding: 0px var(--space-8);
   align-content: center;
   display: none;
 }
 
 .act-udisplay {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .act-username {
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 
 .act-content {
-  padding: 4px;
-  font-size: 17px;
-  color: #cacaca;
+  padding: var(--space-4);
+  font-size: var(--font-size-17);
+  color: var(--color-text-tertiary);
   display: flex;
   align-items: center;
   align-self: center;
 }
 
-
 .act-content-small {
-  font-size: 17px;
-  color: #cacaca;
+  font-size: var(--font-size-17);
+  color: var(--color-text-tertiary);
   display: block;
   align-items: center;
   align-self: center;
-  padding: 8px;
+  padding: var(--space-8);
 }
 
 .act-content span {
-  font-weight: bold;
-  color: #d8d8d8;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-gray-85);
 }
 
 .act-content-small span {
-  font-weight: bold;
-  color: #d8d8d8;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-gray-85);
 }
-
 
 .act-small {
   overflow: hidden;
@@ -476,27 +467,27 @@ body {
 
 .act-header {
   float: left;
-  margin-right: 20px;
+  margin-right: var(--space-20);
 }
 
 .act-content p {
   margin: 0;
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 .search-result-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--space-12);
+  padding: var(--space-12);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: var(--transition-background);
 }
 
 .search-user-photo {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
 }
 
@@ -506,31 +497,31 @@ body {
 }
 
 .search-user-username {
-  font-size: 13px;
-  color: #888;
+  font-size: var(--font-size-13);
+  color: var(--color-text-gray-53);
 }
 
 .no-results {
-  padding: 15px;
+  padding: var(--space-15);
   text-align: center;
-  color: #666;
+  color: var(--color-text-gray-40);
 }
 
 .search-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 20px;
-  color: #888;
+  gap: var(--space-10);
+  padding: var(--space-20);
+  color: var(--color-text-gray-53);
 }
 
 .spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid #333;
-  border-top-color: #ddd;
-  border-radius: 50%;
+  border: 2px solid var(--color-border-default);
+  border-top-color: var(--color-border-gray-87);
+  border-radius: var(--radius-circle);
   animation: spin 0.8s linear infinite;
 }
 
@@ -539,7 +530,7 @@ body {
 }
 
 .search-user-photo.lazy-load {
-  transition: opacity 0.3s ease;
+  transition: var(--transition-opacity);
 }
 
 .search-user-photo.lazy-load.loaded {
@@ -548,13 +539,11 @@ body {
 
 .header-page {
   width: 100%;
-  font-size: 26px;
-  font-weight: bold;
-  padding: 4px 16px;
+  font-size: var(--font-size-26);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-4) var(--space-16);
 }
 
-
-/* ── lista ───────────────────────────────────────────────────── */
 .xact-list {
   display: flex;
   flex-direction: column;
@@ -564,16 +553,15 @@ body {
   padding: 2rem 1rem;
   text-align: center;
   opacity: .45;
-  font-size: .875rem;
+  font-size: var(--font-size-0-875rem);
 }
 
-/* ── loading bar ─────────────────────────────────────────────── */
 .xact-loading {
   width: 30px;
   height: 30px;
-  border: 2px solid #333;
-  border-top-color: #ddd;
-  border-radius: 50%;
+  border: 2px solid var(--color-border-default);
+  border-top-color: var(--color-border-gray-87);
+  border-radius: var(--radius-circle);
   animation: spin 0.8s linear infinite;
 }
 @keyframes xact-pulse {
@@ -589,21 +577,18 @@ body {
   align-items: center;
 }
 
-
-/* ── swipe wrapper ───────────────────────────────────────────── */
 .act-swipe-wrapper {
   position: relative;
-  overflow: hidden;           /* esconde o hint antes do swipe */
+  overflow: hidden;
 }
 
-/* ── botão de apagar (fica atrás do card) ────────────────────── */
 .act-delete-hint {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  pointer-events: none;       /* invisível até o card abrir */
+  pointer-events: none;
 }
 .act-swipe-wrapper.open .act-delete-hint {
   pointer-events: auto;
@@ -613,13 +598,13 @@ body {
   display: flex;
   align-items: center;
   gap: .4rem;
-  padding: 20px 22px;
+  padding: var(--space-20) var(--space-22);
   border: none;
   height: 100%;
-  background: #e53e3e;
-  color: #fff;
-  font-size: .8rem;
-  font-weight: 600;
+  background: var(--color-bg-red-57);
+  color: var(--color-on-accent);
+  font-size: var(--font-size-0-8rem);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   letter-spacing: .02em;
 }
@@ -627,14 +612,13 @@ body {
 .act-delete-btn svg {
   width: 34px;
   height: 34px;
-  stroke: #fff;
+  stroke: var(--color-icon-white);
 }
 
 .act-delete-btn:active {
   opacity: .8;
 }
 
-/* ── card ────────────────────────────────────────────────────── */
 .act-big {
   display: flex;
   align-items: center;
@@ -646,7 +630,6 @@ body {
   will-change: transform;
 }
 
-/* ── inner (avatars + texto lado a lado) ─────────────────────── */
 .act-inner {
   display: flex;
   align-items: center;
@@ -654,7 +637,6 @@ body {
   width: 100%;
 }
 
-/* ── avatars ─────────────────────────────────────────────────── */
 .act-avatars {
   flex-shrink: 0;
   position: relative;
@@ -663,10 +645,10 @@ body {
 .act-avatars.single img {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
   display: block;
-  background: #272727;
+  background: var(--color-bg-surface);
 }
 
 .act-avatars.duo {
@@ -677,24 +659,23 @@ body {
 .act-avatars.duo img {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
   position: absolute;
   border: 2px solid var(--bg-primary);
-  background: #272727;
+  background: var(--color-bg-surface);
 }
 
 .act-avatars.duo img:first-child {
   top: -5; left: 0;
-  z-index: 1;
+  z-index: var(--z-1);
 }
 
 .act-avatars.duo img:last-child {
   bottom: -5px; right: 0; left: 10px;
-  z-index: 2;
+  z-index: var(--z-2);
 }
 
-/* ── texto ───────────────────────────────────────────────────── */
 .act-text {
   flex: 1;
   min-width: 0;
@@ -702,45 +683,42 @@ body {
 
 .act-text p {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.45;
-  color: #aaa;
+  font-size: var(--font-size-15);
+  line-height: var(--line-height-comfortable);
+  color: var(--color-text-muted);
   white-space: normal;
   overflow-wrap: break-word;
 }
 
 .act-link  { 
-  font-weight: bold;
-  color: #fff !important;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure) !important;
 }
 .act-acao  { 
-  color: #ccc;
+  color: var(--color-text-gray-80);
 }
 .act-tempo { 
-  color: #666;
-  font-size: 0.8rem;
+  color: var(--color-text-gray-40);
+  font-size: var(--font-size-0-8rem);
   white-space: nowrap;
 }
 
-/* link de perfil dentro do texto */
 .act-link {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: inherit;
   text-decoration: none;
 }
 
-/* destaque (tempo, contagem, ação) */
 .act-hl {
   opacity: .5;
-  font-size: .98rem;
+  font-size: var(--font-size-0-98rem);
 }
 
-/* ── badge amigo ─────────────────────────────────────────────── */
 .act-friend-badge {
   display: block;
   margin-top: .3rem;
-  font-size: .65rem;
-  font-weight: 700;
+  font-size: var(--font-size-0-65rem);
+  font-weight: var(--font-weight-bold);
   letter-spacing: .06em;
   text-transform: uppercase;
   opacity: .4;
@@ -748,9 +726,9 @@ body {
 }
 
 .xact-empty {
-  font-size: 17px;
-  font-weight: bold;
-  color: #fff;
+  font-size: var(--font-size-17);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
 }
 
 .act-icon {
@@ -768,20 +746,20 @@ body {
 
 .act-filters {
   display: flex;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-12);
   overflow-y: auto;
 }
 
 .act-filter {
-  padding: 9px 19px;
-  background-color: #222;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  padding: var(--space-9) 19px;
+  background-color: var(--color-bg-gray-13);
+  border-radius: var(--radius-10);
+  font-size: var(--font-size-0-8rem);
+  font-weight: var(--font-weight-bold);
   text-wrap: nowrap;
   white-space: nowrap;
-  color: #fafafa;
+  color: var(--color-text-gray-98);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -789,12 +767,12 @@ body {
 
 .act-filter.active {
   color: var(--bg-primary);
-  background-color: #fafafa;
+  background-color: var(--color-bg-gray-98);
 }
 
 .act-section-label {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #fafafa;
-  padding: 18px 12px 6px;
+  font-size: var(--font-size-0-88rem);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-gray-98);
+  padding: var(--space-18) var(--space-12) var(--space-6);
 }

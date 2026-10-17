@@ -2,13 +2,14 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
+  <script src="/src/shared/theme-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Sobre • RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <meta name="theme-color" content="#0f0f0f">
-  <link rel="stylesheet" href="./src/styles/root.css">
+  <link rel="stylesheet" href="./src/styles/shared/tokens.css">
 
   <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="Sobre o RealMe">
@@ -30,12 +31,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: var(--font-family-primary);
 }
 
 body {
   margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial;
+  font-family: var(--font-family-primary);
   background: #0f0f0f;
   color: #ffffff;
   overflow: hidden;
@@ -85,7 +86,7 @@ body {
     font-size: 1.9rem;
     font-weight: bold;
     padding: 6px;
-    font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+    font-family: var(--font-family-primary);
     letter-spacing: -0.01em;
 }
 

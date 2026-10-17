@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <script src="/src/shared/theme-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
@@ -45,7 +46,6 @@
 </head>
 <body>
 
-<!--- side menu -->
 <div class="side-menu" id="sideMenu">
     <div class="menu-header">
         <div class="header-block">
@@ -77,6 +77,14 @@
             <a href="#" class="menu-item-link" id="btn-toggle-notif">
                 <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="m21.306 14.019-.484-.852A6.358 6.358 0 0 1 20 9.997a7.953 7.953 0 0 0-4.745-7.302 3.971 3.971 0 0 0-6.51.002 7.95 7.95 0 0 0-4.74 7.323 6.337 6.337 0 0 1-.83 3.175l-.468.823a4.001 4.001 0 0 0 3.476 5.983h1.96a3.98 3.98 0 0 0 7.716 0h1.964a4.004 4.004 0 0 0 3.482-5.982Zm-9.304 6.983a1.993 1.993 0 0 1-1.722-1.001h3.444a1.993 1.993 0 0 1-1.722 1.001Zm7.554-3.997a1.986 1.986 0 0 1-1.732.996H6.184a2.002 2.002 0 0 1-1.74-2.993l.47-.822a8.337 8.337 0 0 0 1.093-4.174 5.962 5.962 0 0 1 3.781-5.584.996.996 0 0 0 .494-.426 1.976 1.976 0 0 1 3.439 0 1 1 0 0 0 .494.425 5.989 5.989 0 0 1 3.786 5.634 8.303 8.303 0 0 0 1.082 4.094l.483.852a1.984 1.984 0 0 1-.01 1.998Z"></path></svg>
                 <span id="notif-menu-label">Ativar Notificações</span>
+            </a>
+        </div>
+
+        <div class="section-title">Temas</div>
+        <div class="menu-conjunt">
+            <a href="#" class="menu-item-link theme-toggle" id="early2012Toggle" role="switch" aria-checked="false">
+                <svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title></title><path d="M3.642 16.11V6.033a1.192 1.192 0 0 1 1.192-1.192h13.433a1.192 1.192 0 0 1 1.192 1.192m-5.343 13.125H3.778A1.778 1.778 0 0 1 2 17.38v-1.27h11.917" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M22 17.832v.16a1.322 1.322 0 0 1-.121.7.826.826 0 0 1-.343.345 1.316 1.316 0 0 1-.7.121h-2.755a1.315 1.315 0 0 1-.7-.121.826.826 0 0 1-.343-.344 1.321 1.321 0 0 1-.12-.7V10.2a1.321 1.321 0 0 1 .12-.7.826.826 0 0 1 .344-.344 1.315 1.315 0 0 1 .699-.122h2.755a1.315 1.315 0 0 1 .7.122.826.826 0 0 1 .343.343A1.322 1.322 0 0 1 22 10.2v7.632Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span>Early 2012</span>
             </a>
         </div>
 
@@ -117,7 +125,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="event-layer" id="eventLayer">
   <div class="event-header">
@@ -207,7 +214,6 @@
   </div>
 </div>
 
-<!-- more menu -->
 <div class="about-menu-area" id="aboutMenuArea">
   <div class="about-menu-overlay" id="aboutMenuOverlay"></div>
   <div class="about-menu" id="aboutMenu">
@@ -580,7 +586,6 @@
 </div>
 
 <div class="profile-page" id="profilePage">
-<!-- Nav Topo -->
 <nav class="navbar-top">
   <div class="top-left">
     <button onclick="window.history.back()">
@@ -599,7 +604,6 @@
   </div>
 </nav>
 
-<!-- Perfil Pagina visivel-->
 <div class="full-profile-container">
   <div class="pf-banner-area">
     <div class="profile-banner"></div>
@@ -687,7 +691,6 @@
 
   <div class="profile-body">
     <div class="tabs-container" id="tabsContainer">
-      <!-- Posts/Timeline -->
       <div class="profile-tab">
         <div class="mural-posts" id="muralPosts">
           <div class="post-preview"></div>
@@ -699,7 +702,6 @@
         </div>
         <div id="postsSentinel"></div>
       </div>
-      <!-- Wall/Mural -->
       <div class="profile-tab">
         <div class="send-wall">
           <div class="pfp-send-wall" id="pfp-user"></div>
@@ -707,7 +709,6 @@
         </div>
         <div class="wall-feed" id="wallFeed"></div>
       </div>
-      <!-- Links -->
       <div class="profile-tab">
         <div id="linksTab"></div>
       </div>

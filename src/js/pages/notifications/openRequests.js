@@ -3,7 +3,6 @@ const closeRequestsArea = document.getElementById('closeRequestsArea');
 const openRequestsArea = document.getElementById('openRequestsArea');
 const notificationsContainer = document.getElementById('notificationsContainer');
 
-
 function openRequestsTab(){
     requestsArea.classList.add('active');
     notificationsContainer.classList.add('hidden');

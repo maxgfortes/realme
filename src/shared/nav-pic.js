@@ -5,10 +5,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-
 const navPfp = document.getElementById('nav-pic');
 const navPfpPc = document.getElementById('navPicPc');
-
 
 function lerCache() {
   const localGreeting = localStorage.getItem("greeting");

@@ -12,11 +12,10 @@ body {
   width: 100%;
 }
 
-/* --------------------- Navbar superior ------------------*/
 .logo-mobile {
   color: var(--text-caca);
-  font-size: 28px;
-  font-weight: 700;
+  font-size: var(--font-size-28);
+  font-weight: var(--font-weight-bold);
   width: 100%;
   height: 100%;
   display: flex;
@@ -34,8 +33,8 @@ body {
   align-items: center;
   justify-content: space-between;
   background: var(--nav-bg);
-  z-index: 9999;
-  padding: 0 4px;
+  z-index: var(--z-9999);
+  padding: 0 var(--space-4);
 }
 
 .navbar-top svg {
@@ -76,8 +75,6 @@ body {
   align-items: center;
 }
 
-/* ---------------------- formatação de texto --------------------*/
-
 .hashtag {
   color: var(--primary-color);
 }
@@ -87,10 +84,8 @@ body {
   text-decoration: none;
 }
 
-/* ------------------- greeting box + page----------------------------*/
-
 .welcome-container {
-  padding-top: 64px;
+  padding-top: var(--space-64);
   padding-bottom: 120px;
   width: 100%;
   overflow-x: hidden;
@@ -101,36 +96,36 @@ body {
 
 .welcome-box {
   width: 100%;
-  padding: 4px 12px 8px;
+  padding: var(--space-4) var(--space-12) var(--space-8);
 }
 
 .user-welcome {
   background-color: transparent;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-10);
 }
 
 .greetingPfp {
   width: 72px;
   height: 72px ;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   flex-shrink: 0;
   -webkit-user-drag: none;
-  background: #272727;
+  background: var(--color-bg-surface);
 }
 
 .user-welcome h1 {
-  font-size: 19px;
+  font-size: var(--font-size-19);
   height: 22px;
   word-wrap: break-word;
   display: flex;
   align-self: center;
   overflow-wrap: break-word;
-  gap: 4px;
+  gap: var(--space-4);
   width: 100%;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .user-container {
@@ -138,7 +133,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  gap: 6px;
+  gap: var(--space-6);
   min-width: 0;
   flex: 1;
 }
@@ -158,18 +153,15 @@ body {
 }
 
 .np-btn {
-  background-color: #202020;
+  background-color: var(--color-bg-gray-13b);
   border: none;
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: var(--radius-14);
+  padding: var(--space-10) var(--space-14);
   color: var(--text-aaa);
-  font-size: 0.88rem;
+  font-size: var(--font-size-0-88rem);
   text-align: left;
   width: 100%;
 }
-
-
-/*------------- message Server -------------*/
 
 .serverMessageArea {
   width: 100%;
@@ -181,7 +173,7 @@ body {
   max-height: 500px;
   opacity: 1;
   overflow: hidden;
-  transition: all 0.6s;
+  transition: var(--transition-all-slow);
   background: var(--bg-primary);
 }
 
@@ -193,14 +185,14 @@ body {
 .closeMessage {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-fff);
   background: transparent;
-  font-size: 18px;
+  font-size: var(--font-size-18);
   position: absolute;
   top: 10px;
   right: 10px;
@@ -223,39 +215,39 @@ body {
 .textMessageArea {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 32px;
+  gap: var(--space-8);
+  padding: var(--space-32);
 }
 
 .messageTitle {
   width: 100%;
-  font-size: 1.3rem;
-  font-weight: bold;
+  font-size: var(--font-size-1-3rem);
+  font-weight: var(--font-weight-bold);
   color: var(--text-fff);
   text-align: center;
 }
 
 .messageBody {
   width: 100%;
-  font-size: 1rem;
+  font-size: var(--font-size-1rem);
   color: var(--text-999);
   text-align: center;
 }
 
 .messageAction {
   width: 100%;
-  padding: 0 32px 32px;
+  padding: 0 var(--space-32) var(--space-32);
 }
 
 .messageBtn {
   width: 100%;
   height: 50px;
-  border-radius: 10px;
+  border-radius: var(--radius-10);
   border: none;
   background: var(--primary-color);
-  color: var(--text-fff);
-  font-weight: bold;
-  font-size: 1rem;
+  color: var(--color-on-accent);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-1rem);
 }
 
 .left-box-area {
@@ -266,111 +258,9 @@ body {
   background: var(--bg-primary);
 }
 
-
-
-/*
-@media (min-width: 800px) {
-  
-  .welcome-container {
-      padding: 30px 0 0 40px;
-      width: 100%;
-      max-width: 700px;
-  }
-
-  .create-new-post {
-    max-width: 370px;
-  }
-
-  .post-bottom {
-    max-width: 400px;
-  }
-
-  .feed-page {
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .feedRow {
-    width: 100%;
-  }
-
-  .main-content {
-    width: 100%;
-  }
-
-  .img-card {
-      border-radius: var(--radius-min);
-      width: 100%;
-      height: auto;
-      max-width: 300px;
-      max-height: 350px;
-  }
-
-  .img-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: var(--radius-min);
-      display: block;
-      max-height: 350px !important;
-  }
-
-  .carrossel-track {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x proximity !important;
-  }
-
-  .carrossel-track .carrossel-slide {
-      flex: 0 0 100%;
-      scroll-snap-align: none;
-  }
-
-  .left-box-area {
-    display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    min-width: 240px;
-    max-width: 400px;
-    padding: 80px 20px 20px;
-  }
-
-  .left-box {
-    width: 100%;
-    height: 100%;
-    background: #272727;
-    border-radius: 10px;
-  }
-
-  .left-box-content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
-
-  .left-box-title {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #cacaca;
-  }
-  
-
-} */
-
-
 #scroll_page {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-1);
   background: transparent;
   overscroll-behavior-y: contain;
   will-change: transform;
@@ -386,16 +276,16 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--text-999);
-  font-size: 15px;
+  font-size: var(--font-size-15);
   opacity: 0;
-  z-index: 0;
+  z-index: var(--z-0);
   pointer-events: none;
 }
 
 #ptrHook .ptr-conteudo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-10);
 }
 
 #ptrHook .ptr-seta {
@@ -418,8 +308,6 @@ body {
 #ptrHook[data-estado="action"] .ptr-seta { display: none; }
 #ptrHook[data-estado="action"] .ptr-gif { display: block; }
 
-
-
 .top-btn2::after {
   content: "";
   position: absolute;
@@ -427,24 +315,22 @@ body {
   right: 10px;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   border: 3px solid var(--bg-primary);
   background: red;
   opacity: 0;pointer-events: none;
-  transition: all 0.3s;
+  transition: var(--transition-all);
 }
 
 html.has-unread-notif .top-btn2::after {
   opacity: 1;
 }
 
-
-
 .push-modal { 
   position: fixed;
   height: 100%;
   width: 100%;
-  z-index: 9999;
+  z-index: var(--z-9999);
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -464,7 +350,7 @@ html.has-unread-notif .top-btn2::after {
   position: fixed;
   pointer-events: none;
   opacity: 0;
-  transition: all 0.3s;
+  transition: var(--transition-all);
 }
 
 .push-box-overlay.active {
@@ -473,39 +359,39 @@ html.has-unread-notif .top-btn2::after {
 }
 
 .push-modal-box {
-  background: #212327;
-  border-radius: 20px 20px 0 0;
+  background: var(--color-bg-sheet);
+  border-radius: var(--radius-20) var(--radius-20) 0 0;
   width: 100%;
-  padding-bottom: 50px;
+  padding-bottom: var(--space-50);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  z-index: 1;
-  transition: all 0.3s;
+  gap: var(--space-14);
+  z-index: var(--z-1);
+  transition: var(--transition-all);
   transform: translateY(100%);
 }
 
 .push-modal-box.active {
-  background: #212327;
-  border-radius: 20px 20px 0 0;
+  background: var(--color-bg-sheet);
+  border-radius: var(--radius-20) var(--radius-20) 0 0;
   width: 100%;
-  padding-bottom: 50px;
+  padding-bottom: var(--space-50);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  z-index: 1;
+  gap: var(--space-14);
+  z-index: var(--z-1);
   transform: translateY(0);
 }
 
 .push-enable-btn {
   background: var(--primary-color);
-  color: #fff;
-  font-weight: bold;
-  font-size: 15px;
+  color: var(--color-on-accent);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-15);
   width: 100%;
-  padding: 10px;
+  padding: var(--space-10);
   height: 50px;
   border-radius: var(--radius-14);
   border: none;
@@ -513,11 +399,11 @@ html.has-unread-notif .top-btn2::after {
 
 .push-enable-btn.sec {
   background: transparent;
-  color: #fff;
-  font-weight: bold;
-  font-size: 15px;
+  color: var(--color-text-pure);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-15);
   width: 100%;
-  padding: 10px;
+  padding: var(--space-10);
   height: 50px;
   border-radius: var(--radius-14);
   border: none;
@@ -525,34 +411,34 @@ html.has-unread-notif .top-btn2::after {
 
 .push-box-btns {
   display: flex;
-  gap: 8px;
-  padding: 0 14px;
+  gap: var(--space-8);
+  padding: 0 var(--space-14);
 }
 
 .push-box-content {
-  padding: 24px 14px 14px 14px;
+  padding: var(--space-24) var(--space-14) var(--space-14) var(--space-14);
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .push-box-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
 }
 
 .push-box-body {
-  font-size: 16px;
-  color: #999;
+  font-size: var(--font-size-16);
+  color: var(--color-text-subtle);
   max-width: 300px;
 }
 
 .push-box-icon-area {
-  padding: 14px 14px 0;
+  padding: var(--space-14) var(--space-14) 0;
   width: 100%;
   display: flex;
   align-items: center;
@@ -561,8 +447,8 @@ html.has-unread-notif .top-btn2::after {
 }
 
 .push-box-icon {
-  background-color: #363636;
-  border-radius: 50%;
+  background-color: var(--color-bg-gray-21);
+  border-radius: var(--radius-circle);
   height: 80px;
   width: 80px;
   display: flex;

@@ -1,0 +1,327 @@
+:root[data-theme="skeuomorphism"] {
+  color-scheme: light;
+
+  --color-brand: #3b5998;
+  --color-brand-dark: #2d4373;
+  --color-brand-light: #4267b2;
+  --color-link: #385898;
+  --color-danger: #dd3c10;
+  --color-action: #4b4f56;
+  --color-action-disabled: #bec3c9;
+
+  --color-bg-black: #e9ebee;
+  --color-bg-black-a0: rgba(0, 0, 0, 0);
+  --color-bg-blue-50: #4267b2;
+  --color-bg-blue-50b: #4267b2;
+  --color-bg-blue-68-a15: rgba(66, 103, 178, 0.15);
+  --color-bg-card: #ffffff;
+  --color-bg-gray-0-a90: rgba(0, 0, 0, 0.45);
+  --color-bg-gray-10: #ffffff;
+  --color-bg-gray-12: #ffffff;
+  --color-bg-gray-13: #ffffff;
+  --color-bg-gray-13b: #ffffff;
+  --color-bg-gray-14-a84: rgba(0, 0, 0, 0.45);
+  --color-bg-gray-17: #ffffff;
+  --color-bg-gray-19: #f6f7f9;
+  --color-bg-gray-21: #f6f7f9;
+  --color-bg-gray-23: #f6f7f9;
+  --color-bg-gray-27: #ebedf0;
+  --color-bg-gray-53: #dddfe2;
+  --color-bg-gray-6-a0: rgba(15, 15, 15, 0);
+  --color-bg-gray-6-a29: rgba(0, 0, 0, 0.191);
+  --color-bg-gray-6-a40: rgba(0, 0, 0, 0.26);
+  --color-bg-gray-6-a72: rgba(0, 0, 0, 0.45);
+  --color-bg-gray-6-a90: rgba(0, 0, 0, 0.45);
+  --color-bg-gray-60: #dddfe2;
+  --color-bg-gray-67: #dddfe2;
+  --color-bg-gray-98: #3b5998;
+  --color-bg-hover: #ebedf0;
+  --color-bg-input: #f5f6f7;
+  --color-bg-inverse: #3b5998;
+  --color-bg-modal: rgba(0, 0, 0, 0.4);
+  --color-bg-primary: #e9ebee;
+  --color-bg-red-53: #dd3c10;
+  --color-bg-red-55: #dd3c10;
+  --color-bg-red-57: #dd3c10;
+  --color-bg-red-59: #dd3c10;
+  --color-bg-secondary: #ffffff;
+  --color-bg-section: #e9ebee;
+  --color-bg-sheet: #ffffff;
+  --color-bg-slate-10: #ffffff;
+  --color-bg-slate-13: #ffffff;
+  --color-bg-slate-13b: #ffffff;
+  --color-bg-slate-14-a0: rgba(33, 35, 39, 0);
+  --color-bg-slate-17-a96: rgba(0, 0, 0, 0.45);
+  --color-bg-slate-18: #f6f7f9;
+  --color-bg-slate-20: #f6f7f9;
+  --color-bg-slate-20b: #f6f7f9;
+  --color-bg-slate-21: #f6f7f9;
+  --color-bg-slate-22: #f6f7f9;
+  --color-bg-slate-24: #f6f7f9;
+  --color-bg-slate-36: #dddfe2;
+  --color-bg-slate-55-a93: rgba(0, 0, 0, 0.45);
+  --color-bg-slate-9: #ffffff;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-raised: #f6f7f9;
+  --color-bg-tertiary: #f6f7f9;
+  --color-bg-white-a50: rgba(29, 33, 41, 0.3);
+  --color-bg-white-a8: rgba(29, 33, 41, 0.048);
+  --color-border-default: #dddfe2;
+  --color-border-gray-12b: #dddfe2;
+  --color-border-gray-13: #dddfe2;
+  --color-border-gray-13b: #dddfe2;
+  --color-border-gray-15: #dddfe2;
+  --color-border-gray-87: #bec3c9;
+  --color-border-slate-14: #dddfe2;
+  --color-border-slate-97: #ffffff;
+  --color-border-subtle: #dddfe2;
+  --color-border-white: #ffffff;
+  --color-icon-default: #4b4f56;
+  --color-icon-gray-53: #90949c;
+  --color-icon-gray-60: #90949c;
+  --color-icon-gray-80: #4b4f56;
+  --color-icon-slate-14: #ffffff;
+  --color-icon-slate-97: #1d2129;
+  --color-icon-white: #1d2129;
+  --color-text-blue-59: #385898;
+  --color-text-brand: #385898;
+  --color-text-danger: #dd3c10;
+  --color-text-disabled: #bec3c9;
+  --color-text-gray-20: #bec3c9;
+  --color-text-gray-24: #bec3c9;
+  --color-text-gray-27: #bec3c9;
+  --color-text-gray-28: #bec3c9;
+  --color-text-gray-33: #bec3c9;
+  --color-text-gray-35: #bec3c9;
+  --color-text-gray-40: #90949c;
+  --color-text-gray-47: #90949c;
+  --color-text-gray-53: #90949c;
+  --color-text-gray-54: #90949c;
+  --color-text-gray-73: #606770;
+  --color-text-gray-80: #4b4f56;
+  --color-text-gray-81: #4b4f56;
+  --color-text-gray-85: #4b4f56;
+  --color-text-gray-87b: #4b4f56;
+  --color-text-gray-93: #1d2129;
+  --color-text-gray-94: #1d2129;
+  --color-text-gray-95: #1d2129;
+  --color-text-gray-98: #1d2129;
+  --color-text-muted: #90949c;
+  --color-text-primary: #1d2129;
+  --color-text-pure: #1d2129;
+  --color-text-red-57b: #dd3c10;
+  --color-text-red-59b: #dd3c10;
+  --color-text-secondary: #4b4f56;
+  --color-text-slate-73: #606770;
+  --color-text-slate-95: #1d2129;
+  --color-text-soft: #4b4f56;
+  --color-text-subtle: #90949c;
+  --color-text-tertiary: #606770;
+
+  --text-999: #90949c;
+  --text-666: #606770;
+  --text-darker: #606770;
+  --text-888: #90949c;
+  --text-8a8a: #90949c;
+  --text-aaa: #606770;
+  --text-bbb: #606770;
+  --text-ccc: #4b4f56;
+  --text-caca: #606770;
+  --text-dbdb: #4b4f56;
+  --text-ddd: #4b4f56;
+  --text-d8d8: #4b4f56;
+  --text-eee: #1d2129;
+  --text-f8f9: #1d2129;
+  --text-f1f1f: #1d2129;
+  --text-fff: #1d2129;
+
+  --skeuo-gradient-header: linear-gradient(180deg, #5b74a8 0%, #4e69a2 45%, #3b5998 100%);
+  --skeuo-gradient-primary: linear-gradient(180deg, #6d84b4 0%, #5b74a8 50%, #4e69a2 100%);
+  --skeuo-gradient-primary-pressed: linear-gradient(180deg, #4e69a2 0%, #3b5998 100%);
+  --skeuo-gradient-secondary: linear-gradient(180deg, #ffffff 0%, #f6f7f9 55%, #e9ebee 100%);
+  --skeuo-gradient-secondary-pressed: linear-gradient(180deg, #e4e6ea 0%, #f0f1f4 100%);
+  --skeuo-gradient-navbar: linear-gradient(180deg, #ffffff 0%, #f6f7f9 100%);
+  --skeuo-gradient-card-header: linear-gradient(180deg, #f6f7f9 0%, #ffffff 100%);
+  --skeuo-border-primary: #29447e #29447e #1a356e;
+  --skeuo-border-secondary: #cdced0 #cdced0 #b8babd;
+  --skeuo-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --skeuo-shadow-raised: 0 1px 1px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --skeuo-shadow-pressed: inset 0 2px 3px rgba(0, 0, 0, 0.22);
+  --skeuo-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  --skeuo-shadow-header: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --skeuo-text-emboss: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  --skeuo-text-engrave: 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.16);
+  --shadow-xl: 0 0 14px rgba(0, 0, 0, 0.18);
+  --shadow-halo: 0 0 6px 4px rgba(233, 235, 238, 0.8);
+  --shadow-halo-sm: 0 0 4px 4px rgba(233, 235, 238, 0.7);
+  --shadow-soft: 0 0 6px 0 rgba(0, 0, 0, 0.1);
+  --shadow-sheet: 0 -2px 10px rgba(0, 0, 0, 0.15);
+  --shadow-sheet-strong: 0 -4px 12px rgba(0, 0, 0, 0.18);
+}
+:root[data-theme="skeuomorphism"] body {
+  background-color: var(--color-bg-primary);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0, rgba(255, 255, 255, 0) 240px);
+  background-attachment: fixed;
+}
+
+:root[data-theme="skeuomorphism"] :is(.navbar-top, .page-header, .menu-header, .timeline-header, .notifications-header, .header-page, .friends-header, .dm-chat-header, .act-header, .options-header, .comments-header, .event-header) {
+  background: var(--skeuo-gradient-header) !important;
+  color: var(--color-on-accent);
+  box-shadow: var(--skeuo-shadow-header);
+  border-bottom: 1px solid var(--color-brand-dark);
+  text-shadow: var(--skeuo-text-emboss);
+}
+
+:root[data-theme="skeuomorphism"] :is(.navbar-top, .page-header, .menu-header, .timeline-header, .notifications-header, .header-page, .friends-header, .dm-chat-header, .act-header, .options-header, .comments-header, .event-header) :is(a, button, span, div, h1, h2, h3, .header-title) {
+  color: var(--color-on-accent);
+}
+
+:root[data-theme="skeuomorphism"] :is(.navbar-top, .page-header, .menu-header, .timeline-header, .notifications-header, .header-page, .friends-header, .dm-chat-header, .act-header, .options-header, .comments-header, .event-header) svg {
+  fill: var(--color-on-accent);
+  color: var(--color-on-accent);
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.2));
+}
+
+:root[data-theme="skeuomorphism"] .navbar-bottom {
+  background: var(--skeuo-gradient-navbar);
+  border-top: 1px solid var(--color-border-default);
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
+}
+
+:root[data-theme="skeuomorphism"] .navbar-bottom-area a {
+  color: var(--color-text-secondary);
+}
+
+:root[data-theme="skeuomorphism"] .navbar-bottom-area a.active-bar,
+:root[data-theme="skeuomorphism"] .navbar-bottom-area a.active-bar svg {
+  color: var(--color-brand);
+  fill: var(--color-brand);
+}
+
+:root[data-theme="skeuomorphism"] :is(.post-card-new, .sugestion-card, .stat-card, .message-card, .event-card, .music-card, .menu-conjunt, .user-list-box, .item, .alert-box, .push-modal-box, .feeling-item .humor-note) {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-base);
+  box-shadow: var(--skeuo-shadow-card);
+}
+
+:root[data-theme="skeuomorphism"] .post-card-new {
+  margin: 0 var(--space-8) var(--space-10);
+  overflow: hidden;
+}
+
+:root[data-theme="skeuomorphism"] .post-header-new {
+  background-image: var(--skeuo-gradient-card-header);
+  border-bottom: 1px solid #eceef1;
+}
+
+:root[data-theme="skeuomorphism"] .post-graph-box {
+  border: 1px solid var(--color-border-default);
+  box-shadow: var(--skeuo-shadow-inset);
+}
+
+:root[data-theme="skeuomorphism"] .post-author-name,
+:root[data-theme="skeuomorphism"] .post-profile-link,
+:root[data-theme="skeuomorphism"] .comment-preview-name,
+:root[data-theme="skeuomorphism"] .post-graph-text span {
+  color: var(--color-link);
+}
+
+:root[data-theme="skeuomorphism"] :is(.action-btn.primary, .send-post-btn, .send-wall-btn, .send-feeling-btn, .push-enable-btn:not(.sec), .save-btn, .messageBtn, .card-add-btn, .follow-btn, .search-btn, .accept-request-btn, .friend-request-btn, .modal-footer-btn, .event-act-btn, .btn-area button, .btn.register, .welcome-auth-btn, .bottom-btn:not(.cancel), .about-menu-btn.active) {
+  background: var(--skeuo-gradient-primary) !important;
+  color: var(--color-on-accent) !important;
+  border: 1px solid;
+  border-color: var(--skeuo-border-primary);
+  box-shadow: var(--skeuo-shadow-raised);
+  text-shadow: var(--skeuo-text-emboss);
+}
+
+:root[data-theme="skeuomorphism"] :is(.action-btn.primary, .send-post-btn, .send-wall-btn, .send-feeling-btn, .push-enable-btn:not(.sec), .save-btn, .messageBtn, .card-add-btn, .follow-btn, .search-btn, .accept-request-btn, .friend-request-btn, .modal-footer-btn, .event-act-btn, .btn-area button, .btn.register, .welcome-auth-btn, .bottom-btn:not(.cancel), .about-menu-btn.active):active {
+  background: var(--skeuo-gradient-primary-pressed) !important;
+  box-shadow: var(--skeuo-shadow-pressed);
+  transform: translateY(1px);
+}
+
+:root[data-theme="skeuomorphism"] :is(.action-btn:not(.primary), .push-enable-btn.sec, .bottom-btn.cancel, .cancel-feeling-btn, .menu-bottom-btn, .about-menu-btn:not(.active), .alert-btn, .btn.login, .np-bottom-btn, .sections-btn) {
+  background: var(--skeuo-gradient-secondary) !important;
+  color: var(--color-text-secondary) !important;
+  border: 1px solid;
+  border-color: var(--skeuo-border-secondary);
+  box-shadow: var(--skeuo-shadow-raised);
+  text-shadow: var(--skeuo-text-engrave);
+}
+
+:root[data-theme="skeuomorphism"] :is(.action-btn:not(.primary), .push-enable-btn.sec, .bottom-btn.cancel, .cancel-feeling-btn, .menu-bottom-btn, .about-menu-btn:not(.active), .alert-btn, .btn.login, .np-bottom-btn, .sections-btn):active {
+  background: var(--skeuo-gradient-secondary-pressed) !important;
+  box-shadow: var(--skeuo-shadow-pressed);
+}
+
+:root[data-theme="skeuomorphism"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), textarea, select, .search-input, .humor-note) {
+  background-color: #ffffff;
+  color: var(--color-text-primary);
+  border: 1px solid #bdc7d8;
+  box-shadow: var(--skeuo-shadow-inset);
+}
+
+:root[data-theme="skeuomorphism"] :is(input, textarea)::placeholder {
+  color: var(--color-text-muted);
+}
+
+:root[data-theme="skeuomorphism"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea):focus {
+  border-color: var(--color-brand-light);
+  box-shadow: var(--skeuo-shadow-inset), 0 0 0 2px rgba(66, 103, 178, 0.18);
+}
+
+:root[data-theme="skeuomorphism"] :is(.bottom-menu, .post-menu-bottom, .note-view-modal, .feeling-create-modal, .wall-post-creation, .comments-container, .about-menu, .creation-modal) {
+  background-color: var(--color-bg-card);
+  border-top: 1px solid var(--color-border-default);
+  box-shadow: var(--shadow-sheet);
+}
+
+:root[data-theme="skeuomorphism"] .side-menu {
+  background-color: var(--color-bg-primary);
+}
+
+:root[data-theme="skeuomorphism"] .section-title {
+  color: var(--color-text-tertiary);
+  text-shadow: var(--skeuo-text-engrave);
+  font-weight: var(--font-weight-bold);
+}
+
+:root[data-theme="skeuomorphism"] .menu-item-link {
+  color: var(--color-text-primary);
+  border-bottom: 1px solid #eceef1;
+}
+
+:root[data-theme="skeuomorphism"] .menu-item-link:active {
+  background: var(--color-bg-hover);
+}
+
+:root[data-theme="skeuomorphism"] :is(.post-pfp img, .comment-pfp img, .note-pfp img, .user-pfp-area img, .profile-mini, .greetingPfp, .pfp-border) {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+:root[data-theme="skeuomorphism"] .msg-beta-mine {
+  background: var(--skeuo-gradient-primary);
+  color: var(--color-on-accent);
+  box-shadow: var(--skeuo-shadow-raised);
+}
+
+:root[data-theme="skeuomorphism"] .msg-beta {
+  background: var(--skeuo-gradient-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+}
+
+:root[data-theme="skeuomorphism"] ::selection {
+  background-color: rgba(66, 103, 178, 0.25);
+  color: var(--color-text-primary);
+}
+
+:root[data-theme="skeuomorphism"] :is(.navbar-top, .page-header, .menu-header, .timeline-header, .notifications-header, .header-page, .friends-header, .dm-chat-header, .act-header, .options-header, .comments-header, .event-header) .header-block {
+  background: transparent;
+}

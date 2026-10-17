@@ -419,7 +419,6 @@ function handleFriendNoteClick(event) {
     });
 }
 
-
 createNoteBtn.addEventListener("click", handleNoteClick);
 createNoteBtn.addEventListener("pointerdown", startLongPress);
 createNoteBtn.addEventListener("pointerup", clearLongPress);

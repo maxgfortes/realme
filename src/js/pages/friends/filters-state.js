@@ -4,7 +4,6 @@ export function setCurrentUserId(uid) {
   currentUserId = uid;
 }
 
-// os filtros são <textarea class="filterInput"> dentro de .filtros
 export const filtrosInputs = document.querySelectorAll(
   '.filtros input, .filtros select, .filtros textarea'
 );
@@ -13,7 +12,6 @@ export function normalizar(str) {
   return (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// id do input no HTML → campo da busca (o mesmo nome que o servidor usa)
 const CAMPO_POR_ID = {
   styleInput: "styles",
   personalityInput: "personality",
@@ -24,7 +22,6 @@ const CAMPO_POR_ID = {
   hobbiesInput: "hobbies"
 };
 
-// plano B, caso o id mude: pelo texto do rótulo (.filterLabel)
 const CAMPO_POR_ROTULO = {
   styles: ["estilo"],
   personality: ["personalidade"],
@@ -48,8 +45,6 @@ export function getFieldKey(el) {
   return null;
 }
 
-// { music: "rock", hobbies: "games" } — só o que foi digitado.
-// O front não interpreta nada: manda o texto e o servidor pontua.
 export function coletarFiltros() {
   const filtros = {};
 
@@ -65,7 +60,6 @@ export function coletarFiltros() {
   return filtros;
 }
 
-// "Igual a mim": mostra nos inputs os dados do seu perfil (vindos do servidor)
 export function preencherFiltros(campos = {}) {
   filtrosInputs.forEach(el => {
     const campo = getFieldKey(el);
@@ -74,7 +68,6 @@ export function preencherFiltros(campos = {}) {
 
     el.value = campos[campo] || "";
 
-    // dispara o autoajuste de altura (inputSize.js)
     el.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }

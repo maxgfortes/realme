@@ -1,10 +1,5 @@
 import { setupBottomMenu } from "./bottomMenu.js";
 
-/*
- * Localização: texto livre (o usuário pode escrever qualquer coisa).
- * Salva no post como string: location: "Praia do Campeche, Floripa".
- */
-
 const MAX_LENGTH = 100;
 
 const button = document.getElementById("btnLocal");
@@ -15,7 +10,6 @@ let confirmed = "";
 function updateButton() {
     if (!button) return;
 
-    // o visual fica no CSS (.has-value::after)
     button.classList.toggle("has-value", Boolean(confirmed));
 }
 

@@ -16,20 +16,20 @@
 }
 
 .event-card-area {
-  padding: 0 10px;
-  padding-bottom: 20px;
+  padding: 0 var(--space-10);
+  padding-bottom: var(--space-20);
   max-width: 500px;
 }
 
 .event-card {
-  background: #272727;
+  background: var(--color-bg-surface);
   border-radius: var(--radius-md);
 }
 
 .event-card-top {
-  padding: 6px 8px;
+  padding: var(--space-6) var(--space-8);
   display: flex;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 .event-card-info {
@@ -37,26 +37,26 @@
 }
 
 .event-card-label {
-  font-size: 16px;
-  color: #fff;
-  font-weight: bold;
+  font-size: var(--font-size-16);
+  color: var(--color-text-pure);
+  font-weight: var(--font-weight-bold);
 }
 
 .event-card-title {
-  font-size: 14px;
-  color: #aaa;
-  font-weight: bold;
+  font-size: var(--font-size-14);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
 }
 
 .event-card-bottom {
-  background: #333;
-  border-radius: 0 0 10px 10px;
-  font-size: 13.5px;
-  padding: 6px 8px;
-  color: #ccc;
+  background: var(--color-bg-surface-raised);
+  border-radius: 0 0 var(--radius-10) var(--radius-10);
+  font-size: var(--font-size-13-5);
+  padding: var(--space-6) var(--space-8);
+  color: var(--color-text-gray-80);
   height: 27px;
 }
 
 .event-card-bottom span {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }

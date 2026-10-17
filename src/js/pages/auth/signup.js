@@ -1,4 +1,3 @@
-/* ================= CADASTRO ================= */
 
 async function criarContaSegura(event) {
   event.preventDefault();

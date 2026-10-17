@@ -1,11 +1,11 @@
 
 .music-card-area {
-  padding: 0 10px;
+  padding: 0 var(--space-10);
   max-width: 500px;
 }
 
 .music-card {
-    background: #272727;
+    background: var(--color-bg-surface);
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
@@ -22,14 +22,14 @@
     aspect-ratio: 1/1;
     width: 60px;
     height: 60px;
-    padding: 10px;
+    padding: var(--space-10);
 }
 
 .music-cover {
-    background: #444;
+    background: var(--color-bg-gray-27);
     height: 100%;
     width: 100%;
-    border-radius: 8px;
+    border-radius: var(--radius-8);
     background-image: url("https://f4.bcbits.com/img/a2383768177_5.jpg");
     background-position: center;
     background-repeat: no-repeat;
@@ -41,13 +41,13 @@
     min-height: 60px;
     display: flex;
     align-items: center;
-    padding: 10px 10px 10px 0;
+    padding: var(--space-10) var(--space-10) var(--space-10) 0;
     box-sizing: border-box;
 }
 
 .music-name {
-    font-weight: bold;
-    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-14);
     white-space: normal;
     overflow-wrap: anywhere;
     display: -webkit-box;
@@ -58,13 +58,13 @@
 }
 
 .music-card-bottom {
-    padding: 0 10px 10px 10px;
+    padding: 0 var(--space-10) var(--space-10) var(--space-10);
 }
 
 .music-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-10);
 }
 
 .music-controls-top {
@@ -72,8 +72,8 @@
     height: 60px;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px;
+    gap: var(--space-6);
+    padding: var(--space-10);
 }
 
 .music-controls-bottom {
@@ -86,15 +86,15 @@
 .music-track {
     width: 100%;
     height: 6px;
-    background: #444;
-    border-radius: 999px;
+    background: var(--color-bg-gray-27);
+    border-radius: var(--radius-pill);
 }
 
 .music-tracker {
     width: 0;
     height: 100%;
-    background: #aaa;
-    border-radius: 999pc;
+    background: var(--color-bg-gray-67);
+    border-radius: var(--radius-pill);
 }
 
 .music-control {
@@ -102,7 +102,7 @@
     width: 42px;
     aspect-ratio: 1/1;
     border: none;
-    color: #fff;
+    color: var(--color-text-pure);
     background: transparent;
     display: flex;
     align-items: center;

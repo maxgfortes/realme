@@ -2,11 +2,11 @@
   background: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  padding-bottom: var(--space-10);
   max-height: 2000px;
   opacity: 1;
   overflow: hidden;
-  transition: all 0.6s;
+  transition: var(--transition-all-slow);
 }
 
 .post-card-new.hidden {
@@ -17,8 +17,8 @@
 
 .post-header-new {
   display: flex;
-  padding: 10px;
-  gap: 10px;
+  padding: var(--space-10);
+  gap: var(--space-10);
 }
 
 .post-pfp-area {
@@ -29,7 +29,7 @@
   height: 44px;
   width: 44px;
   aspect-ratio: 1/1;
-  background: #272727;
+  background: var(--color-bg-surface);
   border-radius: var(--radius-full);
 }
 
@@ -45,24 +45,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 .post-author-name-area {
-  font-size: 14px;
+  font-size: var(--font-size-14);
   color: var(--text-ddd);
 }
 
 .post-author-name {
-  font-weight: bold;
-  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-14);
   color: var(--text-fff);
   white-space: nowrap;
   text-transform: capitalize; 
   text-decoration: none;
 }
-
-
 
 .post-meta-new {
   position: relative;
@@ -78,7 +76,7 @@
   inset: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-4);
   width: 100%;
   height: 18px;
   overflow: hidden;
@@ -93,7 +91,7 @@
 
 .post-date-new {
   color: var(--text-bbb);
-  font-size: 12px;
+  font-size: var(--font-size-12);
 }
 
 .post-location-area-name,
@@ -103,7 +101,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-bbb);
-  font-size: 12px;
+  font-size: var(--font-size-12);
 }
 
 .post-date-area-icon,
@@ -129,8 +127,6 @@
   pointer-events: auto;
 }
 
-
-
 .post-more-actions {
   height: 47px;
   width: 47px;
@@ -152,18 +148,18 @@
 .post-content-new {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 1rem;
+  gap: var(--space-10);
+  font-size: var(--font-size-1rem);
   position: relative;
 }
 
 .post-content-text {
-  padding: 0px 10px;
-  font-size: 1rem;
+  padding: 0px var(--space-10);
+  font-size: var(--font-size-1rem);
 }
 
 .post-content-media {
-  padding: 0 10px;
+  padding: 0 var(--space-10);
   width: 100%;
 }
 
@@ -182,8 +178,8 @@
     overflow-x:auto;
     scroll-snap-type:x mandatory;
     scrollbar-width:none;
-    gap: 10px;
-    padding: 0 10px;
+    gap: var(--space-10);
+    padding: 0 var(--space-10);
 }
 
 .carousel-track .img-card{
@@ -195,7 +191,6 @@
   width:100%;
   display:block;
 }
-
 
 .img-card img {
   width: 100%;
@@ -210,14 +205,15 @@
   border-radius: var(--radius-md);
   width: 100%;
   height: auto;
-  background: #272727;
+  background: var(--color-bg-surface);
+  border:  0.5px var(--color-border-gray-13) solid;
 }
 
 .post-bottom {
-  padding: 10px;
+  padding: var(--space-10);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-14);
 }
 
 .post-graph-box {
@@ -225,49 +221,49 @@
   position: relative;
   flex-direction: column;
   justify-content: center;
-  gap: 7px;
-  padding: 10px;
+  gap: var(--space-7);
+  padding: var(--space-10);
   width: 100%;
-  background: #303035;
+  background: var(--color-bg-slate-20b);
   min-height: 38px;
   border-radius: var(--radius-md);
-  font-size: 14px;
-  z-index: 1;
-  color: #eee;
+  font-size: var(--font-size-14);
+  z-index: var(--z-1);
+  color: var(--color-text-gray-93);
 }
 
 .post-graph-box::after {
   content: '';
   position: absolute;
-  background: #303035;
+  background: var(--color-bg-slate-20b);
   width: 22px;
   height: 22px;
   border-radius:var(--radius-min);
   transform: rotate(45deg);
-  z-index: -1;
+  z-index: var(--z-neg-1);
   top: -4px;
-  left: 27px;
+  left: 22px;
 }
 
 .post-graph-text span{
-  font-weight: bold;
-  font-size: 14px
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-14)
 }
 
 .post-graph-text{
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 
 .post-graph-comment {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.9rem;
+  font-size: var(--font-size-0-9rem);
   display: none;
 }
 
 .post-graph-comment span{
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .post-actions-area {
@@ -278,7 +274,7 @@
 .post-actions-left {
   width: 100%;
   display: flex;
-  gap: 10px;
+  gap: var(--space-10);
 }
 
 .post-action-btn {
@@ -286,7 +282,7 @@
   align-items: center;
   background: transparent;
   border: none;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .post-action-btn svg {
@@ -294,9 +290,9 @@
 }
 
 .post-action-btn span {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   color: var(--text-eee);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 
 .carrossel-container {
@@ -325,32 +321,32 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 6px;
-  border-radius: 90px;
-  box-shadow: 0 0 4px 6px #0f0f0f4b;
-  background: #0f0f0f4b;
+  gap: var(--space-6);
+  border-radius: var(--radius-90);
+  box-shadow: var(--shadow-halo-sm);
+  background: var(--color-bg-gray-6-a29);
 }
 
 .carrossel-dot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-white-a50);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .carrossel-dot.active {
-  background: #ffffff;
+  background: var(--color-bg-inverse);
   transform: scale(1.3);
 }
 
 .comment-outline {
-  color: #eee;
+  color: var(--color-text-gray-93);
 }
 
 .heart-outline {
-  color: #eee;
+  color: var(--color-text-gray-93);
 }
 
 .heart-outline.active {
@@ -358,7 +354,7 @@
 }
 
 .heart-fill {
-  color: #ff3040;
+  color: var(--color-text-red-59b);
   display: none;
 }
 
@@ -371,7 +367,7 @@
     width: 90px;
     height: 90px;
     pointer-events: none;
-    z-index: 50;
+    z-index: var(--z-50);
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
     animation: instagram-heart 1s ease-out forwards;
@@ -416,7 +412,6 @@
         opacity: 1;
     }
 
-    
     100% {
         transform: translate(-50%, -50%) scale(0.8);
         opacity: 0;
@@ -436,7 +431,7 @@
 .comments-preview {
   display: none;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-8);
   cursor: pointer;
 }
 
@@ -447,7 +442,7 @@
 .comment-preview-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-8);
   min-width: 0;
 }
 
@@ -455,25 +450,25 @@
   width: 22px;
   height: 22px;
   min-width: 22px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
-  background: #272727;
+  background: var(--color-bg-surface);
 }
 
 .comment-preview-text {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   line-height: 22px;
-  color: #ddd;
+  color: var(--color-text-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .comment-preview-name {
-  font-weight: bold;
-  color: #fff;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
 }
 
 .post-content-media {
@@ -484,25 +479,21 @@
   position: absolute;
   right: 20px;
   bottom: 10px;
-  z-index: 2;
+  z-index: var(--z-2);
   width: 30px;
   height: 30px;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  color: #fff;
-  background: rgba(20, 20, 22, 0.72);
+  color: var(--color-text-pure);
+  background: var(--color-bg-gray-6-a72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.2s ease;
-}
-
-.post-music-toggle:active {
-  transform: scale(0.92);
 }
 
 .post-music-toggle.music-unavailable {
@@ -514,12 +505,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 3px;
+  margin-left: var(--space-3);
 }
 
 .post-music-icon svg {
   width: 14px;
   height: 14px;
+  fill: var(--color-icon-white);
+  color: var(--color-text-pure);
+  stroke: var(--color-icon-white);
 }
 
 .post-music-icon.pause,
@@ -528,8 +522,8 @@
 }
 
 .post-music-icon.pause {
-  margin-top: 2px;
-  margin-left: 2px;
+  margin-top: var(--space-2);
+  margin-left: var(--space-2);
 }
 
 .post-music-toggle.playing .post-music-icon.pause {
@@ -538,7 +532,7 @@
 
 .video-card {
   overflow: hidden;
-  background: #272727;
+  background: var(--color-bg-surface);
 }
 
 .post-video {
@@ -547,7 +541,7 @@
   object-fit: cover;
   display: block;
   border-radius: var(--radius-md);
-  background: #272727;
+  background: var(--color-bg-surface);
   pointer-events: none;
 }
 

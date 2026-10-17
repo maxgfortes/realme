@@ -257,9 +257,9 @@ const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" aria-label="Ícone" fi
 
 const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" aria-label="Ícone" fill="currentColor" height="24" role="img" viewBox="0 0 40 40" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="translate(3.5 3) scale(0.85,-0.85) translate(0,-34.2890625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.5" d="M 7.390625,0.81640625 L 11.880859375,0.81640625 C 13.234375,0.81640625 13.771484375,1.375 13.771484375,2.728515625 L 13.771484375,31.560546875 C 13.771484375,32.935546875 13.234375,33.47265625 11.880859375,33.47265625 L 7.390625,33.47265625 C 6.015625,33.47265625 5.478515625,32.935546875 5.478515625,31.560546875 L 5.478515625,2.728515625 C 5.478515625,1.375 6.015625,0.81640625 7.390625,0.81640625 Z M 20.8828125,0.81640625 L 25.373046875,0.81640625 C 26.748046875,0.81640625 27.28515625,1.375 27.28515625,2.728515625 L 27.28515625,31.560546875 C 27.28515625,32.935546875 26.748046875,33.47265625 25.373046875,33.47265625 L 20.8828125,33.47265625 C 19.529296875,33.47265625 18.9921875,32.935546875 18.9921875,31.560546875 L 18.9921875,2.728515625 C 18.9921875,1.375 19.529296875,0.81640625 20.8828125,0.81640625 Z"/></g></svg>`;
 
-const SOUND_OFF_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const SOUND_OFF_SVG = `<svg width="16" height="16" viewBox="0 0 41.29296875 48.146484375" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-48.146484375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1" d="M 31.173828125,41.958984375 C 31.173828125,42.775390625 30.744140625,43.419921875 29.86328125,43.419921875 C 29.283203125,43.419921875 28.7890625,43.09765625 28.380859375,42.732421875 L 18.154296875,32.7421875 C 17.91796875,32.52734375 17.638671875,32.419921875 17.251953125,32.419921875 L 13.40625,32.419921875 L 31.173828125,14.65234375 Z M 37.060546875,4.94140625 C 37.275390625,4.7265625 37.619140625,4.7265625 37.833984375,4.94140625 C 38.0703125,5.177734375 38.048828125,5.5 37.833984375,5.71484375 L 4.189453125,39.359375 C 4.017578125,39.53125 3.673828125,39.595703125 3.416015625,39.359375 C 3.22265625,39.14453125 3.22265625,38.80078125 3.416015625,38.5859375 Z M 10.0546875,17.23046875 L 17.2734375,17.23046875 C 17.66015625,17.23046875 17.91796875,17.123046875 18.17578125,16.908203125 L 28.380859375,7.21875 C 28.7890625,6.83203125 29.283203125,6.509765625 29.86328125,6.509765625 C 30.744140625,6.509765625 31.173828125,7.17578125 31.173828125,7.9921875 C 31.173828125,8.185546875 31.173828125,8.37890625 31.173828125,8.572265625 L 8.03515625,31.689453125 C 7.26171875,31.087890625 6.7890625,30.1640625 6.7890625,29.17578125 L 6.7890625,20.49609375 C 6.7890625,18.712890625 8.271484375,17.23046875 10.0546875,17.23046875 Z"/></g></svg>`;
 
-const SOUND_ON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const SOUND_ON_SVG = `<svg width="55.064453125px" height="42.796875px" viewBox="0 0 55.064453125 42.796875" xmlns="http://www.w3.org/2000/svg" version="1.1"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-42.796875)"><path fill=currentColor" stroke="currentColor" fill-opacity="1.0" stroke-width="1.0" d="M 25.65234375,2.943359375 C 26.51171875,2.943359375 26.94140625,3.587890625 26.94140625,4.404296875 L 26.94140625,38.392578125 C 26.94140625,39.208984375 26.51171875,39.853515625 25.65234375,39.853515625 C 25.05078125,39.853515625 24.556640625,39.53125 24.169921875,39.166015625 L 13.943359375,29.197265625 C 13.70703125,28.9609375 13.427734375,28.853515625 13.041015625,28.853515625 L 5.84375,28.853515625 C 4.060546875,28.853515625 2.578125,27.392578125 2.578125,25.609375 L 2.578125,16.9296875 C 2.578125,15.146484375 4.060546875,13.6640625 5.84375,13.6640625 L 13.041015625,13.6640625 C 13.427734375,13.6640625 13.70703125,13.556640625 13.943359375,13.341796875 L 24.169921875,3.65234375 C 24.556640625,3.265625 25.05078125,2.943359375 25.65234375,2.943359375 Z M 47.201171875,6.939453125 C 47.458984375,6.74609375 47.73828125,6.83203125 47.931640625,7.068359375 C 50.896484375,10.87109375 52.486328125,15.8125 52.486328125,21.3984375 C 52.486328125,27.005859375 50.896484375,31.92578125 47.931640625,35.728515625 C 47.759765625,35.96484375 47.458984375,36.05078125 47.201171875,35.857421875 C 46.943359375,35.685546875 46.943359375,35.384765625 47.115234375,35.10546875 C 49.5859375,31.23828125 51.43359375,26.76953125 51.43359375,21.3984375 C 51.43359375,16.005859375 49.88671875,11.30078125 47.072265625,7.6484375 C 46.87890625,7.412109375 46.943359375,7.111328125 47.201171875,6.939453125 Z M 38.865234375,12.6328125 C 39.1015625,12.4609375 39.423828125,12.50390625 39.595703125,12.740234375 C 41.25,14.845703125 42.41015625,17.939453125 42.41015625,21.3984375 C 42.41015625,24.87890625 41.25,27.951171875 39.595703125,30.056640625 C 39.423828125,30.29296875 39.123046875,30.357421875 38.865234375,30.1640625 C 38.62890625,29.970703125 38.5859375,29.669921875 38.779296875,29.369140625 C 40.240234375,27.37109375 41.357421875,24.599609375 41.357421875,21.3984375 C 41.357421875,18.154296875 40.21875,15.318359375 38.71484375,13.3203125 C 38.54296875,13.10546875 38.62890625,12.826171875 38.865234375,12.6328125 Z"/></g></svg>`;
 
 const VIDEO_PLAY_RATIO = 0.5;
 
@@ -502,8 +502,6 @@ function createHiddenPlayer(holder, videoId, events) {
     }));
 }
 
-/* ---------- utilidades ---------- */
-
 function getYouTubeId(url) {
     try {
         const parsed = new URL(String(url ?? "").trim());
@@ -572,8 +570,6 @@ function formatName(title = "", author = "") {
     return `${title} - ${cleanAuthor}`;
 }
 
-/* ---------- header: data / local / música ---------- */
-
 const META_ROTATE_MS = 6000;
 
 const LOCATION_SVG = `<svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1.5 3.5 44.5 45.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>`;
@@ -608,7 +604,6 @@ function buildPostMeta({ dateText, location, headerMusicId }) {
     `;
 }
 
-// troca "Música" pelo nome real (usa o mesmo cache do card de música)
 function initHeaderMusic(postElement, videoId) {
     if (!videoId) return;
 
@@ -623,7 +618,6 @@ function initHeaderMusic(postElement, videoId) {
     });
 }
 
-// a cada 3s, em todos os posts, passa o .active para o próximo item disponível
 function rotatePostMeta() {
     if (document.hidden) return;
 
@@ -640,8 +634,6 @@ function rotatePostMeta() {
 }
 
 setInterval(rotatePostMeta, META_ROTATE_MS);
-
-/* ---------- HTML ---------- */
 
 function musicCardHTML(videoId) {
     const cover = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
@@ -690,8 +682,6 @@ function musicCardHTML(videoId) {
     `;
 }
 
-/* ---------- comportamento ---------- */
-
 function initMusicCard(card) {
     if (card.dataset.musicReady) return;
 
@@ -712,7 +702,7 @@ function initMusicCard(card) {
     let playing = false;
     let dragging = false;
     let timer = null;
-    let pendingFraction = null; // posição escolhida na track antes do primeiro play
+    let pendingFraction = null;
     let lastFraction = 0;
     let infoLoaded = false;
 
@@ -738,7 +728,6 @@ function initMusicCard(card) {
     }
 
     function tick() {
-        // o card saiu da página (timeline fechada, feed recarregado...)
         if (!card.isConnected) {
             destroy();
             return;
@@ -776,7 +765,6 @@ function initMusicCard(card) {
         try {
             player?.destroy();
         } catch {
-            // player já removido junto com o card
         }
 
         player = null;
@@ -901,7 +889,6 @@ function initMusicCard(card) {
         dragging = false;
 
         if (!ready) {
-            // ainda não tocou: guarda a posição e usa no primeiro play
             pendingFraction = lastFraction;
             return;
         }
@@ -965,7 +952,6 @@ function initMusicCard(card) {
 
     registerMusic(card.closest(".post-card-new"), controller);
 
-    // nome + autor
     fetchMusicInfo(videoId).then(info => {
         if (info) setName(info.title, info.author);
         else if (!infoLoaded) nameElement.textContent = "Música";
@@ -1130,13 +1116,11 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                 `
                 : "";
 
-    const hasBody = Boolean(String(content || "").trim()) || imgs.length > 0;
+    const hasMedia = imgs.length > 0;
 
-    // post só com música (sem texto e sem foto) vira o card de música
-    const musicId = !hasBody ? videoId : null;
+    const musicId = !hasMedia ? videoId : null;
 
-    // com texto ou foto, a música aparece girando no header
-    const headerMusicId = hasBody ? videoId : null;
+    const headerMusicId = hasMedia ? videoId : null;
 
     const musicHTML = musicId ? musicCardHTML(musicId) : "";
 
@@ -1270,10 +1254,6 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
     return postElement;
 }
 
-/*
- * Termina de montar o card depois de inserido: ícone de curtida,
- * contadores e rodapé.
- */
 export async function hydratePost(postElement, postId) {
     const liked = await hasLikedPost(postId);
 
@@ -1281,7 +1261,6 @@ export async function hydratePost(postElement, postId) {
     trackListeners(postElement, listenPostCount(postId, postElement));
 }
 
-/* HTML de "estava com ..." (string vazia se o post não tem menções) */
 export function getPostMentionsHTML(data) {
     return Promise.all([
         buildWallHTML(data).catch(() => ""),
@@ -1289,10 +1268,6 @@ export function getPostMentionsHTML(data) {
     ]).then(parts => parts.join(""));
 }
 
-/*
- * Cria o card de um post a partir dos dados do Firestore e insere no
- * container. Retorna o elemento criado.
- */
 export function appendPost(container, { postId, data, creator, mentionsHTML = "", before = null }) {
     const created = data.create?.toDate?.();
 

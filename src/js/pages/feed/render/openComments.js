@@ -43,7 +43,6 @@ export function openComments(postId) {
         "active"
     );
 
-    
     document.body.classList.add("scroll-locked");
 
     loadComments(postId);

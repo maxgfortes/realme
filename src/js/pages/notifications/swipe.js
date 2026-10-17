@@ -2,7 +2,6 @@ const swipeWidth = 75;
 
 let openedItem = null;
 
-
 function closeItem(item) {
 
     if (!item) {
@@ -28,7 +27,6 @@ function closeItem(item) {
     }
 }
 
-
 function closeOtherItems(current) {
 
     const items = document.querySelectorAll(".notification-item");
@@ -39,7 +37,6 @@ function closeOtherItems(current) {
         }
     });
 }
-
 
 export function enableSwipe(item, onDelete) {
 
@@ -204,7 +201,6 @@ export function enableSwipe(item, onDelete) {
         }, 250);
     });
 }
-
 
 document.addEventListener("pointerdown", function(event) {
     if (openedItem && !openedItem.contains(event.target)) {

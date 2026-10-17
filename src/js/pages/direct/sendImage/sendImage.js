@@ -10,7 +10,6 @@ imgButton.addEventListener("click", function() {
     imageInput.click();
 });
 
-
 imageInput.addEventListener("change", async function() {
 
     const file = imageInput.files[0];
@@ -30,7 +29,6 @@ imageInput.addEventListener("change", async function() {
     imageInput.value = "";
 });
 
-
 async function compressImage(file) {
 
     const image = new Image();
@@ -47,7 +45,6 @@ async function compressImage(file) {
     let width = image.width;
     let height = image.height;
 
-
     if (width > maxWidth || height > maxHeight) {
 
         const ratio = Math.min(
@@ -59,10 +56,8 @@ async function compressImage(file) {
         height = height * ratio;
     }
 
-
     canvas.width = width;
     canvas.height = height;
-
 
     const context = canvas.getContext("2d");
 
@@ -92,8 +87,6 @@ async function compressImage(file) {
 
     });
 }
-
-
 
 async function uploadToImgBB(image) {
     const apiKey = "fc8497dcdf559dc9cbff97378c82344c";
@@ -127,7 +120,6 @@ async function saveMessage(imageUrl) {
     if (!chatId) {
         throw new Error("Chat não encontrado");
     }
-
 
     await addDoc(
         collection( db, "chats", chatId, "messages"),

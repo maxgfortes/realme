@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
+  <script src="/src/shared/theme-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png">
@@ -22,6 +23,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <link rel="stylesheet" href="./src/styles/shared/tokens.css">
 </head>
 <style>
 
@@ -29,12 +31,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: var(--font-family-primary);
 }
 
 body {
   margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial;
+  font-family: var(--font-family-primary);
   background: #0f0f0f;
   color: #ffffff;
   height: 100vh;
@@ -119,12 +121,11 @@ body {
     width: 100%;
 }
 
-
 .logo {
     font-size: 1.9rem;
     font-weight: bold;
     padding: 6px;
-    font-family: Arial, "Helvetica Neue", Helvetica, Arial;
+    font-family: var(--font-family-primary);
     letter-spacing: -0.01em;
 }
 
@@ -145,7 +146,6 @@ body {
     padding: 20px;
 }
 
-
 .info-box {
     width: 100%;
     display: flex;
@@ -154,7 +154,7 @@ body {
     height: auto;
     padding: 20px;
     background: #272727;
-    border-radius:10px;
+    border-radius:var(--radius-10);
     position: relative;
 }
 
@@ -163,7 +163,7 @@ body {
     text-transform: uppercase;
     color: #bbb;
     font-weight: 900;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: var(--font-family-primary);
 }
 
 .box-counter {

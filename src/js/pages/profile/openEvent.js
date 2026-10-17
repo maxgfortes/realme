@@ -1,5 +1,3 @@
-// Abre o modal de evento (#eventLayer). Escuta "realme:open-event" ({ eventId }),
-// então funciona igual no feed e no perfil. Basta o HTML do modal estar na página.
 import { db, auth } from "/src/config/config.js";
 
 import {
@@ -14,8 +12,6 @@ import {
 const OPEN_EVENT = "realme:open-event";
 const GOING_CHANGED = "realme:event-going-changed";
 
-// events/{eventId}/going/{uid} → { uid, status }
-// "Não vou" apaga o documento. Sem status = "vou" (registros antigos).
 const STATUS = { going: "going", maybe: "maybe" };
 
 const MAX_PEOPLE = 60;
@@ -23,11 +19,6 @@ const DEFAULT_PHOTO = "./public/img/default.jpg";
 
 const ARROW_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>';
-
-
-// ==============================
-// ELEMENTOS
-// ==============================
 
 const layer = document.getElementById("eventLayer");
 
@@ -48,25 +39,15 @@ const el = layer && {
   btnNo: layer.querySelector(".event-act-btn.no")
 };
 
-
-// ==============================
-// ESTADO
-// ==============================
-
 const current = {
   eventId: null,
-  token: 0,              // invalida carregamentos antigos
-  people: new Map(),     // uid -> "going" | "maybe"
+  token: 0,
+  people: new Map(),
   busy: false
 };
 
-const userCache = new Map();   // uid -> Promise<{ name, photo }>
-let friendsCache = null;       // Set de uids amigos
-
-
-// ==============================
-// HELPERS
-// ==============================
+const userCache = new Map();
+let friendsCache = null;
 
 function esc(valor) {
   return String(valor ?? "").replace(/[&<>"']/g, c => ({
@@ -133,11 +114,6 @@ function loadUser(uid) {
   return promise;
 }
 
-
-// ==============================
-// RENDER
-// ==============================
-
 function fillEvent(data) {
   const banner = safeUrl(data.eventBanner);
 
@@ -173,13 +149,12 @@ async function renderPeople() {
 
   const entries = [...current.people.entries()];
 
-  // você primeiro, depois amigos, depois o resto
   const rank = uid => (uid === me ? 0 : friends.has(uid) ? 1 : 2);
   entries.sort((a, b) => rank(a[0]) - rank(b[0]));
 
   const users = await Promise.all(entries.map(([uid]) => loadUser(uid)));
 
-  if (token !== current.token) return; // outro evento foi aberto
+  if (token !== current.token) return;
 
   const going = [];
   const maybe = [];
@@ -216,11 +191,6 @@ function renderButtons() {
   });
 }
 
-
-// ==============================
-// ABRIR / FECHAR
-// ==============================
-
 function closeEvent() {
   layer.classList.remove("active");
   layer.setAttribute("aria-hidden", "true");
@@ -246,7 +216,6 @@ async function openEvent(eventId) {
 
     data = snap.data();
   } catch (error) {
-    // permission-denied: evento de quem não é seu amigo
     console.error("Erro ao abrir evento:", error);
     return;
   }
@@ -283,11 +252,6 @@ async function openEvent(eventId) {
   await renderPeople();
 }
 
-
-// ==============================
-// "VOU IR" / "NÃO SEI" / "NÃO VOU"
-// ==============================
-
 async function setMyStatus(status) {
   const me = auth.currentUser?.uid;
   const eventId = current.eventId;
@@ -300,7 +264,6 @@ async function setMyStatus(status) {
 
   current.busy = true;
 
-  // otimista: atualiza a tela e desfaz se o servidor recusar
   status ? current.people.set(me, status) : current.people.delete(me);
   await renderPeople();
 
@@ -326,11 +289,6 @@ async function setMyStatus(status) {
     if (eventId === current.eventId) await renderPeople();
   }
 }
-
-
-// ==============================
-// LIGAÇÕES
-// ==============================
 
 if (layer) {
   document.addEventListener(OPEN_EVENT, e => openEvent(e.detail?.eventId));

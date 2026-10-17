@@ -3,7 +3,7 @@
   inset: 0;
   background: var(--bg-primary);
   display: none;
-  z-index: 999999;
+  z-index: var(--z-999999);
 }
 
 .timeline-overlay.active {
@@ -17,14 +17,13 @@
   flex-direction: column;
 }
 
-
 .timeline-header {
   height: 60px;
   width: 100%;
   position: fixed;
   background-color: var(--bg-primary);
   display: flex;
-  padding: 0 12px;
+  padding: 0 var(--space-12);
 }
 
 .area-header {
@@ -44,13 +43,13 @@
 }
 
 .timeline-title {
-  font-size: 0.9rem;
-  color: #aaa;
+  font-size: var(--font-size-0-9rem);
+  color: var(--color-text-muted);
 }
 
 .timeline-username {
-  font-weight: bold;
-  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-1rem);
   text-transform: lowercase;
 }
 
@@ -62,8 +61,8 @@
 
 .timeline-btn button {
   background-color: transparent;
-  color: #fff;
-  font-size: 16px;
+  color: var(--color-text-pure);
+  font-size: var(--font-size-16);
   height: 100%;
   aspect-ratio: 1/1;
   border: none;
@@ -73,10 +72,10 @@
   flex: 1;
   overflow-y: auto;
   scroll-behavior: smooth;
-  padding: 60px 0 80px 0;
+  padding: var(--space-60) 0 80px 0;
 }
 
 .timeline-post {
-  padding: 20px;
+  padding: var(--space-20);
 }
 

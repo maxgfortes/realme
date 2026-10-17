@@ -2,9 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─────────────────────────────────────────────
-    // HELPERS
-    // ─────────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
@@ -25,7 +22,6 @@ service cloud.firestore {
         ).data.participants;
     }
 
-    // Quem pode ver um evento: o criador ou amigos do criador
     function canSeeEvent(eventId) {
       let creatorId = get(/databases/$(database)/documents/events/$(eventId)).data.creatorId;
       return isSignedIn() && (
@@ -34,17 +30,11 @@ service cloud.firestore {
       );
     }
 
-    // ─────────────────────────────────────────────
-    // ADMIN
-    // ─────────────────────────────────────────────
     match /admin/{uid} {
       allow read: if isOwner(uid);
       allow write: if false;
     }
 
-    // ─────────────────────────────────────────────
-    // NOTES
-    // ─────────────────────────────────────────────
     match /notes/{userId} {
       allow read: if isSignedIn();
 
@@ -58,9 +48,6 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
-    // ─────────────────────────────────────────────
-    // EVENTS
-    // ─────────────────────────────────────────────
     match /events/{eventId} {
 
       allow read: if isSignedIn() && (
@@ -111,9 +98,6 @@ service cloud.firestore {
       allow delete: if isSignedIn() &&
         resource.data.creatorId == request.auth.uid;
 
-      // Presença: "going" (vou) e "maybe" (não sei).
-      // Só a própria pessoa mexe no seu doc, e só em evento que ela pode ver.
-      // Update é permitido porque clicar de novo no mesmo botão regrava o doc.
       match /{status}/{uid} {
         allow read: if status in ['going', 'maybe'] &&
           canSeeEvent(eventId);
@@ -125,8 +109,6 @@ service cloud.firestore {
           request.resource.data.uid == request.auth.uid &&
           request.resource.data.createdAt == request.time;
 
-        // a própria pessoa remove a sua presença; o criador do evento também
-        // pode limpar (necessário para apagar o evento junto com as listas)
         allow delete: if status in ['going', 'maybe'] && (
           isOwner(uid) ||
           (isSignedIn() &&
@@ -135,9 +117,6 @@ service cloud.firestore {
       }
     }
 
-    // ─────────────────────────────────────────────
-    // USERNAMES — criados só pelo servidor (createAccount)
-    // ─────────────────────────────────────────────
     match /usernames/{username} {
       allow read: if true;
       allow create, update, delete: if false;
@@ -148,9 +127,6 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ─────────────────────────────────────────────
-    // SERVER MESSAGES
-    // ─────────────────────────────────────────────
     match /serverMessages/{messageId} {
       allow read: if isSignedIn();
 
@@ -168,9 +144,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ─────────────────────────────────────────────
-    // FRIEND REQUESTS (amizade em si é criada pelo servidor)
-    // ─────────────────────────────────────────────
     match /friendRequests/{requestId} {
       allow read: if isSignedIn() && (
         resource == null ||
@@ -198,9 +171,6 @@ service cloud.firestore {
       );
     }
 
-    // ─────────────────────────────────────────────
-    // NOTIFICATIONS — criadas só pelo servidor
-    // ─────────────────────────────────────────────
     match /notifications/{notificationId} {
       allow read: if isSignedIn() &&
         request.auth.uid == resource.data.toUid;
@@ -222,13 +192,9 @@ service cloud.firestore {
         request.auth.uid == resource.data.toUid;
     }
 
-    // ─────────────────────────────────────────────
-    // POSTS
-    // ─────────────────────────────────────────────
     match /posts/{postId} {
       allow read: if true;
 
-      // Só em nome de si mesmo; no máximo 20 menções (cada uma gera push)
       allow create: if isSignedIn() &&
         request.resource.data.creatorid == request.auth.uid &&
         (!('content' in request.resource.data) ||
@@ -244,11 +210,9 @@ service cloud.firestore {
           request.resource.data.wallTo == request.auth.uid);
 
       allow update: if isSignedIn() && (
-        // contador de curtidas: só muda o campo likes, de 1 em 1
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
          request.resource.data.likes is int &&
          (request.resource.data.likes - resource.data.get('likes', 0)) in [-1, 1]) ||
-        // ocultar/exibir: só o dono do post (ou admin)
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visible']) &&
          request.resource.data.visible is bool &&
          (resource.data.creatorid == request.auth.uid || isAdmin()))
@@ -277,17 +241,12 @@ service cloud.firestore {
       }
     }
 
-    // ─────────────────────────────────────────────
-    // CHATS
-    // ─────────────────────────────────────────────
     match /chats/{chatId} {
-      // resource == null permite o getDoc de um chat que ainda não existe
       allow read: if isSignedIn() && (
         resource == null ||
         request.auth.uid in resource.data.participants
       );
 
-      // 2 participantes distintos e ordenados; id padronizado chat-<a>-<b>
       allow create: if isSignedIn() &&
         request.resource.data.participants is list &&
         request.resource.data.participants.size() == 2 &&
@@ -295,7 +254,6 @@ service cloud.firestore {
         request.resource.data.participants[0] < request.resource.data.participants[1] &&
         chatId == 'chat-' + request.resource.data.participants[0] + '-' + request.resource.data.participants[1];
 
-      // participantes não podem ser alterados depois de criado
       allow update: if isSignedIn() &&
         request.auth.uid in resource.data.participants &&
         request.resource.data.participants == resource.data.participants;
@@ -316,15 +274,11 @@ service cloud.firestore {
       }
     }
 
-    // ─────────────────────────────────────────────
-    // ACTIVITIES — criadas só pelo servidor (Cloud Functions)
-    // ─────────────────────────────────────────────
     match /activities/{activityId} {
       allow read: if true;
 
       allow create: if false;
 
-      // o autor só pode ocultar/exibir a própria atividade
       allow update: if isSignedIn() &&
         resource.data.actorUid == request.auth.uid &&
         request.resource.data.diff(resource.data)
@@ -335,16 +289,11 @@ service cloud.firestore {
         resource.data.actorUid == request.auth.uid;
     }
 
-    // ─────────────────────────────────────────────
-    // USERS
-    // ─────────────────────────────────────────────
     match /users/{userId} {
-      // criado só pelo servidor (createAccount)
       allow create: if false;
 
       allow read: if isSignedIn();
 
-      // campos de identidade não podem ser alterados pelo cliente
       allow update: if (
           isOwner(userId) &&
           !request.resource.data.diff(resource.data).affectedKeys()
@@ -361,8 +310,6 @@ service cloud.firestore {
         allow delete: if isOwner(userId);
       }
 
-      // tokens de push (FCM): só o próprio usuário lê/grava; o servidor
-      // (Admin SDK) ignora as regras e consegue ler para enviar o push
       match /fcmTokens/{token} {
         allow read, write: if isOwner(userId);
       }
@@ -372,7 +319,6 @@ service cloud.firestore {
         allow write: if isOwner(userId);
       }
 
-      // foto/capa/música de perfil são públicas
       match /user-infos/user-media {
         allow read: if true;
         allow write: if isOwner(userId);
@@ -382,8 +328,6 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
-      // Legado: o servidor grava em /notifications (raiz). Cliente não cria
-      // notificações para outros usuários.
       match /notifications/{notifId} {
         allow read: if isOwner(userId);
 
@@ -424,7 +368,6 @@ service cloud.firestore {
         allow update: if false;
       }
 
-      // amizades: escritas só pelo servidor
       match /friends/{friendId} {
         allow read: if isSignedIn();
         allow create, update, delete: if false;
@@ -502,7 +445,6 @@ service cloud.firestore {
         allow create: if isSignedIn() &&
           request.resource.data.creatorid == request.auth.uid;
 
-        // dono do perfil ou autor do depoimento; autor não pode ser trocado
         allow update: if isSignedIn() &&
           (request.auth.uid == userId || request.auth.uid == resource.data.creatorid) &&
           request.resource.data.creatorid == resource.data.creatorid;
@@ -530,7 +472,6 @@ service cloud.firestore {
       }
     }
 
-    // Qualquer outra coleção (ex.: rateLimits) fica bloqueada ao cliente
     match /{document=**} {
       allow read, write: if false;
     }

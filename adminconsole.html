@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <script src="/src/shared/theme-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
@@ -52,7 +53,7 @@ a{font-size:24px;letter-spacing:-.01em; text-decoration: none; color: #fff; font
 main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
 
 .btn{
-  padding:12px 18px;border-radius:12px;font-weight:700;color:#fff;
+  padding:12px 18px;border-radius:var(--radius-12);font-weight:700;color:#fff;
   border:none;background:var(--primary-color);
 }
 .btn.ghost{background:transparent;border:1px solid var(--mute);color:#fff}
@@ -60,13 +61,13 @@ main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
 .btn:disabled{opacity:.5}
 .fab{
   position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));
-  height:56px;padding:0 22px;border-radius:28px;box-shadow:var(--shadow);
+  height:56px;padding:0 22px;border-radius:var(--radius-28);box-shadow:var(--shadow);
 }
 
-.item{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+.item{background:var(--card);border-radius:var(--radius-16);padding:14px;margin-bottom:12px}
 .item-top{display:flex;gap:12px}
 .thumb{
-  width:44px;height:44px;border-radius:12px;background:var(--bg);flex:none;
+  width:44px;height:44px;border-radius:var(--radius-12);background:var(--bg);flex:none;
   object-fit:cover;display:grid;place-items:center;font-size:1.3rem;
 }
 .item h3{font-size:1rem;overflow-wrap:anywhere}
@@ -75,7 +76,7 @@ main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:12px;font-size:.78rem;color:var(--mute)}
-.badge{font-weight:700;padding:3px 10px;border-radius:99px;font-size:.75rem;border:1px solid currentColor}
+.badge{font-weight:700;padding:3px 10px;border-radius:var(--radius-99);font-size:.75rem;border:1px solid currentColor}
 .on{color:var(--ok)}.soon{color:var(--warn)}.off{color:var(--off)}
 .actions{display:flex;gap:8px;margin-top:12px}
 .actions .btn{flex:1;padding:10px}
@@ -100,7 +101,7 @@ main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
 }
 label{display:block;font-size:.85rem;font-weight:700;margin:18px 0 6px}
 input,textarea{
-  width:100%;font:inherit;font-size:16px;padding:14px;border-radius:12px;
+  width:100%;font:inherit;font-size:16px;padding:14px;border-radius:var(--radius-12);
   border:1px solid var(--line);background:var(--card);color:#fff;
 }
 textarea{min-height:200px;resize:vertical;line-height:1.5}
@@ -128,7 +129,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 .messageBody{width:100%;font-size:1rem;color:#999;text-align:center}
 .messageAction{width:100%;padding:0 32px 32px}
 .messageBtn{
-  width:100%;height:50px;border-radius:10px;border:none;
+  width:100%;height:50px;border-radius:var(--radius-10);border:none;
   background:var(--primary-color);color:#fff;font-weight:bold;font-size:1rem;
 }
 
@@ -138,7 +139,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 }
 #delOv.open{display:flex}
 .confirm{
-  background:var(--bg);width:100%;max-width:640px;border-radius:22px 22px 0 0;
+  background:var(--bg);width:100%;max-width:640px;border-radius:var(--radius-22) var(--radius-22) 0 0;
   padding:22px 16px calc(20px + env(safe-area-inset-bottom));
 }
 .confirm p{color:var(--mute);margin:6px 0;overflow-wrap:anywhere}
@@ -147,7 +148,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 .toast{
   position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));
   transform:translateX(-50%) translateY(20px);
-  background:#fff;color:#0f0f0f;padding:11px 18px;border-radius:12px;font-size:.88rem;
+  background:#fff;color:#0f0f0f;padding:11px 18px;border-radius:var(--radius-12);font-size:.88rem;
   opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:90%;
 }
 .toast.show{opacity:1;transform:translateX(-50%)}
@@ -158,7 +159,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
   background:var(--bg-primary);
 }
 .tab{
-  flex:1;padding:10px;border-radius:12px;border:none;font-weight:700;font-size:.9rem;
+  flex:1;padding:10px;border-radius:var(--radius-12);border:none;font-weight:700;font-size:.9rem;
   color:var(--mute);background:var(--card);
 }
 .tab.active{color:#fff;background:var(--primary-color)}
@@ -166,7 +167,7 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 .users-count{font-size:.8rem;color:var(--mute);margin:0 2px 10px}
 .user-row{
   display:flex;align-items:center;gap:12px;background:var(--card);
-  border-radius:16px;padding:12px;margin-bottom:10px;
+  border-radius:var(--radius-16);padding:12px;margin-bottom:10px;
 }
 .user-pfp{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:var(--bg)}
 .user-info{flex:1;min-width:0}

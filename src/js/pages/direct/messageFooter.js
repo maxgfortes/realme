@@ -1,6 +1,5 @@
 import { auth } from "../../../config/config.js";
 
-
 function getMessageStatus(timestamp, read) {
 
     const date = timestamp.toDate();
@@ -28,7 +27,6 @@ function getMessageStatus(timestamp, read) {
 
     return read ? `visto ${time}` : `enviado ${time}`;
 }
-
 
 export function renderMessages(messages) {
 
@@ -75,7 +73,6 @@ export function renderMessages(messages) {
 
         currentBox.appendChild(bubble);
 
-
         if (
             isMine &&
             message.id === lastMessageId &&
@@ -93,8 +90,6 @@ export function renderMessages(messages) {
 
             currentBox.appendChild(status);
         }
-
-
 
     });
 

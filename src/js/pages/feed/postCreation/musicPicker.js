@@ -14,13 +14,11 @@ const PAUSE_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="curren
 
 const changeListeners = [];
 
-let confirmed = null; // { id, title, author, thumb }
+let confirmed = null;
 let draft = null;
 let results = [];
 let searchTimer = null;
 let searchController = null;
-
-/* ---------- YouTube ---------- */
 
 function extractVideoId(text) {
     try {
@@ -105,8 +103,6 @@ async function searchSongs(term, signal) {
                 `https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`
         }));
 }
-
-/* ---------- prévia (um player compartilhado, escondido) ---------- */
 
 let apiPromise = null;
 let playerPromise = null;
@@ -210,14 +206,11 @@ function stopPreview() {
     markPlaying();
 }
 
-/* ---------- lista ---------- */
-
 function renderMessage(html) {
     list.innerHTML = `<div class="list-empty">${html}</div>`;
 }
 
 function renderResults() {
-    // a música escolhida continua visível mesmo que a busca mude
     const songs = draft && !results.some(song => song.id === draft.id)
         ? [draft, ...results]
         : results;

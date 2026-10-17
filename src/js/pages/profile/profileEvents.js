@@ -63,7 +63,6 @@ async function fetchGoing(uid) {
     return [];
   }
 
-  // "Não sei" (maybe) não conta como entrado; registros sem status contam
   const confirmed = snap.docs.filter(d => d.data().status !== "maybe");
 
   const events = await Promise.all(
@@ -84,9 +83,6 @@ async function fetchGoing(uid) {
     .filter(isActive);
 }
 
-/* ---------- abrir / apagar ---------- */
-
-// o openEvent.js escuta este evento e abre o modal igual ao feed
 function openEventLayer(eventId) {
   if (!eventId) return;
 
@@ -95,10 +91,9 @@ function openEventLayer(eventId) {
   );
 }
 
-// encolhe o card até sumir (altura precisa ser px para a transição funcionar)
 function collapse(card) {
   card.style.height = `${card.offsetHeight}px`;
-  void card.offsetHeight; // força o reflow: a transição começa daqui
+  void card.offsetHeight;
   card.classList.add("event-removing");
 
   return new Promise(resolve => setTimeout(resolve, REMOVE_MS));
@@ -112,8 +107,6 @@ async function deleteCard(area) {
   area.classList.add("deleting");
 
   try {
-    // as presenças (going) e a atividade do evento são limpas pelo servidor
-    // (onEventDeleted)
     await deleteDoc(doc(db, "events", eventId));
   } catch (error) {
     console.error("Erro ao apagar evento:", error);
@@ -134,7 +127,6 @@ async function deleteCard(area) {
 
   if (section && !section.querySelector(".event-card-area")) section.remove();
 
-  // apagou o último evento: a aba some
   if (panel && !panel.querySelector(".event-card-area")) {
     removeTab(panel);
     panel = null;
@@ -142,10 +134,6 @@ async function deleteCard(area) {
   }
 }
 
-/*
- * Clique abre o evento. Segurar HOLD_MS apaga (só nas seções marcadas com
- * data-deletable, que são os eventos criados pelo dono do perfil).
- */
 function bindEventCards(root) {
   let hold = null;
 
@@ -179,7 +167,7 @@ function bindEventCards(root) {
         hold = null;
 
         area.classList.remove("holding");
-        area.dataset.held = "1"; // o clique ao soltar não pode abrir o evento
+        area.dataset.held = "1";
 
         deleteCard(area);
       }, HOLD_MS)
@@ -198,7 +186,6 @@ function bindEventCards(root) {
     root.addEventListener(type, cancelHold)
   );
 
-  // segurar no celular dispara o menu de contexto; aqui ele atrapalha
   root.addEventListener("contextmenu", event => {
     if (event.target.closest("[data-deletable] .event-card-area")) {
       event.preventDefault();
@@ -270,7 +257,7 @@ export async function initProfileEvents({ profileUid, isOwner, force = false }) 
     panel.className = "profile-tab";
     panel.innerHTML = html;
     addTab(EVENT_ICON_SVG, panel);
-    bindEventCards(panel); // delegação: vale para os cards renderizados depois também
+    bindEventCards(panel);
   } else if (html !== lastHtml || force) {
     panel.innerHTML = html;
   }
@@ -289,7 +276,6 @@ function refreshProfileEvents(force = false) {
   initProfileEvents({ ...lastArgs, force });
 }
 
-// presença alterada no modal do evento → atualiza as seções do perfil
 document.addEventListener("realme:event-going-changed", () => refreshProfileEvents(true));
 
 setInterval(() => {

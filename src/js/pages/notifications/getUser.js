@@ -5,11 +5,9 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
 const defaultAvatar = "../public/img/default.jpg";
 
 const users = {};
-
 
 export async function getUser(fromUid) {
 

@@ -6,7 +6,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    z-index: 999;
+    z-index: var(--z-999);
     opacity: 0;
     pointer-events: none;
 }
@@ -24,9 +24,9 @@
     width: 100%;
     background: var(--bg-modal);    
     opacity: 0;
-    transition: all 0.3s;
+    transition: var(--transition-all);
     pointer-events: none;
-    transition: all 0.3s;
+    transition: var(--transition-all);
 }
 
 .about-menu-overlay.active {
@@ -35,15 +35,15 @@
 }
 
 .about-menu {
-    z-index: 1;
+    z-index: var(--z-1);
     height: 75vh;
     width: 100%;
-    background: #212327;
-    border-radius: 22px 22px 0 0;
+    background: var(--color-bg-sheet);
+    border-radius: var(--radius-22) var(--radius-22) 0 0;
     display: flex;
     flex-direction: column;
     transform: translateY(100%);
-    transition: all 0.3s;
+    transition: var(--transition-all);
     position: fixed;
 }
 
@@ -54,10 +54,10 @@
 .about-menu-header {
     display: flex;
     position: relative;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border-default);
     height: 60px;
     width: 100%;
-    border-radius: 22px 22px 0 0;
+    border-radius: var(--radius-22) var(--radius-22) 0 0;
 }
 
 .about-menu-header::after {
@@ -66,9 +66,9 @@
     width: 100%;
     height: 20px;
     bottom: -20px;
-    background: #212327;
-    background: linear-gradient(0deg, rgba(33, 35, 39, 0) 0%, rgba(33, 35, 39, 1) 100%);
-    z-index: 2;
+    background: var(--color-bg-sheet);
+    background: linear-gradient(0deg, var(--color-bg-slate-14-a0) 0%, var(--color-bg-sheet) 100%);
+    z-index: var(--z-2);
 }
 
 .about-menu-header-boxes {
@@ -90,9 +90,9 @@
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
+    font-size: var(--font-size-18);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-pure);
 }
 
 .about-menu-btn {
@@ -102,19 +102,18 @@
     height: 100%;
     aspect-ratio: 1/1;
     background: transparent;
-    color: #fff;
+    color: var(--color-text-pure);
     border: none;
-    font-size: 16px;
+    font-size: var(--font-size-16);
     opacity: 1;
-    padding: 10px;
+    padding: var(--space-10);
 }
 
 .about-menu-btn svg {
     height: 24px;
     width: 24px;
-    fill: #fff;
+    fill: var(--color-icon-white);
 }
-
 
 .about-menu-btn {
     width: 0;
@@ -122,7 +121,7 @@
     padding: 0;
     opacity: 0;
     overflow: hidden;
-    transition: all 0.3s;
+    transition: var(--transition-all);
 }
 
 .about-menu-btn.active {
@@ -132,24 +131,24 @@
 
 .about-menu-content {
     padding-bottom: 150px;
-    padding-top: 10px;
+    padding-top: var(--space-10);
     width: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
-    gap: 50px;
+    gap: var(--space-50);
     opacity: 0;
     pointer-events: none;
     height: 0;
     padding-top: 0;
     padding-bottom: 0;
-    transition: all 0.3s;
+    transition: var(--transition-all);
 }
 
 .about-menu-content.active {
     opacity: 1;
     height: 100%;
-    padding-top: 10px;
+    padding-top: var(--space-10);
     padding-bottom: 150px;
     pointer-events: all;
 }
@@ -159,8 +158,8 @@
     align-items: center;
     align-items: stretch;
     width: 100%;
-    padding: 8px 16px;
-    font-size: 17px;
+    padding: var(--space-8) var(--space-16);
+    font-size: var(--font-size-17);
     min-height: 60px;
     height: auto;
     max-height: 200px;
@@ -169,14 +168,13 @@
 .about-menu-item-area {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-8);
     height: 100%;
 }
 
 .about-menu-item-area.muted {
     opacity: 0.4;
 }
-
 
 .about-menu-icon {
     height: 32px;
@@ -185,36 +183,36 @@
     align-items: center;
     justify-content: center;
     aspect-ratio: 1/1;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 }
 
 .about-menu-icon svg {
     height: 22px;
     width: 22px;
-    fill: #fff;
+    fill: var(--color-icon-white);
 }
 
 .about-item-label {
-    color: #fff;
-    font-weight: bold;
-    line-height: 1.2;
+    color: var(--color-text-pure);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
 }
 
 .about-item-content {
-    color: #cacaca;
-    font-weight: normal;
-    padding-left: 4px;
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-regular);
+    padding-left: var(--space-4);
 }
 
 .about-item-label {
-    color: #fff;
-    font-weight: bold;
+    color: var(--color-text-pure);
+    font-weight: var(--font-weight-bold);
 }
 
 .about-item-content {
-    color: #cacaca;
+    color: var(--color-text-tertiary);
     font: inherit;
-    font-weight: normal;
+    font-weight: var(--font-weight-regular);
     background: transparent;
     border: none;
     outline: none;

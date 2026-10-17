@@ -22,7 +22,7 @@ function createPcAlert() {
           left: 0;
           pointer-events: all;
         }
-        .pc-alert-logo { font-size: 2.2em; font-weight: bold; color: #fff; font-family: Arial, Helvetica, sans-serif; }
+        .pc-alert-logo { font-size: 2.2em; font-weight: bold; color: #fff; font-family: var(--font-family-primary); }
         .logo-area { padding-bottom: 30px; }
         .pc-alert-subtitle { font-size: 1em; color: #aaa; }
         .pc-alert-title { font-size: 1.2em; font-weight: bold; color: #fff; }

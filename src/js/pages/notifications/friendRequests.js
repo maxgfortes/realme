@@ -12,14 +12,11 @@ import {
 
 import { getUser } from "./getUser.js";
 
-
 const requestsList = document.querySelector("#requestsList");
 const requestsSub = document.querySelector(".see-requests-sub");
 const requestsDot = document.querySelector(".new-request-dot");
 
-
 let unsubscribeFriendRequests = null;
-
 
 export async function acceptFriendRequest(fromUid, meUid) {
 
@@ -30,7 +27,6 @@ export async function acceptFriendRequest(fromUid, meUid) {
         status: "accepted"
     });
 }
-
 
 export async function declineFriendRequest(fromUid, meUid) {
 
@@ -43,7 +39,6 @@ export async function declineFriendRequest(fromUid, meUid) {
     await deleteDoc(requestReferenceOne);
     await deleteDoc(requestReferenceTwo);
 }
-
 
 function createRequestItem(request, meUid) {
 
@@ -84,7 +79,6 @@ function createRequestItem(request, meUid) {
 
     return item;
 }
-
 
 async function renderFriendRequests(result, meUid) {
 
@@ -136,7 +130,6 @@ async function renderFriendRequests(result, meUid) {
     }
 }
 
-
 export function subscribeFriendRequests(meUid) {
 
     if (unsubscribeFriendRequests) {
@@ -159,7 +152,6 @@ export function subscribeFriendRequests(meUid) {
         }
     );
 }
-
 
 export function unsubscribeFriendRequestsListener() {
 
