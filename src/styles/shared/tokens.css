@@ -1,78 +1,6 @@
 @import url("../themes/skeuomorphism.css");
 
 @font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYREGULAR.OTF') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYMEDIUM.OTF') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYBOLD.OTF') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYTHINITALIC.OTF') format('opentype');
-  font-weight: 100;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYULTRALIGHTITALIC.OTF') format('opentype');
-  font-weight: 200;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYLIGHTITALIC.OTF') format('opentype');
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYSEMIBOLDITALIC.OTF') format('opentype');
-  font-weight: 600;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYHEAVYITALIC.OTF') format('opentype');
-  font-weight: 800;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('/public/font/main/SFPRODISPLAYBLACKITALIC.OTF') format('opentype');
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'RealMeFont';
   src: url('/public/font/TitilliumWeb-Bold.ttf') format('truetype');
   font-weight: 700;
@@ -80,7 +8,7 @@
 }
 
 :root {
-  --font-family-primary: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-primary: Arial, Helvetica, sans-serif;
   --font-family-brand: 'RealMeFont', var(--font-family-primary);
 
   --font-weight-regular: 400;
