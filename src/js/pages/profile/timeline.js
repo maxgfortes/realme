@@ -10,16 +10,18 @@ import "/src/js/pages/feed/render/openLikes.js";
 
 let session = 0;
 
-export async function openProfileTimeline(posts, startIndex = 0, username = "") {
+export async function openProfileTimeline(posts, startIndex = 0, username = "", label = "Posts") {
     const timeline = document.getElementById("timeline");
     const row = document.getElementById("timelineRow");
     const name = document.getElementById("timelineName");
+    const labelElement = timeline?.querySelector(".timeline-label");
 
     if (!row) return;
 
     const id = ++session;
 
     if (name) name.textContent = username;
+    if (labelElement) labelElement.textContent = label;
 
     row.replaceChildren();
     bindPostInteractions(row);

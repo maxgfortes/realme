@@ -1,4 +1,6 @@
 import { loadEvent } from "./loadEvent.js";
+import { auth } from "/src/config/config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const feedPage = document.getElementById("feedPage");
 const eventLayer = document.getElementById("eventLayer");
@@ -40,4 +42,15 @@ document.addEventListener("click", event => {
 
 if (closeEventBtn) {
     closeEventBtn.addEventListener("click", closeEvent);
+}
+
+const eventFromUrl = new URLSearchParams(location.search).get("event");
+
+if (eventFromUrl) {
+    const stopWaiting = onAuthStateChanged(auth, user => {
+        if (!user) return;
+
+        stopWaiting();
+        openEvent(eventFromUrl);
+    });
 }

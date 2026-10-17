@@ -17,6 +17,9 @@ import { EVENT_ICON_SVG, eventCardHTML, loadEventGoing } from "./eventCard.js";
 let panel = null;
 let renderedKey = null;
 let lastArgs = null;
+let lastHtml = "";
+
+const EVENTS_REFRESH_MS = 60 * 1000;
 
 const ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -235,7 +238,7 @@ function sectionHTML(title, events, { deletable = false } = {}) {
     </section>`;
 }
 
-export async function initProfileEvents({ profileUid, isOwner }) {
+export async function initProfileEvents({ profileUid, isOwner, force = false }) {
   lastArgs = { profileUid, isOwner };
 
   const key = `${profileUid}:${isOwner}`;
@@ -268,19 +271,31 @@ export async function initProfileEvents({ profileUid, isOwner }) {
     panel.innerHTML = html;
     addTab(EVENT_ICON_SVG, panel);
     bindEventCards(panel); // delegação: vale para os cards renderizados depois também
-  } else {
+  } else if (html !== lastHtml || force) {
     panel.innerHTML = html;
   }
+
+  lastHtml = html;
 
   panel.querySelectorAll(".event-card-area").forEach(area => {
     loadEventGoing(area.dataset.eventId, area.querySelector(".event-card-graph"));
   });
 }
 
-// presença alterada no modal do evento → atualiza as seções do perfil
-document.addEventListener("realme:event-going-changed", () => {
+function refreshProfileEvents(force = false) {
   if (!lastArgs) return;
 
   renderedKey = null;
-  initProfileEvents(lastArgs);
+  initProfileEvents({ ...lastArgs, force });
+}
+
+// presença alterada no modal do evento → atualiza as seções do perfil
+document.addEventListener("realme:event-going-changed", () => refreshProfileEvents(true));
+
+setInterval(() => {
+  if (!document.hidden) refreshProfileEvents();
+}, EVENTS_REFRESH_MS);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshProfileEvents();
 });

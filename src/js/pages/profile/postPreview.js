@@ -1,7 +1,9 @@
 import { cloneTemplate, createImage } from "./dom.js";
-import { getPostImages } from "./postImages.js";
+import { getPostMedia } from "./postImages.js";
 
 const MAX_PREVIEW_TEXT = 80;
+
+const VIDEO_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M4 2.8v10.4c0 .6.66.97 1.17.65l8.2-5.2a.77.77 0 0 0 0-1.3l-8.2-5.2C4.66 1.83 4 2.2 4 2.8Z" fill="white"/></svg>`;
 
 const MULTI_IMAGE_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3C1 1.89543 1.89543 1 3 1H10C11.1046 1 12 1.89543 12 3V10C12 11.1046 11.1046 12 10 12H3C1.89543 12 1 11.1046 1 10V3Z" fill="white"/><path d="M15 4.5C15 3.67157 14.3284 3 13.5 3V10.5C13.5 12.1569 12.1569 13.5 10.5 13.5H3C3 14.3284 3.67157 15 4.5 15H11C13.2091 15 15 13.2091 15 11V4.5Z" fill="white"/></svg>`;
 
@@ -75,14 +77,39 @@ function createTextPreview(content = "") {
 
 /* ---------- post preview ---------- */
 
-export function createPostPreview(post) {
-  const images = getPostImages(post);
+function createVideoPreview(source, badge) {
+  const preview = cloneTemplate("postImageTemplate");
+  const video = document.createElement("video");
 
-  if (images.length) {
-    return createImagePreview(
-      images[0],
-      images.length > 1 ? createBadge(MULTI_IMAGE_ICON) : null
-    );
+  video.className = "post-preview-img";
+  video.src = `${source}#t=0.1`;
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = "metadata";
+  video.setAttribute("muted", "");
+  video.setAttribute("playsinline", "");
+
+  preview.appendChild(video);
+
+  if (badge) preview.appendChild(badge);
+
+  return preview;
+}
+
+export function createPostPreview(post) {
+  const media = getPostMedia(post);
+
+  if (media.length) {
+    const first = media[0];
+    const badge = media.length > 1
+      ? createBadge(MULTI_IMAGE_ICON)
+      : first.video
+        ? createBadge(VIDEO_ICON)
+        : null;
+
+    if (first.video && !first.poster) return createVideoPreview(first.src, badge);
+
+    return createImagePreview(first.video ? first.poster : first.src, badge);
   }
 
   const cover = getMusicCover(post);

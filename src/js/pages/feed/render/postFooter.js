@@ -1,4 +1,5 @@
 import { db } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 
 import {
     collection,
@@ -12,7 +13,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
-async function getLikersName(uid) {
+const likerNameCache = new Map();
+
+export function getLikersName(uid) {
+    if (!likerNameCache.has(uid)) {
+        likerNameCache.set(uid, fetchLikerName(uid).catch(() => "Usuário"));
+    }
+
+    return likerNameCache.get(uid);
+}
+
+async function fetchLikerName(uid) {
 
     const userRef = doc(db, "users", uid);
 
@@ -35,8 +46,7 @@ async function getPostLikers(postId) {
 
     const likersRef = collection(
         db,
-        "posts",
-        postId,
+        ...postSegments(postId),
         "likers"
     );
 
@@ -65,7 +75,7 @@ async function getPostLikers(postId) {
 }
 
 
-function renderLikersFooter(postElement, names, total) {
+export function renderLikersFooter(postElement, names, total) {
 
     const footerText = postElement.querySelector(
         ".post-graph-text"

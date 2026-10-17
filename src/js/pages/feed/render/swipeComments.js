@@ -1,4 +1,5 @@
 import { db, auth } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 import {
     doc,
     deleteDoc
@@ -305,8 +306,7 @@ export function enableCommentSwipe(
 
                 const commentRef = doc(
                     db,
-                    "posts",
-                    postId,
+                    ...postSegments(postId),
                     "coments",
                     commentId
                 );

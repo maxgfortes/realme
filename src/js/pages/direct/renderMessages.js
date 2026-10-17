@@ -70,7 +70,15 @@ function buildDaySeparator(date) {
 }
 
 function resolveReplySenderName(replyTo, currentUserId, otherUserName) {
-    if (replyTo.sender === currentUserId) {
+    const isOwn = replyTo.sender === currentUserId;
+
+    if (replyTo.type === "note") {
+        return isOwn
+            ? "Sua nota"
+            : `Nota de ${getFirstName(otherUserName) || "Usuário"}`;
+    }
+
+    if (isOwn) {
         return "Você";
     }
 
@@ -81,6 +89,10 @@ function buildReplyDiv(replyTo, currentUserId, isMine, otherUserName) {
     const replyDiv = document.createElement("div");
 
     replyDiv.className = isMine ? "reply-message mine" : "reply-message their";
+
+    if (replyTo.type === "note") {
+        replyDiv.classList.add("note-reply");
+    }
 
     const sender = resolveReplySenderName(
         replyTo,

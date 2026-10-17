@@ -4,6 +4,7 @@ import { $, select } from "./dom.js";
 import { state } from "./state.js";
 import { LOGIN_PAGE } from "./constants.js";
 import { clearOwnUid } from "./profileCache.js";
+import { removePush } from "/src/shared/push.js";
 
 const loginBtn = $("loginBtn");
 const logoutBtn = $("logoutBtn");
@@ -25,6 +26,7 @@ function goToLogin(event) {
 async function logout(event) {
   event.preventDefault();
   clearOwnUid();
+  await removePush(auth.currentUser?.uid).catch(() => {});
   await signOut(auth);
   location.replace(LOGIN_PAGE);
 }

@@ -19,7 +19,7 @@ const commentsContainer =
         "commentsContainer"
     );
 
-function openComments(postId) {
+export function openComments(postId) {
     if (!commentsArea) {
         console.warn("openComments: #commentsArea não existe nesta página.");
         return;
@@ -74,7 +74,7 @@ document.addEventListener(
     event => {
         const commentButton =
             event.target.closest(
-                ".comment-btn"
+                ".comment-btn, .comments-preview"
             );
 
         if (!commentButton) return;

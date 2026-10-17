@@ -40,5 +40,13 @@ export function getNotificationMessage(type) {
         return "aceitou seu pedido de amizade.";
     }
 
+    if (type === "wall_post") {
+        return "escreveu no seu mural.";
+    }
+
+    if (type === "event_going") {
+        return "vai ao seu evento.";
+    }
+
     return "interagiu com você.";
 }

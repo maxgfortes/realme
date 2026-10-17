@@ -3,12 +3,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth, db } from "../../../config/config.js";
+import { openNoteView } from "./noteView.js";
 
 const NOTE_PLACEHOLDER = "O que você está fazendo agora?";
 const DEFAULT_PFP = "../public/img/default.jpg";
 const LONG_PRESS_MS = 500;
 const CACHE_KEY = "notesCache";
-const NOTE_MAX_AGE = 24 * 60 * 60 * 1000; 
+const NOTE_MAX_AGE = 24 * 60 * 60 * 1000;
+const NOTE_EXPIRY_CHECK_MS = 60 * 1000;
 
 const notesRow = document.getElementById("notesRow");
 const createNoteBtn = document.getElementById("createNoteBtn");
@@ -209,6 +211,7 @@ function loadUserInfo() {
 function buildFriendNode(friendId) {
     const item = document.createElement("div");
     item.className = "feeling-item";
+    item.dataset.uid = friendId;
     item.innerHTML = `
         <div class="note-user-infos">
             <div class="note-pfp">
@@ -304,6 +307,7 @@ function updateFriendNote(friendId, note) {
     }
 
     setNoteText(node.contentEl, note.content);
+    node.note = { content: note.content, createdAt: note.createdAt || null };
 
     cache.friends[friendId] = {
     content: note.content,
@@ -392,6 +396,26 @@ function hydrateFromCache() {
         const node = buildFriendNode(friendId);
         applyProfile(node, cache.profiles[friendId]);
         setNoteText(node.contentEl, data.content);
+        node.note = { content: data.content, createdAt: data.createdAt || null };
+    });
+}
+
+function handleFriendNoteClick(event) {
+    const item = event.target.closest(".feeling-item");
+
+    if (!item || item.classList.contains("my-feeling")) return;
+
+    const friendId = item.dataset.uid;
+    const node = friendNodes.get(friendId);
+
+    if (!node?.note?.content) return;
+
+    openNoteView({
+        uid: friendId,
+        name: node.appliedProfile?.name || node.nameEl.textContent || "Usuário",
+        photo: node.appliedProfile?.photo || node.pfpImg.src || DEFAULT_PFP,
+        content: node.note.content,
+        createdAt: node.note.createdAt
     });
 }
 
@@ -403,6 +427,21 @@ createNoteBtn.addEventListener("pointerleave", clearLongPress);
 createNoteBtn.addEventListener("pointercancel", clearLongPress);
 cancelNote.addEventListener("click", closeNoteOverlay);
 sendNote.addEventListener("click", postNote);
+notesRow.addEventListener("click", handleFriendNoteClick);
+
+setInterval(() => {
+    friendNodes.forEach((node, friendId) => {
+        if (node.note?.createdAt && !isNoteWithin24Hours(node.note)) {
+            removeFriendNode(friendId);
+            delete cache.friends[friendId];
+            writeCache();
+        }
+    });
+
+    if (hasActiveNote && cache.own?.createdAt && !isNoteWithin24Hours(cache.own)) {
+        renderNotes(null);
+    }
+}, NOTE_EXPIRY_CHECK_MS);
 
 loadUserInfo();
 hydrateFromCache();

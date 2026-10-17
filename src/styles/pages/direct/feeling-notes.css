@@ -286,13 +286,11 @@
   flex-direction: column;
   justify-content: flex-end;
   z-index: 99999;
-  opacity: 1;
-  pointer-events: all;
+  pointer-events: none;
   display: none;
 }
 
 .note-view-area.active {
-  opacity: 1;
   pointer-events: all;
 }
 
@@ -303,9 +301,14 @@
   width: 100%;
   z-index: 998;
   background: var(--bg-modal);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.note-view-overlay.active {
   opacity: 1;
   pointer-events: all;
-  transition: all 0.3s;
 }
 
 .note-create-overlay.active {
@@ -314,29 +317,45 @@
 }
 
 .note-view-modal {
+  position: relative;
   background-color: #212327;
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  height: 100%;
-  min-height: 260px;
-  max-height: 260px;
   border-radius: 22px 22px 0 0;
-  padding: 16px;
-  transform: translateY(00%);
-  transition:all 0.3s;
+  padding: 26px 16px calc(32px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
   z-index: 999;
+  pointer-events: none;
+  padding-bottom: 50px;
+}
+
+.note-view-modal::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: #474747;
+  transform: translateX(-50%);
+    display: none;
 }
 
 .note-view-modal.active {
   transform: translateY(0);
+  pointer-events: all;
 }
-
 
 .note-content-area {
   font-size: 16px;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .note-content-name {
@@ -345,12 +364,27 @@
 
 .note-content {
   color: #ddd;
+  word-break: break-word;
+}
+
+.note-content-time {
+  color: #8a8a8a;
+  font-size: 13px;
 }
 
 .note-view-actions {
   display: flex;
   gap: 10px;
   width: 100%;
+  margin: 0;
+}
+
+.reply-note-input:focus {
+  outline: none;
+}
+
+.btn-act-note:disabled {
+  opacity: 0.4;
 }
 
 .reply-note-input {

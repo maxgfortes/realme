@@ -51,11 +51,14 @@ export function openChat(user) {
     loadTyping(chatId, otherUserId);
 }
 
-function openChatFromUrl() {
-    if (!chatFromUrl) return;
+const OPEN_RETRY_MS = 100;
+const OPEN_TIMEOUT_MS = 15000;
+
+export function openChatById(chatId, startedAt = Date.now()) {
+    if (!chatId) return;
 
     const user = document.querySelector(
-        `[data-chat-id="${CSS.escape(chatFromUrl)}"]`
+        `.user-list-box[data-chat-id="${CSS.escape(chatId)}"]`
     );
 
     if (user) {
@@ -63,7 +66,15 @@ function openChatFromUrl() {
         return;
     }
 
-    setTimeout(openChatFromUrl, 100);
+    if (Date.now() - startedAt > OPEN_TIMEOUT_MS) return;
+
+    setTimeout(() => openChatById(chatId, startedAt), OPEN_RETRY_MS);
+}
+
+function openChatFromUrl() {
+    if (!chatFromUrl) return;
+
+    openChatById(chatFromUrl);
 }
 
 openChatFromUrl();

@@ -1,6 +1,7 @@
 import { db, auth } from "../../../config/config.js";
 import "/src/config/authGuard.js";
 import "/src/shared/desktopAlert.js";
+import "/src/shared/push.js";
 
 import {
     collection,

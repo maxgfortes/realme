@@ -1,4 +1,5 @@
 import { db } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 
 import {
     collection,
@@ -123,8 +124,7 @@ export async function openLikes(postId) {
     try {
         const likesRef = collection(
             db,
-            "posts",
-            postId,
+            ...postSegments(postId),
             "likers"
         );
 

@@ -1,6 +1,7 @@
 import "/src/config/authGuard.js";
 import "/src/shared/nav-pic.js";
 import "/src/shared/desktopAlert.js";
+import "/src/shared/push.js";
 
 import "/src/js/pages/direct/getUser.js";
 import "/src/js/pages/direct/statusNotes.js";

@@ -13,6 +13,7 @@ import {
   onImagesChanged
 } from './imageUpload.js';
 import { getSelectedMentions, clearMentions } from './mentionPicker.js';
+import { showMediaNotice } from './videoUpload.js';
 import { getSelectedMusicUrl, clearMusic, onMusicChanged } from './musicPicker.js';
 import { getLocationText, clearLocation } from './locationPicker.js';
 
@@ -52,7 +53,9 @@ export async function createPost() {
   showProgress(20);
 
   try {
-    const imgs = hasSelectedImages() ? await uploadSelectedImages() : [];
+    const imgs = hasSelectedImages()
+      ? await uploadSelectedImages(fraction => showProgress(20 + Math.round(fraction * 55)))
+      : [];
 
     showProgress(80);
 
@@ -73,6 +76,8 @@ export async function createPost() {
     setTimeout(hideProgress, 1000);
     clearInputs();
   } catch (error) {
+    console.error('Erro ao criar post:', error);
+    showMediaNotice(error?.message || 'Não foi possível publicar');
     hideProgress();
   }
 }

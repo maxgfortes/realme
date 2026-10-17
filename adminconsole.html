@@ -151,6 +151,38 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
   opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:90%;
 }
 .toast.show{opacity:1;transform:translateX(-50%)}
+
+[hidden]{display:none !important}
+.tabs{
+  position:sticky;top:60px;z-index:4;display:flex;gap:8px;padding:10px 0 12px;
+  background:var(--bg-primary);
+}
+.tab{
+  flex:1;padding:10px;border-radius:12px;border:none;font-weight:700;font-size:.9rem;
+  color:var(--mute);background:var(--card);
+}
+.tab.active{color:#fff;background:var(--primary-color)}
+.search{margin-bottom:12px}
+.users-count{font-size:.8rem;color:var(--mute);margin:0 2px 10px}
+.user-row{
+  display:flex;align-items:center;gap:12px;background:var(--card);
+  border-radius:16px;padding:12px;margin-bottom:10px;
+}
+.user-pfp{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:var(--bg)}
+.user-info{flex:1;min-width:0}
+.user-name{
+  display:flex;align-items:center;gap:6px;font-weight:700;font-size:.95rem;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.user-name a{font-size:inherit;letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
+.verified-mark{
+  flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;
+  background:#3b82f6;color:#fff;font-size:10px;line-height:1;
+}
+.user-username{font-size:.82rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-date{font-size:.75rem;color:var(--mute);margin-top:2px}
+.verify-btn{flex:none;padding:9px 12px;font-size:.8rem;min-width:84px}
+.verify-btn.is-verified{background:transparent;border:1px solid var(--mute)}
 </style>
 </head>
 <body>
@@ -158,7 +190,18 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <header>
   <a href="/feed.html">RealMe</a>
 </header>
-<main id="list"><div class="empty">Carregando…</div></main>
+<main>
+  <div class="tabs" id="tabs" hidden>
+    <button class="tab active" type="button" data-tab="messages">Mensagens</button>
+    <button class="tab" type="button" data-tab="users">Usuários</button>
+  </div>
+  <div id="list"><div class="empty">Carregando…</div></div>
+  <div id="usersPanel" hidden>
+    <input class="search" id="userSearch" type="search" placeholder="Buscar por nome ou username" autocomplete="off">
+    <div class="users-count" id="usersCount"></div>
+    <div id="usersList"></div>
+  </div>
+</main>
 <button class="btn fab" id="btnNew" hidden>Nova mensagem</button>
 
 <div id="editor">
@@ -210,8 +253,8 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 <script type="module">
 import { db, auth } from "./src/config/config.js";
 import {
-  collection, getDocs, getDoc, addDoc, setDoc, deleteDoc, doc,
-  query, orderBy, Timestamp
+  collection, getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc, doc,
+  query, orderBy, onSnapshot, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -426,8 +469,181 @@ $("delYes").addEventListener("click", async () => {
   }
 });
 
+const DEFAULT_PFP = "/public/img/default.jpg";
+
+let users = [];
+let usersUnsubscribe = null;
+let activeTab = "messages";
+const photoCache = new Map();
+const pendingVerify = new Set();
+
+function toDateValue(value) {
+  if (!value) return null;
+  if (value.toDate) return value.toDate();
+  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
+
+  const date = new Date(value);
+
+  return isNaN(date) ? null : date;
+}
+
+function fullName(data) {
+  return [data.name, data.surname].filter(Boolean).join(" ").trim() ||
+    data.displayName || data.displayname || "Sem nome";
+}
+
+function formatJoined(date) {
+  if (!date) return "Data de entrada desconhecida";
+
+  const day = date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const time = date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+  return `Entrou em ${day} às ${time}`;
+}
+
+function getPhoto(uid) {
+  if (!photoCache.has(uid)) {
+    photoCache.set(uid, getDoc(doc(db, "users", uid, "user-infos", "user-media"))
+      .then(snap => {
+        const media = snap.exists() ? snap.data() : {};
+        return media.userphoto || media.pfp || DEFAULT_PFP;
+      })
+      .catch(() => DEFAULT_PFP));
+  }
+
+  return photoCache.get(uid);
+}
+
+function filteredUsers() {
+  const term = $("userSearch").value.trim().toLowerCase().replace(/^@/, "");
+
+  if (!term) return users;
+
+  return users.filter(u =>
+    u.name.toLowerCase().includes(term) || u.username.toLowerCase().includes(term));
+}
+
+function userRowHTML(u) {
+  const profile = `/profile.html?uid=${encodeURIComponent(u.id)}`;
+  const busy = pendingVerify.has(u.id) ? " disabled" : "";
+
+  return `
+    <div class="user-row" data-uid="${esc(u.id)}">
+      <img class="user-pfp" src="${DEFAULT_PFP}" alt="" loading="lazy">
+      <div class="user-info">
+        <div class="user-name">
+          <a href="${profile}">${esc(u.name)}</a>
+          ${u.verified ? `<span class="verified-mark" title="Verificado">✓</span>` : ""}
+        </div>
+        <div class="user-username">@${esc(u.username || "sem-username")}</div>
+        <div class="user-date">${esc(formatJoined(u.joinedAt))}</div>
+      </div>
+      <button class="btn verify-btn${u.verified ? " is-verified" : ""}" type="button" data-verify="${esc(u.id)}"${busy}>
+        ${u.verified ? "Remover" : "Verificar"}
+      </button>
+    </div>`;
+}
+
+function renderUsers() {
+  const list = filteredUsers();
+
+  $("usersCount").textContent = list.length === users.length
+    ? `${users.length} usuários`
+    : `${list.length} de ${users.length} usuários`;
+
+  if (!list.length) {
+    $("usersList").innerHTML = `<div class="empty"><strong>Nenhum usuário</strong>Nada encontrado para essa busca.</div>`;
+    return;
+  }
+
+  $("usersList").innerHTML = list.map(userRowHTML).join("");
+
+  $("usersList").querySelectorAll(".user-row").forEach(row => {
+    const image = row.querySelector(".user-pfp");
+
+    getPhoto(row.dataset.uid).then(src => {
+      if (image.isConnected) image.src = src;
+    });
+  });
+}
+
+function watchUsers() {
+  if (usersUnsubscribe) return;
+
+  $("usersList").innerHTML = `<div class="empty">Carregando…</div>`;
+
+  usersUnsubscribe = onSnapshot(collection(db, "users"), snap => {
+    users = snap.docs.map(d => {
+      const data = d.data();
+
+      return {
+        id: d.id,
+        name: fullName(data),
+        username: data.username || "",
+        verified: data.verified === true,
+        joinedAt: toDateValue(data.criadoem || data.createdAt)
+      };
+    }).sort((a, b) => (b.joinedAt?.getTime() || 0) - (a.joinedAt?.getTime() || 0));
+
+    renderUsers();
+  }, err => {
+    console.error(err);
+    $("usersList").innerHTML = `<div class="empty"><strong>Erro</strong>Não foi possível carregar os usuários.</div>`;
+  });
+}
+
+async function toggleVerified(uid) {
+  const user = users.find(u => u.id === uid);
+
+  if (!user || pendingVerify.has(uid)) return;
+
+  const next = !user.verified;
+
+  pendingVerify.add(uid);
+  renderUsers();
+
+  try {
+    await updateDoc(doc(db, "users", uid), { verified: next });
+    toast(next ? `${user.name} agora é verificado.` : `Verificado removido de ${user.name}.`);
+  } catch (err) {
+    console.error(err);
+    toast("Erro ao alterar verificado. Verifique as regras.");
+  } finally {
+    pendingVerify.delete(uid);
+    renderUsers();
+  }
+}
+
+function setTab(tab) {
+  activeTab = tab;
+
+  document.querySelectorAll(".tab").forEach(button =>
+    button.classList.toggle("active", button.dataset.tab === tab));
+
+  $("list").hidden = tab !== "messages";
+  $("btnNew").hidden = tab !== "messages";
+  $("usersPanel").hidden = tab !== "users";
+
+  if (tab === "users") watchUsers();
+}
+
+$("tabs").addEventListener("click", e => {
+  const tab = e.target.closest(".tab")?.dataset.tab;
+  if (tab && tab !== activeTab) setTab(tab);
+});
+
+$("usersList").addEventListener("click", e => {
+  const uid = e.target.closest("[data-verify]")?.dataset.verify;
+  if (uid) toggleVerified(uid);
+});
+
+$("userSearch").addEventListener("input", renderUsers);
+
 function deny(text) {
   $("btnNew").hidden = true;
+  $("tabs").hidden = true;
+  $("usersPanel").hidden = true;
+  $("list").hidden = false;
   $("list").innerHTML = `<div class="empty"><strong>Acesso restrito</strong>${text}</div>`;
 }
 
@@ -438,7 +654,8 @@ onAuthStateChanged(auth, async user => {
     const adminDoc = await getDoc(doc(db, "admin", user.uid));
     if (!adminDoc.exists()) return deny("Sua conta não tem permissão de administrador.");
 
-    $("btnNew").hidden = false;
+    $("tabs").hidden = false;
+    setTab(activeTab);
     await loadMessages();
   } catch (err) {
     console.error(err);

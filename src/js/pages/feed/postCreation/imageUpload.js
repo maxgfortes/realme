@@ -1,9 +1,17 @@
+import {
+  MAX_MEDIA,
+  isVideoFile,
+  uploadVideo,
+  selectMediaFiles,
+  createMediaPreview,
+  revokeMediaPreview
+} from './videoUpload.js';
+
 const IMGBB_API_KEY = 'fc8497dcdf559dc9cbff97378c82344c';
 
 const MAX_WIDTH = 1080;
 const MAX_HEIGHT = 1440;
 const JPEG_QUALITY = 0.7;
-const MAX_IMAGES = 10;
 
 const mediaButton = document.getElementById('npMediaInput');
 const previewArea = document.querySelector('.image-preview-carrosel');
@@ -11,29 +19,28 @@ const previewArea = document.querySelector('.image-preview-carrosel');
 let selectedFiles = [];
 
 function renderPreviews() {
+  if (!previewArea) return;
+
+  previewArea.querySelectorAll('img, video').forEach(revokeMediaPreview);
   previewArea.innerHTML = '';
 
   selectedFiles.forEach((file, index) => {
     const wrapper = document.createElement('div');
 
-    wrapper.className = 'img-preview';
+    wrapper.className = isVideoFile(file) ? 'img-preview video-preview' : 'img-preview';
     wrapper.dataset.index = index;
 
-    wrapper.innerHTML = `
-      <img src="" alt="Preview">
-      <button type="button" class="remove-image">×</button>
-    `;
+    const remove = document.createElement('button');
 
+    remove.type = 'button';
+    remove.className = 'remove-image';
+    remove.textContent = '×';
+
+    wrapper.append(createMediaPreview(file), remove);
     previewArea.appendChild(wrapper);
-
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      wrapper.querySelector('img').src = event.target.result;
-    };
-
-    reader.readAsDataURL(file);
   });
+
+  mediaButton?.classList.toggle('disable', selectedFiles.length >= MAX_MEDIA);
 
   previewArea.dispatchEvent(
     new CustomEvent('images-changed')
@@ -41,33 +48,18 @@ function renderPreviews() {
 }
 
 
-mediaButton.addEventListener('click', () => {
-  if (selectedFiles.length >= MAX_IMAGES) {
-    return;
-  }
+mediaButton?.addEventListener('click', async () => {
+  const files = await selectMediaFiles(selectedFiles.length);
 
-  const input = document.createElement('input');
+  if (!files.length) return;
 
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.multiple = true;
+  selectedFiles.push(...files.slice(0, MAX_MEDIA - selectedFiles.length));
 
-  input.onchange = () => {
-    const files = Array.from(input.files).slice(
-      0,
-      MAX_IMAGES - selectedFiles.length
-    );
-
-    selectedFiles.push(...files);
-
-    renderPreviews();
-  };
-
-  input.click();
+  renderPreviews();
 });
 
 
-previewArea.addEventListener('click', (event) => {
+previewArea?.addEventListener('click', (event) => {
   const removeBtn = event.target.closest('.remove-image');
 
   if (!removeBtn) {
@@ -292,15 +284,23 @@ export async function uploadOne(file) {
   };
 }
 
-export async function uploadSelectedImages() {
+export function uploadMedia(file, onProgress) {
+  return isVideoFile(file) ? uploadVideo(file, onProgress) : uploadOne(file);
+}
+
+export async function uploadSelectedImages(onProgress) {
 
   const images = [];
+  const files = selectedFiles.slice(0, MAX_MEDIA);
 
-  for (const file of selectedFiles) {
+  for (const [index, file] of files.entries()) {
 
-    const image = await uploadOne(file);
+    const image = await uploadMedia(file, fraction => {
+      onProgress?.((index + fraction) / files.length);
+    });
 
     images.push(image);
+    onProgress?.((index + 1) / files.length);
   }
 
   return images;
@@ -319,7 +319,7 @@ export function clearSelectedImages() {
 
 export function onImagesChanged(callback) {
 
-  previewArea.addEventListener(
+  previewArea?.addEventListener(
     'images-changed',
     callback
   );

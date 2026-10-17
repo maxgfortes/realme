@@ -1,4 +1,5 @@
 import { db, auth } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 
 import {
     doc,
@@ -21,8 +22,7 @@ export function likePost(postId) {
 
     const likeRef = doc(
         db,
-        "posts",
-        postId,
+        ...postSegments(postId),
         "likers",
         userId
     );
@@ -43,8 +43,7 @@ export function unlikePost(postId) {
 
     const likeRef = doc(
         db,
-        "posts",
-        postId,
+        ...postSegments(postId),
         "likers",
         userId
     );
@@ -63,8 +62,7 @@ export async function hasLikedPost(postId) {
 
     const likeRef = doc(
         db,
-        "posts",
-        postId,
+        ...postSegments(postId),
         "likers",
         userId
     );

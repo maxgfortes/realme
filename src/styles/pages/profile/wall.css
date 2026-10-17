@@ -2,6 +2,15 @@
     display: flex;
     height: 76px;
     width: 100%;
+    cursor: pointer;
+}
+
+.send-wall.hidden {
+    display: none;
+}
+
+.wall-item {
+    cursor: pointer;
 }
 
 .pfp-send-wall {
@@ -33,7 +42,9 @@
     height: 100%;
     width: 100%;
     position: fixed;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    z-index: 99990;
     display: flex;
     opacity: 1;
     pointer-events: none;
@@ -87,7 +98,16 @@
     transform: translateX(-50%);
     background: #444;
     top: 6px;
-    display: none;
+    display: block;
+    width: 40px;
+}
+
+.wall-create-content {
+    overflow-y: auto;
+}
+
+.wall-img-btn button:disabled {
+    opacity: 0.4;
 }
 
 .wall-create-content {
@@ -229,6 +249,7 @@
   position:relative;
 }
 
+.wall-img-preview video,
 .wall-img-preview img{
   width:100%;
   height:100%;

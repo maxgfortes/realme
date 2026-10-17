@@ -7,11 +7,60 @@ import "./openComments.js";
 import { openLikes } from "./openLikes.js";
 import { listenPostCount } from "./postCounters.js";
 import { likePost, unlikePost, hasLikedPost, updateLikeIcon } from "./likePost.js";
-import { updatePostFooter } from "./postFooter.js";
 
 const creatorCache = new Map();
 const userNameCache = new Map();
 const boundContainers = new WeakSet();
+const trackedListeners = new Map();
+
+const SWEEP_MS = 4000;
+
+export function trackListeners(element, ...unsubscribers) {
+    if (!element) return;
+
+    const list = trackedListeners.get(element) || [];
+
+    list.push(...unsubscribers.filter(unsubscribe => typeof unsubscribe === "function"));
+    trackedListeners.set(element, list);
+}
+
+export function releaseListeners(element) {
+    trackedListeners.get(element)?.forEach(unsubscribe => {
+        try {
+            unsubscribe();
+        } catch {
+            return;
+        }
+    });
+
+    trackedListeners.delete(element);
+}
+
+function sweepDisconnected() {
+    trackedListeners.forEach((_, element) => {
+        if (!element.isConnected) releaseListeners(element);
+    });
+
+    musicControllers.forEach((controller, element) => {
+        if (element.isConnected) return;
+
+        controller.destroy?.();
+        musicControllers.delete(element);
+        soundControllers.delete(element);
+        musicVisibility.delete(element);
+        musicObserver?.unobserve(element);
+    });
+
+    videoVisibility.forEach((_, video) => {
+        if (video.isConnected) return;
+
+        video.pause();
+        videoVisibility.delete(video);
+        videoObserver?.unobserve(video);
+    });
+}
+
+setInterval(sweepDisconnected, SWEEP_MS);
 
 const MENTION_NAMES_SHOWN = 2;
 
@@ -110,6 +159,16 @@ function mentionLink(uid, name) {
     return `<a class="post-author-name post-profile-link" href="profile.html?uid=${encodeURIComponent(uid)}" data-profile-uid="${escapeHTML(uid)}">${escapeHTML(name)}</a>`;
 }
 
+async function buildWallHTML(data) {
+    const wallTo = typeof data.wallTo === "string" ? data.wallTo : "";
+
+    if (!wallTo || wallTo === data.creatorid) return "";
+
+    const name = await getUserName(wallTo);
+
+    return ` escreveu no mural de ${mentionLink(wallTo, name)}`;
+}
+
 async function buildMentionsHTML(mentionUids) {
     if (!mentionUids.length) return "";
 
@@ -145,7 +204,38 @@ export function normalizeImgs(post) {
     return [];
 }
 
+const MIN_VIDEO_RATIO = 4 / 5;
+
+function isVideoItem(item) {
+    return item?.type === "video" || /\.(mp4|mov|m4v|webm)(\?|$)/i.test(item?.url || "");
+}
+
+function renderVideo(item) {
+    const url = escapeHTML(String(item.url || ""));
+    const poster = item.poster ? ` poster="${escapeHTML(String(item.poster))}"` : "";
+    const ratio = Number(item.aspectRatio) || (item.width && item.height ? item.width / item.height : 9 / 16);
+    const aspectRatio = Math.max(ratio, MIN_VIDEO_RATIO);
+
+    return `
+        <div class="img-card video-card" style="aspect-ratio: ${aspectRatio};">
+            <video
+                class="post-video"
+                src="${url}"${poster}
+                muted
+                loop
+                playsinline
+                webkit-playsinline
+                preload="metadata"
+                disablepictureinpicture
+                disableremoteplayback
+            ></video>
+        </div>
+    `;
+}
+
 function renderImage(img) {
+    if (isVideoItem(img)) return renderVideo(img);
+
     const url = img.url || "";
 
     const aspectRatio =
@@ -167,9 +257,250 @@ const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" aria-label="Ícone" fi
 
 const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" aria-label="Ícone" fill="currentColor" height="24" role="img" viewBox="0 0 40 40" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="translate(3.5 3) scale(0.85,-0.85) translate(0,-34.2890625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.5" d="M 7.390625,0.81640625 L 11.880859375,0.81640625 C 13.234375,0.81640625 13.771484375,1.375 13.771484375,2.728515625 L 13.771484375,31.560546875 C 13.771484375,32.935546875 13.234375,33.47265625 11.880859375,33.47265625 L 7.390625,33.47265625 C 6.015625,33.47265625 5.478515625,32.935546875 5.478515625,31.560546875 L 5.478515625,2.728515625 C 5.478515625,1.375 6.015625,0.81640625 7.390625,0.81640625 Z M 20.8828125,0.81640625 L 25.373046875,0.81640625 C 26.748046875,0.81640625 27.28515625,1.375 27.28515625,2.728515625 L 27.28515625,31.560546875 C 27.28515625,32.935546875 26.748046875,33.47265625 25.373046875,33.47265625 L 20.8828125,33.47265625 C 19.529296875,33.47265625 18.9921875,32.935546875 18.9921875,31.560546875 L 18.9921875,2.728515625 C 18.9921875,1.375 19.529296875,0.81640625 20.8828125,0.81640625 Z"/></g></svg>`;
 
+const SOUND_OFF_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+const SOUND_ON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+const VIDEO_PLAY_RATIO = 0.5;
+
 let apiPromise = null;
 let currentController = null;
+let autoplayMusic = false;
 const infoCache = new Map();
+const musicControllers = new Map();
+const soundControllers = new Map();
+const videoVisibility = new Map();
+
+const videoObserver = "IntersectionObserver" in window
+    ? new IntersectionObserver(onVideoVisibility, { threshold: [0, 0.25, VIDEO_PLAY_RATIO, 0.75, 1] })
+    : null;
+
+function playVideoElement(video) {
+    const attempt = video.play?.();
+
+    if (!attempt?.catch) return;
+
+    attempt.catch(() => {
+        if (video.muted) return;
+
+        video.muted = true;
+        soundControllers.get(video.closest(".post-card-new"))?.markMuted?.();
+        video.play?.().catch(() => {});
+    });
+}
+
+function onVideoVisibility(entries) {
+    entries.forEach(entry => {
+        const video = entry.target;
+        const ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
+
+        videoVisibility.set(video, ratio);
+
+        if (ratio < VIDEO_PLAY_RATIO) {
+            video.pause();
+            return;
+        }
+
+        const controller = soundControllers.get(video.closest(".post-card-new"));
+
+        if (controller && controller === currentController && controller.isPlaying() && video.muted) {
+            controller.play();
+            return;
+        }
+
+        playVideoElement(video);
+    });
+}
+
+function initVideos(postElement) {
+    postElement.querySelectorAll("video.post-video").forEach(video => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+
+        if (videoObserver) videoObserver.observe(video);
+        else playVideoElement(video);
+    });
+}
+
+function soundToggleHTML() {
+    return `
+        <button class="post-music-toggle post-sound-toggle" type="button" aria-label="Ativar som">
+            <span class="post-music-icon play">${SOUND_OFF_SVG}</span>
+            <span class="post-music-icon pause">${SOUND_ON_SVG}</span>
+        </button>
+    `;
+}
+
+function initVideoSound(postElement) {
+    const button = postElement.querySelector(".post-sound-toggle");
+
+    if (!button || button.dataset.soundReady) return;
+
+    button.dataset.soundReady = "1";
+
+    let playing = false;
+
+    const videos = () => [...postElement.querySelectorAll("video.post-video")];
+
+    function setPlaying(value) {
+        playing = value;
+        button.classList.toggle("playing", value);
+        button.setAttribute("aria-label", value ? "Desativar som" : "Ativar som");
+    }
+
+    function activeVideo() {
+        let best = null;
+        let bestRatio = -1;
+
+        videos().forEach(video => {
+            const ratio = videoVisibility.get(video) || 0;
+
+            if (ratio > bestRatio) {
+                best = video;
+                bestRatio = ratio;
+            }
+        });
+
+        return best;
+    }
+
+    function mute() {
+        videos().forEach(video => {
+            video.muted = true;
+        });
+
+        setPlaying(false);
+    }
+
+    async function play() {
+        if (currentController && currentController !== controller) currentController.pause();
+
+        currentController = controller;
+
+        const target = activeVideo();
+
+        if (!target) return;
+
+        videos().forEach(video => {
+            if (video !== target) video.muted = true;
+        });
+
+        target.muted = false;
+
+        try {
+            await target.play();
+            setPlaying(true);
+        } catch {
+            target.muted = true;
+            target.play?.().catch(() => {});
+            setPlaying(false);
+        }
+    }
+
+    const controller = {
+        play: () => play(),
+        pause: mute,
+        destroy: mute,
+        isPlaying: () => playing,
+        markMuted: () => setPlaying(false)
+    };
+
+    button.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (playing) {
+            autoplayMusic = false;
+            mute();
+            return;
+        }
+
+        autoplayMusic = true;
+        play();
+    });
+
+    soundControllers.set(postElement, controller);
+    registerMusic(postElement, controller);
+}
+const musicVisibility = new Map();
+
+const AUTOPLAY_RATIO = 0.6;
+const KEEP_PLAYING_RATIO = 0.3;
+
+const musicObserver = "IntersectionObserver" in window
+    ? new IntersectionObserver(onMusicVisibility, { threshold: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1] })
+    : null;
+
+function registerMusic(postElement, controller) {
+    if (!postElement) return;
+
+    controller.element = postElement;
+    musicControllers.set(postElement, controller);
+    musicObserver?.observe(postElement);
+}
+
+function onMusicVisibility(entries) {
+    entries.forEach(entry => {
+        musicVisibility.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+    });
+
+    if (!autoplayMusic) return;
+
+    const currentRatio = currentController?.element
+        ? musicVisibility.get(currentController.element) || 0
+        : 0;
+
+    if (currentController && currentRatio >= AUTOPLAY_RATIO) return;
+
+    let best = null;
+    let bestRatio = 0;
+
+    musicVisibility.forEach((ratio, element) => {
+        if (element.isConnected && ratio > bestRatio) {
+            best = element;
+            bestRatio = ratio;
+        }
+    });
+
+    const next = best && bestRatio >= AUTOPLAY_RATIO ? musicControllers.get(best) : null;
+
+    if (next && next !== currentController) {
+        next.play();
+        return;
+    }
+
+    if (currentController && currentRatio < KEEP_PLAYING_RATIO) currentController.pause();
+}
+
+function createHiddenPlayer(holder, videoId, events) {
+    return loadYouTubeAPI().then(() => new Promise((resolve, reject) => {
+        const mount = document.createElement("div");
+        holder.appendChild(mount);
+
+        const player = new window.YT.Player(mount, {
+            videoId,
+            width: 200,
+            height: 200,
+            playerVars: {
+                playsinline: 1,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                rel: 0,
+                modestbranding: 1
+            },
+            events: {
+                onReady: () => resolve(player),
+                onStateChange: events.onStateChange,
+                onError: event => {
+                    events.onError?.(event);
+                    reject(new Error("Falha ao carregar o vídeo"));
+                }
+            }
+        });
+    }));
+}
 
 /* ---------- utilidades ---------- */
 
@@ -388,7 +719,9 @@ function initMusicCard(card) {
     const controller = {
         pause() {
             player?.pauseVideo?.();
-        }
+        },
+        play: () => play(),
+        destroy: () => destroy()
     };
 
     function setName(title, author) {
@@ -539,6 +872,8 @@ function initMusicCard(card) {
             return;
         }
 
+        if (currentController !== controller) return;
+
         if (pendingFraction !== null) {
             seek(pendingFraction);
             pendingFraction = null;
@@ -613,9 +948,22 @@ function initMusicCard(card) {
         if (dragging) commitSeek();
     });
 
-    playButton.addEventListener("click", play);
-    pauseButton.addEventListener("click", pause);
-    reloadButton.addEventListener("click", reload);
+    playButton.addEventListener("click", () => {
+        autoplayMusic = true;
+        play();
+    });
+
+    pauseButton.addEventListener("click", () => {
+        autoplayMusic = false;
+        pause();
+    });
+
+    reloadButton.addEventListener("click", () => {
+        autoplayMusic = true;
+        reload();
+    });
+
+    registerMusic(card.closest(".post-card-new"), controller);
 
     // nome + autor
     fetchMusicInfo(videoId).then(info => {
@@ -628,7 +976,123 @@ function initMusicCards(root) {
     root?.querySelectorAll(".music-card[data-music-id]").forEach(initMusicCard);
 }
 
-export function renderPost({ container, postId, content, imgs, creator, dateText, creatorid, mentionsHTML = "", music = "", location = "" }) {
+function musicToggleHTML(videoId) {
+    return `
+        <button class="post-music-toggle" type="button" data-music-id="${videoId}" aria-label="Tocar música">
+            <span class="post-music-icon play">${PLAY_SVG}</span>
+            <span class="post-music-icon pause">${PAUSE_SVG}</span>
+        </button>
+        <div
+            class="post-music-holder"
+            aria-hidden="true"
+            style="position: absolute; left: -9999px; top: 0; width: 200px; height: 200px; overflow: hidden; pointer-events: none;"
+        ></div>
+    `;
+}
+
+function initMusicToggle(postElement) {
+    const button = postElement.querySelector(".post-music-toggle");
+    const holder = postElement.querySelector(".post-music-holder");
+
+    if (!button || !holder || button.dataset.musicReady) return;
+
+    button.dataset.musicReady = "1";
+
+    const videoId = button.dataset.musicId;
+
+    let player = null;
+    let readyPromise = null;
+    let playing = false;
+
+    function setPlaying(value) {
+        playing = value;
+        button.classList.toggle("playing", value);
+        button.setAttribute("aria-label", value ? "Pausar música" : "Tocar música");
+    }
+
+    function destroy() {
+        try {
+            player?.destroy();
+        } catch {
+            player = null;
+        }
+
+        player = null;
+        readyPromise = null;
+        setPlaying(false);
+
+        if (currentController === controller) currentController = null;
+    }
+
+    function ensurePlayer() {
+        readyPromise ??= createHiddenPlayer(holder, videoId, {
+            onStateChange: event => {
+                const states = window.YT.PlayerState;
+
+                if (event.data === states.PLAYING) {
+                    setPlaying(true);
+                } else if (event.data === states.PAUSED) {
+                    setPlaying(false);
+                } else if (event.data === states.ENDED) {
+                    setPlaying(false);
+                    player?.seekTo?.(0, true);
+                    player?.pauseVideo?.();
+                }
+            },
+            onError: () => {
+                setPlaying(false);
+                button.classList.add("music-unavailable");
+            }
+        }).then(created => {
+            player = created;
+            return created;
+        });
+
+        return readyPromise;
+    }
+
+    async function play() {
+        if (currentController && currentController !== controller) currentController.pause();
+
+        currentController = controller;
+
+        try {
+            await ensurePlayer();
+        } catch {
+            return;
+        }
+
+        if (currentController !== controller || !player) return;
+
+        player.playVideo();
+    }
+
+    const controller = {
+        play: () => play(),
+        pause() {
+            player?.pauseVideo?.();
+        },
+        destroy
+    };
+
+    button.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (playing) {
+            autoplayMusic = false;
+            controller.pause();
+            return;
+        }
+
+        autoplayMusic = true;
+        play();
+    });
+
+    registerMusic(postElement, controller);
+}
+
+export function renderPost({ container, postId, content, imgs, creator, dateText, creatorid, mentionsHTML = "", music = "", location = "", before = null }) {
     const safeCreatorId = escapeHTML(String(creatorid || ""));
     const profileUrl = `profile.html?uid=${encodeURIComponent(creatorid || "")}`;
 
@@ -640,11 +1104,19 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
         `
         : "";
 
+    const videoId = getYouTubeId(music);
+    const toggleHTML = videoId && imgs.length
+        ? musicToggleHTML(videoId)
+        : imgs.some(isVideoItem)
+            ? soundToggleHTML()
+            : "";
+
     const mediaHTML =
         imgs.length === 1
             ? `
                 <div class="post-content-media">
                     ${renderImage(imgs[0])}
+                    ${toggleHTML}
                 </div>
             `
             : imgs.length > 1
@@ -653,11 +1125,11 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                         <div class="carousel-track">
                             ${imgs.map(img => renderImage(img)).join("")}
                         </div>
+                        ${toggleHTML}
                     </div>
                 `
                 : "";
 
-    const videoId = getYouTubeId(music);
     const hasBody = Boolean(String(content || "").trim()) || imgs.length > 0;
 
     // post só com música (sem texto e sem foto) vira o card de música
@@ -773,16 +1245,26 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                     <div class="post-graph-item likers-preview">
                         <div class="post-graph-text"></div>
                     </div>
+                    <div class="comments-preview"></div>
                 </div>
             </div>
         </div>
     `;
 
-    container.insertAdjacentHTML("beforeend", postHTML);
+    let postElement;
 
-    const postElement = container.lastElementChild;
+    if (before && before.parentNode === container) {
+        before.insertAdjacentHTML("beforebegin", postHTML);
+        postElement = before.previousElementSibling;
+    } else {
+        container.insertAdjacentHTML("beforeend", postHTML);
+        postElement = container.lastElementChild;
+    }
 
     initMusicCards(postElement);
+    initMusicToggle(postElement);
+    initVideos(postElement);
+    initVideoSound(postElement);
     initHeaderMusic(postElement, headerMusicId);
 
     return postElement;
@@ -796,21 +1278,22 @@ export async function hydratePost(postElement, postId) {
     const liked = await hasLikedPost(postId);
 
     updateLikeIcon(postElement, liked);
-    listenPostCount(postId);
-    updatePostFooter(postId);
+    trackListeners(postElement, listenPostCount(postId, postElement));
 }
 
 /* HTML de "estava com ..." (string vazia se o post não tem menções) */
 export function getPostMentionsHTML(data) {
-    return buildMentionsHTML(getMentionUids(data, data.creatorid || ""))
-        .catch(() => "");
+    return Promise.all([
+        buildWallHTML(data).catch(() => ""),
+        buildMentionsHTML(getMentionUids(data, data.creatorid || "")).catch(() => "")
+    ]).then(parts => parts.join(""));
 }
 
 /*
  * Cria o card de um post a partir dos dados do Firestore e insere no
  * container. Retorna o elemento criado.
  */
-export function appendPost(container, { postId, data, creator, mentionsHTML = "" }) {
+export function appendPost(container, { postId, data, creator, mentionsHTML = "", before = null }) {
     const created = data.create?.toDate?.();
 
     const postElement = renderPost({
@@ -823,7 +1306,8 @@ export function appendPost(container, { postId, data, creator, mentionsHTML = ""
         creatorid: data.creatorid || "",
         mentionsHTML,
         music: data.music || "",
-        location: data.location || ""
+        location: data.location || "",
+        before
     });
 
     hydratePost(postElement, postId)
@@ -942,7 +1426,6 @@ export function bindPostInteractions(container) {
 
             try {
                 await unlikePost(postId);
-                updatePostFooter(postId);
             } catch {
                 updateLikeIcon(postElement, true);
             }
@@ -951,7 +1434,6 @@ export function bindPostInteractions(container) {
 
             try {
                 await likePost(postId);
-                updatePostFooter(postId);
             } catch {
                 updateLikeIcon(postElement, false);
             }

@@ -899,6 +899,20 @@ body {
   border-top-left-radius: 15px;
 }
 
+.reply-message.note-reply {
+  border-radius: 14px;
+  background: transparent;
+  color: #cfcfcf;
+}
+
+.reply-message.note-reply .reply-content::before {
+  content: "“";
+}
+
+.reply-message.note-reply .reply-content::after {
+  content: "”";
+}
+
 
 .reaction-badge {
   padding: 6px 12px;

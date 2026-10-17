@@ -1,4 +1,5 @@
 import { db, auth } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 
 import {
     collection,
@@ -26,8 +27,7 @@ async function sendComment(postId, content) {
 
     const commentsRef = collection(
         db,
-        "posts",
-        postId,
+        ...postSegments(postId),
         "coments"
     );
 

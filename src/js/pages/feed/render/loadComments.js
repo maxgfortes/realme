@@ -1,4 +1,5 @@
 import { db } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 import {
     collection,
     query,
@@ -32,8 +33,7 @@ export async function loadComments(postId) {
     const postRef =
         doc(
             db,
-            "posts",
-            postId
+            ...postSegments(postId)
         );
 
     const postSnapshot =
@@ -55,13 +55,13 @@ export async function loadComments(postId) {
     const postOwnerId =
         postData.creatorid ||
         postData.uid ||
-        postData.ownerid;
+        postData.ownerid ||
+        postData.authorId;
 
     const commentsRef =
         collection(
             db,
-            "posts",
-            postId,
+            ...postSegments(postId),
             "coments"
         );
 

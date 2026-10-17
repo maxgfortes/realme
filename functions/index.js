@@ -11,6 +11,7 @@ const { getAuth }           = require("firebase-admin/auth");
 const { getFirestore, FieldValue, Timestamp, FieldPath } = require("firebase-admin/firestore");
 const { getMessaging }      = require("firebase-admin/messaging");
 const crypto                = require("crypto");
+const { buildFeedPage }     = require("./feed");
 
 initializeApp();
 const db       = getFirestore();
@@ -26,8 +27,8 @@ const ACCOUNT_REGION = "southamerica-east1";
 const IS_EMULATOR    = process.env.FUNCTIONS_EMULATOR === "true";
 
 const BASE_URL  = "https://socialrealme.com";
-const ICON_URL  = `${BASE_URL}/src/icon/icon.png`;
-const BADGE_URL = `${BASE_URL}/src/icon/icon.png`;
+const ICON_URL  = `${BASE_URL}/public/img/icon.png`;
+const BADGE_URL = `${BASE_URL}/public/img/icon.png`;
 
 // ─── Tipos de atividade ──────────────────────────────────────
 const ACTIVITY_TYPES = {
@@ -58,13 +59,18 @@ function buildFullName(d, fallback) {
 }
 
 async function getUserData(uid) {
-  const snap = await db.doc(`users/${uid}`).get();
+  const [snap, mediaSnap] = await Promise.all([
+    db.doc(`users/${uid}`).get(),
+    db.doc(`users/${uid}/user-infos/user-media`).get().catch(() => null),
+  ]);
   if (!snap.exists) return { fcmToken: null, username: uid, photo: ICON_URL };
   const d = snap.data();
+  const media = mediaSnap?.exists ? mediaSnap.data() : {};
+  const photo = media.userphoto || media.pfp || d.photoURL || d.photo || d.userphoto;
   return {
     fcmToken: d.fcmToken || null,
     username: buildFullName(d, uid),
-    photo:    d.photoURL || d.photo || d.userphoto || ICON_URL,
+    photo:    typeof photo === "string" && /^https:\/\//.test(photo) ? photo : ICON_URL,
   };
 }
 
@@ -88,6 +94,14 @@ function isAlreadyExists(err) {
   return err?.code === 6 || /ALREADY_EXISTS/i.test(err?.message || "");
 }
 
+function firstPostImage(post) {
+  if (typeof post?.img === "string" && post.img) return post.img;
+  const first = Array.isArray(post?.imgs) ? post.imgs[0] : null;
+  if (typeof first === "string") return first;
+  if (first?.type === "video") return first.poster || "";
+  return first?.url || "";
+}
+
 function sampleArray(arr, n) {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 }
@@ -97,47 +111,88 @@ function truncate(str, max = 80) {
   return str.length > max ? str.substring(0, max).trimEnd() + "..." : str;
 }
 
-async function sendPush(token, title, body, data = {}, actorPhoto = null) {
-  if (!token) return false;
-  try {
-    const notification = {
-      title,
-      body,
-      icon:    actorPhoto || ICON_URL,
-      badge:   BADGE_URL,
-      vibrate: [100, 50, 100],
-      requireInteraction: false,
-      silent:  false,
-    };
-    if (data.imageUrl) notification.image = data.imageUrl;
+const INVALID_TOKEN_CODES = new Set([
+  "messaging/registration-token-not-registered",
+  "messaging/invalid-registration-token",
+]);
 
-    await fcm.send({
+async function getUserTokens(uid) {
+  if (!uid) return [];
+
+  const [userSnap, tokensSnap] = await Promise.all([
+    db.doc(`users/${uid}`).get(),
+    db.collection(`users/${uid}/fcmTokens`).get().catch(() => null),
+  ]);
+
+  const tokens = new Set();
+
+  tokensSnap?.docs.forEach(d => tokens.add(d.data().token || d.id));
+
+  const legacy = userSnap.exists ? userSnap.data().fcmToken : null;
+  if (typeof legacy === "string" && legacy) tokens.add(legacy);
+
+  return [...tokens];
+}
+
+async function removeInvalidToken(token, ownerUid = null) {
+  await Promise.all([
+    db.collection("users").where("fcmToken", "==", token).get()
+      .then(snap => Promise.all(snap.docs.map(d => d.ref.update({ fcmToken: FieldValue.delete() }))))
+      .catch(() => {}),
+    ownerUid
+      ? db.doc(`users/${ownerUid}/fcmTokens/${token}`).delete().catch(() => {})
+      : null,
+  ]);
+}
+
+function buildPushData(title, body, data, actorPhoto) {
+  const url = data.url || BASE_URL;
+  const tagKey = data.chatId || data.postId || data.uid || "";
+
+  return sanitizeData({
+    ...data,
+    title,
+    body,
+    url,
+    icon:  actorPhoto || ICON_URL,
+    badge: BADGE_URL,
+    image: data.imageUrl,
+    tag:   data.type ? `${data.type}:${tagKey}` : undefined,
+  });
+}
+
+async function sendPush(tokens, title, body, data = {}, actorPhoto = null, ownerUid = null) {
+  const list = [...new Set((Array.isArray(tokens) ? tokens : [tokens]).filter(Boolean))];
+  if (!list.length) return false;
+
+  const payload = buildPushData(title, body, data, actorPhoto);
+
+  try {
+    const response = await fcm.sendEach(list.map(token => ({
       token,
-      notification: { title, body },
+      data: payload,
       webpush: {
-        notification,
-        fcmOptions: { link: data.url || BASE_URL },
+        headers: { Urgency: "high", TTL: "86400" },
       },
-      data: sanitizeData(data),
-    });
-    return true;
+    })));
+
+    await Promise.all(response.responses.map((result, index) => {
+      if (result.success) return null;
+      const code = result.error?.code;
+      console.error("sendPush error:", code, result.error?.message);
+      return INVALID_TOKEN_CODES.has(code) ? removeInvalidToken(list[index], ownerUid) : null;
+    }));
+
+    return response.successCount > 0;
   } catch (err) {
-    if (
-      err.code === "messaging/registration-token-not-registered" ||
-      err.code === "messaging/invalid-registration-token"
-    ) {
-      await db.collection("users").where("fcmToken", "==", token).get()
-        .then(snap => snap.forEach(d => d.ref.update({ fcmToken: null })))
-        .catch(() => {});
-    }
     console.error("sendPush error:", err.code, err.message);
     return false;
   }
 }
 
 async function notifyUser(uid, title, body, data = {}, actorPhoto = null) {
-  const { fcmToken } = await getUserData(uid);
-  return sendPush(fcmToken, title, body, data, actorPhoto);
+  const tokens = await getUserTokens(uid);
+  return sendPush(tokens, title, body, data, actorPhoto, uid);
 }
 
 // `id` (opcional) torna a escrita idempotente: se o trigger for reexecutado,
@@ -308,7 +363,7 @@ exports.onFriendRequestWritten = onDocumentWritten(
         uid1,
         acceptorName,
         "aceitou seu pedido de amizade.",
-        { url: `${BASE_URL}/profile.html?u=${uid2}`, type: "friend_accepted", uid: uid2 },
+        { url: `${BASE_URL}/profile.html?uid=${uid2}`, type: "friend_accepted", uid: uid2 },
         acceptorPhoto
       ),
       createNotification({
@@ -480,7 +535,7 @@ exports.onNewLike = onDocumentCreated(
           type:     "like",
           postId,
           likerId,
-          imageUrl: postData.img || "",
+          imageUrl: firstPostImage(postData),
         },
         liker.photo
       ),
@@ -516,10 +571,14 @@ exports.onNewDirectMessage = onDocumentCreated(
 
     const sender = await getUserData(senderId);
 
+    const isImage = message.type === "image" ||
+      (typeof content === "string" && content.startsWith("https://i.ibb.co/"));
+
     let body;
     if (!content || content.trim() === "") body = "Enviou uma mensagem.";
-    else if (message.type === "image")     body = "Enviou uma foto.";
+    else if (isImage)                      body = "Enviou uma foto.";
     else if (message.type === "video")     body = "Enviou um video.";
+    else if (message.replyTo?.type === "note") body = `Respondeu sua nota: ${truncate(content, 60)}`;
     else                                   body = truncate(content, 80);
 
     await notifyUser(
@@ -718,11 +777,12 @@ async function enviarSugestaoAmizade() {
   let enviados = 0;
 
   for (const userDoc of usersSnap.docs) {
-    const uid   = userDoc.id;
-    const token = userDoc.data().fcmToken;
-    if (!token) continue;
+    const uid = userDoc.id;
 
     try {
+      const tokens = await getUserTokens(uid);
+      if (!tokens.length) continue;
+
       const meusAmigosSnap = await db.collection(`users/${uid}/friends`).get();
       if (meusAmigosSnap.empty) continue;
 
@@ -755,11 +815,12 @@ async function enviarSugestaoAmizade() {
       ]);
 
       await sendPush(
-        token,
-        "Sugestao de amizade",
-        `${sugerido.username} e amigo de ${via.username}. Que tal adicionar?`,
-        { url: `${BASE_URL}/profile.html?u=${sugeridoUid}`, type: "friend_suggestion", uid: sugeridoUid },
-        sugerido.photo
+        tokens,
+        "Sugestão de amizade",
+        `${sugerido.username} é amigo de ${via.username}. Que tal adicionar?`,
+        { url: `${BASE_URL}/profile.html?uid=${sugeridoUid}`, type: "friend_suggestion", uid: sugeridoUid },
+        sugerido.photo,
+        uid
       );
 
       enviados++;
@@ -1557,6 +1618,149 @@ exports.createAccount = onRequest(
       if (error.code === "auth/invalid-password")     return fail(400, "WEAK_PASSWORD");
 
       return fail(500, "INTERNAL_ERROR");
+    }
+  }
+);
+
+exports.onWallPostCreated = onDocumentCreated(
+  { ...TRIGGER_CONFIG, document: "users/{ownerId}/wall/{wallId}" },
+  async (event) => {
+    const wall     = event.data.data();
+    const ownerId  = event.params.ownerId;
+    const authorId = wall.authorId;
+    if (!authorId || authorId === ownerId) return;
+
+    const author = await getUserData(authorId);
+    const text   = wall.content || wall.text || "";
+    const hasMedia = Array.isArray(wall.imgs) && wall.imgs.length > 0;
+    const body = text
+      ? `escreveu no seu mural: ${truncate(text, 60)}`
+      : hasMedia ? "postou no seu mural." : "escreveu no seu mural.";
+
+    await Promise.allSettled([
+      createNotification({
+        id:      `${event.id}_wall`,
+        toUid:   ownerId,
+        fromUid: authorId,
+        type:    "wall_post",
+        message: text ? truncate(text, 120) : null,
+      }),
+      notifyUser(
+        ownerId,
+        author.username,
+        body,
+        {
+          url:      `${BASE_URL}/profile.html?uid=${ownerId}`,
+          type:     "wall_post",
+          uid:      authorId,
+          wallId:   event.params.wallId,
+          imageUrl: hasMedia ? firstPostImage({ imgs: wall.imgs }) : "",
+        },
+        author.photo
+      ),
+    ]);
+  }
+);
+
+exports.onEventGoingCreated = onDocumentCreated(
+  { ...TRIGGER_CONFIG, document: "events/{eventId}/going/{goingUid}" },
+  async (event) => {
+    const eventId  = event.params.eventId;
+    const goingUid = event.data.data()?.uid || event.params.goingUid;
+
+    const eventSnap = await db.doc(`events/${eventId}`).get();
+    if (!eventSnap.exists) return;
+
+    const eventData = eventSnap.data();
+    const ownerId   = eventData.creatorId;
+    if (!ownerId || ownerId === goingUid) return;
+
+    const attendee = await getUserData(goingUid);
+    const title    = typeof eventData.eventTitle === "string" ? eventData.eventTitle.trim() : "";
+    const body     = title ? `vai ao seu evento "${truncate(title, 50)}".` : "vai ao seu evento.";
+
+    await Promise.allSettled([
+      createNotification({
+        id:      `${event.id}_going`,
+        toUid:   ownerId,
+        fromUid: goingUid,
+        type:    "event_going",
+        message: title || null,
+      }),
+      notifyUser(
+        ownerId,
+        attendee.username,
+        body,
+        {
+          url:      `${BASE_URL}/feed.html?event=${eventId}`,
+          type:     "event_going",
+          uid:      goingUid,
+          eventId,
+          imageUrl: typeof eventData.eventBanner === "string" ? eventData.eventBanner : "",
+        },
+        attendee.photo
+      ),
+    ]);
+  }
+);
+
+async function getFeedUserSummary(uid) {
+  const [userSnap, mediaSnap] = await Promise.all([
+    db.doc(`users/${uid}`).get(),
+    db.doc(`users/${uid}/user-infos/user-media`).get().catch(() => null),
+  ]);
+  const user  = userSnap.exists ? userSnap.data() : {};
+  const media = mediaSnap?.exists ? mediaSnap.data() : {};
+  return {
+    uid,
+    name:     buildFullName(user, "Usuário"),
+    username: user.username || "",
+    photo:    media.userphoto || media.pfp || null,
+    verified: user.verified === true,
+  };
+}
+
+exports.feed = onRequest(
+  {
+    region: TRIGGER_CONFIG.region,
+    cors: CALLABLE_CORS,
+    maxInstances: 10,
+    concurrency: 40,
+    timeoutSeconds: 30,
+    memory: "512MiB",
+  },
+  async (req, res) => {
+    res.set("Cache-Control", "private, no-store");
+
+    if (req.method !== "GET") return res.status(405).json({ error: "METHOD_NOT_ALLOWED" });
+
+    const header = req.get("authorization") || "";
+    const token  = header.startsWith("Bearer ") ? header.slice(7) : "";
+    if (!token) return res.status(401).json({ error: "UNAUTHENTICATED" });
+
+    let uid;
+    try {
+      uid = (await auth.verifyIdToken(token)).uid;
+    } catch {
+      return res.status(401).json({ error: "INVALID_TOKEN" });
+    }
+
+    const requestedUser = req.query.user_id;
+    if (requestedUser && requestedUser !== uid) return res.status(403).json({ error: "FORBIDDEN" });
+
+    try {
+      const page = await buildFeedPage({
+        db,
+        uid,
+        cursor: req.query.cursor,
+        limit:  req.query.limit,
+        since:  req.query.since || req.query.last_seen_timestamp,
+        getUserSummary: getFeedUserSummary,
+      });
+      return res.status(200).json(page);
+    } catch (err) {
+      console.error("[feed]", err);
+      return res.status(500).json({ error: "INTERNAL_ERROR" });
     }
   }
 );

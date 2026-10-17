@@ -436,9 +436,15 @@ async function fetchPostImage(postId) {
     const snap = await getDoc(doc(db, 'posts', postId));
     if (snap.exists()) {
       const d = snap.data();
+      const first = Array.isArray(d.imgs) && d.imgs.length ? d.imgs[0] : null;
+      const firstUrl = typeof first === 'string'
+        ? first
+        : first?.type === 'video'
+          ? first.poster || null
+          : first?.url || null;
       const url =
         (typeof d.img === 'string' && d.img.trim() ? d.img.trim() : null) ||
-        (Array.isArray(d.imgs) && d.imgs.length ? d.imgs[0] : null) ||
+        firstUrl ||
         null;
       postImgCache[postId] = url;
       return url;
@@ -879,7 +885,40 @@ function iniciarFiltros() {
   });
 }
 
+const AUTO_REFRESH_MS = 60 * 1000;
+let atualizandoEmSilencio = false;
+
+async function atualizarEmSilencio() {
+  const container = document.getElementById('activities-section');
+  const user = auth.currentUser;
+
+  if (!container || !user || document.hidden || atualizandoEmSilencio) return;
+  if (container.scrollTop >= 80 || container.querySelector('.swiping, .act-swipe-wrapper.open')) return;
+
+  atualizandoEmSilencio = true;
+
+  try {
+    const html = await fetchEMontarHtml(user.uid);
+
+    if (!html || html === lerCacheAtividades(user.uid)?.html || container.scrollTop >= 80) return;
+
+    salvarCacheAtividades(user.uid, html);
+    container.innerHTML = html;
+    ativarSwipeDelete(container, user.uid);
+  } catch (err) {
+    console.warn('[activities-render] Atualização automática falhou:', err);
+  } finally {
+    atualizandoEmSilencio = false;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   carregarAtividades();
   iniciarFiltros();
+
+  setInterval(atualizarEmSilencio, AUTO_REFRESH_MS);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) atualizarEmSilencio();
+  });
 });

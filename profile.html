@@ -529,29 +529,29 @@
   </div>
 </div>
 
-<div class="wall-post-creation-area">
-  <div class="wall-post-creation-overlay"></div>
-  <div class="wall-post-creation">
+<div class="wall-post-creation-area" id="wallCreationArea">
+  <div class="wall-post-creation-overlay" id="wallCreationOverlay"></div>
+  <div class="wall-post-creation" id="wallCreation">
     <div class="wall-create-content">
       <div class="wall-content-row">
         <div class="wall-np-text-area">
           <div class="wall-np-avatar-area">
             <img id="wallCreationModalPfp" src="./public/img/default.jpg" alt="Avatar" class="wall-np-avatar" loading="lazy" decoding="async">
           </div>
-          <div class="wall-np-input-area" id="inputArea">
-            <div class="wall-np-username" id="creationModalDisplayName">Name Surname</div>
-            <textarea id="npTextInput" class="wall-np-text-input" placeholder="Escreva uma mensagem..." maxlength="500" ></textarea>
+          <div class="wall-np-input-area" id="wallInputArea">
+            <div class="wall-np-username" id="wallCreationName">Name Surname</div>
+            <textarea id="wallTextInput" class="wall-np-text-input" placeholder="Escreva uma mensagem..." maxlength="500" ></textarea>
           </div>
         </div>
-        <div class="wall-image-preview-carrosel visible"></div>
+        <div class="wall-image-preview-carrosel visible" id="wallImagePreview"></div>
         <div class="wall-img-btn">
-          <button id="wallMediaInput">Adicionar Imagens</button>
+          <button id="wallMediaInput" type="button">Adicionar fotos ou vídeos</button>
         </div>
       </div>
     </div>
     <div class="wall-sections-btn">
       <div class="send-wall-btn-area">
-        <button class="send-wall-btn" id="sendWall">Postar</button>
+        <button class="send-wall-btn disable" id="sendWall" type="button">Postar</button>
       </div>
     </div>
   </div>

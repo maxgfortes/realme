@@ -1,4 +1,5 @@
 import { db, auth } from "../../../../config/config.js";
+import { postSegments } from "./postPath.js";
 
 import {
     doc,
@@ -79,7 +80,7 @@ function setupAlert() {
         try {
             confirmBtn.disabled = true;
 
-            await deleteDoc(doc(db, "posts", selectedPostId));
+            await deleteDoc(doc(db, ...postSegments(selectedPostId)));
 
             const postCard = document.querySelector(
                 `.post-card-new[data-post-id="${CSS.escape(selectedPostId)}"]`

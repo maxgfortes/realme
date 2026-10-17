@@ -16,11 +16,36 @@ const locationInput = document.getElementById('eventLocationInput');
 const dateInput = document.getElementById('eventDateInput');
 const sendEvent = document.getElementById('sendEvent');
 
+const MIN_DATE_REFRESH_MS = 30 * 1000;
+
+function toLocalInputValue(date) {
+  const pad = value => String(value).padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function refreshMinDate() {
+  const now = new Date();
+
+  now.setSeconds(0, 0);
+  now.setMinutes(now.getMinutes() + 1);
+
+  dateInput.min = toLocalInputValue(now);
+}
+
+function isFutureDate(value) {
+  if (!value) return false;
+
+  const date = new Date(value);
+
+  return !Number.isNaN(date.getTime()) && date.getTime() > Date.now();
+}
+
 function isFormValid() {
-  return (
+  return Boolean(
     titleInput.value.trim() &&
     locationInput.value.trim() &&
-    dateInput.value &&
+    isFutureDate(dateInput.value) &&
     getSelectedBannerFile()
   );
 }
@@ -70,22 +95,39 @@ export async function createEvent() {
 }
 
 export function updateSendButtonState() {
-  const isValid =
-    titleInput.value.trim().length > 0 &&
-    locationInput.value.trim().length > 0 &&
-    dateInput.value.length > 0 &&
-    Boolean(getSelectedBannerFile());
+  const hasDate = dateInput.value.length > 0;
 
-  sendEvent.classList.toggle('disable', !isValid);
+  dateInput.classList.toggle('invalid', hasDate && !isFutureDate(dateInput.value));
+  sendEvent.classList.toggle('disable', !isFormValid());
 }
 
+function enforceFutureDate() {
+  refreshMinDate();
+
+  if (dateInput.value && !isFutureDate(dateInput.value)) {
+    dateInput.value = dateInput.min;
+  }
+
+  updateSendButtonState();
+}
+
+refreshMinDate();
 updateSendButtonState();
 
-sendEvent.addEventListener('click', createEvent);
+setInterval(() => {
+  refreshMinDate();
+  updateSendButtonState();
+}, MIN_DATE_REFRESH_MS);
+
+sendEvent.addEventListener('click', () => {
+  if (sendEvent.classList.contains('disable')) return;
+  createEvent();
+});
 
 titleInput.addEventListener('input', updateSendButtonState);
 descriptionInput.addEventListener('input', updateSendButtonState);
 locationInput.addEventListener('input', updateSendButtonState);
+dateInput.addEventListener('focus', refreshMinDate);
 dateInput.addEventListener('input', updateSendButtonState);
-
-sendEvent.addEventListener('click', createEvent);
+dateInput.addEventListener('change', enforceFutureDate);
+document.getElementById('eventBannerInput')?.addEventListener('change', updateSendButtonState);

@@ -15,12 +15,14 @@ const messaging = firebase.messaging();
 const DEFAULT_ICON = "/public/img/icon.png";
 const DEFAULT_URL = "/feed.html";
 
-const CACHE = "realme-version-1.0.2";
+const CACHE = "realme-version-1.0.3";
 const PRECACHE = [
   "/",
   "/feed.html",
   DEFAULT_ICON
 ];
+
+const TRUSTED_HOSTS = ["socialrealme.com", "www.socialrealme.com"];
 
 messaging.onBackgroundMessage((payload) => {
 
@@ -34,8 +36,10 @@ messaging.onBackgroundMessage((payload) => {
       body: d.body || "Você tem uma nova notificação",
       icon: d.icon || DEFAULT_ICON,
       badge: d.badge || DEFAULT_ICON,
+      image: d.image || undefined,
       tag: d.tag || undefined,
       renotify: Boolean(d.tag),
+      vibrate: [100, 50, 100],
       data: {
         url: safeTarget(d.url || DEFAULT_URL)
       }
@@ -44,23 +48,31 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 function safeTarget(rawUrl) {
+  const fallback = new URL(DEFAULT_URL, self.location.origin).href;
+
   try {
     const url = new URL(
       rawUrl || DEFAULT_URL,
       self.location.origin
     );
 
-    if (url.origin !== self.location.origin) {
-      return new URL(DEFAULT_URL, self.location.origin).href;
+    if (url.origin === self.location.origin) {
+      return url.href;
     }
 
-    return url.href;
+    if (TRUSTED_HOSTS.includes(url.hostname)) {
+      return new URL(`${url.pathname}${url.search}${url.hash}`, self.location.origin).href;
+    }
+
+    return fallback;
   } catch {
-    return new URL(DEFAULT_URL, self.location.origin).href;
+    return fallback;
   }
 }
 
 self.addEventListener("notificationclick", (event) => {
+  if (event.notification.data?.FCM_MSG) return;
+
   event.notification.close();
 
   const target = safeTarget(

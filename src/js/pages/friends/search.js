@@ -109,7 +109,6 @@ function salvarCache(chave, pessoas, fila) {
       })
     );
   } catch (_) {
-    // storage cheio ou bloqueado: segue sem cache
   }
 }
 
