@@ -300,6 +300,7 @@
   justify-content: center;
   align-items: center;
   padding: var(--space-20);
+  display: none;
 }
 
 .drag-area {
