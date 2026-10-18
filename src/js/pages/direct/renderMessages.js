@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth } from "../../../config/config.js";
 import { attachMessageGestures } from "./messageGestures.js";
 import { getDaySeparatorLabel, formatTimeAgo } from "./formatRelativeTime.js";
@@ -74,15 +75,15 @@ function resolveReplySenderName(replyTo, currentUserId, otherUserName) {
 
     if (replyTo.type === "note") {
         return isOwn
-            ? "Sua nota"
-            : `Nota de ${getFirstName(otherUserName) || "Usuário"}`;
+            ? t("dm.yourNote")
+            : t("dm.noteOf", { name: getFirstName(otherUserName) || t("common.user") });
     }
 
     if (isOwn) {
-        return "Você";
+        return t("common.you");
     }
 
-    return getFirstName(otherUserName) || "Usuário";
+    return getFirstName(otherUserName) || t("common.user");
 }
 
 function buildReplyDiv(replyTo, currentUserId, isMine, otherUserName) {
@@ -100,7 +101,7 @@ function buildReplyDiv(replyTo, currentUserId, isMine, otherUserName) {
         otherUserName
     );
 
-    const content = replyTo.type === "image" ? "Imagem" : replyTo.content || "";
+    const content = replyTo.type === "image" ? t("common.image") : replyTo.content || "";
 
     const senderSpan = document.createElement("span");
     senderSpan.className = "reply-sender";

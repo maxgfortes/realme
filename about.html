@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Sobre • RealMe</title>
+  <title data-i18n="about.sobre_realme">Sobre • RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -24,6 +25,7 @@
   <meta name="twitter:title" content="Sobre o RealMe">
   <meta name="twitter:description" content="Isso não é uma social media. Isso é uma social network.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <style>
 
@@ -256,7 +258,7 @@ body {
 }
 
 </style>
-<body>
+<body data-language-slot>
     <nav class="nav-pc">
         <div class="logo">RealMe</div>
     </nav>
@@ -269,7 +271,7 @@ body {
                 </button>
             </div>
             <div class="header-block">
-                <div class="header-title">Sobre</div>
+                <div class="header-title" data-i18n="common.sobre">Sobre</div>
             </div>
             <div class="header-block"></div>
         </div>
@@ -279,45 +281,45 @@ body {
         <div class="terms-area">
 
             <div class="terms-item">
-                <div class="terms-title">Sobre o RealMe</div>
-                <div class="terms-body">Isso não é uma social media. Isso é uma social network.</div>
-                <div class="terms-body">O RealMe é uma rede social que resgata o que o Facebook e as redes sociais tinham entre 2004 e 2013: você vendo seus amigos, sua vida ao redor e pessoas da sua vida real — não o que o algoritmo quer te mostrar.</div>
+                <div class="terms-title" data-i18n="about.sobre_o_realme">Sobre o RealMe</div>
+                <div class="terms-body" data-i18n="about.isso_nao_e_uma_social">Isso não é uma social media. Isso é uma social network.</div>
+                <div class="terms-body" data-i18n="about.o_realme_e_uma_rede">O RealMe é uma rede social que resgata o que o Facebook e as redes sociais tinham entre 2004 e 2013: você vendo seus amigos, sua vida ao redor e pessoas da sua vida real — não o que o algoritmo quer te mostrar.</div>
             </div>
 
             <div class="terms-item">
-                <div class="terms-title">Filosofia</div>
-                <div class="terms-body"><span>As relações são o que dá vida.</span></div>
-                <div class="terms-body">2 horas de tela por dia? Não é um problema se você ficou 5 horas na casa do seu amigo depois de marcar de sair com ele no RealMe.</div>
-                <div class="terms-body">2 horas no app? Mas foi no evento que seu amigo criou e você ficou horas lá. Isso tudo tá ótimo.</div>
-                <div class="terms-body">O RealMe não existe para prender sua atenção. Existe para conectar você com quem importa e te tirar de tela, não pra te manter nela.</div>
+                <div class="terms-title" data-i18n="about.filosofia">Filosofia</div>
+                <div class="terms-body"><span data-i18n="about.as_relacoes_sao_o_que">As relações são o que dá vida.</span></div>
+                <div class="terms-body" data-i18n="about.2_horas_de_tela_por">2 horas de tela por dia? Não é um problema se você ficou 5 horas na casa do seu amigo depois de marcar de sair com ele no RealMe.</div>
+                <div class="terms-body" data-i18n="about.2_horas_no_app_mas">2 horas no app? Mas foi no evento que seu amigo criou e você ficou horas lá. Isso tudo tá ótimo.</div>
+                <div class="terms-body" data-i18n="about.o_realme_nao_existe_para">O RealMe não existe para prender sua atenção. Existe para conectar você com quem importa e te tirar de tela, não pra te manter nela.</div>
             </div>
 
             <div class="terms-item">
-                <div class="terms-title">O que você encontra aqui</div>
-                <div class="terms-body">• Feed cronológico dinâmico (sem algoritmo de recomendação tradicional)</div>
-                <div class="terms-body">• 60% posts de amigos • 35% amigos de amigos • 5% descoberta</div>
-                <div class="terms-body">• Mural inspirado no Facebook clássico</div>
-                <div class="terms-body">• Mensagens com reações, reply e status de humor</div>
-                <div class="terms-body">• Perfis com banner, grid de posts e informações reais</div>
-                <div class="terms-body">• Amizades bidirecionais</div>
-                <div class="terms-body">• Criação de eventos e convites</div>
-                <div class="terms-body">• Busca de amigos por gostos, localização e afinidade</div>
+                <div class="terms-title" data-i18n="about.o_que_voce_encontra_aqui">O que você encontra aqui</div>
+                <div class="terms-body" data-i18n="about.feed_cronologico_dinamico_sem_algoritmo">• Feed cronológico dinâmico (sem algoritmo de recomendação tradicional)</div>
+                <div class="terms-body" data-i18n="about.60_posts_de_amigos_35">• 60% posts de amigos • 35% amigos de amigos • 5% descoberta</div>
+                <div class="terms-body" data-i18n="about.mural_inspirado_no_facebook_classico">• Mural inspirado no Facebook clássico</div>
+                <div class="terms-body" data-i18n="about.mensagens_com_reacoes_reply_e">• Mensagens com reações, reply e status de humor</div>
+                <div class="terms-body" data-i18n="about.perfis_com_banner_grid_de">• Perfis com banner, grid de posts e informações reais</div>
+                <div class="terms-body" data-i18n="about.amizades_bidirecionais">• Amizades bidirecionais</div>
+                <div class="terms-body" data-i18n="about.criacao_de_eventos_e_convites">• Criação de eventos e convites</div>
+                <div class="terms-body" data-i18n="about.busca_de_amigos_por_gostos">• Busca de amigos por gostos, localização e afinidade</div>
             </div>
 
             <div class="terms-item">
-                <div class="terms-title">Design</div>
-                <div class="terms-body">Interface limpa, flat design com leve skeumorphismo e zero ruído visual.</div>
-                <div class="terms-body">Foco total nas pessoas e nas relações — não em métricas de engajamento.</div>
+                <div class="terms-title" data-i18n="about.design">Design</div>
+                <div class="terms-body" data-i18n="about.interface_limpa_flat_design_com">Interface limpa, flat design com leve skeumorphismo e zero ruído visual.</div>
+                <div class="terms-body" data-i18n="about.foco_total_nas_pessoas_e">Foco total nas pessoas e nas relações — não em métricas de engajamento.</div>
             </div>
 
             <div class="terms-item">
-                <div class="terms-title">Criador</div>
-                <div class="terms-body">Criado por <span>Maximus Fortes</span>.</div>
-                <div class="terms-body">Uma rede social construída para aproximar pessoas de verdade.</div>
+                <div class="terms-title" data-i18n="about.criador">Criador</div>
+                <div class="terms-body" data-i18n-html="about.criado_por_maximus_fortes">Criado por <span>Maximus Fortes</span>.</div>
+                <div class="terms-body" data-i18n="about.uma_rede_social_construida_para">Uma rede social construída para aproximar pessoas de verdade.</div>
             </div>
 
             <div class="terms-item">
-                <div class="terms-body letter">as relações são o que dá vida.</div>
+                <div class="terms-body letter" data-i18n="about.as_relacoes_sao_o_que_2">as relações são o que dá vida.</div>
             </div>
 
         </div>
@@ -326,15 +328,15 @@ body {
     <footer class="footer-area">
         <div class="footer-block">
             <div class="links">
-                <a href="https://www.socialrealme.com">Home</a>
-                <a href="https://www.socialrealme.com/login">Login</a>
-                <a href="https://www.socialrealme.com/register">Register</a>
-                <a href="https://www.socialrealme.com/profile">Profile</a>
+                <a href="https://www.socialrealme.com" data-i18n="common.home">Home</a>
+                <a href="https://www.socialrealme.com/login" data-i18n="common.login">Login</a>
+                <a href="https://www.socialrealme.com/register" data-i18n="common.register">Register</a>
+                <a href="https://www.socialrealme.com/profile" data-i18n="common.profile">Profile</a>
             </div>
         </div>
         <div class="footer-block">
             <div class="copy">
-                <p>&copy; 2026 RealMe. All rights reserved.</p>
+                <p data-i18n="common.2026_realme_all_rights_reserved">&copy; 2026 RealMe. All rights reserved.</p>
             </div>
         </div>
         <div class="footer-block">

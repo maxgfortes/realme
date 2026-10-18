@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png" />
@@ -34,33 +35,34 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
 <div class="main">
   <div class="floating-area">
     <div class="floating-bg">
-      <img class="foto foto1" src="/public/img/conections/pfp1.png" alt="Foto de usuario">
-      <img class="foto foto2" src="/public/img/conections/pfp2.png" alt="Foto de usuario">
-      <img class="foto foto3" src="/public/img/conections/pfp3.png" alt="Foto de usuario">
-      <img class="foto foto4" src="/public/img/conections/pfp4.png" alt="Foto de usuario">
-      <img class="foto foto5" src="/public/img/conections/pfp5.png" alt="Foto de usuario">
-      <img class="foto foto6" src="/public/img/conections/pfp6.png" alt="Foto de usuario">
+      <img class="foto foto1" src="/public/img/conections/pfp1.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
+      <img class="foto foto2" src="/public/img/conections/pfp2.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
+      <img class="foto foto3" src="/public/img/conections/pfp3.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
+      <img class="foto foto4" src="/public/img/conections/pfp4.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
+      <img class="foto foto5" src="/public/img/conections/pfp5.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
+      <img class="foto foto6" src="/public/img/conections/pfp6.png" alt="Foto de usuario" data-i18n-attr="alt:welcome.foto_de_usuario">
     </div>
   </div>
   <div class="bottom-container">
-    <div class="bottom-area">
+    <div class="bottom-area" data-language-slot>
       <div class="welcome-area">
         <div class="logo-area">
           <div class="logo">RealMe</div>
         </div>
         <div class="greeting-area">
-          <div class="greeting-text">Conecte-se com seus amigos e pessoas ao seu redor</div>
+          <div class="greeting-text" data-i18n="welcome.conecte_se_com_seus_amigos">Conecte-se com seus amigos e pessoas ao seu redor</div>
         </div>
       </div>
       <div class="btn-area">
-        <a href="/register.html" class="btn register">Criar Conta</a>
-        <a href="/login.html" class="btn login">Entrar</a>
+        <a href="/register.html" class="btn register" data-i18n="common.criar_conta_2">Criar Conta</a>
+        <a href="/login.html" class="btn login" data-i18n="common.entrar">Entrar</a>
       </div>
     </div>
   </div>

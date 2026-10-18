@@ -1,10 +1,11 @@
+import { t } from "/src/i18n/i18n.js";
 import { $ } from "./dom.js";
 import { state } from "./state.js";
 import { formatBirthday, formatJoinDate, getDisplayName, translateGender } from "./format.js";
 import { viewFields, lockedFields, editableFields } from "./aboutFields.js";
 
-const NOT_INFORMED = "Não informado";
-const EMPTY_TEXT = "Ainda não há nada por aqui...";
+const NOT_INFORMED = t("common.notInformed");
+const EMPTY_TEXT = t("profile.emptyAbout");
 
 function buildAboutValues() {
   const { user, about, likes } = state.profileData;

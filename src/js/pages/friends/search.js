@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth, app, db } from "/src/config/config.js";
 
 import {
@@ -121,7 +122,7 @@ const IMG_FOTO_PADRAO = "../public/img/default.jpg";
 
 function cardHTML(pessoa) {
   const username = pessoa.username || "";
-  const nome = pessoa.name || username || "Usuário";
+  const nome = pessoa.name || username || t("common.user");
   const foto = fotoSegura(pessoa.photo);
   const banner = fotoSegura(pessoa.banner) || foto;
 
@@ -153,7 +154,7 @@ function cardHTML(pessoa) {
           <div class="profile-username"><p>${esc(username || nome)}</p></div>
         </div>
         <button class="follow-btn${pessoa.sent ? " sent" : ""}" type="button"${pessoa.sent ? " disabled" : ""}>
-          ${pessoa.sent ? "Enviado" : "Adicionar"}
+          ${pessoa.sent ? t("friends.sent") : t("common.add")}
         </button>
       </div>
     </a>
@@ -165,7 +166,7 @@ function renderizar(pessoas) {
 
   if (!pessoas.length) {
     listaAmigos.innerHTML =
-      '<div class="empty-search">Nenhuma pessoa encontrada.</div>';
+      `<div class="empty-search">${t("friends.noPeople")}</div>`;
     return;
   }
 
@@ -191,7 +192,7 @@ function mostrarErro() {
   if (!listaAmigos) return;
 
   listaAmigos.innerHTML =
-    '<div class="empty-search">Não foi possível buscar agora. Tente novamente.</div>';
+    `<div class="empty-search">${t("friends.searchError")}</div>`;
 }
 
 async function adicionar(uid, botao) {
@@ -200,7 +201,7 @@ async function adicionar(uid, botao) {
   if (!eu || !uid || eu === uid) return;
 
   botao.disabled = true;
-  botao.textContent = "Enviando...";
+  botao.textContent = t("friends.sending");
 
   try {
     const ref = doc(db, "friendRequests", `${eu}_${uid}`);
@@ -214,7 +215,7 @@ async function adicionar(uid, botao) {
       });
     }
 
-    botao.textContent = "Enviado";
+    botao.textContent = t("friends.sent");
     botao.classList.add("sent");
 
     const pessoa = estado.pessoas.find((p) => p.uid === uid);
@@ -227,7 +228,7 @@ async function adicionar(uid, botao) {
     console.error("Erro ao enviar pedido de amizade:", error);
 
     botao.disabled = false;
-    botao.textContent = "Adicionar";
+    botao.textContent = t("common.add");
   }
 }
 

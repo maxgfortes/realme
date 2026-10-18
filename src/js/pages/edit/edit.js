@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc
@@ -178,7 +179,7 @@ async function uploadImage(file) {
   const data = await response.json();
 
   if (!data.success) {
-    throw new Error("Erro ao enviar imagem.");
+    throw new Error(t("edit.uploadError"));
   }
 
   return data.data.url;
@@ -235,7 +236,7 @@ function compressImage(file, type) {
         canvas.toBlob(
           blob => {
             if (!blob) {
-              reject(new Error("Erro ao comprimir a imagem."));
+              reject(new Error(t("edit.compressError")));
               return;
             }
 
@@ -256,14 +257,14 @@ function compressImage(file, type) {
       };
 
       img.onerror = () => {
-        reject(new Error("Erro ao carregar a imagem."));
+        reject(new Error(t("edit.loadError")));
       };
 
       img.src = reader.result;
     };
 
     reader.onerror = () => {
-      reject(new Error("Erro ao ler a imagem."));
+      reject(new Error(t("edit.readError")));
     };
 
     reader.readAsDataURL(file);
@@ -282,7 +283,7 @@ function chooseImage(type) {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      showToast("A imagem deve ter no máximo 5MB.");
+      showToast(t("edit.imageTooBig"));
       return;
     }
 
@@ -303,7 +304,7 @@ function chooseImage(type) {
         pendingUploads.banner = compressedFile;
       }
     } catch (error) {
-      showToast("Erro ao processar a imagem.");
+      showToast(t("edit.processError"));
     }
   };
 
@@ -317,50 +318,50 @@ const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[' -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$
 
 const RULES = {
   name: v => {
-    if (!v) return "Digite seu nome";
-    if (v.length > 10) return "O nome deve ter no máximo 10 caracteres";
-    if (!NAME_REGEX.test(v)) return "Digite um nome válido";
+    if (!v) return t("edit.nameRequired");
+    if (v.length > 10) return t("edit.nameTooLong");
+    if (!NAME_REGEX.test(v)) return t("edit.nameInvalid");
     return null;
   },
 
   surname: v => {
-    if (!v) return "Digite seu sobrenome";
-    if (v.length > 15) return "O sobrenome deve ter no máximo 15 caracteres";
-    if (!NAME_REGEX.test(v)) return "Digite um sobrenome válido";
+    if (!v) return t("edit.surnameRequired");
+    if (v.length > 15) return t("edit.surnameTooLong");
+    if (!NAME_REGEX.test(v)) return t("edit.surnameInvalid");
     return null;
   },
 
   username: v => {
-    if (!v) return "Digite seu nome de usuári.";
-    if (v.length < 3) return "O username precisa ter pelo menos 3 caracteres";
-    if (v.length > 20) return "O username deve ter no máximo 20 caracteres";
+    if (!v) return t("edit.usernameRequired");
+    if (v.length < 3) return t("edit.usernameTooShort");
+    if (v.length > 20) return t("edit.usernameTooLong");
     if (!/^[a-z0-9_]+$/.test(v)) {
-      return "O username só pode ter letras minúsculas, números e _.";
+      return t("edit.usernameRules");
     }
     return null;
   },
 
   pronomes: v => (
     v.length > 30
-      ? "Os pronomes devem ter no máximo 30 caracteres."
+      ? t("edit.pronounsTooLong")
       : null
   ),
 
   bio: v => (
     v.length > 150
-      ? "A bio deve ter no máximo 150 caracteres."
+      ? t("edit.bioTooLong")
       : null
   ),
 
   localizacao: v => (
     v.length > 50
-      ? "A localização deve ter no máximo 50 caracteres."
+      ? t("edit.locationTooLong")
       : null
   ),
 
   musica: v => (
     v && !/youtube\.com|youtu\.be/.test(v)
-      ? "Cole uma URL válida do YouTube."
+      ? t("edit.youtubeInvalid")
       : null
   )
 };
@@ -472,7 +473,7 @@ async function usernameAvailable(username) {
 
 saveBtn.onclick = async () => {
   if (!currentUser) {
-    showToast("Você precisa estar logado.");
+    showToast(t("edit.signInRequired"));
     return;
   }
 
@@ -505,7 +506,7 @@ saveBtn.onclick = async () => {
     const available = await usernameAvailable(values.username);
 
     if (!available) {
-      showToast("Este username já está em uso.");
+      showToast(t("edit.usernameTaken"));
       return;
     }
 
@@ -520,7 +521,7 @@ saveBtn.onclick = async () => {
       "";
 
     if (isUploadingImages) {
-      showToast("Enviando imagens...", { persist: true });
+      showToast(t("edit.uploadingImages"), { persist: true });
     }
 
     if (pendingUploads.pfp) {
@@ -619,7 +620,7 @@ saveBtn.onclick = async () => {
     });
 
     hideToast();
-    showToast("Perfil salvo com sucesso!");
+    showToast(t("edit.saved"));
 
     setTimeout(() => {
       window.location.href =
@@ -628,7 +629,7 @@ saveBtn.onclick = async () => {
 
   } catch (err) {
     hideToast();
-    showToast("Erro ao salvar o perfil.");
+    showToast(t("edit.saveError"));
   } finally {
     saveBtn.disabled = false;
   }
@@ -665,6 +666,6 @@ onAuthStateChanged(auth, async user => {
   try {
     await loadUser();
   } catch (err) {
-    showToast("Erro ao carregar seus dados.");
+    showToast(t("edit.loadDataError"));
   }
 });

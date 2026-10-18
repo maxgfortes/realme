@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import {
   collection,
@@ -44,7 +45,7 @@ export function eventCardHTML({ eventId, title }) {
         <div class="event-card-top">
           <div class="event-card-icon-area">${EVENT_ICON_SVG}</div>
           <div class="event-card-info">
-            <div class="event-card-label">Evento</div>
+            <div class="event-card-label">${t("events.label")}</div>
             <div class="event-card-title">${escapeHTML(title)}</div>
           </div>
         </div>
@@ -69,7 +70,7 @@ export async function loadEventGoing(eventId, graph) {
     const total = countSnap.data().count;
 
     if (total === 0) {
-      graph.textContent = "Ninguém ainda vai";
+      graph.textContent = t("events.nobodyGoing");
       return;
     }
 
@@ -83,11 +84,11 @@ export async function loadEventGoing(eventId, graph) {
     const others = total - names.length;
 
     if (others > 0) {
-      const text = others === 1 ? "outra pessoa" : `outras ${others} pessoas`;
+      const text = t("common.otherPeople", { count: others });
       parts.push(`<span>${text}</span>`);
     }
 
-    graph.innerHTML = `${joinNames(parts)} ${total === 1 ? "vai" : "vão"}`;
+    graph.innerHTML = `${joinNames(parts)} ${t("events.goingVerb", { count: total })}`;
   } catch (error) {
     console.error("Erro ao carregar quem vai:", error);
   }

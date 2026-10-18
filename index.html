@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
   <title>RealMe</title>
   <meta name="description" content="RealMe é a rede social que conecta você a amigos, família e pessoas novas perto de você. Compartilhe momentos, converse e viva conexões reais. Crie sua conta grátis." />
@@ -46,6 +47,7 @@
     ]
   }
   </script>
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
@@ -55,8 +57,8 @@
   </div>
   <div class="nav-right">
     <div class="auth-area">
-      <a href="/login.html" class="auth-btn login">Entrar</a>
-      <a href="/register.html" class="auth-btn register">Criar conta</a>
+      <a href="/login.html" class="auth-btn login" data-i18n="common.entrar">Entrar</a>
+      <a href="/register.html" class="auth-btn register" data-i18n="common.criar_conta">Criar conta</a>
     </div>
   </div>
 </nav>
@@ -64,18 +66,18 @@
 <div class="welcome-container">
   <div class="welcome-left">
     <div class="welcome-img">
-      <img src="./public/img/conections.png" alt="Mapa de conexões do RealMe" width="640" height="640" />
+      <img src="./public/img/conections.png" alt="Mapa de conexões do RealMe" width="640" height="640" data-i18n-attr="alt:index.mapa_de_conexoes_do_realme"/>
     </div>
   </div>
   <div class="welcome-right">
     <div class="welcome-headers">
-      <h1 class="welcome-title">Bem vindo ao <span>RealMe</span></h1>
-      <p class="welcome-sub">Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com quem importa.</p>
-      <p class="welcome-text">Tudo em um só lugar: mensagens, posts, perfis e uma rede feita para aproximar pessoas de verdade — sem filtros, sem pressão, só você sendo você.</p>
+      <h1 class="welcome-title" data-i18n-html="index.bem_vindo_ao_realme">Bem vindo ao <span>RealMe</span></h1>
+      <p class="welcome-sub" data-i18n="index.conecte_se_com_seus_amigos">Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com quem importa.</p>
+      <p class="welcome-text" data-i18n="index.tudo_em_um_so_lugar">Tudo em um só lugar: mensagens, posts, perfis e uma rede feita para aproximar pessoas de verdade — sem filtros, sem pressão, só você sendo você.</p>
     </div>
     <div class="welcome-actions">
-      <a href="/register.html" class="welcome-auth-btn">Criar Conta</a>
-      <a href="/login.html" class="welcome-auth-btn login">Fazer Login</a>
+      <a href="/register.html" class="welcome-auth-btn" data-i18n="common.criar_conta_2">Criar Conta</a>
+      <a href="/login.html" class="welcome-auth-btn login" data-i18n="index.fazer_login">Fazer Login</a>
     </div>
   </div>
 </div>
@@ -84,42 +86,42 @@
   <div class="about-container">
     <div class="section-left">
       <div class="about-content">
-        <h2 class="about-title">Se conecte facilmente com as pessoas ao seu redor.</h2>
-        <p class="about-text">Com o RealMe, você pode facilmente se conectar com amigos e família, conhecer pessoas novas perto de você e compartilhar sua vida com quem importa. Tudo isso de forma simples, rápida e segura.</p>
+        <h2 class="about-title" data-i18n="index.se_conecte_facilmente_com_as">Se conecte facilmente com as pessoas ao seu redor.</h2>
+        <p class="about-text" data-i18n="index.com_o_realme_voce_pode">Com o RealMe, você pode facilmente se conectar com amigos e família, conhecer pessoas novas perto de você e compartilhar sua vida com quem importa. Tudo isso de forma simples, rápida e segura.</p>
       </div>
     </div>
     <div class="section-right">
       <div class="list-content">
-        <h3 class="section-sub">Use o RealMe para...</h3>
+        <h3 class="section-sub" data-i18n="index.use_o_realme_para">Use o RealMe para...</h3>
         <div class="section-list">
           <div class="list-item">
             <div class="list-icon">
               <svg aria-label="Marcados" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Marcados</title><path d="M21 7.48a2 2 0 0 0-2-2h-3.046a2.002 2.002 0 0 1-1.506-.683l-1.695-1.939a1 1 0 0 0-1.506 0L9.552 4.797c-.38.434-.93.682-1.506.682H5a2 2 0 0 0-2 2V19l.01.206A2 2 0 0 0 5 21h14a2 2 0 0 0 2-2V7.48ZM23 19a4 4 0 0 1-4 4H5a4 4 0 0 1-3.995-3.794L1 19V7.48a4 4 0 0 1 4-4h3.046l1.696-1.94a3 3 0 0 1 4.516 0l1.696 1.94H19a4 4 0 0 1 4 4V19Z" fill="currentColor"></path><path d="M14.5 10.419a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm2 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM12 16.003c3.511 0 6.555 1.99 8.13 4.906a1 1 0 0 1-1.76.95c-1.248-2.31-3.64-3.857-6.37-3.857S6.878 19.55 5.63 21.86a1 1 0 0 1-1.76-.951c1.575-2.915 4.618-4.906 8.13-4.906Z" fill="currentColor"></path></svg>
             </div>
-            <div class="list-label">Se conectar com amigos e família</div>
+            <div class="list-label" data-i18n="index.se_conectar_com_amigos_e">Se conectar com amigos e família</div>
           </div>
           <div class="list-item">
             <div class="list-icon">
               <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><path d="M384,448v-42.7c0-58.9-47.7-106.7-106.7-106.7H106.7C47.7,298.7,0,346.4,0,405.3V448c0,11.8,9.6,21.3,21.3,21.3c11.8,0,21.3-9.6,21.3-21.3v-42.7c0.1-35.3,28.7-63.9,64-64l170.7,0c35.3,0.1,63.9,28.7,64,64V448c0,11.8,9.6,21.3,21.3,21.3S384,459.8,384,448z"/><path d="M192,64v21.3c35.3,0.1,63.9,28.7,64,64c-0.1,35.3-28.7,63.9-64,64c-35.3-0.1-63.9-28.7-64-64c0.1-35.3,28.7-63.9,64-64V64V42.7c-58.9,0-106.7,47.7-106.7,106.7C85.3,208.3,133.1,256,192,256c58.9,0,106.7-47.7,106.7-106.7c0-58.9-47.7-106.7-106.7-106.7V64z"/><path d="M512,448v-42.7c0-48.6-32.9-91.1-80-103.2c-11.4-2.9-23,3.9-26,15.3c-2.9,11.4,3.9,23,15.3,26c28.2,7.3,48,32.8,48,61.9V448c0,11.8,9.6,21.3,21.3,21.3S512,459.8,512,448z"/><path d="M336,87.4c28.9,7.4,48.1,33.5,48.1,61.9c0,5.2-0.6,10.6-2,15.9c-5.8,22.6-23.5,40.3-46.1,46.1c-11.4,2.9-18.3,14.5-15.4,26c2.9,11.4,14.5,18.3,26,15.4c37.7-9.7,67.2-39.1,76.9-76.9c2.3-8.8,3.4-17.7,3.4-26.5c0-47.6-32-90.9-80.2-103.3c-11.4-2.9-23,4-26,15.4C317.7,72.9,324.6,84.5,336,87.4L336,87.4z"/></g></svg>
             </div>
-            <div class="list-label">Conhecer pessoas novas perto de você</div>
+            <div class="list-label" data-i18n="index.conhecer_pessoas_novas_perto_de">Conhecer pessoas novas perto de você</div>
           </div>
           <div class="list-item">
             <div class="list-icon">
               <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
             </div>
-            <div class="list-label">Compartilhar momentos e pensamentos do seu dia</div>
+            <div class="list-label" data-i18n="index.compartilhar_momentos_e_pensamentos_do">Compartilhar momentos e pensamentos do seu dia</div>
           </div>
           <div class="list-item">
             <div class="list-icon">
               <svg aria-label="Salvos" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Salvos</title><polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polygon></svg>
             </div>
-            <div class="list-label">Criar eventos e convidar seus amigos</div>
+            <div class="list-label" data-i18n="index.criar_eventos_e_convidar_seus">Criar eventos e convidar seus amigos</div>
           </div>
           <div class="list-item">
             <div class="list-icon">
               <svg aria-label="Descurtir" fill="currentColor" height="24" role="img" viewBox="0 0 48 48" width="24"><title>Descurtir</title><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg></div>
-            <div class="list-label">Curtir e interagir com as pessoas ao seu redor</div>
+            <div class="list-label" data-i18n="index.curtir_e_interagir_com_as">Curtir e interagir com as pessoas ao seu redor</div>
           </div>
         </div>
       </div>
@@ -131,15 +133,15 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-number">220+</div>
-      <div class="stat-label">Pessoas conectadas</div>
+      <div class="stat-label" data-i18n="index.pessoas_conectadas">Pessoas conectadas</div>
     </div>
     <div class="stat-card">
       <div class="stat-number">9+</div>
-      <div class="stat-label">Países alcançados</div>
+      <div class="stat-label" data-i18n="index.paises_alcancados">Países alcançados</div>
     </div>
     <div class="stat-card">
       <div class="stat-number">4.8★</div>
-      <div class="stat-label">Avaliação geral</div>
+      <div class="stat-label" data-i18n="index.avaliacao_geral">Avaliação geral</div>
     </div>
   </div>
 </section>
@@ -147,23 +149,23 @@
 <section class="download">
   <div class="section-left">
     <div class="section-content">
-      <h2 class="section-title">Baixe o Aplicativo</h2>
-      <p class="section-text">Leve o RealMe para onde você for. Baixe agora e comece a se conectar com quem é real.</p>
+      <h2 class="section-title" data-i18n="index.baixe_o_aplicativo">Baixe o Aplicativo</h2>
+      <p class="section-text" data-i18n="index.leve_o_realme_para_onde">Leve o RealMe para onde você for. Baixe agora e comece a se conectar com quem é real.</p>
       <div class="app-promos">
-        <a href="#" class="app-promo" aria-label="Baixar na iPhone">
+        <a href="#" class="app-promo" aria-label="Baixar na iPhone" data-i18n-attr="aria-label:index.baixar_na_iphone">
           <i class="fa-brands fa-apple" aria-hidden="true"></i>
-          <span class="app-promo-text"><small>Disponível em </small>iPhone</span>
+          <span class="app-promo-text" data-i18n-html="index.disponivel_em_iphone"><small>Disponível em </small>iPhone</span>
         </a>
-        <a href="#" class="app-promo" aria-label="Baixar no Android">
+        <a href="#" class="app-promo" aria-label="Baixar no Android" data-i18n-attr="aria-label:index.baixar_no_android">
           <i class="fa-brands fa-google-play" aria-hidden="true"></i>
-          <span class="app-promo-text"><small>Disponível em </small>Android</span>
+          <span class="app-promo-text" data-i18n-html="index.disponivel_em_android"><small>Disponível em </small>Android</span>
         </a>
       </div>
     </div>
   </div>
   <div class="section-right">
     <div class="section-content">
-      <img class="download-gif" src="./public/img/download-gif.gif" alt="Demonstração do aplicativo RealMe" loading="lazy" width="240" height="240" />
+      <img class="download-gif" src="./public/img/download-gif.gif" alt="Demonstração do aplicativo RealMe" loading="lazy" width="240" height="240" data-i18n-attr="alt:index.demonstracao_do_aplicativo_realme"/>
     </div>
   </div>
 </section>
@@ -172,36 +174,36 @@
   <div class="footer-grid">
     <div class="brand-col">
       <p class="logo">RealMe</p>
-      <p>A rede social que te conecta com o que é real. Compartilhe momentos, descubra pessoas e conecte-se.</p>
+      <p data-i18n="index.a_rede_social_que_te">A rede social que te conecta com o que é real. Compartilhe momentos, descubra pessoas e conecte-se.</p>
       <div class="social-row">
-        <a href="https://youtube.com/@socialrealme" aria-label="YouTube" target="_blank" rel="noopener">
+        <a href="https://youtube.com/@socialrealme" aria-label="YouTube" target="_blank" rel="noopener" data-i18n-attr="aria-label:index.youtube">
           <svg viewBox="0 0 24 24"><path d="M23.5 6.2s-.23-1.64-.94-2.36c-.9-.95-1.9-.95-2.36-1C16.9 2.5 12 2.5 12 2.5h-.01s-4.9 0-8.2.34c-.46.05-1.46.05-2.36 1C.72 4.56.5 6.2.5 6.2S.27 8.12.27 10.05v1.8c0 1.93.23 3.85.23 3.85s.22 1.64.93 2.36c.9.95 2.08.92 2.6 1.02 1.9.18 8.07.34 8.07.34s4.9-.01 8.2-.35c.46-.06 1.46-.06 2.36-1.01.71-.72.94-2.36.94-2.36s.23-1.92.23-3.85v-1.8c0-1.93-.23-3.85-.23-3.85zM9.55 14.4V7.7l6.45 3.36-6.45 3.34z"/></svg>
         </a>
-        <a href="https://tiktok.com/@socialrealme" aria-label="TikTok" target="_blank" rel="noopener">
+        <a href="https://tiktok.com/@socialrealme" aria-label="TikTok" target="_blank" rel="noopener" data-i18n-attr="aria-label:index.tiktok">
           <svg viewBox="0 0 24 24"><path d="M16.6 5.82c-.9-.78-1.4-1.93-1.4-3.16h-3.1v13.5a2.6 2.6 0 1 1-1.84-2.49V10.5a5.7 5.7 0 1 0 4.94 5.66c0-.1 0-.2-.01-.3a6.2 6.2 0 0 0 3.7 1.2v-3.13c-.78 0-2.04-.34-2.6-1.06a4.2 4.2 0 0 0 .31-2.27c.83.6 1.84.96 2.9.96v-2.7c-1.07 0-2.06-.46-2.9-1.1z"/></svg>
         </a>
       </div>
     </div>
 
     <nav class="col">
-      <h4>Empresa</h4>
+      <h4 data-i18n="index.empresa">Empresa</h4>
       <ul>
-        <li><a href="about.html">Sobre</a></li>
-        <li><a href="/updates.html">Atualizações</a></li>
+        <li><a href="about.html" data-i18n="common.sobre">Sobre</a></li>
+        <li><a href="/updates.html" data-i18n="index.atualizacoes">Atualizações</a></li>
       </ul>
     </nav>
     <nav class="col">
-      <h4>Contato e legal</h4>
+      <h4 data-i18n="index.contato_e_legal">Contato e legal</h4>
       <ul>
-        <li><a href="mailto:socialrealme@gmail.com">socialrealme@gmail.com</a></li>
-        <li><a href="terms.html">Termos de uso</a></li>
-        <li><a href="terms.html">Privacidade</a></li>
+        <li><a href="mailto:socialrealme@gmail.com" data-i18n="index.socialrealme_gmail_com">socialrealme@gmail.com</a></li>
+        <li><a href="terms.html" data-i18n="index.termos_de_uso">Termos de uso</a></li>
+        <li><a href="terms.html" data-i18n="index.privacidade">Privacidade</a></li>
       </ul>
     </nav>
   </div>
 
   <div class="footer-bottom">
-    <p>© 2026 RealMe — Todos os direitos reservados. Criado por maxgfortes.</p>
+    <p data-i18n="index.2026_realme_todos_os_direitos">© 2026 RealMe — Todos os direitos reservados. Criado por maxgfortes.</p>
   </div>
 </footer>
 </body>

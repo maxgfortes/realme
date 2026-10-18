@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import { getDocs, collection } from "./firestore.js";
 import { $, cloneTemplate, createImage } from "./dom.js";
@@ -9,10 +10,10 @@ const BATCH_SIZE = 8;
 const REMOVE_DELAY = 320;
 
 const ROW_LABELS = {
-  none: "Adicionar",
-  pending_sent: "Pedido enviado",
-  pending_received: "Aceitar",
-  friends: "Amigos",
+  none: t("common.add"),
+  pending_sent: t("friendship.pendingSent"),
+  pending_received: t("common.accept"),
+  friends: t("common.friends"),
 };
 
 const overlay = $("friendsOverlay");
@@ -119,7 +120,7 @@ async function loadFriends(uid) {
 }
 
 function openFriendsList() {
-  $("friendsTitle").textContent = `Amigos de ${state.profileUsername}`;
+  $("friendsTitle").textContent = t("friendship.friendsOf", { name: state.profileUsername });
   overlay.classList.add("active");
   profilePage.classList.add("active")
   loadFriends(state.profileUserId);

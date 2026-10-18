@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import {
     doc, collection, getDoc, setDoc, deleteDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -5,7 +6,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import { auth, db } from "../../../config/config.js";
 import { openNoteView } from "./noteView.js";
 
-const NOTE_PLACEHOLDER = "O que você está fazendo agora?";
+const NOTE_PLACEHOLDER = t("dm.notePlaceholder");
 const DEFAULT_PFP = "../public/img/default.jpg";
 const LONG_PRESS_MS = 500;
 const CACHE_KEY = "notesCache";
@@ -53,7 +54,7 @@ function writeCache() {
 
 const cache = readCache();
 
-const NOTE_PREFIX = "Está: ";
+const NOTE_PREFIX = t("dm.notePrefix");
 
 function setNoteText(el, content) {
     if (el.dataset.rawContent === content) return;
@@ -199,7 +200,7 @@ function loadUserInfo() {
 
     if (dados.displayName) {
         noteName.textContent = dados.displayName;
-        createNoteModalName.textContent = `${dados.displayName} está:`;
+        createNoteModalName.textContent = t("dm.noteModalName", { name: dados.displayName });
     }
 
     if (dados.userphoto) {
@@ -274,7 +275,7 @@ async function loadFriendProfile(friendId, node) {
             const mediaData = mediaSnap.exists() ? mediaSnap.data() : {};
 
             profile = {
-                name: [userData.name, userData.surname].filter(Boolean).join(" ") || "Usuário",
+                name: [userData.name, userData.surname].filter(Boolean).join(" ") || t("common.user"),
                 photo: mediaData.userphoto || DEFAULT_PFP
             };
 
@@ -412,7 +413,7 @@ function handleFriendNoteClick(event) {
 
     openNoteView({
         uid: friendId,
-        name: node.appliedProfile?.name || node.nameEl.textContent || "Usuário",
+        name: node.appliedProfile?.name || node.nameEl.textContent || t("common.user"),
         photo: node.appliedProfile?.photo || node.pfpImg.src || DEFAULT_PFP,
         content: node.note.content,
         createdAt: node.note.createdAt

@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 let currentReply = null;
 const listeners = new Set();
 
@@ -18,9 +19,9 @@ export function setReplyingTo(message, senderName) {
 
     currentReply = {
         id: message.id,
-        content: isImage ? "📷 Imagem" : message.content,
+        content: isImage ? t("common.imageWithIcon") : message.content,
         sender: message.sender,
-        senderName: getFirstName(senderName) || "Usuário",
+        senderName: getFirstName(senderName) || t("common.user"),
         timestamp: message.timestamp,
         type: message.type || "text"
     };

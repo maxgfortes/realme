@@ -259,6 +259,7 @@
   width: 100%;
   text-align: center;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .action-btn.primary {

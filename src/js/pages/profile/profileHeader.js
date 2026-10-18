@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { $, select, setImage } from "./dom.js";
 import { getDisplayName } from "./format.js";
 import { DEFAULT_PHOTO } from "./constants.js";
@@ -10,7 +11,7 @@ export function renderName(user) {
   const name = getDisplayName(user);
   $("displayname").textContent = name;
   $("viewMoreDisplayname").textContent = name;
-  select(".input-send-wall").textContent = `Escreva para ${name}...`;
+  select(".input-send-wall").textContent = t("profile.writeTo", { name });
 }
 
 export function renderVerified(user) {
@@ -25,7 +26,7 @@ export function renderPronouns(about) {
 export function renderPfp(media) {
   const photo = media.pfp || media.userphoto || DEFAULT_PHOTO;
   const border = select(".pfp-border");
-  setImage(border, photo, "profile-pic", "Foto de perfil");
+  setImage(border, photo, "profile-pic", t("common.profilePhoto"));
   border.style.backgroundImage = `url(${photo})`;
 }
 

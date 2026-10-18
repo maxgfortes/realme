@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 let overlay = null;
 let titleEl = null;
 let textEl = null;
@@ -16,7 +17,7 @@ function createConfirm() {
           <div class="alert-text"></div>
         </div>
         <div class="alert-actions">
-          <button class="alert-btn" id="confirmCancelBtn">Cancelar</button>
+          <button class="alert-btn" id="confirmCancelBtn">${t("common.cancel")}</button>
           <button class="alert-btn critic-btn" id="confirmOkBtn"></button>
         </div>
       </div>
@@ -42,7 +43,7 @@ function closeConfirm(result) {
   resolver = null;
 }
 
-export function confirmAlert({ title, text, confirmLabel = "Confirmar" }) {
+export function confirmAlert({ title, text, confirmLabel = t("common.confirm") }) {
   createConfirm();
 
   titleEl.textContent = title;

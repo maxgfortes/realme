@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import {
   collection,
@@ -221,7 +222,7 @@ function sectionHTML(title, events, { deletable = false } = {}) {
           .map(e => eventCardHTML({ eventId: e.id, title: e.eventTitle || "" }))
           .join("")}
       </div>
-      ${deletable ? `<p class="events-section-hint">Segure um evento para apagar</p>` : ""}
+      ${deletable ? `<p class="events-section-hint">${t("events.holdToDelete")}</p>` : ""}
     </section>`;
 }
 

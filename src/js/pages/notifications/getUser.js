@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../config/config.js";
 
 import {
@@ -27,7 +28,7 @@ export async function getUser(fromUid) {
             getDoc(mediaReference)
         ]);
 
-    let username = "usuário";
+    let username = t("common.userLower");
     let handle = "";
     let userphoto = defaultAvatar;
 
@@ -46,7 +47,7 @@ export async function getUser(fromUid) {
             (name + " " + surname).trim();
 
         if (!username) {
-            username = "usuário";
+            username = t("common.userLower");
         }
 
         handle =

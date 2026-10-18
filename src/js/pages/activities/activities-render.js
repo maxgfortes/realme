@@ -1,3 +1,4 @@
+import { t, getLanguage, getLocale } from "/src/i18n/i18n.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
@@ -31,7 +32,7 @@ const UM_MES_MS = 30 * 24 * 60 * 60 * 1000;
 const GROUPING_WINDOW = 6 * 60 * 60 * 1000;
 const DEFAULT_PHOTO   = '../public/img/default.jpg';
 
-const ACTIVITIES_CACHE_KEY = 'xact_cache_v2';
+const ACTIVITIES_CACHE_KEY = `xact_cache_v2_${getLanguage()}`;
 const ACTIVITIES_CACHE_TTL = 1 * 60 * 1000;
 
 function lerCacheAtividades(uid) {
@@ -194,14 +195,12 @@ function tempoContextual(ms) {
   const d = Math.floor(diff / 86400000);
   const w = Math.floor(d / 7);
 
-  if (diff < 60000) return 'agora';
-  if (m < 60)       return `${m}min`;
-  if (h < 24)       return `${h}h`;
-  if (d === 1)      return '1 dia';
-  if (d < 7)        return `${d} dias`;
-  if (w === 1)      return '1 semana';
-  if (w < 5)        return `${w} semanas`;
-  return `${Math.floor(d / 30)} meses`;
+  if (diff < 60000) return t('act.time.now');
+  if (m < 60)       return t('act.time.minutes', { count: m });
+  if (h < 24)       return t('act.time.hours', { count: h });
+  if (d < 7)        return t('act.time.days', { count: d });
+  if (w < 5)        return t('act.time.weeks', { count: w });
+  return t('act.time.months', { count: Math.floor(d / 30) });
 }
 function escapeHtml(str) {
   return String(str ?? '')
@@ -242,36 +241,26 @@ function gerarTexto(tipo, items, ultimoMs) {
 
   const alvoLink = (i) => (i.targetUsername || i.targetUid)
     ? profileLink(i.targetUsername || i.targetUid, i.targetNome)
-    : 'alguém';
+    : t('act.someone');
 
   function listarNomes(links) {
-    if (links.length === 1) return links[0];
-    if (links.length === 2) return `${links[0]} e ${links[1]}`;
-
-    const u = [...links];
-    const last = u.pop();
-
-    return `${u.join(', ')} e ${last}`;
+    return new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(links);
   }
 
   const statusLabel = {
-    solteiro: 'solteiro',
-    namorando: 'namorando',
-    casado: 'casado',
-    em_compromisso: 'em compromisso',
-    viuvo: 'viúvo'
+    solteiro: t('act.status.solteiro'),
+    namorando: t('act.status.namorando'),
+    casado: t('act.status.casado'),
+    em_compromisso: t('act.status.em_compromisso'),
+    viuvo: t('act.status.viuvo')
   };
 
   switch (tipo) {
     case 'new_post':
-      return n === 1
-        ? `${autor} fez um novo post. ${tempo}`
-        : `${autor} fez ${n} novos posts. ${tempo}`;
+      return t('act.newPost', { count: n, author: autor, time: tempo });
 
     case 'new_bubble':
-      return n === 1
-        ? `${autor} publicou uma nota. ${tempo}`
-        : `${autor} publicou ${n} notas. ${tempo}`;
+      return t('act.newNote', { count: n, author: autor, time: tempo });
 
     case 'new_comment': {
       const proprio = (i) => i.targetUid && i.targetUid === i.actorUid;
@@ -280,53 +269,51 @@ function gerarTexto(tipo, items, ultimoMs) {
 
       if (n === 1) {
         return proprio(primeiro)
-          ? `${autor} comentou no proprio post. ${tempo}`
-          : `${autor} comentou em um post de ${alvoLink(primeiro)}. ${tempo}`;
+          ? t('act.commentOwn', { author: autor, time: tempo })
+          : t('act.commentOn', { author: autor, target: alvoLink(primeiro), time: tempo });
       }
       if (todosProprios)
-        return `${autor} comentou ${n} vezes nos proprios posts. ${tempo}`;
+        return t('act.commentOwnMany', { count: n, author: autor, time: tempo });
       if (alvosUnicos.size === 1)
-        return `${autor} comentou ${n} vezes em posts de ${alvoLink(primeiro)}. ${tempo}`;
-      return `${autor} fez ${n} comentários. ${tempo}`;
+        return t('act.commentOnMany', { count: n, author: autor, target: alvoLink(primeiro), time: tempo });
+      return t('act.commentMany', { count: n, author: autor, time: tempo });
     }
 
     case 'new_friendship':
-      return `${autor} e ${alvoLink(primeiro)} são amigos agora. ${tempo}`;
+      return t('act.friendship', { author: autor, target: alvoLink(primeiro), time: tempo });
 
     case 'profile_update':
-      return `${autor} atualizou o perfil. ${tempo}`;
+      return t('act.profileUpdate', { author: autor, time: tempo });
 
     case 'status_change': {
       const novoStatus = spanDestaque(
         statusLabel[primeiro.novoStatus] || primeiro.novoStatus
       );
-      return `${autor} mudou o status de relacionamento para ${novoStatus}. ${tempo}`;
+      return t('act.statusChange', { author: autor, status: novoStatus, time: tempo });
     }
 
     case 'new_location':
-      return `${autor} agora está morando em ${spanDestaque(primeiro.location)}. ${tempo}`;
+      return t('act.location', { author: autor, location: spanDestaque(primeiro.location), time: tempo });
 
     case 'add_profile_music':
-      return `${autor} adicionou uma musica ao perfil. ${tempo}`;
+      return t('act.addMusic', { author: autor, time: tempo });
 
     case 'update_profile_music':
-      return `${autor} atualizou a musica de perfil. ${tempo}`;
+      return t('act.updateMusic', { author: autor, time: tempo });
 
     case 'update_bio':
-      return `${autor} atualizou a propria bio. ${tempo}`;
+      return t('act.updateBio', { author: autor, time: tempo });
 
     case 'new_event':
-      return n === 1
-        ? `${autor} iniciou um evento: ${escapeHtml(primeiro.eventTitle || '')}. ${tempo}`
-        : `${autor} iniciou ${n} eventos. ${tempo}`;
+      return t('act.newEvent', { count: n, author: autor, title: escapeHtml(primeiro.eventTitle || ''), time: tempo });
 
     case 'new_user':
       return n === 1
-        ? `${autor} entrou no Realme. ${tempo}`
-        : `${listarNomes(autoresLinks)} entraram no Realme. ${tempo}`;
+        ? t('act.newUser', { author: autor, time: tempo })
+        : t('act.newUsers', { names: listarNomes(autoresLinks), time: tempo });
 
     default:
-      return `${autor} fez uma nova atividade no Realme. ${tempo}`;
+      return t('act.default', { author: autor, time: tempo });
   }
 }
 
@@ -344,22 +331,21 @@ function getBucket(ms) {
   const diaSemana = data.getDay();
   const nomes = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
-  if (diffMin < 5)  return { key: 'agora',           label: 'Agora' };
+  if (diffMin < 5)  return { key: 'agora',           label: t('act.bucket.now') };
   if (diffH   < 24 && data >= hoje)
-                    return { key: 'hoje',             label: 'Hoje' };
+                    return { key: 'hoje',             label: t('act.bucket.today') };
   if (data >= ontem)
-                    return { key: 'ontem',            label: 'Ontem' };
+                    return { key: 'ontem',            label: t('act.bucket.yesterday') };
   if (diffD   < 7)  return { key: nomes[diaSemana],  label: label7dias(diaSemana) };
-  if (diffD   < 14) return { key: 'semana_passada',  label: 'Semana passada' };
-  if (diffD   < 21) return { key: '2_semanas',        label: '2 semanas atrás' };
-  if (diffD   < 30) return { key: '3_semanas',        label: '3 semanas atrás' };
-  if (diffD   < 60) return { key: 'um_mes',           label: 'Um mês atrás' };
-  return              { key: 'muito_tempo',           label: 'Há muito tempo' };
+  if (diffD   < 14) return { key: 'semana_passada',  label: t('act.bucket.lastWeek') };
+  if (diffD   < 21) return { key: '2_semanas',        label: t('act.bucket.twoWeeks') };
+  if (diffD   < 30) return { key: '3_semanas',        label: t('act.bucket.threeWeeks') };
+  if (diffD   < 60) return { key: 'um_mes',           label: t('act.bucket.oneMonth') };
+  return              { key: 'muito_tempo',           label: t('act.bucket.longAgo') };
 }
 
 function label7dias(diaSemana) {
-  const labels = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-  return labels[diaSemana];
+  return t(`time.weekdayCap.${diaSemana}`);
 }
 
 function isBig(tipo) {
@@ -761,8 +747,8 @@ async function fetchEMontarHtml(uid) {
   return `
     <div class="xact-list">${montarLayout(gruposOrdenados, uid)}</div>
     <div class="end-feed">
-    <h3>As atividades acabaram...</h3>
-    <p>ja viu tudo? porque não puxar assunto com alguém agora?</p>
+    <h3>${t('act.endTitle')}</h3>
+    <p>${t('act.endText')}</p>
     </div>`;
 }
 
@@ -773,7 +759,7 @@ async function carregarAtividades() {
 
   const user = await esperarAuth();
   if (!user) {
-    container.innerHTML = `<p class="xact-empty">Você precisa estar logado para ver as atividades.</p>`;
+    container.innerHTML = `<p class="xact-empty">${t('act.signIn')}</p>`;
     return;
   }
 
@@ -804,7 +790,7 @@ async function carregarAtividades() {
     const html = await fetchEMontarHtml(uid);
 
     if (!html) {
-      container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`;
+      container.innerHTML = `<p class="xact-empty">${t('act.empty')}</p>`;
       return;
     }
 
@@ -814,7 +800,7 @@ async function carregarAtividades() {
 
   } catch (err) {
     console.error('[activities-render] Erro:', err);
-    container.innerHTML = `<p class="xact-empty">Não foi possível carregar as atividades.</p>`;
+    container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
   }
 }
 
@@ -828,7 +814,7 @@ window.recarregarAtividades = async function () {
 
   try {
     const html = await fetchEMontarHtml(user.uid);
-    if (!html) { container.innerHTML = `<p class="xact-empty">Nenhuma atividade recente ainda.</p>`; return; }
+    if (!html) { container.innerHTML = `<p class="xact-empty">${t('act.empty')}</p>`; return; }
     salvarCacheAtividades(user.uid, html);
     container.innerHTML = html;
     ativarSwipeDelete(container, user.uid);
@@ -872,14 +858,14 @@ function iniciarFiltros() {
 
   new MutationObserver(() => {
     const ativo = document.querySelector('.act-filter.active');
-    if (ativo) aplicarFiltro(ativo.textContent.trim());
+    if (ativo) aplicarFiltro(ativo.dataset.filter || ativo.textContent.trim());
   }).observe(section, { childList: true });
 
   document.querySelectorAll('.act-filter').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.act-filter').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      aplicarFiltro(btn.textContent.trim());
+      aplicarFiltro(btn.dataset.filter || btn.textContent.trim());
     });
   });
 }

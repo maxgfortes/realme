@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth, IS_LOCAL } from "../../../config/config.js";
 
@@ -166,25 +167,19 @@ function validateOpenTab() {
         email === "" ||
         password === ""
     ) {
-        showError(
-            "Please fill in all fields"
-        );
+        showError(t("auth.fillAll"));
 
         return;
     }
 
     if (!validateEmail()) {
-        showError(
-            "Enter a valid email address"
-        );
+        showError(t("auth.validEmail"));
 
         return;
     }
 
     if (!validatePassword()) {
-        showError(
-            "Password must be 8 characters long, with one uppercase letter, one lowercase letter, and one number"
-        );
+        showError(t("auth.passwordRules"));
 
         return;
     }
@@ -234,57 +229,43 @@ async function createAccount(event) {
         birthDate === "" ||
         gender === ""
     ) {
-        showError(
-            "Please fill in all fields"
-        );
+        showError(t("auth.fillAll"));
 
         return;
     }
 
     if (!validateEmail()) {
-        showError(
-            "Enter a valid email address"
-        );
+        showError(t("auth.validEmail"));
 
         return;
     }
 
     if (!validatePassword()) {
-        showError(
-            "Password must be 8 characters long, with one uppercase letter, one lowercase letter, and one number"
-        );
+        showError(t("auth.passwordRules"));
 
         return;
     }
 
     if (!validateName(name)) {
-        showError(
-            "Enter a valid first name"
-        );
+        showError(t("auth.firstName"));
 
         return;
     }
 
     if (!validateName(surname)) {
-        showError(
-            "Enter a valid last name"
-        );
+        showError(t("auth.lastName"));
 
         return;
     }
 
     if (!validateUsername(username)) {
-        showError(
-            "Username must contain only lowercase letters, numbers and underscores"
-        );
+        showError(t("auth.usernameRules"));
 
         return;
     }
 
     if (!validateBirthDate(birthDate)) {
-        showError(
-            "You must be at least 13 years old"
-        );
+        showError(t("auth.minAge"));
 
         return;
     }
@@ -325,89 +306,67 @@ async function createAccount(event) {
 
                 case "USERNAME_TAKEN":
 
-                    showError(
-                        "This username is already in use"
-                    );
+                    showError(t("auth.usernameTaken"));
 
                     break;
 
                 case "EMAIL_ALREADY_IN_USE":
 
-                    showError(
-                        "This email is already registered"
-                    );
+                    showError(t("auth.emailTaken"));
 
                     break;
 
                 case "INVALID_EMAIL":
 
-                    showError(
-                        "Enter a valid email address"
-                    );
+                    showError(t("auth.validEmail"));
 
                     break;
 
                 case "INVALID_BIRTH_DATE":
 
-                    showError(
-                        "Enter a valid birth date"
-                    );
+                    showError(t("auth.birthDate"));
 
                     break;
 
                 case "INVALID_USERNAME":
 
-                    showError(
-                        "Invalid username"
-                    );
+                    showError(t("auth.invalidUsername"));
 
                     break;
 
                 case "INVALID_NAME":
 
-                    showError(
-                        "Enter a valid first name"
-                    );
+                    showError(t("auth.firstName"));
 
                     break;
 
                 case "INVALID_SURNAME":
 
-                    showError(
-                        "Enter a valid last name"
-                    );
+                    showError(t("auth.lastName"));
 
                     break;
 
                 case "WEAK_PASSWORD":
 
-                    showError(
-                        "Password must be 8 characters long, with one uppercase letter, one lowercase letter, and one number"
-                    );
+                    showError(t("auth.passwordRules"));
 
                     break;
 
                 case "UNDERAGE":
 
-                    showError(
-                        "You must be at least 13 years old"
-                    );
+                    showError(t("auth.minAge"));
 
                     break;
 
                 case "RATE_LIMITED":
 
-                    showError(
-                        "Too many attempts. Please try again later"
-                    );
+                    showError(t("auth.tooMany"));
 
                     break;
 
                 default:
 
-                    showError(
-                        "Unable to create account"
-                    );
+                    showError(t("auth.createFailed"));
 
                     break;
             }
@@ -430,9 +389,7 @@ async function createAccount(event) {
             error
         );
 
-        showError(
-            "Unable to create account"
-        );
+        showError(t("auth.createFailed"));
 
     } finally {
 

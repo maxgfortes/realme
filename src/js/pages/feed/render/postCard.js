@@ -1,3 +1,5 @@
+import { timeAgo } from "/src/i18n/time.js";
+import { t, getLocale } from "/src/i18n/i18n.js";
 import { db } from "../../../../config/config.js";
 
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -114,7 +116,7 @@ async function getCreator(creatorid) {
         }
 
         return {
-            name: alias || "Usuário",
+            name: alias || t("common.user"),
             photo
         };
     } catch (error) {
@@ -128,14 +130,14 @@ export function getUserName(uid) {
             uid,
             getDoc(doc(db, "users", uid))
                 .then(snap => {
-                    if (!snap.exists()) return "Usuário";
+                    if (!snap.exists()) return t("common.user");
 
                     const data = snap.data();
                     const fullName = `${data.name || ""} ${data.surname || ""}`.trim();
 
-                    return fullName || "Usuário";
+                    return fullName || t("common.user");
                 })
-                .catch(() => "Usuário")
+                .catch(() => t("common.user"))
         );
     }
 
@@ -145,7 +147,7 @@ export function getUserName(uid) {
 export function joinNames(parts) {
     if (parts.length <= 1) return parts[0] || "";
 
-    return `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}`;
+    return new Intl.ListFormat(getLocale(), { type: "conjunction" }).format(parts);
 }
 
 function getMentionUids(data, creatorid) {
@@ -166,7 +168,7 @@ async function buildWallHTML(data) {
 
     const name = await getUserName(wallTo);
 
-    return ` escreveu no mural de ${mentionLink(wallTo, name)}`;
+    return t("post.wroteOnWall", { name: mentionLink(wallTo, name) });
 }
 
 async function buildMentionsHTML(mentionUids) {
@@ -179,11 +181,11 @@ async function buildMentionsHTML(mentionUids) {
     const others = mentionUids.length - shownUids.length;
 
     if (others > 0) {
-        const othersText = others === 1 ? "outra pessoa" : `outras ${others} pessoas`;
+        const othersText = t("common.otherPeople", { count: others });
         parts.push(`<span class="post-mentions-others">${othersText}</span>`);
     }
 
-    return ` estava com ${joinNames(parts)}`;
+    return t("post.with", { names: joinNames(parts) });
 }
 
 export function normalizeImgs(post) {
@@ -325,7 +327,7 @@ function initVideos(postElement) {
 
 function soundToggleHTML() {
     return `
-        <button class="post-music-toggle post-sound-toggle" type="button" aria-label="Ativar som">
+        <button class="post-music-toggle post-sound-toggle" type="button" aria-label="${t("music.soundOn")}">
             <span class="post-music-icon play">${SOUND_OFF_SVG}</span>
             <span class="post-music-icon pause">${SOUND_ON_SVG}</span>
         </button>
@@ -346,7 +348,7 @@ function initVideoSound(postElement) {
     function setPlaying(value) {
         playing = value;
         button.classList.toggle("playing", value);
-        button.setAttribute("aria-label", value ? "Desativar som" : "Ativar som");
+        button.setAttribute("aria-label", value ? t("music.soundOff") : t("music.soundOn"));
     }
 
     function activeVideo() {
@@ -590,7 +592,7 @@ function buildPostMeta({ dateText, location, headerMusicId }) {
         ? `
             <div class="post-music-area">
                 <div class="post-music-area-icon">${MUSIC_SVG}</div>
-                <div class="post-music-area-name">Música</div>
+                <div class="post-music-area-name">${t("music.label")}</div>
             </div>
         `
         : "";
@@ -651,13 +653,13 @@ function musicCardHTML(videoId) {
                         </div>
 
                         <div class="music-info">
-                            <div class="music-name">Carregando…</div>
+                            <div class="music-name">${t("common.loading")}</div>
                         </div>
 
                         <div class="music-controls-top">
-                            <button class="music-control" data-music-action="reload" type="button" aria-label="Recomeçar">${RELOAD_SVG}</button>
-                            <button class="music-control" data-music-action="play" type="button" aria-label="Tocar">${PLAY_SVG}</button>
-                            <button class="music-control hidden" data-music-action="pause" type="button" aria-label="Pausar">${PAUSE_SVG}</button>
+                            <button class="music-control" data-music-action="reload" type="button" aria-label="${t("music.restart")}">${RELOAD_SVG}</button>
+                            <button class="music-control" data-music-action="play" type="button" aria-label="${t("music.playShort")}">${PLAY_SVG}</button>
+                            <button class="music-control hidden" data-music-action="pause" type="button" aria-label="${t("music.pauseShort")}">${PAUSE_SVG}</button>
                         </div>
                     </div>
 
@@ -818,20 +820,20 @@ function initMusicCard(card) {
                         onStateChange,
                         onError: event => {
                             const reasons = {
-                                2: "link inválido",
-                                5: "erro no player do YouTube",
-                                100: "vídeo removido ou privado",
-                                101: "o dono não permite tocar fora do YouTube",
-                                150: "o dono não permite tocar fora do YouTube"
+                                2: t("music.error.invalid"),
+                                5: t("music.error.player"),
+                                100: t("music.error.removed"),
+                                101: t("music.error.blocked"),
+                                150: t("music.error.blocked")
                             };
 
-                            const reason = reasons[event.data] || "erro desconhecido";
+                            const reason = reasons[event.data] || t("music.error.unknown");
 
                             console.warn(`Música indisponível (${videoId}): erro ${event.data} - ${reason}`);
 
                             setPlaying(false);
                             card.classList.add("music-unavailable");
-                            nameElement.textContent = "Música indisponível";
+                            nameElement.textContent = t("music.unavailable");
                             nameElement.title = reason;
                             reject(new Error("Falha ao carregar o vídeo"));
                         }
@@ -954,7 +956,7 @@ function initMusicCard(card) {
 
     fetchMusicInfo(videoId).then(info => {
         if (info) setName(info.title, info.author);
-        else if (!infoLoaded) nameElement.textContent = "Música";
+        else if (!infoLoaded) nameElement.textContent = t("music.label");
     });
 }
 
@@ -964,7 +966,7 @@ function initMusicCards(root) {
 
 function musicToggleHTML(videoId) {
     return `
-        <button class="post-music-toggle" type="button" data-music-id="${videoId}" aria-label="Tocar música">
+        <button class="post-music-toggle" type="button" data-music-id="${videoId}" aria-label="${t("music.play")}">
             <span class="post-music-icon play">${PLAY_SVG}</span>
             <span class="post-music-icon pause">${PAUSE_SVG}</span>
         </button>
@@ -993,7 +995,7 @@ function initMusicToggle(postElement) {
     function setPlaying(value) {
         playing = value;
         button.classList.toggle("playing", value);
-        button.setAttribute("aria-label", value ? "Pausar música" : "Tocar música");
+        button.setAttribute("aria-label", value ? t("music.pause") : t("music.play"));
     }
 
     function destroy() {
@@ -1185,7 +1187,7 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                         <button class="post-action-btn like-btn" type="button">
                             <svg
                                 class="heart-outline"
-                                aria-label="Curtir"
+                                aria-label="${t("post.like")}"
                                 fill="currentColor"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -1196,7 +1198,7 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                             </svg>
 
                             <svg
-                                aria-label="Descurtir"
+                                aria-label="${t("post.unlike")}"
                                 class="heart-fill"
                                 fill="currentColor"
                                 height="24"
@@ -1292,44 +1294,7 @@ export function appendPost(container, { postId, data, creator, mentionsHTML = ""
 }
 
 export function formatPostDate(date) {
-    const now = new Date();
-    const difference = Math.floor((now - date) / 1000);
-
-    if (difference < 60) return "Agora mesmo";
-
-    const minutes = Math.floor(difference / 60);
-
-    if (minutes < 60) {
-        return `Há ${minutes} ${minutes === 1 ? "minuto" : "minutos"}`;
-    }
-
-    const hours = Math.floor(minutes / 60);
-
-    if (hours < 24) {
-        return `Há ${hours} ${hours === 1 ? "hora" : "horas"}`;
-    }
-
-    const days = Math.floor(hours / 24);
-
-    if (days < 7) {
-        return `Há ${days} ${days === 1 ? "dia" : "dias"}`;
-    }
-
-    const weeks = Math.floor(days / 7);
-
-    if (weeks < 4) {
-        return `Há ${weeks} ${weeks === 1 ? "semana" : "semanas"}`;
-    }
-
-    const months = Math.floor(days / 30);
-
-    if (months < 12) {
-        return `Há ${months} ${months === 1 ? "mês" : "meses"}`;
-    }
-
-    const years = Math.floor(days / 365);
-
-    return `Há ${years} ${years === 1 ? "ano" : "anos"}`;
+    return timeAgo(date, { capital: true });
 }
 
 export function escapeHTML(value) {

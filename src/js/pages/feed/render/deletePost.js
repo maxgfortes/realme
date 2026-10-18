@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../../../config/config.js";
 import { postSegments } from "./postPath.js";
 
@@ -25,7 +26,7 @@ function createAlert() {
                     <div class="alert-text"></div>
                 </div>
                 <div class="alert-actions">
-                    <button class="alert-btn" id="cancelAlertBtn">Cancelar</button>
+                    <button class="alert-btn" id="cancelAlertBtn">${t("common.cancel")}</button>
                     <button class="alert-btn critic-btn" id="confirmAlertBtn"></button>
                 </div>
             </div>
@@ -48,13 +49,13 @@ function showAlert(type, postId) {
     actionType = type;
 
     if (type === "delete") {
-        title.textContent = "Apagar Post";
-        text.textContent = "Deseja mesmo apagar esse post?";
-        confirmBtn.textContent = "Apagar";
+        title.textContent = t("post.deleteTitle");
+        text.textContent = t("post.deleteText");
+        confirmBtn.textContent = t("common.delete");
     } else {
-        title.textContent = "Denunciar Post";
-        text.textContent = "Deseja mesmo denunciar esse post?";
-        confirmBtn.textContent = "Denunciar";
+        title.textContent = t("post.reportTitle");
+        text.textContent = t("post.reportText");
+        confirmBtn.textContent = t("post.report");
     }
 
     overlay.classList.add("active");
@@ -99,7 +100,7 @@ function setupAlert() {
 
         } finally {
             confirmBtn.disabled = false;
-            confirmBtn.textContent = "Apagar";
+            confirmBtn.textContent = t("common.delete");
         }
     });
 }

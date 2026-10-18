@@ -1,4 +1,5 @@
 @import url("../themes/skeuomorphism.css");
+@import url("./language.css");
 
 @font-face {
   font-family: 'RealMeFont';

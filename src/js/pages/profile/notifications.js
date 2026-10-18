@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth } from "./firebase.js";
 import { $ } from "./dom.js";
 import { enablePush, pushSupported, saveToken } from "/src/shared/push.js";
@@ -19,19 +20,19 @@ async function renderNotificationState() {
   if (!supported) {
     button.classList.add("disable");
     label.textContent = isIosBrowser()
-      ? "Adicione à tela de início para ativar"
-      : "Notificações indisponíveis";
+      ? t("push.addToHome")
+      : t("push.unavailable");
     return;
   }
 
   if (Notification.permission === "denied") {
     button.classList.add("disable");
-    label.textContent = "Notificações bloqueadas";
+    label.textContent = t("push.blocked");
     return;
   }
 
   button.classList.remove("disable");
-  label.textContent = Notification.permission === "granted" ? "Notificações ativadas" : "Ativar Notificações";
+  label.textContent = Notification.permission === "granted" ? t("push.enabled") : t("push.enable");
 }
 
 async function enableNotifications(event) {

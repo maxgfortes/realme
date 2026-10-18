@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 function createPcAlert() {
   if (!document.getElementById("pc-alert-style")) {
     const style = document.createElement("style");
@@ -40,8 +41,8 @@ function createPcAlert() {
     <div class="logo-area">
       <div class="pc-alert-logo">RealMe</div>
     </div>
-    <div class="pc-alert-title">Indisponivel em Desktops</div>
-    <div class="pc-alert-subtitle">Por enquanto o realme só esta disponivel em celulares.</div>
+    <div class="pc-alert-title">${t("desktop.title")}</div>
+    <div class="pc-alert-subtitle">${t("desktop.subtitle")}</div>
   `;
   return el;
 }

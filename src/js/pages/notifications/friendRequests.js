@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../config/config.js";
 
 import {
@@ -57,7 +58,7 @@ function createRequestItem(request, meUid) {
             </div>
         </div>
         <div class="request-item-right">
-            <button class="accept-request-btn" type="button">Aceitar</button>
+            <button class="accept-request-btn" type="button">${t("common.accept")}</button>
             <button class="decline-request-btn" type="button">Excluir</button>
         </div>
     `;
@@ -90,19 +91,15 @@ async function renderFriendRequests(result, meUid) {
         requestsDot.classList.remove("active");
     }
 
-    if (count === 0) {
-        requestsSub.textContent = "Nenhum pedido pendente";
-    } else if (count === 1) {
-        requestsSub.textContent = "1 pedido de amizade";
-    } else {
-        requestsSub.textContent = count + " pedidos de amizade";
-    }
+    requestsSub.textContent = count === 0
+        ? t("notif.noPendingRequests")
+        : t("notif.requestsCount", { count });
 
     requestsList.innerHTML = "";
 
     if (result.empty) {
         requestsList.innerHTML =
-            `<div class="fr-empty"><p>Nenhum pedido pendente</p></div>`;
+            `<div class="fr-empty"><p>${t("notif.noPendingRequests")}</p></div>`;
         return;
     }
 
@@ -162,5 +159,5 @@ export function unsubscribeFriendRequestsListener() {
 
     requestsList.innerHTML = "";
     requestsDot.classList.remove("active");
-    requestsSub.textContent = "Nenhum pedido pendente";
+    requestsSub.textContent = t("notif.noPendingRequests");
 }

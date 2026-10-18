@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { deleteMessage } from "./deleteMessage.js";
 import { toggleHeartReaction } from "./reactMessage.js";
 import { setReplyingTo } from "./replyState.js";
@@ -77,7 +78,7 @@ export function attachMessageGestures(bubbleEl, message, options) {
             deltaX > SWIPE_THRESHOLD_PX &&
             Math.abs(deltaY) < SWIPE_MAX_VERTICAL_PX
         ) {
-            setReplyingTo(message, isMine ? "Você" : otherUserName);
+            setReplyingTo(message, isMine ? t("common.you") : otherUserName);
             return;
         }
 

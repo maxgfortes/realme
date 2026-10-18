@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { onSnapshot } from "./firestore.js";
 import { $ } from "./dom.js";
 import { state, unsubscribers } from "./state.js";
@@ -5,10 +6,10 @@ import { requestRef, readStatus, toggleFriendship } from "./friendRequests.js";
 import { confirmAlert } from "./confirmAlert.js";
 
 const LABELS = {
-  none: "Adicionar",
-  pending_sent: "Pedido enviado",
-  pending_received: "Aceitar amizade",
-  friends: "Amigos",
+  none: t("common.add"),
+  pending_sent: t("friendship.pendingSent"),
+  pending_received: t("friendship.acceptRequest"),
+  friends: t("common.friends"),
 };
 
 const PRIMARY_STATUSES = ["none", "pending_received"];
@@ -24,9 +25,9 @@ function renderFriendButton() {
 export async function handleFriendButton() {
   if (currentStatus === "friends") {
     const confirmed = await confirmAlert({
-      title: "Desfazer amizade",
-      text: "Deseja mesmo deixar de ser amigo dessa pessoa?",
-      confirmLabel: "Desfazer",
+      title: t("friendship.undoTitle"),
+      text: t("friendship.undoText"),
+      confirmLabel: t("friendship.undo"),
     });
 
     if (!confirmed) return;

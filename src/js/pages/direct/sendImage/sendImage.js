@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { collection, addDoc, serverTimestamp, updateDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -134,7 +135,7 @@ async function saveMessage(imageUrl) {
     await updateDoc(
         doc(db, "chats", chatId),
         {
-            lastMessage: "Enviou uma foto.",
+            lastMessage: t("dm.sentPhoto"),
             lastMessageTime: serverTimestamp()
         }
     );

@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { setupBottomMenu, escapeHTML } from "./bottomMenu.js";
 
 const YOUTUBE_API_KEY = "AIzaSyANnbp95mLLqwl4FThjC__R5gQWqJ7_V7g";
@@ -226,7 +227,7 @@ function renderResults() {
                 <div class="song-title">${escapeHTML(song.title)}</div>
                 <div class="song-author">${escapeHTML(song.author)}</div>
             </div>
-            <button class="song-preview" type="button" aria-label="Ouvir prévia">${PLAY_ICON}</button>
+            <button class="song-preview" type="button" aria-label="${t("musicPicker.preview")}">${PLAY_ICON}</button>
         </div>
     `).join("");
 
@@ -242,7 +243,7 @@ async function runSearch() {
         results = [];
 
         if (draft) renderResults();
-        else renderMessage("Pesquise uma música pelo nome ou artista.");
+        else renderMessage(t("musicPicker.hint"));
 
         return;
     }
@@ -260,17 +261,17 @@ async function runSearch() {
 
         if (error.message === "NO_KEY") {
         } else if (error.message === "HTTP_403") {
-            renderMessage("Limite de buscas do YouTube atingido. Cole o link da música ou tente mais tarde.");
+            renderMessage(t("musicPicker.quota"));
         } else {
             console.error("Erro ao buscar músicas:", error);
-            renderMessage("Não foi possível buscar músicas agora.");
+            renderMessage(t("musicPicker.error"));
         }
 
         return;
     }
 
     if (!results.length && !draft) {
-        renderMessage("Nenhuma música encontrada.");
+        renderMessage(t("musicPicker.empty"));
         return;
     }
 
@@ -296,7 +297,7 @@ if (button && searchInput && list) {
             searchInput.value = "";
 
             if (draft) renderResults();
-            else renderMessage("Pesquise uma música pelo nome ou artista.");
+            else renderMessage(t("musicPicker.hint"));
         },
         onConfirm() {
             confirmed = draft;

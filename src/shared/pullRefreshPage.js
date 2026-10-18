@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { refreshFeed } from "../js/pages/feed/render/postsRender.js";
 
 (function iniciarPullToRefresh() {
@@ -20,7 +21,7 @@ import { refreshFeed } from "../js/pages/feed/render/postsRender.js";
   hook.innerHTML =
     '<div class="ptr-conteudo">' +
       ICONE_SETA +
-      '<img class="ptr-gif" src="' + GIF_LOADING + '" alt="Carregando">' +
+      '<img class="ptr-gif" src="' + GIF_LOADING + '" alt="' + t("common.loadingAlt") + '">' +
       '<span class="ptr-texto">Puxe para atualizar</span>' +
     '</div>';
   document.body.appendChild(hook);

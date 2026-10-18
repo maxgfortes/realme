@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth, db } from "../../config/config.js";
 
 import {
@@ -46,7 +47,7 @@ function markShown(id) {
 
 async function getUser(uid) {
     if (!uid) {
-        return { name: "Usuário", pfp: DEFAULT_PFP };
+        return { name: t("common.user"), pfp: DEFAULT_PFP };
     }
 
     if (userCache[uid]) return userCache[uid];
@@ -69,7 +70,7 @@ async function getUser(uid) {
     const fullName = `${data.name || ""} ${data.surname || ""}`.trim();
 
     userCache[uid] = {
-        name: fullName || "Usuário",
+        name: fullName || t("common.user"),
         pfp: media.userphoto || DEFAULT_PFP
     };
 

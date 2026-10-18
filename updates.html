@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="./public/img/icon.png" type="image/png">
@@ -24,6 +25,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <style>
 
@@ -270,7 +272,7 @@ body {
 }
 
 </style>
-<body>
+<body data-language-slot>
     <nav class="nav-pc">
         <div class="logo">RealMe</div>
     </nav>
@@ -283,7 +285,7 @@ body {
                 </button>
             </div>
             <div class="header-block">
-                <div class="header-title">Historico de atualizações</div>
+                <div class="header-title" data-i18n="common.historico_de_atualizacoes">Historico de atualizações</div>
             </div>
             <div class="header-block"></div>
         </div>
@@ -297,15 +299,15 @@ body {
     <footer class="footer-area">
         <div class="footer-block">
             <div class="links">
-                <a href="https://www.socialrealme.com">Home</a>
-                <a href="https://www.socialrealme.com/login">Login</a>
-                <a href="https://www.socialrealme.com/register">Register</a>
-                <a href="https://www.socialrealme.com/profile">Profile</a>
+                <a href="https://www.socialrealme.com" data-i18n="common.home">Home</a>
+                <a href="https://www.socialrealme.com/login" data-i18n="common.login">Login</a>
+                <a href="https://www.socialrealme.com/register" data-i18n="common.register">Register</a>
+                <a href="https://www.socialrealme.com/profile" data-i18n="common.profile">Profile</a>
             </div>
         </div>
         <div class="footer-block">
             <div class="copy">
-                <p>&copy; 2026 RealMe. All rights reserved.</p>
+                <p data-i18n="common.2026_realme_all_rights_reserved">&copy; 2026 RealMe. All rights reserved.</p>
             </div>
         </div>
         <div class="footer-block">

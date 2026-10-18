@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../../../config/config.js";
 
 import {
@@ -108,7 +109,7 @@ async function renderEventGoing(graph, goingDocs, isCurrent) {
     const total = goingDocs.length;
 
     if (total === 0) {
-        graph.textContent = "Ninguém ainda vai";
+        graph.textContent = t("events.nobodyGoing");
         return;
     }
 
@@ -124,11 +125,11 @@ async function renderEventGoing(graph, goingDocs, isCurrent) {
     const others = total - names.length;
 
     if (others > 0) {
-        const othersText = others === 1 ? "outra pessoa" : `outras ${others} pessoas`;
+        const othersText = t("common.otherPeople", { count: others });
         parts.push(`<span>${othersText}</span>`);
     }
 
-    graph.innerHTML = `${joinNames(parts)} ${total === 1 ? "vai" : "vão"}`;
+    graph.innerHTML = `${joinNames(parts)} ${t("events.goingVerb", { count: total })}`;
 }
 
 function loadEventGoing(eventId) {
@@ -409,7 +410,7 @@ function reviveFeedItem(item) {
         creatorid: (item.type === "event" ? data.creatorId : data.creatorid) || item.creator?.uid || "",
         time: item.createdAt || 0,
         creator: {
-            name: item.creator?.name || "Usuário",
+            name: item.creator?.name || t("common.user"),
             photo: item.creator?.photo || DEFAULT_CREATOR_PHOTO
         }
     };
@@ -593,7 +594,7 @@ function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
                             class="post-author-name post-profile-link"
                             href="${profileUrl}"
                             data-profile-uid="${safeCreatorId}"
-                        >${escapeHTML(creator.name)}</a> criou um evento
+                        >${escapeHTML(creator.name)}</a>${t("events.createdEvent")}
                     </div>
 
                     <div class="post-date-new">${dateText}</div>
@@ -617,7 +618,7 @@ function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
                             ${EVENT_ICON_SVG}
                         </div>
                         <div class="event-card-info">
-                            <div class="event-card-label">Evento</div>
+                            <div class="event-card-label">${t("events.label")}</div>
                             <div class="event-card-title">${escapeHTML(title)}</div>
                         </div>
                     </div>

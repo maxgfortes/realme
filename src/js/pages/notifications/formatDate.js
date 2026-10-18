@@ -1,27 +1,11 @@
+import { formatDate as formatIntlDate } from "/src/i18n/i18n.js";
+import { timeAgo } from "/src/i18n/time.js";
 export function formatDate(date) {
     if (!date) { return ""; }
 
-    const now = new Date();
-    const difference = now - date;
-    const minutes = Math.floor(difference / 60000);
-    const hours = Math.floor(difference / 3600000);
-    const days = Math.floor(difference / 86400000);
+    const days = Math.floor((Date.now() - date.getTime()) / 86400000);
 
-    if (minutes < 1) {
-        return "agora";
-    }
-    if (minutes < 60) {
-        return "há " + minutes + " minutos";
-    }
-    if (hours < 24) {
-        return "há " + hours + " horas";
-    }
-    if (days < 7) {
-        return "há " + days + " dias";
-    }
+    if (days < 7) return timeAgo(date, { nowKey: "time.now" });
 
-    return date.toLocaleDateString("pt-BR", {
-        day: "numeric",
-        month: "short"
-    }).replace(".", "");
+    return formatIntlDate(date, { day: "numeric", month: "short" }).replace(".", "");
 }

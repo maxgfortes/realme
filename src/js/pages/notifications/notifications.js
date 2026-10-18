@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../../config/config.js";
 import "/src/config/authGuard.js";
 import "/src/shared/desktopAlert.js";
@@ -66,8 +67,8 @@ function renderEmpty() {
 
     notificationsList.innerHTML = `
         <div class="nt-empty">
-            <p class="nt-empty-title">Sem notificações</p>
-            <p class="nt-empty-sub">Interaja para receber notificações</p>
+            <p class="nt-empty-title">${t("notif.emptyTitle")}</p>
+            <p class="nt-empty-sub">${t("notif.emptySub")}</p>
         </div>
     `;
 }
@@ -147,7 +148,7 @@ function createNotification(
 
         message = `
             <span class="notification-action">
-                comentou na sua publicação:
+                ${t("notif.commentedWith")}
             </span>
 
             <span class="notification-comment">
@@ -179,7 +180,7 @@ function createNotification(
 
                                 <img
                                     src="${post.imgs[0].url}"
-                                    alt="Publicação"
+                                    alt="${t("notif.postAlt")}"
                                     onerror="this.parentElement.style.display='none'"
                                 >
 
@@ -198,7 +199,7 @@ function createNotification(
     if (notification.type === "friend_request") {
         actions = `
             <div class="notification-friend-actions">
-                <button class="friend-request-btn" type="button">Aceitar</button>
+                <button class="friend-request-btn" type="button">${t("common.accept")}</button>
                 <button class="friend-request-btn sec" type="button">×</button>
             </div>
         `;

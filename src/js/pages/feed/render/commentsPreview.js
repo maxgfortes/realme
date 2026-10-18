@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../../config/config.js";
 
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -16,18 +17,18 @@ async function fetchAuthor(uid) {
     const media = mediaSnap.exists() ? mediaSnap.data() : {};
 
     return {
-        name: `${data.name || ""} ${data.surname || ""}`.trim() || "Usuário",
+        name: `${data.name || ""} ${data.surname || ""}`.trim() || t("common.user"),
         photo: media.userphoto || DEFAULT_PHOTO
     };
 }
 
 function getAuthor(uid) {
-    if (!uid) return Promise.resolve({ name: "Usuário", photo: DEFAULT_PHOTO });
+    if (!uid) return Promise.resolve({ name: t("common.user"), photo: DEFAULT_PHOTO });
 
     if (!authorCache.has(uid)) {
         authorCache.set(
             uid,
-            fetchAuthor(uid).catch(() => ({ name: "Usuário", photo: DEFAULT_PHOTO }))
+            fetchAuthor(uid).catch(() => ({ name: t("common.user"), photo: DEFAULT_PHOTO }))
         );
     }
 

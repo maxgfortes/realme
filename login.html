@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>RealMe</title>
   <link rel="icon" href="../public/img/icon.png" type="image/png" />
@@ -32,6 +33,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem realmente importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 
 <body>
@@ -51,10 +53,10 @@
 
         <div class="info-area1">
           <div class="logo-area">
-            <p>Entre no <span>RealMe</span></p>
+            <p data-i18n-html="login.entre_no_realme">Entre no <span>RealMe</span></p>
           </div>
 
-          <div class="page-title">
+          <div class="page-title" data-i18n="login.bem_vindo_de_volta_entre">
             Bem-vindo de volta! Entre para continuar na sua conta do RealMe.
           </div>
         </div>
@@ -63,41 +65,39 @@
           <div class="inputs-area">
 
             <div class="input">
-              <label for="inputEmail">E-mail</label>
+              <label for="inputEmail" data-i18n="common.e_mail">E-mail</label>
               <input
                 type="email"
                 id="inputEmail"
                 name="email"
-                placeholder="Seu e-mail"
-              />
+                placeholder="Seu e-mail" data-i18n-attr="placeholder:login.seu_e_mail"/>
             </div>
 
             <div class="input">
-              <label for="inputPassword">Senha</label>
+              <label for="inputPassword" data-i18n="common.senha">Senha</label>
               <input
                 type="password"
                 id="inputPassword"
                 name="senha"
-                placeholder="Sua senha"
-              />
+                placeholder="Sua senha" data-i18n-attr="placeholder:login.sua_senha"/>
             </div>
 
           </div>
 
           <div class="btn-area">
-            <button id="loginBtn" type="submit">Entrar</button>
+            <button id="loginBtn" type="submit" data-i18n="common.entrar">Entrar</button>
           </div>
         </form>
       </div>
 
-      <div class="more">
+      <div class="more" data-language-slot>
         <div class="forgot-password">
-          <button type="button" id="forgetPassword">
+          <button type="button" id="forgetPassword" data-i18n="login.esqueceu_sua_senha">
             Esqueceu sua senha?
           </button>
         </div>
 
-        <div class="alert1">
+        <div class="alert1" data-i18n-html="login.ainda_nao_tem_uma_conta">
           Ainda não tem uma conta?
           <a href="register.html">Criar conta</a>
         </div>

@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import {
   doc, getDoc, getDocs, onSnapshot, collection, query, where, orderBy, limit,
@@ -46,7 +47,7 @@ async function renderComposer(uid) {
   if (uid !== wallUid) return;
 
   composer.classList.toggle("hidden", !canWrite);
-  if (canWrite) setImage($("pfp-user"), await getUserPhoto(state.currentUserId), "", "Foto de perfil");
+  if (canWrite) setImage($("pfp-user"), await getUserPhoto(state.currentUserId), "", t("common.profilePhoto"));
 }
 
 async function wallDocToItem(wallDoc) {

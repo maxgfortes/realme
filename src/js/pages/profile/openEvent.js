@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "/src/config/config.js";
 
 import {
@@ -95,7 +96,7 @@ function loadUser(uid) {
 
       const name =
         [data.name, data.surname].filter(Boolean).join(" ").trim() ||
-        data.displayName || data.username || "Usuário";
+        data.displayName || data.username || t("common.user");
 
       let photo = data.userphoto || "";
 
@@ -106,7 +107,7 @@ function loadUser(uid) {
 
       return { name, photo: safeUrl(photo) || DEFAULT_PHOTO };
     } catch {
-      return { name: "Usuário", photo: DEFAULT_PHOTO };
+      return { name: t("common.user"), photo: DEFAULT_PHOTO };
     }
   })();
 
@@ -128,8 +129,8 @@ function fillEvent(data) {
 
 function rowHTML(uid, user, me, friends) {
   const badge =
-    uid === me ? '<div class="is-friend-badge">Você</div>' :
-    friends.has(uid) ? '<div class="is-friend-badge">Seu amigo</div>' : "";
+    uid === me ? `<div class="is-friend-badge">${t("events.badgeYou")}</div>` :
+    friends.has(uid) ? `<div class="is-friend-badge">${t("events.badgeFriend")}</div>` : "";
 
   return `
     <a href="profile.html?uid=${encodeURIComponent(uid)}" class="user-event-box">

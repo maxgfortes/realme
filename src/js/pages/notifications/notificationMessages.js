@@ -1,52 +1,53 @@
+import { t } from "/src/i18n/i18n.js";
 export function getNotificationMessage(type) {
 
     if (type === "like") {
-        return "curtiu sua publicação.";
+        return t("notif.like");
     }
 
     if (type === "like_comment") {
-        return "curtiu seu comentário.";
+        return t("notif.likeComment");
     }
 
     if (type === "post_mention") {
-        return "mencionou você em um post.";
+        return t("notif.postMention");
     }
 
     if (type === "comment") {
-        return "comentou na sua publicação.";
+        return t("notif.comment");
     }
 
     if (type === "reply") {
-        return "respondeu seu comentário.";
+        return t("notif.reply");
     }
 
     if (type === "like_milestone") {
-        return "curtiu sua publicação.";
+        return t("notif.like");
     }
 
     if (type === "mention_post") {
-        return "te mencionou em uma publicação.";
+        return t("notif.mentionPost");
     }
 
     if (type === "mention_comment") {
-        return "te mencionou em um comentário.";
+        return t("notif.mentionComment");
     }
 
     if (type === "friend_request") {
-        return "te enviou um pedido de amizade.";
+        return t("notif.friendRequest");
     }
 
     if (type === "friend_accepted") {
-        return "aceitou seu pedido de amizade.";
+        return t("notif.friendAccepted");
     }
 
     if (type === "wall_post") {
-        return "escreveu no seu mural.";
+        return t("notif.wallPost");
     }
 
     if (type === "event_going") {
-        return "vai ao seu evento.";
+        return t("notif.eventGoing");
     }
 
-    return "interagiu com você.";
+    return t("notif.default");
 }

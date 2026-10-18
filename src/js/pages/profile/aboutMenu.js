@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import { doc, setDoc } from "./firestore.js";
 import { $ } from "./dom.js";
@@ -67,7 +68,7 @@ async function saveAbout() {
   ]);
 
   closeEditMode();
-  showToast("Informações salvas com sucesso.");
+  showToast(t("profile.savedInfo"));
 }
 
 export function setupAboutPermissions() {

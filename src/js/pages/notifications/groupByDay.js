@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 function getDayLabel(date) {
 
     const now = new Date();
@@ -12,16 +13,14 @@ function getDayLabel(date) {
     const diffDays = Math.floor(diffTime / 86400000);
 
     if (diffDays === 0) {
-        return "Hoje";
+        return t("time.today").replace(/^./, c => c.toUpperCase());
     }
 
     if (diffDays === 1) {
-        return "Ontem";
+        return t("time.yesterday").replace(/^./, c => c.toUpperCase());
     }
 
-    const weekdays = [
-        "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"
-    ];
+    const weekdays = [0, 1, 2, 3, 4, 5, 6].map(day => t(`time.weekdayCap.${day}`));
 
     if (diffDays < 7) {
         return weekdays[date.getDay()];
@@ -30,11 +29,11 @@ function getDayLabel(date) {
     const diffWeeks = Math.floor(diffDays / 7);
 
     if (diffWeeks === 1) {
-        return "Semana passada";
+        return t("time.lastWeek");
     }
 
     if (diffWeeks < 5) {
-        return "Há " + diffWeeks + " semanas";
+        return t("time.weeksAgoCap", { count: diffWeeks });
     }
 
     const diffMonths =
@@ -42,20 +41,20 @@ function getDayLabel(date) {
         (now.getMonth() - date.getMonth());
 
     if (diffMonths === 1) {
-        return "Mês passado";
+        return t("time.lastMonth");
     }
 
     if (diffMonths < 12) {
-        return "Há " + diffMonths + " meses";
+        return t("time.monthsAgoCap", { count: diffMonths });
     }
 
     const diffYears = now.getFullYear() - date.getFullYear();
 
     if (diffYears === 1) {
-        return "Ano passado";
+        return t("time.lastYear");
     }
 
-    return "Há " + diffYears + " anos";
+    return t("time.yearsAgoCap", { count: diffYears });
 }
 
 export function groupByDay(notifications) {

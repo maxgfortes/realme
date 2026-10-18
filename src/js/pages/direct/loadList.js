@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth, db } from "../../../config/config.js";
 
 import {
@@ -515,7 +516,7 @@ export function formatMessageTime(timestamp) {
     );
 
     if (difference < 60) {
-        return "Agora";
+        return t("time.now").replace(/^./, c => c.toUpperCase());
     }
 
     const minutes = Math.floor(

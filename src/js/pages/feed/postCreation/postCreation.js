@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth, db } from "../../../../config/config.js";
 import {
   collection,
@@ -77,7 +78,7 @@ export async function createPost() {
     clearInputs();
   } catch (error) {
     console.error('Erro ao criar post:', error);
-    showMediaNotice(error?.message || 'Não foi possível publicar');
+    showMediaNotice(error?.message || t('post.publishError'));
     hideProgress();
   }
 }

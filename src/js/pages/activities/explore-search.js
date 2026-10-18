@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { collection, query, orderBy, startAt, endAt, getDocs, doc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -97,7 +98,7 @@ async function searchUsers(term) {
     console.error("[explore-search]", error);
 
     searchResults.innerHTML = `
-      <div class="no-results">Erro ao buscar usuários.</div>
+      <div class="no-results">${t("search.usersError")}</div>
     `;
   }
 }
@@ -116,7 +117,7 @@ async function renderResults(users) {
 
   if (!users.length) {
     searchResults.innerHTML = `
-      <div class="no-results">Nenhum usuário encontrado.</div>
+      <div class="no-results">${t("search.noUsers")}</div>
     `;
     return;
   }
@@ -128,7 +129,7 @@ async function renderResults(users) {
     const fullName =
       `${user.name} ${user.surname}`.trim() ||
       user.username ||
-      "Usuário";
+      t("common.user");
 
     li.innerHTML = `
       <img src="${DEFAULT_PHOTO}" alt="${escapeHtml(fullName)}" class="search-user-photo"   onerror="this.onerror=null; this.src='${DEFAULT_PHOTO}';">
@@ -212,7 +213,7 @@ async function renderRecentSearches() {
     const fullName =
       `${user.name} ${user.surname}`.trim() ||
       user.username ||
-      "Usuário";
+      t("common.user");
 
     li.innerHTML = `
       <img src="${escapeHtml(user.photo || DEFAULT_PHOTO)}" alt="${escapeHtml(fullName)}" class="search-user-photo"   onerror="this.onerror=null; this.src='${DEFAULT_PHOTO}';">

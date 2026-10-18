@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import {
   MAX_MEDIA,
   isVideoFile,
@@ -96,7 +97,7 @@ function getImageDimensions(file) {
       URL.revokeObjectURL(objectUrl);
 
       reject(
-        new Error('Não foi possível medir a imagem')
+        new Error(t('upload.measureImage'))
       );
     };
 
@@ -228,7 +229,7 @@ export async function uploadOne(file) {
     if (!data.success) {
       throw new Error(
         data.error?.message ||
-        'Erro ao enviar GIF'
+        t('upload.gifError')
       );
     }
 
@@ -268,7 +269,7 @@ export async function uploadOne(file) {
   if (!data.success) {
     throw new Error(
       data.error?.message ||
-      'Erro ao enviar imagem'
+      t('upload.imageError')
     );
   }
 
@@ -338,7 +339,7 @@ function loadImage(file) {
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error('Não foi possível carregar a imagem'));
+      reject(new Error(t('upload.loadImage')));
     };
 
     img.src = url;
@@ -408,7 +409,7 @@ export async function uploadBanner(file) {
   const data = await response.json();
 
   if (!data.success) {
-    throw new Error(data.error?.message || 'Erro ao enviar banner');
+    throw new Error(data.error?.message || t('upload.bannerError'));
   }
 
   return {

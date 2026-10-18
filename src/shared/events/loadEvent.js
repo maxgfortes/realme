@@ -1,3 +1,4 @@
+import { t, formatDate as formatIntlDate } from "/src/i18n/i18n.js";
 import { db, auth } from "../../config/config.js";
 import "./actionsEvent.js";
 import "./deleteEvent.js";
@@ -97,27 +98,27 @@ export function loadEvent(eventId) {
             const data = snapshot.data();
 
             if (eventLayerTitle) {
-                eventLayerTitle.textContent = data.eventTitle || "Evento sem título";
+                eventLayerTitle.textContent = data.eventTitle || t("events.untitled");
             }
 
             if (eventLayerSub) {
-                eventLayerSub.textContent = data.eventDescription || "Sem descrição";
+                eventLayerSub.textContent = data.eventDescription || t("events.noDescription");
             }
 
             if (eventLayerLocation) {
-                eventLayerLocation.textContent = data.eventLocation || "Local não informado";
+                eventLayerLocation.textContent = data.eventLocation || t("events.noLocation");
             }
 
             if (eventLayerDate) {
                 eventLayerDate.textContent = data.eventDate?.toDate
-                    ? data.eventDate.toDate().toLocaleString("pt-BR", {
+                    ? formatIntlDate(data.eventDate.toDate(), {
                         day: "numeric",
                         month: "long",
                         year: "numeric",
                         hour: "2-digit",
                         minute: "2-digit"
                     })
-                    : "Data não informada";
+                    : t("events.noDate");
             }
 
             if (eventLayerBanner) {
@@ -125,7 +126,7 @@ export function loadEvent(eventId) {
                     data.eventBanner || DEFAULT_BANNER;
 
                 eventLayerBanner.alt =
-                    data.eventTitle || "Banner do evento";
+                    data.eventTitle || t("events.bannerAlt");
             }
         },
         error => console.error(error)
@@ -292,7 +293,7 @@ function getParticipantFromState(uid) {
 
     return {
         uid,
-        name: `${firstName} ${surname}`.trim() || "Usuário",
+        name: `${firstName} ${surname}`.trim() || t("common.user"),
         photo: state.photo || DEFAULT_PFP,
         friend: state.friend
     };
@@ -363,7 +364,7 @@ function createParticipantElement(user) {
 
         const badge = document.createElement("div");
         badge.className = "is-friend-badge";
-        badge.textContent = "Seu amigo";
+        badge.textContent = t("events.badgeFriend");
 
         const arrow = document.createElement("div");
         arrow.className = "user-event-arrow";

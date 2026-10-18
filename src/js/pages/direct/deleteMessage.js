@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../config/config.js";
 
 import {
@@ -50,7 +51,7 @@ export async function deleteMessage(chatId, messageId) {
             const chatRef = doc(db, "chats", chatId);
 
             await updateDoc(chatRef, {
-                lastMessage: "Mensagem apagada"
+                lastMessage: t("dm.deletedMessage")
             });
         }
     } catch (error) {

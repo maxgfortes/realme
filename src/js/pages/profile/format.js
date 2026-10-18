@@ -1,12 +1,13 @@
+import { t } from "/src/i18n/i18n.js";
 const GENDERS = {
-  masculino: "Masculino",
-  feminino: "Feminino",
-  outro: "Outro",
-  prefiro_nao_dizer: "Prefiro não dizer",
-  male: "Masculino",
-  female: "Feminino",
-  other: "Outro",
-  prefer_not_to_say: "Prefiro não dizer",
+  masculino: t("gender.male"),
+  feminino: t("gender.female"),
+  outro: t("gender.other"),
+  prefiro_nao_dizer: t("gender.preferNot"),
+  male: t("gender.male"),
+  female: t("gender.female"),
+  other: t("gender.other"),
+  prefer_not_to_say: t("gender.preferNot"),
 };
 
 export function toDate(value) {
@@ -22,12 +23,12 @@ export function capitalize(text) {
 
 export function getDisplayName(user) {
   const fullName = [user.name, user.surname].filter(Boolean).join(" ");
-  return fullName || user.displayName || user.displayname || user.username || "Usuário";
+  return fullName || user.displayName || user.displayname || user.username || t("common.user");
 }
 
 export function formatBirthday(value) {
   const date = toDate(value);
-  if (!date || isNaN(date)) return "Não informado";
+  if (!date || isNaN(date)) return t("common.notInformed");
   return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 }
 

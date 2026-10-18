@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
@@ -31,15 +32,16 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
 <div class="search-area-mobile">
   <div class="search-box-mobile">
-    <input type="text" id="searchInput" placeholder="Pesquisar..."  spellcheck="false" autocomplete="off"/>
+    <input type="text" id="searchInput" placeholder="Pesquisar..."  spellcheck="false" autocomplete="off" data-i18n-attr="placeholder:common.pesquisar"/>
   </div>
   <div class="cancel-search" id="cancelSearchArea">
-    <button class="cancel-search-btn" id="cancelSearchBtn">Cancelar</button>
+    <button class="cancel-search-btn" id="cancelSearchBtn" data-i18n="common.cancelar">Cancelar</button>
   </div>
 </div>
 
@@ -47,12 +49,12 @@
 
 <div class="active-feed">
   <div class="activities">
-    <div class="header-page">Atividades</div>
+    <div class="header-page" data-i18n="activities.atividades">Atividades</div>
     <div class="act-filters">
-      <div class="act-filter active">Todos</div>
-      <div class="act-filter">Comentarios</div>
-      <div class="act-filter">Novas Amizades</div>
-      <div class="act-filter">Posts</div>
+      <div class="act-filter active" data-filter="Todos" data-i18n="activities.todos">Todos</div>
+      <div class="act-filter" data-filter="Comentarios" data-i18n="activities.comentarios">Comentarios</div>
+      <div class="act-filter" data-filter="Novas Amizades" data-i18n="activities.novas_amizades">Novas Amizades</div>
+      <div class="act-filter" data-filter="Posts" data-i18n="common.posts">Posts</div>
     </div>
     <div id="activities-section"></div>
   </div>
@@ -73,7 +75,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
     </a>
     <a href="profile.html">
-      <img src="./public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic">
+      <img src="./public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic" data-i18n-attr="alt:common.perfil">
     </a>
   </div>
 </div>

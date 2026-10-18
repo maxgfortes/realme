@@ -265,7 +265,7 @@
   height: auto;
   background: var(--primary-btn);
   border: none;
-  border-radius: var(--radius-14);
+  border-radius: var(--radius-10);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,7 +280,7 @@
   height: auto;
   background: var(--color-bg-surface);
   border: none;
-  border-radius: var(--radius-14);
+  border-radius: var(--radius-10);
   display: flex;
   align-items: center;
   justify-content: center;

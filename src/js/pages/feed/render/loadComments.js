@@ -1,3 +1,5 @@
+import { timeAgo } from "/src/i18n/time.js";
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../../config/config.js";
 import { postSegments } from "./postPath.js";
 import {
@@ -42,7 +44,7 @@ export async function loadComments(postId) {
     if (!postSnapshot.exists()) {
         commentsRow.innerHTML = `
             <div class="no-comments">
-                Post não encontrado.
+                ${t("comments.postNotFound")}
             </div>
         `;
 
@@ -83,7 +85,7 @@ export async function loadComments(postId) {
                 if (snapshot.empty) {
                     commentsRow.innerHTML = `
                         <div class="no-comments">
-                            Nenhum comentário ainda.
+                            ${t("comments.empty")}
                         </div>
                     `;
 
@@ -130,7 +132,7 @@ export function stopCommentsListener() {
 async function getUserData(uid) {
     if (!uid) {
         return {
-            name: "Usuário",
+            name: t("common.user"),
             surname: "",
             userphoto:
                 "/public/img/default.jpg"
@@ -154,7 +156,7 @@ async function getUserData(uid) {
 
         if (!userSnapshot.exists()) {
             const defaultUser = {
-                name: "Usuário",
+                name: t("common.user"),
                 surname: "",
                 userphoto:
                     "/public/img/default.jpg"
@@ -193,7 +195,7 @@ async function getUserData(uid) {
         const user = {
             name:
                 data.name ||
-                "Usuário",
+                t("common.user"),
 
             surname:
                 data.surname ||
@@ -218,7 +220,7 @@ async function getUserData(uid) {
         );
 
         return {
-            name: "Usuário",
+            name: t("common.user"),
             surname: "",
             userphoto:
                 "/public/img/default.jpg"
@@ -308,7 +310,7 @@ function renderComment(
                     class="comment-reply"
                     type="button"
                 >
-                    Responder
+                    ${t("comments.reply")}
                 </button>
 
             </div>
@@ -398,78 +400,9 @@ function renderComment(
 }
 
 function formatCommentDate(timestamp) {
-    if (!timestamp) {
-        return "agora mesmo";
-    }
+    if (!timestamp) return t("time.justNow");
 
-    const date =
-        timestamp.toDate();
-
-    const now =
-        new Date();
-
-    const diff =
-        now.getTime() -
-        date.getTime();
-
-    const seconds =
-        Math.floor(
-            diff / 1000
-        );
-
-    const minutes =
-        Math.floor(
-            seconds / 60
-        );
-
-    const hours =
-        Math.floor(
-            minutes / 60
-        );
-
-    const days =
-        Math.floor(
-            hours / 24
-        );
-
-    const weeks =
-        Math.floor(
-            days / 7
-        );
-
-    if (seconds < 60) {
-        return "agora mesmo";
-    }
-
-    if (minutes < 60) {
-        return `há ${minutes} ${
-            minutes === 1
-                ? "minuto"
-                : "minutos"
-        }`;
-    }
-
-    if (hours < 24) {
-        return `há ${hours} ${
-            hours === 1
-                ? "hora"
-                : "horas"
-        }`;
-    }
-
-    if (days < 7) {
-        return `há ${days} ${
-            days === 1
-                ? "dia"
-                : "dias"
-        }`;
-    }
-
-    return `há ${weeks} ${
-        weeks === 1
-            ? "semana"
-            : "semanas"
-    }`;
+    return timeAgo(timestamp);
 }
 
 function escapeHTML(value) {

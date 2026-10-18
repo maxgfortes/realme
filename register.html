@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png" />
@@ -31,6 +32,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça novas pessoas e compartilhe sua vida com quem realmente importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 
 <body>
@@ -53,10 +55,10 @@
 
         <div class="info-area1">
           <div class="logo-area">
-            <p>Crie sua conta no <span>RealMe</span></p>
+            <p data-i18n-html="register.crie_sua_conta_no_realme">Crie sua conta no <span>RealMe</span></p>
           </div>
 
-          <div class="page-title">
+          <div class="page-title" data-i18n="register.crie_sua_conta_no_realme_2">
             Crie sua conta no RealMe e conecte-se com seus amigos por perto
           </div>
         </div>
@@ -64,40 +66,38 @@
         <div class="inputs-area">
 
           <div class="input">
-            <label for="email">E-mail</label>
+            <label for="email" data-i18n="common.e_mail">E-mail</label>
             <input
               type="text"
               id="inputEmail"
               name="email"
               placeholder="email@exemplo.com"
-              required
-            />
+              required data-i18n-attr="placeholder:register.email_exemplo_com"/>
           </div>
 
           <div class="input">
-            <label for="password">Senha</label>
+            <label for="password" data-i18n="common.senha">Senha</label>
             <input
               type="password"
               id="inputPassword"
               name="password"
               placeholder="Crie uma senha"
               required
-              minlength="6"
-            />
+              minlength="6" data-i18n-attr="placeholder:register.crie_uma_senha"/>
           </div>
 
         </div>
 
         <div class="btn-area">
-          <button type="button" id="nextBtn" class="continuar-btn">
+          <button type="button" id="nextBtn" class="continuar-btn" data-i18n="register.continuar">
             Continuar
           </button>
         </div>
 
       </div>
 
-      <div class="more">
-        <div class="alert1">
+      <div class="more" data-language-slot>
+        <div class="alert1" data-i18n-html="register.ja_tem_uma_conta_entrar">
           Já tem uma conta?
           <a href="./login.html">Entrar</a>
         </div>
@@ -111,7 +111,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93">
             <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
           </svg>
-          <span>Voltar</span>
+          <span data-i18n="register.voltar">Voltar</span>
         </button>
       </div>
 
@@ -122,7 +122,7 @@
             <span>RealMe</span>
           </div>
 
-          <div class="page-title">
+          <div class="page-title" data-i18n="register.quase_la_termine_de_configurar">
             Quase lá! Termine de configurar sua conta para começar
           </div>
         </div>
@@ -130,54 +130,51 @@
         <div class="inputs-area">
 
           <div class="input">
-            <label for="name">Nome</label>
+            <label for="name" data-i18n="common.nome">Nome</label>
             <input
               type="text"
               id="nome"
               name="name"
               placeholder="Seu nome"
-              required
-            />
+              required data-i18n-attr="placeholder:register.seu_nome"/>
           </div>
 
           <div class="input">
-            <label for="surname">Sobrenome</label>
+            <label for="surname" data-i18n="common.sobrenome">Sobrenome</label>
             <input
               type="text"
               id="sobrenome"
               name="surname"
               placeholder="Seu sobrenome"
-              required
-            />
+              required data-i18n-attr="placeholder:register.seu_sobrenome"/>
           </div>
 
           <div class="input">
-            <label for="username">Nome de usuário</label>
+            <label for="username" data-i18n="register.nome_de_usuario">Nome de usuário</label>
             <input
               type="text"
               id="usuario"
               name="username"
               placeholder="Escolha um nome de usuário"
-              required
-            />
+              required data-i18n-attr="placeholder:register.escolha_um_nome_de_usuario"/>
           </div>
 
           <div class="input">
-            <label for="gender">Gênero</label>
+            <label for="gender" data-i18n="register.genero">Gênero</label>
 
             <div class="select-wrapper">
               <select id="genero" name="gender" required>
-                <option value="" disabled selected>
+                <option value="" disabled selected data-i18n="register.selecione_seu_genero">
                   Selecione seu gênero
                 </option>
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
+                <option value="masculino" data-i18n="common.masculino">Masculino</option>
+                <option value="feminino" data-i18n="common.feminino">Feminino</option>
               </select>
             </div>
           </div>
 
           <div class="input">
-            <label for="birthdate">Data de nascimento</label>
+            <label for="birthdate" data-i18n="register.data_de_nascimento">Data de nascimento</label>
             <input
               type="date"
               id="nascimento"
@@ -189,7 +186,7 @@
         </div>
 
         <div class="btn-area">
-          <button class="create-btn" type="submit">
+          <button class="create-btn" type="submit" data-i18n="common.criar_conta">
             Criar conta
           </button>
         </div>

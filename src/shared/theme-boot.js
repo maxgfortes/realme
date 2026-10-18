@@ -1,5 +1,6 @@
 (function () {
   var THEMES = { "default": "#0f0f0f", "skeuomorphism": "#3b5998" };
+  var HIDDEN = { "skeuomorphism": true };
   var RADII = ["early", "none", "small", "medium", "large"];
   var root = document.documentElement;
   var theme = "default";
@@ -13,6 +14,10 @@
   }
 
   if (!Object.prototype.hasOwnProperty.call(THEMES, theme)) theme = "default";
+  if (HIDDEN[theme]) {
+    theme = "default";
+    if (radius === "early") radius = "medium";
+  }
   if (RADII.indexOf(radius) === -1) radius = "medium";
 
   if (theme === "default") root.removeAttribute("data-theme");

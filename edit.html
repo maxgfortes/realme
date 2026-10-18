@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -31,6 +32,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
@@ -40,7 +42,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
     </button>
   </div>
-  <h2>Editar perfil</h2>
+  <h2 data-i18n="edit.editar_perfil">Editar perfil</h2>
   <div class="top-right">
     <a>
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.95"><g><path d="M8.94,0h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,17.88,0,13.86,0,8.94l0,0C0,4.02,4.02,0,8.94,0L8.94,0z M8.94,78.07h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,95.95,0,91.93,0,87.01l0,0C0,82.09,4.02,78.07,8.94,78.07L8.94,78.07z M8.94,39.03h105c4.92,0,8.94,4.02,8.94,8.94l0,0c0,4.92-4.02,8.94-8.94,8.94h-105C4.02,56.91,0,52.89,0,47.97l0,0C0,43.06,4.02,39.03,8.94,39.03L8.94,39.03z"/></g></svg>
@@ -52,12 +54,12 @@
   <div class="media-area">
     <div class="pfp-container">
       <div class="pfp-area">
-        <img src="../public/img/default.jpg" alt="pfp" class="pfp">
+        <img src="../public/img/default.jpg" alt="pfp" class="pfp" data-i18n-attr="alt:edit.pfp">
       </div>
     </div>
     <div class="banner-container">
       <div class="banner-area">
-        <img src="../public/img/bg.jpg" alt="banner" class="banner">
+        <img src="../public/img/bg.jpg" alt="banner" class="banner" data-i18n-attr="alt:edit.banner">
       </div>
     </div>
   </div>
@@ -65,7 +67,7 @@
   <div class="major-container">
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Nome</div>
+        <div class="label-title" data-i18n="common.nome">Nome</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -76,7 +78,7 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Sobrenome</div>
+        <div class="label-title" data-i18n="common.sobrenome">Sobrenome</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -87,7 +89,7 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Nome de usuario</div>
+        <div class="label-title" data-i18n="edit.nome_de_usuario">Nome de usuario</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -98,7 +100,7 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Pronomes</div>
+        <div class="label-title" data-i18n="edit.pronomes">Pronomes</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -109,7 +111,7 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Bio</div>
+        <div class="label-title" data-i18n="edit.bio">Bio</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -120,14 +122,14 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Genero</div>
+        <div class="label-title" data-i18n="edit.genero">Genero</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
           <select class="label-input" id="genero">
-            <option value="">Selecione</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Feminino">Feminino</option>
+            <option value="" data-i18n="edit.selecione">Selecione</option>
+            <option value="Masculino" data-i18n="common.masculino">Masculino</option>
+            <option value="Feminino" data-i18n="common.feminino">Feminino</option>
           </select>
         </div>
       </div>
@@ -135,7 +137,7 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Localização</div>
+        <div class="label-title" data-i18n="common.localizacao">Localização</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
@@ -146,18 +148,18 @@
 
     <div class="label-container">
       <div class="label-left">
-        <div class="label-title">Status de relacionamento</div>
+        <div class="label-title" data-i18n="edit.status_de_relacionamento">Status de relacionamento</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
           <select class="label-input" id="relacionamento">
-            <option value="">Selecione</option>
-            <option value="Em Compromisso">Em Compromisso</option>
-            <option value="Solteiro(a)">Solteiro(a)</option>
-            <option value="Namorando">Namorando</option>
-            <option value="Noivo(a)">Noivo(a)</option>
-            <option value="Casado(a)">Casado(a)</option>
-            <option value="É Complicado">É Complicado</option>
+            <option value="" data-i18n="edit.selecione">Selecione</option>
+            <option value="Em Compromisso" data-i18n="edit.em_compromisso">Em Compromisso</option>
+            <option value="Solteiro(a)" data-i18n="edit.solteiro_a">Solteiro(a)</option>
+            <option value="Namorando" data-i18n="common.namorando">Namorando</option>
+            <option value="Noivo(a)" data-i18n="edit.noivo_a">Noivo(a)</option>
+            <option value="Casado(a)" data-i18n="edit.casado_a">Casado(a)</option>
+            <option value="É Complicado" data-i18n="edit.e_complicado">É Complicado</option>
           </select>
         </div>
       </div>
@@ -165,18 +167,18 @@
 
     <div class="label-container">
       <div class="label-left last">
-        <div class="label-title">Musica</div>
+        <div class="label-title" data-i18n="common.musica">Musica</div>
       </div>
       <div class="label-rigth">
         <div class="label-input-area">
-          <input type="text" class="label-input" id="musica" placeholder="Cole uma URL do youtube">
+          <input type="text" class="label-input" id="musica" placeholder="Cole uma URL do youtube" data-i18n-attr="placeholder:edit.cole_uma_url_do_youtube">
         </div>
       </div>
     </div>
   </div>
 
   <div class="major-container link" id="links-container">
-    <div class="config-title" id="links-toggle">Links</div>
+    <div class="config-title" id="links-toggle" data-i18n="edit.links">Links</div>
     <div class="links-list">
       <div class="label-container">
         <div class="label-left link">
@@ -186,8 +188,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>instagram.com/</span>
-            <input type="text" class="label-input" data-link="instagram" placeholder="username">
+            <span data-i18n="edit.instagram_com">instagram.com/</span>
+            <input type="text" class="label-input" data-link="instagram" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -199,8 +201,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>x.com/</span>
-            <input type="text" class="label-input" data-link="x" placeholder="username">
+            <span data-i18n="edit.x_com">x.com/</span>
+            <input type="text" class="label-input" data-link="x" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -212,8 +214,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>open.spotify.com/user/</span>
-            <input type="text" class="label-input" data-link="spotify" placeholder="username">
+            <span data-i18n="edit.open_spotify_com_user">open.spotify.com/user/</span>
+            <input type="text" class="label-input" data-link="spotify" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -225,8 +227,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>tiktok.com/@</span>
-            <input type="text" class="label-input" data-link="tiktok" placeholder="username">
+            <span data-i18n="edit.tiktok_com">tiktok.com/@</span>
+            <input type="text" class="label-input" data-link="tiktok" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -238,8 +240,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>pinterest.com/</span>
-            <input type="text" class="label-input" data-link="pinterest" placeholder="username">
+            <span data-i18n="edit.pinterest_com">pinterest.com/</span>
+            <input type="text" class="label-input" data-link="pinterest" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -251,8 +253,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>reddit.com/user/</span>
-            <input type="text" class="label-input" data-link="reddit" placeholder="username">
+            <span data-i18n="edit.reddit_com_user">reddit.com/user/</span>
+            <input type="text" class="label-input" data-link="reddit" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -264,8 +266,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>facebook.com/</span>
-            <input type="text" class="label-input" data-link="facebook" placeholder="username">
+            <span data-i18n="edit.facebook_com">facebook.com/</span>
+            <input type="text" class="label-input" data-link="facebook" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -277,8 +279,8 @@
         </div>
         <div class="label-rigth">
           <div class="label-input-area">
-            <span>youtube.com/@</span>
-            <input type="text" class="label-input" data-link="youtube" placeholder="username">
+            <span data-i18n="edit.youtube_com">youtube.com/@</span>
+            <input type="text" class="label-input" data-link="youtube" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -291,7 +293,7 @@
         <div class="label-rigth">
           <div class="label-input-area">
             <span>@</span>
-            <input type="text" class="label-input" data-link="discord" placeholder="username">
+            <input type="text" class="label-input" data-link="discord" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
@@ -304,14 +306,14 @@
         <div class="label-rigth last">
           <div class="label-input-area last">
             <span>@</span>
-            <input type="text" class="label-input" data-link="playstation" placeholder="username">
+            <input type="text" class="label-input" data-link="playstation" placeholder="username" data-i18n-attr="placeholder:edit.username">
           </div>
         </div>
       </div>
     </div>
   </div>
   <div class="save-area">
-    <button class="save-btn">Salvar</button>
+    <button class="save-btn" data-i18n="edit.salvar">Salvar</button>
   </div>
 </div>
 

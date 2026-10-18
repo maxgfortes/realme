@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../../config/config.js";
 import { postSegments } from "./postPath.js";
 
@@ -27,7 +28,7 @@ function escapeHTML(value) {
 async function getUser(uid) {
     if (!uid) {
         return {
-            name: "Usuário",
+            name: t("common.user"),
             username: "",
             photo: "/src/public/img/default.jpg"
         };
@@ -45,7 +46,7 @@ async function getUser(uid) {
 
             if (!userSnapshot.exists()) {
                 return {
-                    name: "Usuário",
+                    name: t("common.user"),
                     username: "",
                     photo: "/src/public/img/default.jpg"
                 };
@@ -57,7 +58,7 @@ async function getUser(uid) {
             const surname = userData.surname || "";
 
             const fullName =
-                `${name} ${surname}`.trim() || "Usuário";
+                `${name} ${surname}`.trim() || t("common.user");
 
             const username =
                 userData.username || "";
@@ -94,7 +95,7 @@ async function getUser(uid) {
             );
 
             return {
-                name: "Usuário",
+                name: t("common.user"),
                 username: "",
                 photo: "/src/public/img/default.jpg"
             };
@@ -133,7 +134,7 @@ export async function openLikes(postId) {
         if (likesSnapshot.empty) {
             likesList.innerHTML = `
                 <div class="likes-empty">
-                    Ninguém curtiu ainda.
+                    ${t("likes.empty")}
                 </div>
             `;
 
@@ -186,7 +187,7 @@ export async function openLikes(postId) {
 
         likesList.innerHTML = `
             <div class="likes-empty">
-                Não foi possível carregar as curtidas.
+                ${t("likes.error")}
             </div>
         `;
     }

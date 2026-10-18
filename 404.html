@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-language-select>
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
   <title>RealMe</title>
   <link rel="icon" href="./src/icon/icon.png" type="image/png">
@@ -25,6 +26,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <style>
     .nav {
@@ -104,10 +106,10 @@
         <div class="error-box">
             <div class="text-area">
                 <div class="error-title">404</div>
-                <div class="error-sub">a pagina que você esta procurando não existe</div>
+                <div class="error-sub" data-i18n="404.a_pagina_que_voce_esta">a pagina que você esta procurando não existe</div>
             </div>
             <div class="btn-area">
-                <a href="feed.html" class="home-btn">Voltar ao Inicio</a>
+                <a href="feed.html" class="home-btn" data-i18n="404.voltar_ao_inicio">Voltar ao Inicio</a>
             </div>
         </div>
     </main>

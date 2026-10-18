@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "./firebase.js";
 import { doc, collection, setDoc, serverTimestamp } from "./firestore.js";
 import { $ } from "./dom.js";
@@ -97,8 +98,8 @@ export function openWallComposer(uid) {
   const ownerName = getDisplayName(state.profileData?.user || {});
 
   textInput.placeholder = state.isOwnProfile
-    ? "Escreva uma mensagem..."
-    : `Escreva para ${ownerName}...`;
+    ? t("wall.writeMessage")
+    : t("profile.writeTo", { name: ownerName });
 
   fillAuthor().catch(error => console.error("Erro ao carregar autor do mural:", error));
 
@@ -140,7 +141,7 @@ async function publish() {
 
   sending = true;
   updateSendState();
-  sendButton.textContent = "Postando...";
+  sendButton.textContent = t("wall.posting");
 
   try {
     const imgs = [];
@@ -148,7 +149,7 @@ async function publish() {
 
     for (const [index, file] of files.entries()) {
       imgs.push(await uploadMedia(file, fraction => {
-        sendButton.textContent = `Postando... ${Math.round(((index + fraction) / files.length) * 100)}%`;
+        sendButton.textContent = t("wall.postingProgress", { percent: Math.round(((index + fraction) / files.length) * 100) });
       }));
     }
 
@@ -163,10 +164,10 @@ async function publish() {
     closeWallComposer();
   } catch (error) {
     console.error("Erro ao postar no mural:", error);
-    showMediaNotice(error?.message || "Não foi possível postar no mural");
+    showMediaNotice(error?.message || t("wall.postError"));
   } finally {
     sending = false;
-    sendButton.textContent = "Postar";
+    sendButton.textContent = t("wall.post");
     updateSendState();
   }
 }

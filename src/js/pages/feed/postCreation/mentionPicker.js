@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth, db } from "../../../../config/config.js";
 
 import {
@@ -105,7 +106,7 @@ function renderMessage(html) {
 
 function render() {
     if (!friends.length) {
-        renderMessage("Você ainda não tem amigos para mencionar.");
+        renderMessage(t("mention.noFriends"));
         return;
     }
 
@@ -116,7 +117,7 @@ function render() {
     );
 
     if (!visible.length) {
-        renderMessage("Nenhum amigo encontrado.");
+        renderMessage(t("mention.noResults"));
         return;
     }
 
@@ -201,7 +202,7 @@ async function getProfile(uid, forceRefresh = false) {
             const profile = {
                 uid,
                 name: `${data.name || ""} ${data.surname || ""}`.trim()
-                    || "Usuário",
+                    || t("common.user"),
                 photo: (
                     mediaSnap.exists() &&
                     mediaSnap.data().userphoto
@@ -293,7 +294,7 @@ async function onOpen() {
 
     if (!myUid) {
         friends = [];
-        renderMessage("Faça login para carregar seus amigos.");
+        renderMessage(t("mention.signIn"));
         return;
     }
 
@@ -323,7 +324,7 @@ async function onOpen() {
     }
 
     renderMessage(
-        '<img src="/public/img/loading.gif" alt="Carregando">'
+        `<img src="/public/img/loading.gif" alt="${t("common.loadingAlt")}">`
     );
 
     try {
@@ -337,7 +338,7 @@ async function onOpen() {
         if (generation !== openGeneration) return;
 
         console.error("Erro ao carregar amigos:", error);
-        renderMessage("Não foi possível carregar seus amigos.");
+        renderMessage(t("mention.loadError"));
     }
 }
 

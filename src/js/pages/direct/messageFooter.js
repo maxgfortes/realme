@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { auth } from "../../../config/config.js";
 
 function getMessageStatus(timestamp, read) {
@@ -16,16 +17,16 @@ function getMessageStatus(timestamp, read) {
     let time;
 
     if (minutes < 1) {
-        time = "agora";
+        time = t("time.now");
     } else if (minutes < 60) {
-        time = `há ${minutes} min`;
+        time = t("time.agoShort.minute", { count: minutes });
     } else if (hours < 24) {
-        time = `há ${hours} horas`;
+        time = t("time.agoShort.hour", { count: hours });
     } else {
-        time = `há ${days} dias`;
+        time = t("time.agoShort.day", { count: days });
     }
 
-    return read ? `visto ${time}` : `enviado ${time}`;
+    return read ? t("dm.seen", { time }) : t("dm.sent", { time });
 }
 
 export function renderMessages(messages) {

@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db } from "../../../../config/config.js";
 import { postSegments } from "./postPath.js";
 
@@ -16,7 +17,7 @@ const likerNameCache = new Map();
 
 export function getLikersName(uid) {
     if (!likerNameCache.has(uid)) {
-        likerNameCache.set(uid, fetchLikerName(uid).catch(() => "Usuário"));
+        likerNameCache.set(uid, fetchLikerName(uid).catch(() => t("common.user")));
     }
 
     return likerNameCache.get(uid);
@@ -29,7 +30,7 @@ async function fetchLikerName(uid) {
     const userSnapshot = await getDoc(userRef);
 
     if (!userSnapshot.exists()) {
-        return "Usuário";
+        return t("common.user");
     }
 
     const userData = userSnapshot.data();
@@ -87,7 +88,7 @@ export function renderLikersFooter(postElement, names, total) {
     }
 
     footerText.append(
-        document.createTextNode("Curtido por ")
+        document.createTextNode(t("post.likedBy"))
     );
 
     const firstUser = document.createElement("span");
@@ -126,7 +127,7 @@ export function renderLikersFooter(postElement, names, total) {
     footerText.append(secondUser);
 
     const others = document.createTextNode(
-        ` e outras ${total - 2} pessoas`
+        t("post.andOthers", { others: t("common.otherPeople", { count: total - 2 }) })
     );
 
     footerText.append(others);

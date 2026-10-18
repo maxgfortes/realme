@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../../../config/config.js";
 import {
   doc,
@@ -11,10 +12,10 @@ const displayNameElement = document.getElementById('greetingUsername');
 
 function greetingText() {
     const h = new Date().getHours();
-    if (h < 5) return "Boa noite";
-    if (h < 12) return "Bom dia";
-    if (h < 18) return "Boa tarde";
-    return "Boa noite";
+    if (h < 5) return t("greeting.night");
+    if (h < 12) return t("greeting.morning");
+    if (h < 18) return t("greeting.afternoon");
+    return t("greeting.night");
 }
 
 greeting.textContent = greetingText();
@@ -88,13 +89,7 @@ onAuthStateChanged(auth, function (user) {
 
 const btn = document.getElementById('openPostLayer');
 
-const frases = [
-  "Como foi o seu dia?",
-  "O que você está pensando?",
-  "Quer compartilhar algo?",
-  "O que rolou hoje?",
-  "Alguma novidade?"
-];
+const frases = [1, 2, 3, 4, 5].map(n => t(`feed.prompt.${n}`));
 
 const indiceAleatorio = Math.floor(Math.random() * frases.length);
 btn.textContent = frases[indiceAleatorio];

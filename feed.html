@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="manifest" href="/manifest.json">
@@ -44,6 +45,7 @@
   <meta name="twitter:title" content="RealMe">
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
@@ -54,8 +56,8 @@
   <div class="header-layer">
     <div class="create-type-area">
       <div class="create-type-pill">
-        <button class="create-type-btn active" id="createPost">Post</button>
-        <button class="create-type-btn" id="createEvent">Evento</button>
+        <button class="create-type-btn active" id="createPost" data-i18n="feed.post">Post</button>
+        <button class="create-type-btn" id="createEvent" data-i18n="common.evento">Evento</button>
       </div>
     </div>
     <button id="closeLayerBtn" class="close-layer-btn">
@@ -67,16 +69,16 @@
       <div class="content-row">
         <div class="np-text-area">
           <div class="np-avatar-area">
-            <img id="creationModalPfp" src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async">
+            <img id="creationModalPfp" src="../public/img/default.jpg" alt="Avatar" class="np-avatar" loading="lazy" decoding="async" data-i18n-attr="alt:common.avatar">
           </div>
           <div class="np-input-area" id="inputArea">
             <div class="np-username" id="creationModalDisplayName"></div>
-            <textarea id="npTextInput" class="np-text-input" placeholder="O que você está pensando?" maxlength="500" ></textarea>
+            <textarea id="npTextInput" class="np-text-input" placeholder="O que você está pensando?" maxlength="500" data-i18n-attr="placeholder:feed.o_que_voce_esta_pensando"></textarea>
           </div>
         </div>
         <div class="image-preview-carrosel visible"></div>
         <div class="img-btn">
-          <button id="npMediaInput" type="button">Adicionar fotos ou vídeos</button>
+          <button id="npMediaInput" type="button" data-i18n="common.adicionar_fotos_ou_videos">Adicionar fotos ou vídeos</button>
         </div>
       </div>
     </div>
@@ -85,54 +87,54 @@
         <div class="btns-row">
           <button class="np-bottom-btn" id="btnMention">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 46 54"><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-61.037109375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="2.5" d="M 3.845703125,30.744140625 C 3.845703125,17.251953125 12.998046875,7.77734375 26.08203125,7.77734375 C 30.078125,7.77734375 33.21484375,8.056640625 34.890625,8.615234375 C 35.255859375,8.72265625 35.44921875,8.873046875 35.44921875,9.15234375 C 35.44921875,9.453125 35.27734375,9.646484375 34.955078125,9.646484375 C 34.611328125,9.646484375 34.224609375,9.474609375 33.7734375,9.388671875 C 31.96875,9.044921875 29.240234375,8.765625 26.060546875,8.765625 C 13.599609375,8.765625 4.8984375,17.83203125 4.8984375,30.765625 C 4.8984375,43.140625 13.96484375,52.25 26.25390625,52.25 C 38.478515625,52.25 47.05078125,44.0859375 47.05078125,32.44140625 C 47.05078125,24.40625 44.408203125,19.765625 39.853515625,19.765625 C 36.501953125,19.765625 34.4609375,22.322265625 34.4609375,26.46875 L 34.4609375,41.20703125 C 34.4609375,41.55078125 34.24609375,41.787109375 33.923828125,41.787109375 C 33.623046875,41.787109375 33.408203125,41.55078125 33.408203125,41.20703125 L 33.408203125,36.1796875 L 33.30078125,36.1796875 C 32.3125,39.6171875 29.326171875,41.787109375 25.609375,41.787109375 C 20.044921875,41.787109375 16.263671875,37.103515625 16.263671875,30.228515625 C 16.263671875,23.4609375 20.044921875,18.841796875 25.609375,18.841796875 C 29.34765625,18.841796875 31.92578125,20.861328125 33.30078125,24.771484375 L 33.408203125,24.771484375 C 33.9453125,20.990234375 36.3515625,18.755859375 39.875,18.755859375 C 45.07421875,18.755859375 48.103515625,23.76171875 48.103515625,32.419921875 C 48.103515625,44.6875 39.14453125,53.259765625 26.275390625,53.259765625 C 13.27734375,53.259765625 3.845703125,43.763671875 3.845703125,30.744140625 Z M 25.587890625,19.8515625 C 20.775390625,19.8515625 17.359375,24.1484375 17.359375,30.228515625 C 17.359375,36.265625 20.861328125,40.798828125 25.587890625,40.798828125 C 30.400390625,40.798828125 33.408203125,36.888671875 33.408203125,30.615234375 C 33.408203125,24.10546875 30.29296875,19.8515625 25.587890625,19.8515625 Z"/></g></svg>
-            <span class="btn-texto">Mencionar</span>
+            <span class="btn-texto" data-i18n="feed.mencionar">Mencionar</span>
           </button>
           <button class="np-bottom-btn" id="btnMusic">
             <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>
-            <span class="btn-texto">Musica</span>
+            <span class="btn-texto" data-i18n="common.musica">Musica</span>
           </button>
           <button class="np-bottom-btn" id="btnLocal">
             <svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1.5 3.5 44.5 45.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-51.283203125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M4.555 25.803L23.203 25.76C23.354 25.76 23.461 25.652 23.461 25.502L23.504 6.854C23.504 6.145 23.934 5.586 24.535 5.586C25.072 5.586 25.438 5.951 25.674 6.488L43.248 43.721C43.398 44.064 43.484 44.387 43.484 44.666C43.484 45.139 43.098 45.697 42.389 45.697C42.152 45.697 41.809 45.654 41.443 45.482L4.189 27.973C3.674 27.736 3.287 27.328 3.287 26.834C3.287 26.254 3.781 25.803 4.555 25.803Z"/></g></svg>
-            <span class="btn-texto">Localização</span>
+            <span class="btn-texto" data-i18n="common.localizacao">Localização</span>
           </button>
         </div>
       </div>
       <div class="send-post-btn-area">
-        <button class="send-post-btn" id="sendPost">Publicar</button>
+        <button class="send-post-btn" id="sendPost" data-i18n="feed.publicar">Publicar</button>
       </div>
     </div>
   </div>
   <div class="create-area" id="createEventArea">
     <div class="create-content">
       <div class="event-banner" id="eventBanner">
-        <div class="event-banner-icon">Banner</div>
+        <div class="event-banner-icon" data-i18n="feed.banner">Banner</div>
       </div>
       <input type="file" id="eventBannerInput" accept="image/*" hidden />
       <div class="event-row">
         <div class="event-item">
-          <div class="event-create-label">Titulo do evento</div>
-          <textarea class="event-create-input" name="" id="eventTitleInput" placeholder="Escolha um nome para o evento"rows="1"></textarea>
+          <div class="event-create-label" data-i18n="feed.titulo_do_evento">Titulo do evento</div>
+          <textarea class="event-create-input" name="" id="eventTitleInput" placeholder="Escolha um nome para o evento"rows="1" data-i18n-attr="placeholder:feed.escolha_um_nome_para_o"></textarea>
         </div>
         <div class="event-item">
-          <div class="event-create-label">Descrição</div>
-          <textarea class="event-create-input" name="" id="eventDescriptionInput" placeholder="Descreva seu evento"rows="1"></textarea>
+          <div class="event-create-label" data-i18n="feed.descricao">Descrição</div>
+          <textarea class="event-create-input" name="" id="eventDescriptionInput" placeholder="Descreva seu evento"rows="1" data-i18n-attr="placeholder:feed.descreva_seu_evento"></textarea>
         </div>
         <div class="event-item">
-          <div class="event-create-label">Localização</div>
-          <textarea class="event-create-input" name="" id="eventLocationInput" placeholder="Onde seu evento vai ser?"rows="1" ></textarea>
+          <div class="event-create-label" data-i18n="common.localizacao">Localização</div>
+          <textarea class="event-create-input" name="" id="eventLocationInput" placeholder="Onde seu evento vai ser?"rows="1" data-i18n-attr="placeholder:feed.onde_seu_evento_vai_ser"></textarea>
         </div>
         <div class="event-item">
-          <div class="event-create-label">Data</div>
+          <div class="event-create-label" data-i18n="common.data">Data</div>
           <input type="datetime-local" id="eventDateInput">
         </div>
       </div>
     </div>
     <div class="sections-btn">
       <div class="sections-btns-row">
-        <div class="event-create-alert">Ao criar um evento ele ficara publico para todos os seus amigos.</div>
+        <div class="event-create-alert" data-i18n="feed.ao_criar_um_evento_ele">Ao criar um evento ele ficara publico para todos os seus amigos.</div>
       </div>
       <div class="send-post-btn-area">
-        <button class="send-post-btn" id="sendEvent">Publicar</button>
+        <button class="send-post-btn" id="sendEvent" data-i18n="feed.publicar">Publicar</button>
       </div>
     </div>
   </div>
@@ -141,11 +143,11 @@
 <div class="bottom-menu-area">
   <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
   <div class="bottom-menu" id="bottomMenu">
-    <div class="bottom-menu-title">Mencionar</div>
+    <div class="bottom-menu-title" data-i18n="feed.mencionar">Mencionar</div>
     <div class="bottom-menu-row">
       <div class="bottom-menu-search-area">
         <div class="menu-search-input">
-          <input id="searchUserMention" type="text" placeholder="Procurar...">
+          <input id="searchUserMention" type="text" placeholder="Procurar..." data-i18n-attr="placeholder:feed.procurar">
         </div>
       </div>
       <div class="bottom-menu-list" id="usersMentionList">
@@ -153,8 +155,8 @@
       </div>
     </div>
     <div class="bottom-menu-btns-area">
-      <button class="bottom-btn cancel">Cancelar</button>
-      <button class="bottom-btn">Concluir</button>
+      <button class="bottom-btn cancel" data-i18n="common.cancelar">Cancelar</button>
+      <button class="bottom-btn" data-i18n="feed.concluir">Concluir</button>
     </div>
   </div>
 </div>
@@ -162,18 +164,18 @@
 <div class="bottom-menu-area">
   <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
   <div class="bottom-menu" id="bottomMenu">
-    <div class="bottom-menu-title">Musica</div>
+    <div class="bottom-menu-title" data-i18n="common.musica">Musica</div>
     <div class="bottom-menu-row">
       <div class="bottom-menu-search-area">
         <bottom class="menu-search-input">
-          <input id="searchSongs" type="text" placeholder="Pesquisar...">
+          <input id="searchSongs" type="text" placeholder="Pesquisar..." data-i18n-attr="placeholder:common.pesquisar">
         </bottom>
       </div>
       <div class="bottom-menu-list" id="songsList"></div>
     </div>
     <div class="bottom-menu-btns-area">
-      <button class="bottom-btn cancel">Cancelar</button>
-      <button class="bottom-btn">Concluir</button>
+      <button class="bottom-btn cancel" data-i18n="common.cancelar">Cancelar</button>
+      <button class="bottom-btn" data-i18n="feed.concluir">Concluir</button>
     </div>
   </div>
 </div>
@@ -181,13 +183,13 @@
 <div class="bottom-menu-area">
   <div class="bottom-menu-overlay" id="bottomMenuOverlay"></div>
   <div class="bottom-menu" id="bottomMenu">
-    <div class="bottom-menu-title">Localização</div>
+    <div class="bottom-menu-title" data-i18n="common.localizacao">Localização</div>
     <div class="bottom-menu-content">
-      <textarea name="location" id="locationInput" placeholder="Adicione uma localização..."></textarea>
+      <textarea name="location" id="locationInput" placeholder="Adicione uma localização..." data-i18n-attr="placeholder:feed.adicione_uma_localizacao"></textarea>
     </div>
     <div class="bottom-menu-btns-area">
-      <button class="bottom-btn cancel">Cancelar</button>
-      <button class="bottom-btn">Concluir</button>
+      <button class="bottom-btn cancel" data-i18n="common.cancelar">Cancelar</button>
+      <button class="bottom-btn" data-i18n="feed.concluir">Concluir</button>
     </div>
   </div>
 </div>
@@ -200,7 +202,7 @@
       </button>
     </div>
     <div class="header-block">
-      <div class="header-title">Evento</div>
+      <div class="header-title" data-i18n="common.evento">Evento</div>
     </div>
     <div class="header-block"></div>
   </div>
@@ -222,7 +224,7 @@
             <div class="icon-area">
               <img src="./public/img/link.png">
             </div>
-            <div class="event-info-title">Data</div>
+            <div class="event-info-title" data-i18n="common.data">Data</div>
           </div>
           <div class="event-info-text" id="eventLayerDate"></div>
         </div>
@@ -231,28 +233,28 @@
             <div class="icon-area">
               <img src="./public/img/map.png">
             </div>
-            <div class="event-info-title">Localização</div>
+            <div class="event-info-title" data-i18n="common.localizacao">Localização</div>
           </div>
           <div class="event-info-text" id="eventLayerLocation"></div>
         </div>
       </div>
       <div class="empty-event-list">
-        <div class="empty-event-title">Ninguem vai ainda</div>
-        <div class="empty-event-sub">Nenhuma pessoa confirmou ou talvez vá nesse evento ainda.</div>
+        <div class="empty-event-title" data-i18n="common.ninguem_vai_ainda">Ninguem vai ainda</div>
+        <div class="empty-event-sub" data-i18n="common.nenhuma_pessoa_confirmou_ou_talvez">Nenhuma pessoa confirmou ou talvez vá nesse evento ainda.</div>
       </div>
       <div class="event-users-row-list">
         <div class="event-users-list">
-          <div class="event-list-title">Pessoas que vão</div>
+          <div class="event-list-title" data-i18n="common.pessoas_que_vao">Pessoas que vão</div>
           <div class="event-list-row" id="eventRowGoing">
             <a href="/profile.html" class="user-event-box">
               <div class="user-pfp-area">
                 <img src="./public/img/default.jpg">
               </div>
               <div class="user-event-infos">
-                <div class="user-event-name">Maximus Fortes</div>
+                <div class="user-event-name" data-i18n="common.maximus_fortes">Maximus Fortes</div>
               </div>
               <div class="user-event-social">
-                <div class="is-friend-badge">Seu amigo</div>
+                <div class="is-friend-badge" data-i18n="common.seu_amigo">Seu amigo</div>
                 <div class="user-event-arrow">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
                 </div>
@@ -261,7 +263,7 @@
           </div>
         </div>
         <div class="event-users-list">
-          <div class="event-list-title">Não sabem ainda</div>
+          <div class="event-list-title" data-i18n="common.nao_sabem_ainda">Não sabem ainda</div>
           <div class="event-list-row" id="eventRowMaybe"></div>
         </div>
       </div>
@@ -270,11 +272,11 @@
   <div class="event-bottom">
     <div class="event-actions-area">
       <div class="event-actions">
-        <button class="event-act-btn confirm">Vou ir</button>
-        <button class="event-act-btn maybe">Não sei</button>
+        <button class="event-act-btn confirm" data-i18n="common.vou_ir">Vou ir</button>
+        <button class="event-act-btn maybe" data-i18n="common.nao_sei">Não sei</button>
       </div>
       <div class="event-actions">
-        <button class="event-act-btn no">Não vou</button>
+        <button class="event-act-btn no" data-i18n="common.nao_vou">Não vou</button>
       </div>
     </div>
   </div>
@@ -292,7 +294,7 @@
         <button class="send-img-comment" id="sendImgBtn">
           <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Adicionar foto ou vídeo</title><path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fill-rule="evenodd"></path><path d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
         </button>
-        <textarea class="comment-input" name="comment-input" id="commentInput" placeholder="Comentar..."></textarea>
+        <textarea class="comment-input" name="comment-input" id="commentInput" placeholder="Comentar..." data-i18n-attr="placeholder:common.comentar"></textarea>
         <button class="send-comment" id="sendCommentBtn">
           <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"></path></svg>
         </button>
@@ -304,7 +306,7 @@
 <div class="bottom-menu-area" id="likesMenuArea">
   <div class="bottom-menu-overlay" id="likesMenuOverlay"></div>
   <div class="bottom-menu" id="likesMenu">
-    <div class="bottom-menu-title">Curtido por</div>
+    <div class="bottom-menu-title" data-i18n="common.curtido_por">Curtido por</div>
     <div class="bottom-menu-list" id="likesList">
     </div>
   </div>
@@ -319,12 +321,12 @@
       </div>
     </div>
     <div class="push-box-content">
-      <div class="push-box-title">Ativar Notificações?</div>
-      <div class="push-box-body">Receba avisos de mensagens, curtidas e pedidos de amizade.</div>
+      <div class="push-box-title" data-i18n="feed.ativar_notificacoes">Ativar Notificações?</div>
+      <div class="push-box-body" data-i18n="feed.receba_avisos_de_mensagens_curtidas">Receba avisos de mensagens, curtidas e pedidos de amizade.</div>
     </div>
     <div class="push-box-btns">
-      <button id="pushLaterBtn" class="push-enable-btn sec">Agora não</button>
-      <button id="pushEnableBtn" class="push-enable-btn">Ativar</button>
+      <button id="pushLaterBtn" class="push-enable-btn sec" data-i18n="feed.agora_nao">Agora não</button>
+      <button id="pushEnableBtn" class="push-enable-btn" data-i18n="feed.ativar">Ativar</button>
     </div>
   </div>
 </div>
@@ -348,7 +350,7 @@
           <div class="user-container">
             <h1><span class="greetingText" id="greeting"></span> <span class="greetingUsername" id="greetingUsername"></span></h1>
             <div class="create-new-post">
-              <button class="np-btn" id="openPostLayer">Como foi o seu dia?</button>
+              <button class="np-btn" id="openPostLayer" data-i18n="feed.como_foi_o_seu_dia">Como foi o seu dia?</button>
             </div>
           </div>
         </div>
@@ -378,7 +380,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
       </a>
       <a href="profile.html">
-        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic" loading="lazy" decoding="async">
+        <img src="../public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic" loading="lazy" decoding="async" data-i18n-attr="alt:common.perfil">
       </a>
     </div>
   </div>

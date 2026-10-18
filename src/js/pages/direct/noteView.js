@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import {
     doc,
     collection,
@@ -56,7 +57,7 @@ export function openNoteView(note) {
     currentNote = note;
 
     pfp.src = note.photo || "../public/img/default.jpg";
-    nameElement.textContent = note.name || "Usuário";
+    nameElement.textContent = note.name || t("common.user");
     textElement.textContent = note.content || "";
 
     const createdAt = toDate(note.createdAt);
@@ -64,7 +65,7 @@ export function openNoteView(note) {
     timeElement.textContent = createdAt ? formatTimeAgo(createdAt) : "";
 
     input.value = "";
-    input.placeholder = `Responder ${firstName(note.name) || "nota"}...`;
+    input.placeholder = t("dm.replyTo", { name: firstName(note.name) || t("dm.noteFallback") });
     updateSendState();
 
     area.classList.add("active");

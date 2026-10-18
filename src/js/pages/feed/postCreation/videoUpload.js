@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { app, auth } from "/src/config/config.js";
 import {
   getStorage,
@@ -55,7 +56,7 @@ function loadVideoElement(file) {
     const timer = setTimeout(() => {
       cleanup();
       URL.revokeObjectURL(url);
-      reject(new Error("Não foi possível ler o vídeo"));
+      reject(new Error(t("upload.readVideo")));
     }, METADATA_TIMEOUT_MS);
 
     video.preload = "metadata";
@@ -72,7 +73,7 @@ function loadVideoElement(file) {
     video.onerror = () => {
       cleanup();
       URL.revokeObjectURL(url);
-      reject(new Error("Formato de vídeo não suportado"));
+      reject(new Error(t("upload.videoFormat")));
     };
 
     video.src = url;
@@ -98,19 +99,19 @@ export async function readVideoInfo(file) {
 
 export async function validateVideo(file) {
   if (file.size > MAX_VIDEO_BYTES) {
-    return { ok: false, reason: "Vídeo muito grande (máx. 100 MB)" };
+    return { ok: false, reason: t("upload.videoTooBig") };
   }
 
   try {
     const info = await readVideoInfo(file);
 
     if (!info.duration || info.duration > MAX_VIDEO_SECONDS + DURATION_TOLERANCE) {
-      return { ok: false, reason: `Vídeos podem ter no máximo ${MAX_VIDEO_SECONDS} segundos` };
+      return { ok: false, reason: t("upload.videoTooLong", { seconds: MAX_VIDEO_SECONDS }) };
     }
 
     return { ok: true, info };
   } catch (error) {
-    return { ok: false, reason: error.message || "Não foi possível ler o vídeo" };
+    return { ok: false, reason: error.message || t("upload.readVideo") };
   }
 }
 
@@ -118,7 +119,7 @@ export function selectMediaFiles(currentCount) {
   const remaining = MAX_MEDIA - currentCount;
 
   if (remaining <= 0) {
-    showMediaNotice(`Máximo de ${MAX_MEDIA} fotos ou vídeos por post`);
+    showMediaNotice(t("upload.maxMedia", { max: MAX_MEDIA }));
     return Promise.resolve([]);
   }
 
@@ -134,7 +135,7 @@ export function selectMediaFiles(currentCount) {
         .filter(file => String(file.type).startsWith("image/") || isVideoFile(file));
 
       if (picked.length > remaining) {
-        showMediaNotice(`Máximo de ${MAX_MEDIA} fotos ou vídeos por post`);
+        showMediaNotice(t("upload.maxMedia", { max: MAX_MEDIA }));
       }
 
       const accepted = [];
@@ -262,7 +263,7 @@ function contentTypeOf(file) {
 export async function uploadVideo(file, onProgress) {
   const user = auth.currentUser;
 
-  if (!user) throw new Error("Usuário não autenticado");
+  if (!user) throw new Error(t("upload.notSignedIn"));
 
   const check = await validateVideo(file);
 

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="../public/img/icon.png" type="image/png">
@@ -16,6 +17,7 @@
   <link rel="stylesheet" href="../src/styles/shared/base.css">
   <link rel="stylesheet" href="../src/styles/shared/root.css">
   <link rel="stylesheet" href="./src/styles/pages/notifications/notifications.css">
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
@@ -27,7 +29,7 @@
           <path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/>
         </svg>
       </button>
-      <div class="nt-title">Notificações</div>
+      <div class="nt-title" data-i18n="common.notificacoes">Notificações</div>
     </div>
     <div class="header-block"></div>
     <div class="header-block"></div>
@@ -43,7 +45,7 @@
           </div>
         </div>
         <div class="see-requests-text">
-          <div class="see-requests-title">Pedidos de amizade</div>
+          <div class="see-requests-title" data-i18n="notifications.pedidos_de_amizade">Pedidos de amizade</div>
           <div class="see-requests-sub"></div>
         </div>
       </div>
@@ -59,8 +61,8 @@
     <div class="notifications-list-row" id="notifications-list">
     </div>
     <div class="finish-list">
-      <div class="finish-list-title">Suas notificações acabaram</div>
-      <div class="finish-list-text">volte aqui mais tarde para ver mais</div>
+      <div class="finish-list-title" data-i18n="notifications.suas_notificacoes_acabaram">Suas notificações acabaram</div>
+      <div class="finish-list-text" data-i18n="notifications.volte_aqui_mais_tarde_para">volte aqui mais tarde para ver mais</div>
     </div>
   </div>
 </div>
@@ -71,7 +73,7 @@
       <button id="closeRequestsArea">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
       </button>
-      <div class="nt-title">Pedidos de amizade</div>
+      <div class="nt-title" data-i18n="notifications.pedidos_de_amizade">Pedidos de amizade</div>
     </div>
     <div class="header-block"></div>
     <div class="header-block"></div>
@@ -79,8 +81,8 @@
   <div class="list-row">
     <div class="requests-list-row" id="requestsList"></div>
     <div class="finish-list">
-      <div class="finish-list-title">Pedidos de amizade</div>
-      <div class="finish-list-text">novos pedidos de amizade apareceram aqui</div>
+      <div class="finish-list-title" data-i18n="notifications.pedidos_de_amizade">Pedidos de amizade</div>
+      <div class="finish-list-text" data-i18n="notifications.novos_pedidos_de_amizade_apareceram">novos pedidos de amizade apareceram aqui</div>
     </div>
   </div>
 </div>

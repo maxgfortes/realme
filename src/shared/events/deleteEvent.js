@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../config/config.js";
 
 import {
@@ -32,7 +33,7 @@ function createAlert() {
                     <div class="alert-text"></div>
                 </div>
                 <div class="alert-actions">
-                    <button class="alert-btn" id="cancelEventAlertBtn">Cancelar</button>
+                    <button class="alert-btn" id="cancelEventAlertBtn">${t("common.cancel")}</button>
                     <button class="alert-btn critic-btn" id="confirmEventAlertBtn"></button>
                 </div>
             </div>
@@ -58,13 +59,13 @@ function showAlert(type, eventId) {
     cancelBtn.disabled = false;
 
     if (type === "delete") {
-        title.textContent = "Apagar Evento";
-        text.textContent = "Deseja mesmo apagar esse evento? Quem confirmou presença deixará de vê-lo.";
-        confirmBtn.textContent = "Apagar";
+        title.textContent = t("events.deleteTitle");
+        text.textContent = t("events.deleteText");
+        confirmBtn.textContent = t("common.delete");
     } else {
-        title.textContent = "Denunciar Evento";
-        text.textContent = "Deseja mesmo denunciar esse evento?";
-        confirmBtn.textContent = "Denunciar";
+        title.textContent = t("events.reportTitle");
+        text.textContent = t("events.reportText");
+        confirmBtn.textContent = t("post.report");
     }
 
     overlay.classList.add("active");
@@ -138,8 +139,8 @@ function setupAlert() {
         } catch (error) {
             console.error("Erro ao apagar evento:", error);
 
-            text.textContent = "Não foi possível apagar o evento. Tente novamente.";
-            confirmBtn.textContent = "Tentar de novo";
+            text.textContent = t("events.deleteError");
+            confirmBtn.textContent = t("common.retry");
         } finally {
             busy = false;
             confirmBtn.disabled = false;

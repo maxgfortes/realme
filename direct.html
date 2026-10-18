@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <script src="/src/shared/theme-boot.js"></script>
+  <script src="/src/i18n/i18n-boot.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>RealMe</title>
   <link rel="icon" href="../public/img/icon.png" type="image/png" />
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="./src/styles/shared/navs-pc.css" /> 
   <link rel="stylesheet" href="./src/styles/shared/root.css" />
   <link rel="stylesheet" href="./src/styles/pages/direct/feeling-notes.css" />
+  <script type="module" src="/src/i18n/page.js"></script>
 </head>
 <body>
 
@@ -29,7 +31,7 @@
   <div class="dm-users-list">
     <div class="dm-bottom-options">
       <div class="dm-search-box">
-        <input type="text" id="dmSearchInput" placeholder="Pesquisar..." autocomplete="off" maxlength="40"/>
+        <input type="text" id="dmSearchInput" placeholder="Pesquisar..." autocomplete="off" maxlength="40" data-i18n-attr="placeholder:common.pesquisar"/>
       </div>
     </div>
     <div class="feelings-stories" id="notesRow">
@@ -43,12 +45,12 @@
           <div class="note-username" id="notenName"></div>
         </div>
         <div class="humor-note-border">
-          <div class="humor-note placeholder" id="createNoteBtn">O que você está fazendo agora?</div>
+          <div class="humor-note placeholder" id="createNoteBtn" data-i18n="direct.o_que_voce_esta_fazendo">O que você está fazendo agora?</div>
         </div>
       </div>
     </div>
     <div class="dmChatsList">
-      <div class="dmchatsTitle">Mensagens</div>
+      <div class="dmchatsTitle" data-i18n="common.mensagens">Mensagens</div>
       <div class="dmChatsListRow" id="dmUsersList">
       </div>
     </div>
@@ -68,7 +70,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
         </a>
         <a href="profile.html">
-            <img src="./public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic" loading="lazy" decoding="async">
+            <img src="./public/img/default.jpg" alt="Perfil" class="profile-mini" id="nav-pic" loading="lazy" decoding="async" data-i18n-attr="alt:common.perfil">
         </a>
     </div>
   </div>
@@ -91,7 +93,7 @@
         <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fill-rule="evenodd"></path><path d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
       </button>
       <input type="file" id="dm-image-input" accept="image/*" hidden>
-      <textarea type="text" class="dmMsgInput" id="dmMsgInput" placeholder="Mensagem" autocomplete="off" maxlength="500"></textarea>
+      <textarea type="text" class="dmMsgInput" id="dmMsgInput" placeholder="Mensagem" autocomplete="off" maxlength="500" data-i18n-attr="placeholder:direct.mensagem"></textarea>
       <button class="dmSendBtn" id="dmSendBtn" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"/></svg>
       </button>
@@ -104,18 +106,18 @@
   <div class="feeling-create-modal" id="createNoteModal">
     <div class="user-header">
       <div class="pfp-modal-feeling">
-        <img src="./public/img/default.jpg" alt="Foto de perfil" id="createNoteModalPfp">
+        <img src="./public/img/default.jpg" alt="Foto de perfil" id="createNoteModalPfp" data-i18n-attr="alt:direct.foto_de_perfil">
       </div>
       <div class="user-info-modal-feeling">
         <div class="username-modal-feeling" id="createNoteModalName"></div>
       </div>
     </div>
     <div class="feelings-area">
-      <textarea class="noteInput" name="note" id="noteInput" placeholder="Ocupado, estudando, trabalhando..." maxlength="40"></textarea>
+      <textarea class="noteInput" name="note" id="noteInput" placeholder="Ocupado, estudando, trabalhando..." maxlength="40" data-i18n-attr="placeholder:direct.ocupado_estudando_trabalhando"></textarea>
     </div>
     <div class="modal-feeling-btns">
-      <button class="cancel-feeling-btn" id="cancelNote">Cancelar</button>
-      <button class="send-feeling-btn" id="sendNote">Enviar</button>
+      <button class="cancel-feeling-btn" id="cancelNote" data-i18n="common.cancelar">Cancelar</button>
+      <button class="send-feeling-btn" id="sendNote" data-i18n="direct.enviar">Enviar</button>
     </div>
   </div>
 </div>
@@ -125,7 +127,7 @@
   <div class="note-view-modal" id="viewNoteModal">
     <div class="user-header">
       <div class="pfp-modal-feeling">
-        <img src="./public/img/default.jpg" alt="Foto de perfil" id="noteModalPfp">
+        <img src="./public/img/default.jpg" alt="Foto de perfil" id="noteModalPfp" data-i18n-attr="alt:direct.foto_de_perfil">
       </div>
       <div class="user-info-modal-feeling">
         <div class="note-content-area" id="noteContent">
@@ -136,8 +138,8 @@
       </div>
     </div>
     <form class="note-view-actions" id="replyNoteForm">
-      <input class="reply-note-input" type="text" id="replyNoteInput" placeholder="Responder..." maxlength="500" autocomplete="off">
-      <button class="btn-act-note" id="replyNoteBtn" type="submit" aria-label="Responder">
+      <input class="reply-note-input" type="text" id="replyNoteInput" placeholder="Responder..." maxlength="500" autocomplete="off" data-i18n-attr="placeholder:direct.responder">
+      <button class="btn-act-note" id="replyNoteBtn" type="submit" aria-label="Responder" data-i18n-attr="aria-label:direct.responder_2">
         <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M22.513 3.576C21.826 2.552 20.617 2 19.384 2H4.621c-1.474 0-2.878.818-3.46 2.173-.6 1.398-.297 2.935.784 3.997l3.359 3.295a1 1 0 0 0 1.195.156l8.522-4.849a1 1 0 1 1 .988 1.738l-8.526 4.851a1 1 0 0 0-.477 1.104l1.218 5.038c.343 1.418 1.487 2.534 2.927 2.766.208.034.412.051.616.051 1.26 0 2.401-.644 3.066-1.763l7.796-13.118a3.572 3.572 0 0 0-.116-3.863Z"></path></svg>
       </button>
     </form>

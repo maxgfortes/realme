@@ -1,3 +1,4 @@
+import { t } from "/src/i18n/i18n.js";
 import { signInWithEmailAndPassword, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -35,12 +36,12 @@ async function login(event) {
     const password = inputPassword.value;
 
     if (email === "" || password === "") {
-        showError("Please fill in all fields");
+        showError(t("auth.fillAll"));
         return;
     }
 
     if (!validateEmail()) {
-        showError("Please enter a valid email");
+        showError(t("auth.validEmail"));
         return;
     }
 
@@ -54,23 +55,23 @@ async function login(event) {
 
         switch (error.code) {
             case "auth/invalid-credential":
-                showError("Email or password is incorrect");
+                showError(t("auth.wrongCredentials"));
                 break;
 
             case "auth/user-disabled":
-                showError("This account has been disabled");
+                showError(t("auth.disabled"));
                 break;
 
             case "auth/too-many-requests":
-                showError("Too many login attempts. Please try again later");
+                showError(t("auth.tooManyLogin"));
                 break;
 
             case "auth/network-request-failed":
-                showError("Check your internet connection and try again");
+                showError(t("auth.network"));
                 break;
 
             default:
-                showError("Something went wrong. Please try again");
+                showError(t("auth.generic"));
         }
     }
 }
