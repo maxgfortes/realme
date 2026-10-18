@@ -6,9 +6,10 @@ import {
     query,
     where,
     onSnapshot,
-    doc,
+    getDocs,
     updateDoc,
-    deleteDoc
+    deleteDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { getUser } from "./getUser.js";
@@ -19,26 +20,38 @@ const requestsDot = document.querySelector(".new-request-dot");
 
 let unsubscribeFriendRequests = null;
 
+async function findRequests(fromUid, toUid) {
+
+    const result = await getDocs(query(
+        collection(db, "friendRequests"),
+        where("from", "==", fromUid),
+        where("to", "==", toUid)
+    ));
+
+    return result.docs;
+}
+
 export async function acceptFriendRequest(fromUid, meUid) {
 
-    const requestReference =
-        doc(db, "friendRequests", fromUid + "_" + meUid);
+    const requests = (await findRequests(fromUid, meUid))
+        .filter(request => request.data().status === "pending");
 
-    await updateDoc(requestReference, {
-        status: "accepted"
-    });
+    if (!requests.length) throw new Error("friend request not found");
+
+    await Promise.all(requests.map(request => updateDoc(request.ref, {
+        status: "accepted",
+        acceptedAt: serverTimestamp()
+    })));
 }
 
 export async function declineFriendRequest(fromUid, meUid) {
 
-    const requestReferenceOne =
-        doc(db, "friendRequests", fromUid + "_" + meUid);
+    const requests = [
+        ...await findRequests(fromUid, meUid),
+        ...await findRequests(meUid, fromUid)
+    ];
 
-    const requestReferenceTwo =
-        doc(db, "friendRequests", meUid + "_" + fromUid);
-
-    await deleteDoc(requestReferenceOne);
-    await deleteDoc(requestReferenceTwo);
+    await Promise.all(requests.map(request => deleteDoc(request.ref)));
 }
 
 function createRequestItem(request, meUid) {
@@ -59,24 +72,28 @@ function createRequestItem(request, meUid) {
         </div>
         <div class="request-item-right">
             <button class="accept-request-btn" type="button">${t("common.accept")}</button>
-            <button class="decline-request-btn" type="button">Excluir</button>
+            <button class="decline-request-btn" type="button">${t("notif.decline")}</button>
         </div>
     `;
 
     const acceptButton = item.querySelector(".accept-request-btn");
     const declineButton = item.querySelector(".decline-request-btn");
 
-    acceptButton.addEventListener("click", async function() {
+    async function respond(action) {
         acceptButton.disabled = true;
         declineButton.disabled = true;
-        await acceptFriendRequest(request.fromUid, meUid);
-    });
 
-    declineButton.addEventListener("click", async function() {
-        acceptButton.disabled = true;
-        declineButton.disabled = true;
-        await declineFriendRequest(request.fromUid, meUid);
-    });
+        try {
+            await action(request.fromUid, meUid);
+        } catch (error) {
+            console.error(error);
+            acceptButton.disabled = false;
+            declineButton.disabled = false;
+        }
+    }
+
+    acceptButton.addEventListener("click", () => respond(acceptFriendRequest));
+    declineButton.addEventListener("click", () => respond(declineFriendRequest));
 
     return item;
 }

@@ -370,6 +370,7 @@ export default {
   "musicPicker.quota": "Limite de buscas do YouTube atingido. Cole o link da música ou tente mais tarde.",
   "notif.comment": "comentou na sua publicação.",
   "notif.commentedWith": "comentou na sua publicação:",
+  "notif.decline": "Excluir",
   "notif.default": "interagiu com você.",
   "notif.emptySub": "Interaja para receber notificações",
   "notif.emptyTitle": "Sem notificações",

@@ -288,21 +288,23 @@ function createNotification(
         const declineButton =
             item.querySelector(".friend-request-btn.sec");
 
-        acceptButton.addEventListener("click", async function() {
+        async function respond(action) {
             acceptButton.disabled = true;
             declineButton.disabled = true;
-            await acceptFriendRequest(notification.fromUid, meUid);
-            deleteNotification(notification.id);
-            item.remove();
-        });
 
-        declineButton.addEventListener("click", async function() {
-            acceptButton.disabled = true;
-            declineButton.disabled = true;
-            await declineFriendRequest(notification.fromUid, meUid);
-            deleteNotification(notification.id);
-            item.remove();
-        });
+            try {
+                await action(notification.fromUid, meUid);
+                deleteNotification(notification.id);
+                item.remove();
+            } catch (error) {
+                console.error(error);
+                acceptButton.disabled = false;
+                declineButton.disabled = false;
+            }
+        }
+
+        acceptButton.addEventListener("click", () => respond(acceptFriendRequest));
+        declineButton.addEventListener("click", () => respond(declineFriendRequest));
     }
 
 

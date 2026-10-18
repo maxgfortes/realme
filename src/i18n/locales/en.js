@@ -370,6 +370,7 @@ export default {
   "musicPicker.quota": "YouTube search limit reached. Paste the song link or try again later.",
   "notif.comment": "commented on your post.",
   "notif.commentedWith": "commented on your post:",
+  "notif.decline": "Delete",
   "notif.default": "interacted with you.",
   "notif.emptySub": "Interact to get notifications",
   "notif.emptyTitle": "No notifications",

@@ -15,7 +15,7 @@ const messaging = firebase.messaging();
 const DEFAULT_ICON = "/public/img/icon.png";
 const DEFAULT_URL = "/feed.html";
 
-const CACHE = "realme-version-1.0.7";
+const CACHE = "realme-version-1.0.8";
 const PRECACHE = [
   "/",
   "/feed.html",
