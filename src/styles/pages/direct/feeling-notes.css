@@ -270,8 +270,9 @@
   justify-content: flex-end;
   z-index: var(--z-99999);
   pointer-events: none;
-  display: none;
+  z-index: 9999;
 }
+
 
 .note-view-area.active {
   pointer-events: all;
@@ -287,6 +288,7 @@
   opacity: 0;
   pointer-events: none;
   transition: var(--transition-opacity-linear);
+  z-index: 9;
 }
 
 .note-view-overlay.active {
@@ -322,10 +324,9 @@
   left: 50%;
   width: 40px;
   height: 4px;
-  border-radius: var(--radius-pill);
   background: var(--color-bg-input);
   transform: translateX(-50%);
-    display: none;
+  display: none;
 }
 
 .note-view-modal.active {
