@@ -1,4 +1,4 @@
-import { loadMessages } from "./loadMessages.js";
+import { loadMessages, stopMessages } from "./loadMessages.js";
 import { destroyMessages } from "./renderMessages.js";
 import { setupTyping, stopTyping } from "./typing.js";
 import { loadTyping, stopLoadingTyping } from "./showTyping.js";
@@ -82,7 +82,9 @@ openChatFromUrl();
 function closeChat() {
     stopTyping();
     stopLoadingTyping();
+    stopMessages();
     destroyMessages();
+    delete chatArea.dataset.chatId;
 
     chatArea.classList.remove("active");
     listPage.classList.remove("active");

@@ -274,6 +274,19 @@ service cloud.firestore {
       }
     }
 
+    match /nowPlaying/{userId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /spotifyTokens/{userId} {
+      allow read, write: if false;
+    }
+
+    match /spotifyStates/{stateId} {
+      allow read, write: if false;
+    }
+
     match /activities/{activityId} {
       allow read: if true;
 

@@ -1,0 +1,7 @@
+:root {
+  --bottom-cover-size: 400px;
+}
+
+:root .dm-send-area {
+  box-shadow: 0 var(--bottom-cover-size) 0 0 var(--bg-primary);
+}

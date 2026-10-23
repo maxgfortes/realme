@@ -1,0 +1,9 @@
+.ios-keyboard .keyboard-lift {
+  translate: 0 calc(-1 * min(var(--keyboard-height, 0px), var(--keyboard-lift-max, 100vh)));
+  will-change: translate;
+}
+
+.ios-keyboard .keyboard-follow {
+  translate: 0 calc(-1 * var(--keyboard-height, 0px));
+  will-change: translate;
+}

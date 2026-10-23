@@ -1,4 +1,5 @@
 const usersList = document.getElementById("dmUsersList");
+const MAX_ANIMATED_ROWS = 12;
 
 export function renderUsers( chatId, uid, fullName, userPfp, lastMessage, messageTime, unread) {
     const item = document.createElement("div");
@@ -24,6 +25,17 @@ export function renderUsers( chatId, uid, fullName, userPfp, lastMessage, messag
             <div class="new-msg-dot ${unread ? "active" : ""}"></div>
         </div>
     `;
+
+    const index = usersList.querySelectorAll(".user-list-box").length;
+
+    if (index < MAX_ANIMATED_ROWS) {
+        item.classList.add("enter");
+        item.style.setProperty("--row-delay", `${index * 35}ms`);
+        item.addEventListener("animationend", () => {
+            item.classList.remove("enter");
+            item.style.removeProperty("--row-delay");
+        }, { once: true });
+    }
 
     usersList.appendChild(item);
 }

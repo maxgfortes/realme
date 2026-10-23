@@ -72,6 +72,10 @@
                 <svg aria-label="Mensagens" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
                 <span data-i18n="profile.compartilhar_meu_perfil">Compartilhar Meu Perfil</span>
             </a>
+            <a href="#" class="menu-item-link connections-link" data-connections-trigger>
+                <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="16"><title>Ícone de link</title><path d="m9.726 5.123 1.228-1.228a6.47 6.47 0 0 1 9.15 9.152l-1.227 1.227m-4.603 4.603-1.228 1.228a6.47 6.47 0 0 1-9.15-9.152l1.227-1.227" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="8.471" x2="15.529" y1="15.529" y2="8.471"></line></svg>
+                <span data-i18n="connections.title">Conexões</span>
+            </a>
         </div>
 
         <div class="section-title" data-i18n="common.notificacoes">Notificações</div>
@@ -144,6 +148,36 @@
     <div class="menu-items">
         <div class="section-title" data-i18n="profile.linguas">Linguas</div>
         <div class="menu-conjunt" data-language-list></div>
+    </div>
+</div>
+
+<div class="side-menu sec" id="sideMenuConnections" data-connections-panel>
+    <div class="menu-header">
+        <div class="header-block">
+            <button class="close-menu" data-connections-close>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+            </button>
+        </div>
+        <div class="header-block">
+            <div class="header-title" data-i18n="connections.title">Conexões</div>
+        </div>
+        <div class="header-block"></div>
+    </div>
+
+    <div class="menu-items">
+        <div class="section-title" data-i18n="connections.music">Música</div>
+        <div class="menu-conjunt">
+            <a href="#" class="menu-item-link spotify-connect" id="spotifyConnectBtn">
+                <svg class="spotify-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                <span class="spotify-connect-text">
+                    <span id="spotifyConnectLabel">Conectar Spotify</span>
+                    <span class="spotify-connect-status" id="spotifyConnectStatus"></span>
+                </span>
+            </a>
+        </div>
+        <div class="side-menu-footer">
+            <div class="footer-text-item" data-i18n="connections.spotifyHint">Mostra no seu perfil a música que você está ouvindo no Spotify.</div>
+        </div>
     </div>
 </div>
 
@@ -687,6 +721,22 @@
         <button class="action-btn" id="shareProfile" data-i18n="profile.compartilhar_perfil">Compartilhar perfil</button>
       </div>
     </div>
+  </div>
+
+  <div class="now-playing" id="nowPlaying" hidden>
+    <a class="now-playing-card" id="nowPlayingLink" href="#" target="_blank" rel="noopener">
+      <img class="now-playing-cover" id="nowPlayingCover" alt="">
+      <div class="now-playing-info">
+        <div class="now-playing-label"><svg class="spotify-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg><span data-i18n="spotify.listening">Ouvindo no Spotify</span></div>
+        <div class="now-playing-title" id="nowPlayingTitle"></div>
+        <div class="now-playing-artist" id="nowPlayingArtist"></div>
+        <div class="now-playing-progress">
+          <span class="now-playing-time" id="nowPlayingElapsed">0:00</span>
+          <div class="now-playing-bar"><div class="now-playing-fill" id="nowPlayingFill"></div></div>
+          <span class="now-playing-time" id="nowPlayingDuration">0:00</span>
+        </div>
+      </div>
+    </a>
   </div>
 
   <div class="main-profile">

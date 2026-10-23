@@ -3,6 +3,9 @@ import { collection, addDoc, serverTimestamp, updateDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { auth, db } from "../../../../config/config.js";
+import { showPendingImage } from "../renderMessages.js";
+
+const PRELOAD_TIMEOUT_MS = 4000;
 
 const imgButton = document.getElementById("img-dm");
 const imageInput = document.getElementById("dm-image-input");
@@ -17,18 +20,50 @@ imageInput.addEventListener("change", async function() {
 
     if (!file) { return; }
 
+    imageInput.value = "";
+
+    const chatId = document.getElementById("dmChatArea")?.dataset.chatId;
+
+    if (!chatId) { return; }
+
+    let pending = null;
+
     try {
-        const compressedImage = await compressImage(file);
+        const compressed = await compressImage(file);
 
-        const imageUrl = await uploadToImgBB(compressedImage);
+        pending = showPendingImage(
+            URL.createObjectURL(compressed.blob),
+            compressed.width,
+            compressed.height
+        );
 
-        await saveMessage(imageUrl);
+        const imageUrl = await uploadToImgBB(compressed.blob);
+
+        await preloadImage(imageUrl);
+
+        await saveMessage(chatId, imageUrl, compressed.width, compressed.height);
+
+        pending.remove();
 
     } catch (error) {
+        console.error("Erro ao enviar imagem:", error);
+        pending?.fail();
     }
-
-    imageInput.value = "";
 });
+
+function preloadImage(url) {
+    return new Promise(function(resolve) {
+        const image = new Image();
+        const timer = setTimeout(resolve, PRELOAD_TIMEOUT_MS);
+
+        image.onload = image.onerror = function() {
+            clearTimeout(timer);
+            resolve();
+        };
+
+        image.src = url;
+    });
+}
 
 async function compressImage(file) {
 
@@ -43,8 +78,8 @@ async function compressImage(file) {
     const maxWidth = 1920;
     const maxHeight = 1080;
 
-    let width = image.width;
-    let height = image.height;
+    let width = image.naturalWidth;
+    let height = image.naturalHeight;
 
     if (width > maxWidth || height > maxHeight) {
 
@@ -53,9 +88,11 @@ async function compressImage(file) {
             maxHeight / height
         );
 
-        width = width * ratio;
-        height = height * ratio;
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
     }
+
+    URL.revokeObjectURL(image.src);
 
     canvas.width = width;
     canvas.height = height;
@@ -80,7 +117,7 @@ async function compressImage(file) {
                     return;
                 }
 
-                resolve(blob);
+                resolve({ blob, width, height });
             },
             "image/jpeg",
             0.8
@@ -112,21 +149,17 @@ async function uploadToImgBB(image) {
     return data.data.url;
 }
 
-async function saveMessage(imageUrl) {
-
-    const chatArea = document.getElementById("dmChatArea");
-
-    const chatId = chatArea.dataset.chatId;
-
-    if (!chatId) {
-        throw new Error("Chat não encontrado");
-    }
+async function saveMessage(chatId, imageUrl, width, height) {
 
     await addDoc(
         collection( db, "chats", chatId, "messages"),
         {
             sender: auth.currentUser.uid,
             content: imageUrl,
+            type: "image",
+            width,
+            height,
+            aspectRatio: width / height,
             read: false,
             timestamp: serverTimestamp()
         }

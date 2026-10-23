@@ -146,6 +146,87 @@ function isImageMessage(message) {
     );
 }
 
+const IMAGE_MAX_WIDTH = 260;
+const IMAGE_MAX_HEIGHT = 340;
+
+function imageDisplaySize(width, height) {
+    if (!width || !height) return null;
+
+    const ratio = width / height;
+    const maxWidth = Math.min(IMAGE_MAX_WIDTH, window.innerWidth * 0.68);
+
+    let displayWidth = Math.min(maxWidth, width);
+    let displayHeight = displayWidth / ratio;
+
+    if (displayHeight > IMAGE_MAX_HEIGHT) {
+        displayHeight = IMAGE_MAX_HEIGHT;
+        displayWidth = displayHeight * ratio;
+    }
+
+    return {
+        width: Math.round(displayWidth),
+        height: Math.round(displayHeight)
+    };
+}
+
+function applyImageSize(image, width, height) {
+    const size = imageDisplaySize(width, height);
+
+    if (!size) return;
+
+    image.width = size.width;
+    image.height = size.height;
+    image.style.width = `${size.width}px`;
+    image.style.height = `${size.height}px`;
+    image.style.aspectRatio = `${width} / ${height}`;
+    image.classList.add("sized");
+}
+
+export function showPendingImage(previewUrl, width, height) {
+    const messagesList = document.getElementById("dmMessages");
+
+    if (!messagesList) return { remove() {} };
+
+    const box = document.createElement("div");
+    box.className = "box mine pending";
+
+    const bubble = document.createElement("div");
+    bubble.className = "msg-beta-image-mine";
+
+    const image = document.createElement("img");
+    image.className = "dm-image loaded";
+    image.src = previewUrl;
+    applyImageSize(image, width, height);
+    bubble.style.setProperty("--dm-pending-width", `${image.width}px`);
+
+    const spinner = document.createElement("span");
+    spinner.className = "dm-image-uploading";
+
+    bubble.append(image, spinner);
+    box.appendChild(bubble);
+    mount(messagesList, box);
+
+    playEnterAnimation([bubble]);
+    scrollToBottom(messagesList, true);
+
+    return {
+        remove() {
+            box.remove();
+            URL.revokeObjectURL(previewUrl);
+        },
+        fail() {
+            box.classList.add("failed");
+            setTimeout(function () {
+                box.classList.add("leaving");
+                setTimeout(function () {
+                    box.remove();
+                    URL.revokeObjectURL(previewUrl);
+                }, 250);
+            }, 1800);
+        }
+    };
+}
+
 function buildBubble(message, isMine) {
     const bubble = document.createElement("div");
 
@@ -153,8 +234,10 @@ function buildBubble(message, isMine) {
         bubble.classList.add(isMine ? "msg-beta-image-mine" : "msg-beta-image");
 
         const image = document.createElement("img");
-        image.src = message.content;
         image.className = "dm-image";
+        image.decoding = "async";
+        applyImageSize(image, message.width, message.height);
+        image.src = message.content;
 
         image.addEventListener("load", function () {
             image.classList.add("loaded");
@@ -327,6 +410,28 @@ function playEnterAnimation(nodes) {
     });
 }
 
+const INTRO_COUNT = 14;
+
+function playIntroAnimation(messagesList) {
+    const nodes = Array.from(
+        messagesList.querySelectorAll(":scope > .box, :scope > .dm-day-separator, :scope > .dm-seen-label")
+    ).slice(-INTRO_COUNT);
+
+    nodes.forEach(function (node, index) {
+        node.style.setProperty("--intro-delay", `${index * 22}ms`);
+        node.classList.add("msg-intro");
+
+        node.addEventListener(
+            "animationend",
+            function () {
+                node.classList.remove("msg-intro");
+                node.style.removeProperty("--intro-delay");
+            },
+            { once: true }
+        );
+    });
+}
+
 function resetList(messagesList) {
 
     const typing = messagesList.querySelector(".typing-area");
@@ -364,7 +469,7 @@ function setFooterLabelText(labelEl, type, date) {
 
     const prefix = document.createElement("span");
     prefix.className = "dm-footer-prefix";
-    prefix.textContent = type === "seen" ? "visto" : "enviado";
+    prefix.textContent = type === "seen" ? t("dm.seenLabel") : t("dm.sentLabel");
 
     labelEl.appendChild(prefix);
     labelEl.appendChild(document.createTextNode(` ${formatTimeAgo(date)}`));
@@ -448,6 +553,10 @@ export function renderMessages(messages, chatId, otherUserName) {
 
     if (!messagesList) return;
 
+    const openChatId = document.getElementById("dmChatArea")?.dataset.chatId;
+
+    if (openChatId && openChatId !== chatId) return;
+
     const currentUserId = auth.currentUser?.uid;
 
     const nameChanged =
@@ -468,6 +577,7 @@ export function renderMessages(messages, chatId, otherUserName) {
     const prevScrollTop = messagesList.scrollTop;
     const prevScrollHeight = messagesList.scrollHeight;
 
+    const isNewChat = chatId !== state.chatId;
     const rebuilt = needsRebuild(messages, chatId);
 
     if (rebuilt) {
@@ -511,7 +621,13 @@ export function renderMessages(messages, chatId, otherUserName) {
 
     renderFooter(messagesList, messages, currentUserId);
 
-    if (wasNearBottom) {
+    if (isNewChat && chatIsOpen && appended.length) {
+        playIntroAnimation(messagesList);
+    }
+
+    if (isNewChat) {
+        scrollToBottom(messagesList, false);
+    } else if (wasNearBottom) {
         scrollToBottom(messagesList, shouldAnimate);
     } else {
         messagesList.scrollTop =

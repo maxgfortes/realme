@@ -10,7 +10,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { auth, db } from "../../../config/config.js";
-import { openChatById } from "./openChat.js";
 import { formatTimeAgo } from "./formatRelativeTime.js";
 
 const CLOSE_MS = 300;
@@ -104,6 +103,16 @@ async function ensureChat(myUid, otherUid) {
     return { chatId, chatRef };
 }
 
+async function openReplyChat(chatId) {
+    if (!document.getElementById("dmChatArea")) {
+        location.href = `/direct.html?chatid=${encodeURIComponent(chatId)}`;
+        return;
+    }
+
+    const { openChatById } = await import("./openChat.js");
+    openChatById(chatId);
+}
+
 async function replyToNote() {
     const user = auth.currentUser;
     const note = currentNote;
@@ -137,7 +146,7 @@ async function replyToNote() {
 
         input.value = "";
         closeNoteView();
-        openChatById(chatId);
+        await openReplyChat(chatId);
     } catch (error) {
         console.error("Erro ao responder nota:", error);
     } finally {

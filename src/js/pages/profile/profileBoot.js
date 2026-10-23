@@ -17,6 +17,7 @@ import { loadWall } from "./wall.js";
 import { showProfileNotFound } from "./profileNotFound.js";
 import { stopMusic } from "./profileMusic.js";
 import { initProfileEvents } from "./profileEvents.js";
+import { watchNowPlaying, setSpotifyViewer } from "./spotify.js";
 
 function renderCachedProfile() {
   const uid = getCachedProfileUid();
@@ -42,6 +43,7 @@ async function openProfile(uid) {
   setupAboutPermissions();
 
   watchProfile(uid);
+  watchNowPlaying(uid);
   watchFriendship(uid);
   loadWall(uid);
   loadPostsGrid(uid);
@@ -54,6 +56,7 @@ async function handleAuthChange(user) {
   state.currentUserId = user ? user.uid : null;
   state.currentUsername = user ? await getCurrentUsername(user.uid) : "";
   if (user) saveOwnUid(user.uid);
+  setSpotifyViewer(state.currentUserId);
   renderAuthMenu();
 
   const uid = await resolveProfileUid();

@@ -1,5 +1,7 @@
 @import url("../themes/skeuomorphism.css");
 @import url("./language.css");
+@import url("./bottom-cover.css");
+@import url("./keyboard.css");
 
 @font-face {
   font-family: 'RealMeFont';

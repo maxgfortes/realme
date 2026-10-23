@@ -22,6 +22,7 @@ import "./eventCreation/eventCreation.js";
 import "/src/js/pages/feed/postSystem/inputSize.js";
 
 import "/src/js/pages/feed/utils/serverMessage.js";
+import "/src/js/pages/direct/statusNotes.js";
 import "/src/js/pages/feed/navbarAnimation.js";
 
 import "/src/js/pages/feed/render/postsRender.js";

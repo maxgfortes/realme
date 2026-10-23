@@ -552,6 +552,7 @@ body {
   height: 20px;
   background: var(--bg-primary);
   border-bottom-right-radius: var(--radius-10);
+  display: none;
 }
 
 .typing-bubble::before {
@@ -564,7 +565,9 @@ body {
   width: 20px;
   background: var(--color-bg-gray-19);
   border-bottom-right-radius: var(--radius-15);
+  display: none;
 }
+
 
 .typing-dot {
   width: 7px;
@@ -1103,3 +1106,181 @@ body {
       opacity: 1;
   }
 }
+.dmSendBtn {
+  display: flex;
+  justify-content: center;
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+  transition: width 220ms var(--dm-ease), opacity 160ms ease,
+      transform 260ms var(--dm-ease), scale 120ms ease,
+      background-color 160ms ease;
+}
+
+.input-area.has-text .dmSendBtn {
+  width: 52px;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.dmSendBtn:active,
+.img-btn:active,
+.dm-back-btn:active {
+  scale: 0.9;
+}
+
+.img-btn,
+.dm-back-btn {
+  transition: scale 120ms ease, opacity 160ms ease;
+}
+
+.input-area {
+  transition: var(--transition-height-fast), box-shadow 200ms ease,
+      background-color 200ms ease;
+}
+
+
+.dm-chat-area.active .dm-chat-header > * {
+  animation: dm-header-in 340ms var(--dm-ease) both;
+}
+
+.dm-chat-area.active .dm-chat-header > :nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.dm-chat-area.active .dm-chat-header > :nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.dm-chat-area.active .dm-send-area .input-area {
+  animation: dm-rise-in 380ms var(--dm-ease) 90ms both;
+}
+
+@keyframes dm-header-in {
+  from {
+      opacity: 0;
+      transform: translateX(12px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+@keyframes dm-rise-in {
+  from {
+      opacity: 0;
+      transform: translateY(16px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.msg-intro {
+  animation: dm-intro 320ms var(--dm-ease) var(--intro-delay, 0ms) both;
+}
+
+@keyframes dm-intro {
+  from {
+      opacity: 0;
+      transform: translateY(12px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.user-list-box.enter {
+  animation: dm-row-in 360ms var(--dm-ease) var(--row-delay, 0ms) both;
+}
+
+.user-list-box:active {
+  transform: scale(0.98);
+}
+
+@keyframes dm-row-in {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: none;
+  }
+}
+
+.new-msg-dot.active {
+  animation: dm-badge-in 260ms var(--dm-ease) both;
+}
+
+.dm-image.sized {
+  opacity: 1;
+  object-fit: cover;
+  max-width: none;
+  background-color: var(--color-bg-surface);
+}
+
+.dm-image.sized:not(.loaded) {
+  animation: dm-image-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes dm-image-pulse {
+  0%,
+  100% {
+      opacity: 1;
+  }
+  50% {
+      opacity: 0.6;
+  }
+}
+
+.box.pending .msg-beta-image-mine {
+  position: relative;
+}
+
+.box.pending .dm-image {
+  filter: brightness(0.65);
+  transition: filter 200ms ease;
+}
+
+.dm-image-uploading {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--dm-pending-width, 0px) / 2);
+  width: 28px;
+  height: 28px;
+  margin: -14px -14px 0 0;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: dm-spin 800ms linear infinite;
+  pointer-events: none;
+}
+
+@keyframes dm-spin {
+  to {
+      transform: rotate(360deg);
+  }
+}
+
+.box.pending.failed .dm-image {
+  filter: grayscale(1) brightness(0.5);
+}
+
+.box.pending.failed .dm-image-uploading {
+  display: none;
+}
+
+.box.pending.leaving {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+

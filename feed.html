@@ -30,7 +30,8 @@
   <link rel="stylesheet" href="./src/styles/shared/sugestions.css">
   <link rel="stylesheet" href="./src/styles/shared/eventPage.css">
   <link rel="stylesheet" href="./src/styles/pages/feed/creationOverlay.css">
-    <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
+  <link rel="stylesheet" href="../src/styles/shared/menu-bottom.css">
+  <link rel="stylesheet" href="./src/styles/pages/direct/feeling-notes.css" />
 
   <meta property="og:site_name" content="RealMe">
   <meta property="og:title" content="RealMe">
@@ -356,9 +357,22 @@
         </div>
       </section>
       <div id="server-messages"></div>
-      <div class="feedRow" id="feed">
-
+      <div class="feelings-stories" id="notesRow">
+        <div class="feeling-item my-feeling">
+          <div class="note-user-infos">
+            <div class="note-pfp">
+              <div class="note-pfp-border">
+                <img src="../public/img/default.jpg" id="notePfp">
+              </div>
+            </div>
+            <div class="note-username" id="notenName"></div>
+          </div>
+          <div class="humor-note-border">
+            <div class="humor-note placeholder" id="createNoteBtn" data-i18n="direct.o_que_voce_esta_fazendo">O que você está fazendo agora?</div>
+          </div>
+        </div>
       </div>
+      <div class="feedRow" id="feed"></div>
     </div>
   </main>
 
@@ -387,6 +401,51 @@
 
 </div>
 </div>
+</div>
+
+<div class="note-create-area" id="createNoteArea">
+  <div class="note-create-overlay" id="createNoteOverlay"></div>
+  <div class="feeling-create-modal" id="createNoteModal">
+    <div class="user-header">
+      <div class="pfp-modal-feeling">
+        <img src="./public/img/default.jpg" alt="Foto de perfil" id="createNoteModalPfp" data-i18n-attr="alt:direct.foto_de_perfil">
+      </div>
+      <div class="user-info-modal-feeling">
+        <div class="username-modal-feeling" id="createNoteModalName"></div>
+      </div>
+    </div>
+    <div class="feelings-area">
+      <textarea class="noteInput" name="note" id="noteInput" placeholder="Ocupado, estudando, trabalhando..." maxlength="40" data-i18n-attr="placeholder:direct.ocupado_estudando_trabalhando"></textarea>
+    </div>
+    <div class="modal-feeling-btns">
+      <button class="cancel-feeling-btn" id="cancelNote" data-i18n="common.cancelar">Cancelar</button>
+      <button class="send-feeling-btn" id="sendNote" data-i18n="direct.enviar">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<div class="note-view-area" id="viewNoteArea">
+  <div class="note-view-overlay" id="viewNoteOverlay"></div>
+  <div class="note-view-modal" id="viewNoteModal">
+    <div class="user-header">
+      <div class="pfp-modal-feeling">
+        <img src="./public/img/default.jpg" alt="Foto de perfil" id="noteModalPfp" data-i18n-attr="alt:direct.foto_de_perfil">
+      </div>
+      <div class="user-info-modal-feeling">
+        <div class="note-content-area" id="noteContent">
+          <div class="note-content-name" id="noteContentName"></div>
+          <div class="note-content" id="noteContentText"></div>
+          <div class="note-content-time" id="noteContentTime"></div>
+        </div>
+      </div>
+    </div>
+    <form class="note-view-actions" id="replyNoteForm">
+      <input class="reply-note-input" type="text" id="replyNoteInput" placeholder="Responder..." maxlength="500" autocomplete="off" data-i18n-attr="placeholder:direct.responder">
+      <button class="btn-act-note" id="replyNoteBtn" type="submit" aria-label="Responder" data-i18n-attr="aria-label:direct.responder_2">
+        <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M22.513 3.576C21.826 2.552 20.617 2 19.384 2H4.621c-1.474 0-2.878.818-3.46 2.173-.6 1.398-.297 2.935.784 3.997l3.359 3.295a1 1 0 0 0 1.195.156l8.522-4.849a1 1 0 1 1 .988 1.738l-8.526 4.851a1 1 0 0 0-.477 1.104l1.218 5.038c.343 1.418 1.487 2.534 2.927 2.766.208.034.412.051.616.051 1.26 0 2.401-.644 3.066-1.763l7.796-13.118a3.572 3.572 0 0 0-.116-3.863Z"></path></svg>
+      </button>
+    </form>
+  </div>
 </div>
 
 <script type="module" src="./src/js/pages/feed/feed.js"></script>
