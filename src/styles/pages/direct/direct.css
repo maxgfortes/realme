@@ -1284,16 +1284,3 @@ body {
   transition: opacity 220ms ease, transform 220ms ease;
 }
 
-
-.dm-heart-icon {
-  width: 1em;
-  height: 1em;
-  fill: #ff3b5c;
-  vertical-align: -0.15em;
-}
-
-.reaction-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}

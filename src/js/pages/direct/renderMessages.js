@@ -7,7 +7,6 @@ import { initReplyPreview } from "./replyPreview.js";
 initReplyPreview();
 
 const NEAR_BOTTOM_THRESHOLD_PX = 100;
-const HEART_SVG = '<svg class="dm-heart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.1 5.2 3 1.6-1.9 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21Z"/></svg>';
 
 let footerRefreshTimer = null;
 let footerElementRef = null;
@@ -282,7 +281,7 @@ function syncReactionBadge(entry, message) {
         entry.bubble.appendChild(entry.reactionBadge);
     }
 
-    entry.reactionBadge.innerHTML = count > 1 ? `${HEART_SVG}<span>${count}</span>` : HEART_SVG;
+    entry.reactionBadge.textContent = count > 1 ? `❤️ ${count}` : "❤️";
 
     entry.reactionBadge.classList.remove("enter", "pop");
     void entry.reactionBadge.offsetWidth;
