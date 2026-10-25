@@ -30,7 +30,7 @@ function buildQuery() {
 }
 
 export function isProfilePost(data) {
-  return !data.wallTo || data.wallTo === data.creatorid;
+  return data.visible !== false && (!data.wallTo || data.wallTo === data.creatorid);
 }
 
 function createGridItem(post) {

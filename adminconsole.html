@@ -29,180 +29,163 @@
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
 
-<style>
-:root{
-  --bg:#0f0f0f;--card:#272727;--ink:#fff;--mute:#aaaaaa;--line:transparent;
-  --brand-ink:#fff;--ok:#178a54;--warn:#b7791f;--off:#8a869a;--bad:#d23c4a;
-}
-
-::-webkit-scrollbar {
-  width: var(--scrollbar-width);
-  display: none;
-}
-
-header{
-  padding:18px 16px 12px;
-  position:fixed;
-  width:100%;
-  height:60px;
-  z-index:5;
-  background:var(--bg-primary);
-}
-
-a{font-size:24px;letter-spacing:-.01em; text-decoration: none; color: #fff; font-weight: bold;}
-main{padding:60px 16px 110px;max-width:640px;margin:0 auto}
-
-.btn{
-  padding:12px 18px;border-radius:var(--radius-12);font-weight:700;color:#fff;
-  border:none;background:var(--primary-color);
-}
-.btn.ghost{background:transparent;border:1px solid var(--mute);color:#fff}
-.btn.danger{background:var(--bad)}
-.btn:disabled{opacity:.5}
-.fab{
-  position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));
-  height:56px;padding:0 22px;border-radius:var(--radius-28);box-shadow:var(--shadow);
-}
-
-.item{background:var(--card);border-radius:var(--radius-16);padding:14px;margin-bottom:12px}
-.item-top{display:flex;gap:12px}
-.thumb{
-  width:44px;height:44px;border-radius:var(--radius-12);background:var(--bg);flex:none;
-  object-fit:cover;display:grid;place-items:center;font-size:1.3rem;
-}
-.item h3{font-size:1rem;overflow-wrap:anywhere}
-.item p{
-  font-size:.85rem;color:var(--mute);margin-top:4px;overflow-wrap:anywhere;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-}
-.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:12px;font-size:.78rem;color:var(--mute)}
-.badge{font-weight:700;padding:3px 10px;border-radius:var(--radius-99);font-size:.75rem;border:1px solid currentColor}
-.on{color:var(--ok)}.soon{color:var(--warn)}.off{color:var(--off)}
-.actions{display:flex;gap:8px;margin-top:12px}
-.actions .btn{flex:1;padding:10px}
-.empty{text-align:center;color:var(--mute);padding:60px 20px;line-height:1.5}
-.empty strong{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:6px}
-
-#editor{
-  position:fixed;inset:0;z-index:20;background:var(--bg);
-  display:none;flex-direction:column;overflow-y:hidden;
-}
-#editor.open{display:flex}
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding:calc(10px + env(safe-area-inset-top)) 12px 10px;
-  border-bottom:1px solid var(--line);background:var(--bg);
-}
-.topbar h2{font-size:1rem}
-.topbar .btn{padding:10px 16px}
-.editor-body{
-  flex:1;overflow:auto;padding:8px 16px calc(40px + env(safe-area-inset-bottom));
-  max-width:640px;width:100%;margin:0 auto;
-}
-label{display:block;font-size:.85rem;font-weight:700;margin:18px 0 6px}
-input,textarea{
-  width:100%;font:inherit;font-size:16px;padding:14px;border-radius:var(--radius-12);
-  border:1px solid var(--line);background:var(--card);color:#fff;
-}
-textarea{min-height:200px;resize:vertical;line-height:1.5}
-.hint{font-size:.78rem;color:var(--mute);margin-top:5px}
-.row{display:grid;grid-template-columns:1fr;gap:0 12px;overflow-y:hidden}
-@media (min-width:520px){.row{grid-template-columns:1fr 1fr}}
-.pv-title{margin:28px 0 8px;font-size:.9rem;font-weight:700}
-.pv-frame{border-radius:0;overflow:hidden;background:var(--bg-primary)}
-.pv-empty{color:var(--mute);text-align:center;font-size:.85rem;padding:24px}
-
-.serverMessageArea{
-  width:100%;position:relative;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;max-height:500px;opacity:1;overflow:hidden;
-  transition:all .6s;background:var(--bg-primary);
-}
-.closeMessage{
-  width:28px;height:28px;border-radius:50%;border:none;display:flex;align-items:center;
-  justify-content:center;color:#fff;background:transparent;font-size:18px;
-  position:absolute;top:10px;right:10px;
-}
-.messageIconArea{display:flex;align-items:center;justify-content:center;width:100%;height:140px}
-.messageIconArea img{height:100%;width:100%;object-fit:cover}
-.textMessageArea{display:flex;flex-direction:column;gap:8px;padding:32px}
-.messageTitle{width:100%;font-size:1.3rem;font-weight:bold;color:#fff;text-align:center}
-.messageBody{width:100%;font-size:1rem;color:#999;text-align:center}
-.messageAction{width:100%;padding:0 32px 32px}
-.messageBtn{
-  width:100%;height:50px;border-radius:var(--radius-10);border:none;
-  background:var(--primary-color);color:#fff;font-weight:bold;font-size:1rem;
-}
-
-#delOv{
-  position:fixed;inset:0;background:rgba(10,8,20,.55);z-index:30;
-  display:none;align-items:flex-end;justify-content:center;
-}
-#delOv.open{display:flex}
-.confirm{
-  background:var(--bg);width:100%;max-width:640px;border-radius:var(--radius-22) var(--radius-22) 0 0;
-  padding:22px 16px calc(20px + env(safe-area-inset-bottom));
-}
-.confirm p{color:var(--mute);margin:6px 0;overflow-wrap:anywhere}
-.confirm .actions{margin-top:16px}
-
-.toast{
-  position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));
-  transform:translateX(-50%) translateY(20px);
-  background:#fff;color:#0f0f0f;padding:11px 18px;border-radius:var(--radius-12);font-size:.88rem;
-  opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:90%;
-}
-.toast.show{opacity:1;transform:translateX(-50%)}
-
-[hidden]{display:none !important}
-.tabs{
-  position:sticky;top:60px;z-index:4;display:flex;gap:8px;padding:10px 0 12px;
-  background:var(--bg-primary);
-}
-.tab{
-  flex:1;padding:10px;border-radius:var(--radius-12);border:none;font-weight:700;font-size:.9rem;
-  color:var(--mute);background:var(--card);
-}
-.tab.active{color:#fff;background:var(--primary-color)}
-.search{margin-bottom:12px}
-.users-count{font-size:.8rem;color:var(--mute);margin:0 2px 10px}
-.user-row{
-  display:flex;align-items:center;gap:12px;background:var(--card);
-  border-radius:var(--radius-16);padding:12px;margin-bottom:10px;
-}
-.user-pfp{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:var(--bg)}
-.user-info{flex:1;min-width:0}
-.user-name{
-  display:flex;align-items:center;gap:6px;font-weight:700;font-size:.95rem;color:#fff;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.user-name a{font-size:inherit;letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
-.verified-mark{
-  flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;
-  background:#3b82f6;color:#fff;font-size:10px;line-height:1;
-}
-.user-username{font-size:.82rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-date{font-size:.75rem;color:var(--mute);margin-top:2px}
-.verify-btn{flex:none;padding:9px 12px;font-size:.8rem;min-width:84px}
-.verify-btn.is-verified{background:transparent;border:1px solid var(--mute)}
-</style>
+  <link rel="stylesheet" href="/src/styles/pages/admin/admin-legacy.css">
+  <link rel="stylesheet" href="/src/styles/pages/admin/admin.css">
 </head>
 <body>
 
-<header>
+<header class="admin-header">
   <a href="/feed.html">RealMe</a>
-</header>
-<main>
-  <div class="tabs" id="tabs" hidden>
-    <button class="tab active" type="button" data-tab="messages">Mensagens</button>
-    <button class="tab" type="button" data-tab="users">Usuários</button>
+  <div class="admin-header-right">
+    <span class="role-badge" id="roleBadge" hidden></span>
+    <button class="icon-btn" id="btnRefresh" type="button" aria-label="Atualizar" hidden>↻</button>
   </div>
-  <div id="list"><div class="empty">Carregando…</div></div>
-  <div id="usersPanel" hidden>
+</header>
+
+<main class="admin-main">
+  <nav class="admin-tabs" id="tabs" hidden>
+    <button class="tab active" type="button" data-tab="overview">Visão geral</button>
+    <button class="tab" type="button" data-tab="functions" data-min-role="admin">Funções</button>
+    <button class="tab" type="button" data-tab="reports">Denúncias <span class="tab-count" id="reportsCount" hidden></span></button>
+    <button class="tab" type="button" data-tab="content">Conteúdo</button>
+    <button class="tab" type="button" data-tab="users">Usuários</button>
+    <button class="tab" type="button" data-tab="messages">Mensagens</button>
+    <button class="tab" type="button" data-tab="security" data-min-role="admin">Segurança</button>
+    <button class="tab" type="button" data-tab="errors" data-min-role="admin">Erros</button>
+  </nav>
+
+  <div id="gate" class="empty">Carregando…</div>
+
+  <section class="panel" id="panel-overview" hidden>
+    <div class="panel-head">
+      <h2>Visão geral</h2>
+      <span class="updated" id="overviewUpdated"></span>
+    </div>
+    <div class="kpi-grid" id="kpiActivity"></div>
+    <div class="card">
+      <div class="card-title">Novos usuários · 30 dias</div>
+      <div class="chart" id="chartSignups"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Posts por dia · 30 dias</div>
+      <div class="chart" id="chartPosts"></div>
+    </div>
+    <div class="section-label">Totais</div>
+    <div class="kpi-grid small" id="kpiTotals"></div>
+    <div class="card">
+      <div class="card-title">Quem mais postou · 7 dias</div>
+      <div id="topCreators"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-functions" hidden>
+    <div class="panel-head">
+      <h2>Funções · 24h</h2>
+      <span class="updated" id="functionsUpdated"></span>
+    </div>
+    <div class="kpi-grid" id="kpiFunctions"></div>
+    <div class="card">
+      <div class="card-title">Chamadas por hora</div>
+      <div class="chart" id="chartFunctions"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Por função</div>
+      <div class="fn-table" id="functionsTable"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-reports" hidden>
+    <div class="panel-head">
+      <h2>Denúncias</h2>
+    </div>
+    <div class="segmented" id="reportsFilter">
+      <button type="button" class="active" data-status="open">Abertas</button>
+      <button type="button" data-status="resolved">Resolvidas</button>
+      <button type="button" data-status="dismissed">Ignoradas</button>
+    </div>
+    <div id="reportsList"></div>
+  </section>
+
+  <section class="panel" id="panel-content" hidden>
+    <div class="panel-head">
+      <h2>Posts recentes</h2>
+    </div>
+    <div id="contentList"></div>
+    <button class="btn ghost load-more" id="contentMore" type="button" hidden>Carregar mais</button>
+  </section>
+
+  <section class="panel" id="panel-users" hidden>
     <input class="search" id="userSearch" type="search" placeholder="Buscar por nome ou username" autocomplete="off">
+    <div class="segmented" id="usersFilter">
+      <button type="button" class="active" data-filter="all">Todos</button>
+      <button type="button" data-filter="verified">Verificados</button>
+      <button type="button" data-filter="banned">Banidos</button>
+      <button type="button" data-filter="inactive">Inativos 30d</button>
+    </div>
     <div class="users-count" id="usersCount"></div>
     <div id="usersList"></div>
-  </div>
+  </section>
+
+  <section class="panel" id="panel-messages" hidden>
+    <div class="panel-head">
+      <h2>Mensagens do servidor</h2>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <section class="panel" id="panel-security" hidden>
+    <div class="panel-head"><h2>Segurança</h2></div>
+
+    <div class="card">
+      <div class="card-title">Controles do app</div>
+      <div class="switch-row">
+        <div><strong>Modo manutenção</strong><span>Bloqueia o app para todos, menos a equipe.</span></div>
+        <button class="switch" type="button" data-config="maintenance" role="switch" aria-checked="false"></button>
+      </div>
+      <div class="maint-message">
+        <input id="maintenanceMessage" maxlength="300" placeholder="Mensagem de manutenção (opcional)">
+        <button class="btn" id="saveMaintenanceMessage" type="button">Salvar</button>
+      </div>
+      <div class="switch-row">
+        <div><strong>Novos cadastros</strong><span>Permite criar contas novas.</span></div>
+        <button class="switch" type="button" data-config="signupsEnabled" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="switch-row">
+        <div><strong>Publicações</strong><span>Permite criar posts e escrever em murais.</span></div>
+        <button class="switch" type="button" data-config="postingEnabled" role="switch" aria-checked="true"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Equipe</div>
+      <div id="adminsList"></div>
+      <div class="add-admin" id="addAdmin" hidden>
+        <input id="addAdminUsername" placeholder="@username" autocomplete="off">
+        <select id="addAdminRole">
+          <option value="moderator">Moderador</option>
+          <option value="admin">Admin</option>
+          <option value="owner">Dono</option>
+        </select>
+        <button class="btn" id="addAdminBtn" type="button">Adicionar</button>
+      </div>
+      <div class="hint">Moderador: denúncias, conteúdo, verificado e banimento. Admin: também funções, segurança e erros. Dono: também gerencia a equipe.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Registro de auditoria</div>
+      <div id="auditList"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-errors" hidden>
+    <div class="panel-head">
+      <h2>Erros dos usuários</h2>
+      <button class="btn ghost small-btn" id="clearErrors" type="button">Limpar</button>
+    </div>
+    <div id="errorsList"></div>
+  </section>
 </main>
+
 <button class="btn fab" id="btnNew" hidden>Nova mensagem</button>
 
 <div id="editor">
@@ -239,9 +222,10 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 
 <div id="delOv">
   <div class="confirm">
-    <h2>Apagar mensagem?</h2>
+    <h2 id="confirmTitle">Apagar mensagem?</h2>
     <p id="delName"></p>
-    <div class="hint">Essa ação não pode ser desfeita.</div>
+    <input id="confirmReason" maxlength="300" placeholder="Motivo (opcional)" hidden>
+    <div class="hint" id="confirmHint">Essa ação não pode ser desfeita.</div>
     <div class="actions">
       <button class="btn ghost" id="delNo">Cancelar</button>
       <button class="btn danger" id="delYes">Apagar</button>
@@ -249,420 +233,16 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
   </div>
 </div>
 
+<div class="sheet-area" id="userSheet">
+  <div class="sheet-overlay" data-close-sheet></div>
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <div id="userSheetBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { db, auth } from "./src/config/config.js";
-import {
-  collection, getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc, doc,
-  query, orderBy, onSnapshot, Timestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const $ = id => document.getElementById(id);
-
-let messages = [];
-let editingId = null;
-let deletingId = null;
-
-function esc(text) {
-  return String(text || "").replace(/[&<>"']/g, c =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
-function pad(n) { return String(n).padStart(2, "0"); }
-
-function toInput(d) {
-  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
-         "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
-}
-
-function fmt(d) {
-  return d.toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-}
-
-function toast(text) {
-  const t = $("toast");
-  t.textContent = text;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2400);
-}
-
-function getStatus(m) {
-  const now = new Date();
-  if (now < m.startAt) return { label: "Agendada", cls: "soon" };
-  if (now > m.endAt) return { label: "Expirada", cls: "off" };
-  return { label: "No ar", cls: "on" };
-}
-
-function renderList() {
-  if (messages.length === 0) {
-    $("list").innerHTML = `<div class="empty"><strong>Nenhuma mensagem</strong>Toque em “Nova mensagem” para criar a primeira.</div>`;
-    return;
-  }
-
-  $("list").innerHTML = messages.map(m => {
-    const s = getStatus(m);
-    const icon = m.icon
-      ? `<img class="thumb" src="${esc(m.icon)}" alt="">`
-      : `<div class="thumb">💬</div>`;
-    const btn = m.buttonText ? `<span>Botão: ${esc(m.buttonText)}</span>` : "";
-
-    return `
-      <div class="item">
-        <div class="item-top">
-          ${icon}
-          <div>
-            <h3>${esc(m.title)}</h3>
-            <p>${esc(m.body)}</p>
-          </div>
-        </div>
-        <div class="meta">
-          <span class="badge ${s.cls}">${s.label}</span>
-          <span>${fmt(m.startAt)} → ${fmt(m.endAt)}</span>
-          ${btn}
-        </div>
-        <div class="actions">
-          <button class="btn ghost" data-edit="${m.id}">Editar</button>
-          <button class="btn ghost" data-del="${m.id}">Apagar</button>
-        </div>
-      </div>`;
-  }).join("");
-}
-
-$("list").addEventListener("click", e => {
-  const editId = e.target.dataset.edit;
-  const delId = e.target.dataset.del;
-  if (editId) openEditor(messages.find(m => m.id === editId));
-  if (delId) openDelete(messages.find(m => m.id === delId));
-});
-
-async function loadMessages() {
-  const q = query(collection(db, "serverMessages"), orderBy("startAt", "desc"));
-  const snap = await getDocs(q);
-
-  messages = snap.docs.map(d => {
-    const data = d.data();
-    return { ...data, id: d.id, startAt: data.startAt.toDate(), endAt: data.endAt.toDate() };
-  });
-
-  renderList();
-}
-
-function renderPreview() {
-  const title = $("fTitle").value.trim();
-  const body = $("fBody").value.trim();
-  const icon = $("fIcon").value.trim();
-  const btn = $("fBtn").value.trim();
-
-  $("count").textContent = $("fBody").value.length + " / 400";
-
-  if (!title && !body) {
-    $("preview").innerHTML = `<div class="pv-empty">Preencha título e texto para ver como fica.</div>`;
-    return;
-  }
-
-  $("preview").innerHTML = `
-    <div class="serverMessageArea">
-      <button class="closeMessage" type="button">×</button>
-      ${icon ? `<div class="messageIconArea"><img src="${esc(icon)}" alt=""></div>` : ""}
-      <div class="textMessageArea">
-        <div class="messageTitle">${esc(title)}</div>
-        <div class="messageBody">${esc(body)}</div>
-      </div>
-      ${btn ? `<div class="messageAction"><button class="messageBtn" type="button">${esc(btn)}</button></div>` : ""}
-    </div>`;
-}
-
-["fTitle", "fBody", "fIcon", "fBtn"].forEach(id => $(id).addEventListener("input", renderPreview));
-
-function openEditor(m) {
-  editingId = m ? m.id : null;
-
-  const now = new Date();
-  const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  $("editorTitle").textContent = m ? "Editar mensagem" : "Nova mensagem";
-  $("editHint").hidden = !m;
-  $("fTitle").value = m ? m.title : "";
-  $("fBody").value = m ? m.body : "";
-  $("fIcon").value = m && m.icon ? m.icon : "";
-  $("fBtn").value = m && m.buttonText ? m.buttonText : "";
-  $("fStart").value = toInput(m ? m.startAt : now);
-  $("fEnd").value = toInput(m ? m.endAt : nextWeek);
-
-  renderPreview();
-  $("editor").classList.add("open");
-  $("editor").querySelector(".editor-body").scrollTop = 0;
-}
-
-function closeEditor() {
-  $("editor").classList.remove("open");
-}
-
-$("btnNew").addEventListener("click", () => openEditor(null));
-$("btnCancel").addEventListener("click", closeEditor);
-
-$("form").addEventListener("submit", async e => {
-  e.preventDefault();
-
-  const title = $("fTitle").value.trim();
-  const body = $("fBody").value.trim();
-  const icon = $("fIcon").value.trim();
-  const buttonText = $("fBtn").value.trim();
-  const start = new Date($("fStart").value);
-  const end = new Date($("fEnd").value);
-
-  if (!title || !body) return toast("Preencha título e texto.");
-  if (isNaN(start) || isNaN(end)) return toast("Defina início e fim.");
-  if (end <= start) return toast("O fim precisa ser depois do início.");
-
-  const data = {
-    title,
-    body,
-    startAt: Timestamp.fromDate(start),
-    endAt: Timestamp.fromDate(end)
-  };
-  if (icon) data.icon = icon;
-  if (buttonText) data.buttonText = buttonText;
-
-  $("btnSave").disabled = true;
-
-  try {
-    if (editingId) {
-      await setDoc(doc(db, "serverMessages", editingId), data);
-    } else {
-      await addDoc(collection(db, "serverMessages"), data);
-    }
-    closeEditor();
-    toast(editingId ? "Mensagem atualizada." : "Mensagem criada.");
-    await loadMessages();
-  } catch (err) {
-    console.error(err);
-    toast("Erro ao salvar. Verifique as regras.");
-  }
-
-  $("btnSave").disabled = false;
-});
-
-function openDelete(m) {
-  deletingId = m.id;
-  $("delName").textContent = m.title;
-  $("delOv").classList.add("open");
-}
-
-function closeDelete() {
-  $("delOv").classList.remove("open");
-}
-
-$("delNo").addEventListener("click", closeDelete);
-$("delOv").addEventListener("click", e => { if (e.target.id === "delOv") closeDelete(); });
-
-$("delYes").addEventListener("click", async () => {
-  try {
-    await deleteDoc(doc(db, "serverMessages", deletingId));
-    closeDelete();
-    toast("Mensagem apagada.");
-    await loadMessages();
-  } catch (err) {
-    console.error(err);
-    toast("Erro ao apagar.");
-  }
-});
-
-const DEFAULT_PFP = "/public/img/default.jpg";
-
-let users = [];
-let usersUnsubscribe = null;
-let activeTab = "messages";
-const photoCache = new Map();
-const pendingVerify = new Set();
-
-function toDateValue(value) {
-  if (!value) return null;
-  if (value.toDate) return value.toDate();
-  if (typeof value.seconds === "number") return new Date(value.seconds * 1000);
-
-  const date = new Date(value);
-
-  return isNaN(date) ? null : date;
-}
-
-function fullName(data) {
-  return [data.name, data.surname].filter(Boolean).join(" ").trim() ||
-    data.displayName || data.displayname || "Sem nome";
-}
-
-function formatJoined(date) {
-  if (!date) return "Data de entrada desconhecida";
-
-  const day = date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const time = date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-
-  return `Entrou em ${day} às ${time}`;
-}
-
-function getPhoto(uid) {
-  if (!photoCache.has(uid)) {
-    photoCache.set(uid, getDoc(doc(db, "users", uid, "user-infos", "user-media"))
-      .then(snap => {
-        const media = snap.exists() ? snap.data() : {};
-        return media.userphoto || media.pfp || DEFAULT_PFP;
-      })
-      .catch(() => DEFAULT_PFP));
-  }
-
-  return photoCache.get(uid);
-}
-
-function filteredUsers() {
-  const term = $("userSearch").value.trim().toLowerCase().replace(/^@/, "");
-
-  if (!term) return users;
-
-  return users.filter(u =>
-    u.name.toLowerCase().includes(term) || u.username.toLowerCase().includes(term));
-}
-
-function userRowHTML(u) {
-  const profile = `/profile.html?uid=${encodeURIComponent(u.id)}`;
-  const busy = pendingVerify.has(u.id) ? " disabled" : "";
-
-  return `
-    <div class="user-row" data-uid="${esc(u.id)}">
-      <img class="user-pfp" src="${DEFAULT_PFP}" alt="" loading="lazy">
-      <div class="user-info">
-        <div class="user-name">
-          <a href="${profile}">${esc(u.name)}</a>
-          ${u.verified ? `<span class="verified-mark" title="Verificado">✓</span>` : ""}
-        </div>
-        <div class="user-username">@${esc(u.username || "sem-username")}</div>
-        <div class="user-date">${esc(formatJoined(u.joinedAt))}</div>
-      </div>
-      <button class="btn verify-btn${u.verified ? " is-verified" : ""}" type="button" data-verify="${esc(u.id)}"${busy}>
-        ${u.verified ? "Remover" : "Verificar"}
-      </button>
-    </div>`;
-}
-
-function renderUsers() {
-  const list = filteredUsers();
-
-  $("usersCount").textContent = list.length === users.length
-    ? `${users.length} usuários`
-    : `${list.length} de ${users.length} usuários`;
-
-  if (!list.length) {
-    $("usersList").innerHTML = `<div class="empty"><strong>Nenhum usuário</strong>Nada encontrado para essa busca.</div>`;
-    return;
-  }
-
-  $("usersList").innerHTML = list.map(userRowHTML).join("");
-
-  $("usersList").querySelectorAll(".user-row").forEach(row => {
-    const image = row.querySelector(".user-pfp");
-
-    getPhoto(row.dataset.uid).then(src => {
-      if (image.isConnected) image.src = src;
-    });
-  });
-}
-
-function watchUsers() {
-  if (usersUnsubscribe) return;
-
-  $("usersList").innerHTML = `<div class="empty">Carregando…</div>`;
-
-  usersUnsubscribe = onSnapshot(collection(db, "users"), snap => {
-    users = snap.docs.map(d => {
-      const data = d.data();
-
-      return {
-        id: d.id,
-        name: fullName(data),
-        username: data.username || "",
-        verified: data.verified === true,
-        joinedAt: toDateValue(data.criadoem || data.createdAt)
-      };
-    }).sort((a, b) => (b.joinedAt?.getTime() || 0) - (a.joinedAt?.getTime() || 0));
-
-    renderUsers();
-  }, err => {
-    console.error(err);
-    $("usersList").innerHTML = `<div class="empty"><strong>Erro</strong>Não foi possível carregar os usuários.</div>`;
-  });
-}
-
-async function toggleVerified(uid) {
-  const user = users.find(u => u.id === uid);
-
-  if (!user || pendingVerify.has(uid)) return;
-
-  const next = !user.verified;
-
-  pendingVerify.add(uid);
-  renderUsers();
-
-  try {
-    await updateDoc(doc(db, "users", uid), { verified: next });
-    toast(next ? `${user.name} agora é verificado.` : `Verificado removido de ${user.name}.`);
-  } catch (err) {
-    console.error(err);
-    toast("Erro ao alterar verificado. Verifique as regras.");
-  } finally {
-    pendingVerify.delete(uid);
-    renderUsers();
-  }
-}
-
-function setTab(tab) {
-  activeTab = tab;
-
-  document.querySelectorAll(".tab").forEach(button =>
-    button.classList.toggle("active", button.dataset.tab === tab));
-
-  $("list").hidden = tab !== "messages";
-  $("btnNew").hidden = tab !== "messages";
-  $("usersPanel").hidden = tab !== "users";
-
-  if (tab === "users") watchUsers();
-}
-
-$("tabs").addEventListener("click", e => {
-  const tab = e.target.closest(".tab")?.dataset.tab;
-  if (tab && tab !== activeTab) setTab(tab);
-});
-
-$("usersList").addEventListener("click", e => {
-  const uid = e.target.closest("[data-verify]")?.dataset.verify;
-  if (uid) toggleVerified(uid);
-});
-
-$("userSearch").addEventListener("input", renderUsers);
-
-function deny(text) {
-  $("btnNew").hidden = true;
-  $("tabs").hidden = true;
-  $("usersPanel").hidden = true;
-  $("list").hidden = false;
-  $("list").innerHTML = `<div class="empty"><strong>Acesso restrito</strong>${text}</div>`;
-}
-
-onAuthStateChanged(auth, async user => {
-  if (!user) return deny("Entre na sua conta para continuar.");
-
-  try {
-    const adminDoc = await getDoc(doc(db, "admin", user.uid));
-    if (!adminDoc.exists()) return deny("Sua conta não tem permissão de administrador.");
-
-    $("tabs").hidden = false;
-    setTab(activeTab);
-    await loadMessages();
-  } catch (err) {
-    console.error(err);
-    deny("Não foi possível verificar suas permissões.");
-  }
-});
-</script>
+<script type="module" src="/src/js/pages/admin/admin.js"></script>
 </body>
 </html>

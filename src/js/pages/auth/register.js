@@ -364,6 +364,12 @@ async function createAccount(event) {
 
                     break;
 
+                case "SIGNUPS_DISABLED":
+
+                    showError(t("auth.signupsDisabled"));
+
+                    break;
+
                 default:
 
                     showError(t("auth.createFailed"));

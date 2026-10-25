@@ -1,3 +1,4 @@
+import "/src/shared/appGuard.js";
 import "/src/shared/nav-pic.js";
 import "/src/shared/notifications/notificationPushItem.js";
 import "/src/shared/directDot.js";

@@ -131,7 +131,9 @@ async function renderWallFeed(uid, wallSnapshot) {
 
   if (session !== renderSession || uid !== wallUid) return;
 
-  const items = uniqueById([...wallEntries, ...mentionItems]).sort((a, b) => b.time - a.time);
+  const items = uniqueById([...wallEntries, ...mentionItems])
+    .filter(item => item?.data?.visible !== false)
+    .sort((a, b) => b.time - a.time);
   const feed = $("wallFeed");
 
   wallItems = items;

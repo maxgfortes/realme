@@ -15,6 +15,11 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admin/$(request.auth.uid));
     }
 
+    function postingEnabled() {
+      return !exists(/databases/$(database)/documents/config/app) ||
+        get(/databases/$(database)/documents/config/app).data.get('postingEnabled', true) != false;
+    }
+
     function isChatParticipant(chatId) {
       return request.auth != null &&
         request.auth.uid in get(
@@ -207,7 +212,8 @@ service cloud.firestore {
           (request.resource.data.imgs is list &&
            request.resource.data.imgs.size() <= 12)) &&
         (!('wallTo' in request.resource.data) ||
-          request.resource.data.wallTo == request.auth.uid);
+          request.resource.data.wallTo == request.auth.uid) &&
+        postingEnabled();
 
       allow update: if isSignedIn() && (
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
@@ -274,6 +280,58 @@ service cloud.firestore {
       }
     }
 
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /reports/{reportId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasOnly(['type', 'targetPath', 'reason', 'reporterId', 'status', 'createdAt']) &&
+        request.resource.data.reporterId == request.auth.uid &&
+        request.resource.data.type in ['post', 'event'] &&
+        request.resource.data.targetPath is string &&
+        request.resource.data.targetPath.size() <= 300 &&
+        request.resource.data.reason is string &&
+        request.resource.data.reason.size() <= 60 &&
+        request.resource.data.status == 'open';
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /reportTargets/{targetId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /adminAudit/{entryId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /adminMetrics/{metricId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /clientErrors/{errorId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasOnly(['message', 'stack', 'source', 'page', 'userAgent', 'uid', 'createdAt']) &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() <= 300 &&
+        request.resource.data.stack is string &&
+        request.resource.data.stack.size() <= 2000 &&
+        request.resource.data.source is string &&
+        request.resource.data.source.size() <= 300 &&
+        request.resource.data.page is string &&
+        request.resource.data.page.size() <= 120 &&
+        request.resource.data.userAgent is string &&
+        request.resource.data.userAgent.size() <= 300 &&
+        request.resource.data.uid == request.auth.uid;
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
     match /nowPlaying/{userId} {
       allow read: if isSignedIn();
       allow write: if false;
@@ -310,7 +368,7 @@ service cloud.firestore {
       allow update: if (
           isOwner(userId) &&
           !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['uid', 'username', 'email', 'criadoem', 'nascimento', 'verified'])
+            .hasAny(['uid', 'username', 'email', 'criadoem', 'nascimento', 'verified', 'banned', 'banReason', 'bannedAt', 'bannedBy'])
         ) || (
           isAdmin() &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verified']) &&

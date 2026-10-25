@@ -1,6 +1,7 @@
 import { t } from "/src/i18n/i18n.js";
 import { db, auth } from "../../../../config/config.js";
 import { postSegments } from "./postPath.js";
+import { submitReport } from "/src/shared/report.js";
 
 import {
     doc,
@@ -74,7 +75,22 @@ function setupAlert() {
         if (!selectedPostId) return;
 
         if (actionType === "report") {
-            closeAlert();
+            const postId = selectedPostId;
+
+            confirmBtn.disabled = true;
+
+            try {
+                await submitReport("post", postSegments(postId).join("/"));
+                text.textContent = t("report.sent");
+            } catch (error) {
+                console.error("Erro ao denunciar post:", error);
+                text.textContent = t("report.error");
+            }
+
+            setTimeout(() => {
+                confirmBtn.disabled = false;
+                closeAlert();
+            }, 1400);
             return;
         }
 

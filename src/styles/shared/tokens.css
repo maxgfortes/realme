@@ -2,6 +2,7 @@
 @import url("./language.css");
 @import url("./bottom-cover.css");
 @import url("./keyboard.css");
+@import url("./app-guard.css");
 
 @font-face {
   font-family: 'RealMeFont';
