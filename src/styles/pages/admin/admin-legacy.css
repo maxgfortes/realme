@@ -152,3 +152,8 @@ textarea{min-height:200px;resize:vertical;line-height:1.5}
 .user-date{font-size:.75rem;color:var(--mute);margin-top:2px}
 .verify-btn{flex:none;padding:9px 12px;font-size:.8rem;min-width:84px}
 .verify-btn.is-verified{background:transparent;border:1px solid var(--mute)}
+
+.maint-message.maint-fields{flex-direction:column;align-items:stretch}
+.maint-message.maint-fields textarea{min-height:90px;padding:10px 12px;background:var(--bg)}
+.verified-mark svg{width:10px;height:10px}
+.thumb svg{color:var(--mute)}

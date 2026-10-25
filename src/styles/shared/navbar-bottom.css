@@ -93,6 +93,31 @@
   border: 3px solid var(--bg-primary);
 }
 
-html.has-unread-dm .navbar-bottom-area a::after {
+html.has-unread-dm .navbar-bottom-area a.direct-dot::after {
   opacity: 1;
+}
+
+.navbar-bottom-area a.explore-dot {
+  position: relative;
+}
+
+.navbar-bottom-area a.explore-dot::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  right: 0px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  background: red;
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+  transition: var(--transition-all);
+  border: 3px solid var(--bg-primary);
+}
+
+html.has-new-activity .navbar-bottom-area a.explore-dot::after {
+  opacity: 1;
+  transform: scale(1);
 }

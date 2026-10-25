@@ -119,7 +119,6 @@ export default {
   "common.historico_de_atualizacoes": "Historico de atualizações",
   "common.home": "Home",
   "common.image": "Imagem",
-  "common.imageWithIcon": "📷 Imagem",
   "common.loading": "Carregando…",
   "common.loadingAlt": "Carregando",
   "common.localizacao": "Localização",

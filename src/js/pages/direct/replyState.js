@@ -19,7 +19,7 @@ export function setReplyingTo(message, senderName) {
 
     currentReply = {
         id: message.id,
-        content: isImage ? t("common.imageWithIcon") : message.content,
+        content: isImage ? t("common.image") : message.content,
         sender: message.sender,
         senderName: getFirstName(senderName) || t("common.user"),
         timestamp: message.timestamp,

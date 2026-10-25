@@ -115,6 +115,33 @@ export async function validateVideo(file) {
   }
 }
 
+const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
+
+function canDecodeImage(file) {
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image.naturalWidth > 0);
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(false);
+    };
+
+    image.src = url;
+  });
+}
+
+async function validateImage(file) {
+  if (file.size > MAX_IMAGE_BYTES) return { ok: false, reason: t("edit.imageTooBig") };
+  if (!(await canDecodeImage(file))) return { ok: false, reason: t("upload.loadImage") };
+  return { ok: true };
+}
+
 export function selectMediaFiles(currentCount) {
   const remaining = MAX_MEDIA - currentCount;
 
@@ -125,10 +152,21 @@ export function selectMediaFiles(currentCount) {
 
   return new Promise(resolve => {
     const input = document.createElement("input");
+    let settled = false;
 
     input.type = "file";
     input.accept = "image/*,video/*";
     input.multiple = true;
+    input.hidden = true;
+
+    const finish = files => {
+      if (settled) return;
+      settled = true;
+      input.remove();
+      resolve(files);
+    };
+
+    input.addEventListener("cancel", () => finish([]));
 
     input.onchange = async () => {
       const picked = Array.from(input.files || [])
@@ -141,20 +179,16 @@ export function selectMediaFiles(currentCount) {
       const accepted = [];
 
       for (const file of picked.slice(0, remaining)) {
-        if (!isVideoFile(file)) {
-          accepted.push(file);
-          continue;
-        }
-
-        const check = await validateVideo(file);
+        const check = isVideoFile(file) ? await validateVideo(file) : await validateImage(file);
 
         if (check.ok) accepted.push(file);
         else showMediaNotice(check.reason);
       }
 
-      resolve(accepted);
+      finish(accepted);
     };
 
+    document.body.appendChild(input);
     input.click();
   });
 }

@@ -33,7 +33,7 @@ function rowHTML(user) {
       <div class="user-info">
         <div class="user-name">
           <span>${esc(user.name)}</span>
-          ${user.verified ? `<span class="verified-mark" title="Verificado">✓</span>` : ""}
+          ${user.verified ? `<span class="verified-mark" title="Verificado"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ""}
         </div>
         <div class="user-username">@${esc(user.username || "sem-username")}</div>
         <div class="user-badges">
@@ -112,7 +112,7 @@ function sheetHTML(detail) {
     <div class="detail-head">
       <img src="${esc(detail.photo || DEFAULT_PFP)}" alt="">
       <div style="min-width:0">
-        <div class="detail-name">${esc(detail.name)} ${detail.verified ? `<span class="verified-mark">✓</span>` : ""}</div>
+        <div class="detail-name">${esc(detail.name)} ${detail.verified ? `<span class="verified-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ""}</div>
         <div class="user-username">@${esc(detail.username || "sem-username")}</div>
         ${detail.role ? `<span class="status-pill ok">${esc(ROLE_LABEL[detail.role])}</span>` : ""}
       </div>

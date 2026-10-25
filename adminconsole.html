@@ -142,9 +142,10 @@
         <div><strong>Modo manutenção</strong><span>Bloqueia o app para todos, menos a equipe.</span></div>
         <button class="switch" type="button" data-config="maintenance" role="switch" aria-checked="false"></button>
       </div>
-      <div class="maint-message">
-        <input id="maintenanceMessage" maxlength="300" placeholder="Mensagem de manutenção (opcional)">
-        <button class="btn" id="saveMaintenanceMessage" type="button">Salvar</button>
+      <div class="maint-message maint-fields">
+        <input id="maintenanceTitle" maxlength="80" placeholder="Título da tela de manutenção">
+        <textarea id="maintenanceMessage" maxlength="300" placeholder="Texto da tela de manutenção"></textarea>
+        <button class="btn" id="saveMaintenanceMessage" type="button">Salvar título e texto</button>
       </div>
       <div class="switch-row">
         <div><strong>Novos cadastros</strong><span>Permite criar contas novas.</span></div>

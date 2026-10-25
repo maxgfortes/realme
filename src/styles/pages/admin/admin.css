@@ -342,6 +342,10 @@
   margin-top: 10px;
 }
 
+.report-image {
+  max-width: 500px;
+}
+
 .report-count {
   color: #ff6b78;
 }

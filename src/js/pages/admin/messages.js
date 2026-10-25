@@ -37,7 +37,7 @@ function renderList() {
     const status = getStatus(message);
     const icon = message.icon
       ? `<img class="thumb" src="${esc(message.icon)}" alt="">`
-      : `<div class="thumb">💬</div>`;
+      : `<div class="thumb"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>`;
 
     return `
       <div class="item">

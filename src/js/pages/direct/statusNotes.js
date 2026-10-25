@@ -349,13 +349,37 @@ function stopFriendNotes() {
 }
 
 function loadFriendNotes(user) {
-    stopFriendNotes();
+    unsubscribeFriends?.();
+    unsubscribeFriends = null;
 
-    if (!user) return;
+    friendNoteUnsubs.forEach((unsub) => unsub());
+    friendNoteUnsubs.clear();
+
+    if (!user) {
+        stopFriendNotes();
+        return;
+    }
+
+    let firstSnapshot = true;
 
     unsubscribeFriends = onSnapshot(
         collection(db, "users", user.uid, "friends"),
         (snapshot) => {
+            if (firstSnapshot) {
+                firstSnapshot = false;
+
+                const friendIds = new Set(snapshot.docs.map((friendDoc) => friendDoc.id));
+
+                [...friendNodes.keys()].forEach((friendId) => {
+                    if (!friendIds.has(friendId)) {
+                        removeFriendNode(friendId);
+                        delete cache.friends[friendId];
+                    }
+                });
+
+                writeCache();
+            }
+
             snapshot.docChanges().forEach((change) => {
                 const friendId = change.doc.id;
 
@@ -384,8 +408,8 @@ function isNoteWithin24Hours(note) {
 }
 
 function hydrateFromCache() {
-    if (cache.own?.content) {
-        renderNotes({ content: cache.own.content });
+    if (cache.own?.content && isNoteWithin24Hours(cache.own)) {
+        renderNotes({ content: cache.own.content, createdAt: cache.own.createdAt });
     }
 
     Object.entries(cache.friends).forEach(([friendId, data]) => {

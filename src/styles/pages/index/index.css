@@ -682,3 +682,11 @@ a:focus-visible {
 @view-transition {
   navigation: auto;
 }
+
+.stat-star {
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 2px;
+  fill: currentColor;
+  vertical-align: -0.05em;
+}

@@ -2,8 +2,9 @@ import { t, getLanguage, getLocale } from "/src/i18n/i18n.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, query, where, orderBy, limit,
-  getDocs, getDoc, doc, deleteDoc, Timestamp
+  getDocs, getDoc, doc, deleteDoc, Timestamp, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getActivitiesSeenAt, markActivitiesSeen } from "/src/shared/activityDot.js";
 import {
   getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -35,6 +36,8 @@ const DEFAULT_PHOTO   = '../public/img/default.jpg';
 const ACTIVITIES_CACHE_KEY = `xact_cache_v2_${getLanguage()}`;
 const ACTIVITIES_CACHE_TTL = 1 * 60 * 1000;
 
+let sessionSeenAt = Infinity;
+
 function lerCacheAtividades(uid) {
   try {
     const raw = localStorage.getItem(`${ACTIVITIES_CACHE_KEY}_${uid}`);
@@ -51,7 +54,7 @@ function salvarCacheAtividades(uid, html) {
   try {
     localStorage.setItem(
       `${ACTIVITIES_CACHE_KEY}_${uid}`,
-      JSON.stringify({ timestamp: Date.now(), html })
+      JSON.stringify({ timestamp: Date.now(), html: html.replace(/ act-(new|enter)/g, '') })
     );
   } catch (_) {
   }
@@ -392,6 +395,27 @@ function injetarCSS() {
   .act-big[data-profile-nav] {
     cursor: pointer;
   }
+  .act-swipe-wrapper.act-new .act-big {
+    background: var(--color-bg-slate-13b);
+  }
+  .act-swipe-wrapper.act-enter {
+    animation: act-enter 460ms cubic-bezier(0.22, 0.75, 0.3, 1) both;
+  }
+  @keyframes act-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .act-swipe-wrapper.act-enter {
+      animation: none;
+    }
+  }
   `;
   document.head.appendChild(s);
 }
@@ -474,6 +498,12 @@ function profileNavAttr(tipo, items) {
   return '';
 }
 
+function novoClasse(items, currentUid) {
+  const recente = Math.max(...items.map(item => toMs(item.createdAt)));
+  const deAmigo = items.some(item => item.actorUid !== currentUid);
+  return deAmigo && recente > sessionSeenAt ? ' act-new' : '';
+}
+
 function renderBigCard(grupo, currentUid) {
   const { tipo, items, ultimoMs, _isAmigo } = grupo;
   const ids    = items.map(i => i.activityId).join(',');
@@ -501,7 +531,7 @@ function renderBigCard(grupo, currentUid) {
   }
 
   return `
-  <div class="act-swipe-wrapper" data-type="${tipo}">
+  <div class="act-swipe-wrapper${novoClasse(items, currentUid)}" data-type="${tipo}">
     <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
         <div>
@@ -528,7 +558,7 @@ function renderSmallCard(grupo, currentUid) {
   if (!fotos.length) fotos.push({ src: DEFAULT_PHOTO, uid: items[0].actorUid });
 
   return `
-  <div class="act-swipe-wrapper" data-type="${tipo}">
+  <div class="act-swipe-wrapper${novoClasse(items, currentUid)}" data-type="${tipo}">
     <div class="act-delete-hint"><i class="fas fa-trash-can"></i></div>
     <div class="act-big" data-ids="${ids}" data-dono="${isDono}" data-type="${tipo}" ${navAttr}>
       <div class="act-inner">
@@ -671,21 +701,25 @@ function ativarSwipeDelete(container, currentUid) {
   });
 }
 
-async function fetchEMontarHtml(uid) {
+function queryAtividades() {
+  return query(
+    collection(db, 'activities'),
+    where('createdAt', '>=', Timestamp.fromMillis(Date.now() - UM_MES_MS)),
+    where('visible', '==', true),
+    orderBy('createdAt', 'desc'),
+    limit(150)
+  );
+}
+
+async function fetchEMontarHtml(uid, docsPrecarregados = null) {
   const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
 
-  const [snap, amigosSet] = await Promise.all([
-    getDocs(query(
-      collection(db, 'activities'),
-      where('createdAt', '>=', duasSemanasAtras),
-      where('visible', '==', true),
-      orderBy('createdAt', 'desc'),
-      limit(150)
-    )),
+  const [docs, amigosSet] = await Promise.all([
+    docsPrecarregados ? Promise.resolve(docsPrecarregados) : getDocs(queryAtividades()).then(snap => snap.docs),
     buscarAmigos(uid)
   ]);
 
-  let atividades = snap.docs.map(d => ({ activityId: d.id, ...d.data() }));
+  let atividades = docs.map(d => ({ activityId: d.id, ...d.data() }));
 
   atividades = await Promise.all(atividades.map(async act => {
     if (act.actorUid) {
@@ -752,6 +786,83 @@ async function fetchEMontarHtml(uid) {
     </div>`;
 }
 
+function renderizarComAnimacao(container, html, uid) {
+  const antes = new Set([...container.querySelectorAll('.act-big')].map(card => card.dataset.ids));
+  const tinhaCards = antes.size > 0;
+  const alturaAntes = container.scrollHeight;
+  const topoAntes = container.scrollTop;
+
+  container.innerHTML = html;
+  ativarSwipeDelete(container, uid);
+
+  if (tinhaCards) {
+    container.querySelectorAll('.act-big').forEach(card => {
+      if (!antes.has(card.dataset.ids)) card.closest('.act-swipe-wrapper')?.classList.add('act-enter');
+    });
+  }
+
+  if (topoAntes > 0) {
+    container.scrollTop = topoAntes + (container.scrollHeight - alturaAntes);
+  }
+}
+
+let pararTempoReal = null;
+
+function iniciarTempoReal(container, uid) {
+  pararTempoReal?.();
+
+  let timer = null;
+  let docsAtuais = null;
+  let recebeuPrimeiro = false;
+
+  const aplicar = async () => {
+    if (!docsAtuais) return;
+
+    if (container.querySelector('.swiping, .act-swipe-wrapper.open')) {
+      clearTimeout(timer);
+      timer = setTimeout(aplicar, 1500);
+      return;
+    }
+
+    try {
+      const html = await fetchEMontarHtml(uid, docsAtuais);
+
+      if (!html) {
+        container.innerHTML = `<p class="xact-empty">${t('act.empty')}</p>`;
+        return;
+      }
+
+      salvarCacheAtividades(uid, html);
+      renderizarComAnimacao(container, html, uid);
+
+      if (!document.hidden) markActivitiesSeen(uid);
+    } catch (err) {
+      console.warn('[activities-render] Atualização em tempo real falhou:', err);
+      if (!container.querySelector('.act-big')) {
+        container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
+      }
+    }
+  };
+
+  pararTempoReal = onSnapshot(queryAtividades(), snap => {
+    docsAtuais = snap.docs;
+    clearTimeout(timer);
+    timer = setTimeout(aplicar, recebeuPrimeiro ? 350 : 0);
+    recebeuPrimeiro = true;
+  }, err => {
+    console.error('[activities-render] Erro no tempo real:', err);
+    if (!container.querySelector('.act-big')) {
+      container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
+    }
+  });
+
+  window.recarregarAtividades = async function () {
+    limparCacheAtividades(uid);
+    container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
+    await aplicar();
+  };
+}
+
 async function carregarAtividades() {
   injetarCSS();
   const container = document.getElementById('activities-section');
@@ -763,65 +874,21 @@ async function carregarAtividades() {
     return;
   }
 
-  const uid    = user.uid;
+  const uid = user.uid;
+  sessionSeenAt = getActivitiesSeenAt(uid) || Date.now();
+
   const cached = lerCacheAtividades(uid);
 
   if (cached) {
     container.innerHTML = cached.html;
     ativarSwipeDelete(container, uid);
-
-    if (!cached.stale) return;
-
-    fetchEMontarHtml(uid).then(html => {
-      if (!html) return;
-      salvarCacheAtividades(uid, html);
-      if (container.scrollTop < 80) {
-        container.innerHTML = html;
-        ativarSwipeDelete(container, uid);
-      }
-    }).catch(err => console.warn('[activities-render] Revalidação em background falhou:', err));
-
-    return;
+  } else {
+    container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
   }
 
-  container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
-
-  try {
-    const html = await fetchEMontarHtml(uid);
-
-    if (!html) {
-      container.innerHTML = `<p class="xact-empty">${t('act.empty')}</p>`;
-      return;
-    }
-
-    salvarCacheAtividades(uid, html);
-    container.innerHTML = html;
-    ativarSwipeDelete(container, uid);
-
-  } catch (err) {
-    console.error('[activities-render] Erro:', err);
-    container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
-  }
+  markActivitiesSeen(uid);
+  iniciarTempoReal(container, uid);
 }
-
-window.recarregarAtividades = async function () {
-  const container = document.getElementById('activities-section');
-  const user = auth.currentUser;
-  if (!container || !user) return;
-
-  limparCacheAtividades(user.uid);
-  container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
-
-  try {
-    const html = await fetchEMontarHtml(user.uid);
-    if (!html) { container.innerHTML = `<p class="xact-empty">${t('act.empty')}</p>`; return; }
-    salvarCacheAtividades(user.uid, html);
-    container.innerHTML = html;
-    ativarSwipeDelete(container, user.uid);
-  } catch (err) {
-    console.error('[activities-render] Erro ao recarregar:', err);
-  }
-};
 
 const FILTER_TYPES = {
   'Todos':          null,
@@ -870,40 +937,12 @@ function iniciarFiltros() {
   });
 }
 
-const AUTO_REFRESH_MS = 60 * 1000;
-let atualizandoEmSilencio = false;
-
-async function atualizarEmSilencio() {
-  const container = document.getElementById('activities-section');
-  const user = auth.currentUser;
-
-  if (!container || !user || document.hidden || atualizandoEmSilencio) return;
-  if (container.scrollTop >= 80 || container.querySelector('.swiping, .act-swipe-wrapper.open')) return;
-
-  atualizandoEmSilencio = true;
-
-  try {
-    const html = await fetchEMontarHtml(user.uid);
-
-    if (!html || html === lerCacheAtividades(user.uid)?.html || container.scrollTop >= 80) return;
-
-    salvarCacheAtividades(user.uid, html);
-    container.innerHTML = html;
-    ativarSwipeDelete(container, user.uid);
-  } catch (err) {
-    console.warn('[activities-render] Atualização automática falhou:', err);
-  } finally {
-    atualizandoEmSilencio = false;
-  }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   carregarAtividades();
   iniciarFiltros();
 
-  setInterval(atualizarEmSilencio, AUTO_REFRESH_MS);
-
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) atualizarEmSilencio();
+    const user = auth.currentUser;
+    if (!document.hidden && user) markActivitiesSeen(user.uid);
   });
 });

@@ -38,6 +38,10 @@ function renderConfig() {
   if (document.activeElement !== $("maintenanceMessage")) {
     $("maintenanceMessage").value = config.maintenanceMessage || "";
   }
+
+  if (document.activeElement !== $("maintenanceTitle")) {
+    $("maintenanceTitle").value = config.maintenanceTitle || "";
+  }
 }
 
 async function toggleConfig(button) {
@@ -183,8 +187,11 @@ $("saveMaintenanceMessage").addEventListener("click", async () => {
   $("saveMaintenanceMessage").disabled = true;
 
   try {
-    await api.setConfig({ maintenanceMessage: $("maintenanceMessage").value });
-    toast("Mensagem salva.");
+    await api.setConfig({
+      maintenanceTitle: $("maintenanceTitle").value,
+      maintenanceMessage: $("maintenanceMessage").value
+    });
+    toast("Tela de manutenção salva.");
   } catch (error) {
     toast(error.message);
   } finally {

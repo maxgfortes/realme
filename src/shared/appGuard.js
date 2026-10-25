@@ -5,6 +5,7 @@ import {
     doc, getDoc, updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import "/src/shared/errorReporter.js";
+import "/src/shared/activityDot.js";
 
 const ACTIVE_THROTTLE_MS = 60 * 60 * 1000;
 const ACTIVE_KEY = "realme.lastActivePing";
@@ -70,7 +71,6 @@ function renderMaintenance() {
         overlay.className = "maintenance-overlay";
         overlay.innerHTML = `
             <div class="maintenance-box">
-                <div class="maintenance-icon">🛠️</div>
                 <div class="maintenance-title"></div>
                 <div class="maintenance-text"></div>
             </div>
@@ -78,7 +78,7 @@ function renderMaintenance() {
         document.body.appendChild(overlay);
     }
 
-    overlay.querySelector(".maintenance-title").textContent = t("app.maintenanceTitle");
+    overlay.querySelector(".maintenance-title").textContent = config.maintenanceTitle || t("app.maintenanceTitle");
     overlay.querySelector(".maintenance-text").textContent = config.maintenanceMessage || t("app.maintenanceText");
 }
 
