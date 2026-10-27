@@ -1,13 +1,13 @@
 export const PROFILE_THEMES = [
   { id: "", label: null, color: null },
   { id: "midnight", label: "Midnight", color: "#0b1026" },
-  { id: "sweetie", label: "Sweetie", color: "#ffe6f0" },
+  { id: "sweetie", label: "Sweetie", color: "#ffe6f0", selectable: false },
   { id: "darkness", label: "Darkness", color: "#000000" },
   { id: "sunset", label: "Sunset", color: "#2a1320" },
-  { id: "cute", label: "Cute", color: "#f4eaff" },
+  { id: "cute", label: "Cute", color: "#f4eaff", selectable: false },
   { id: "dark-florest", label: "Dark Florest", color: "#0d1a11" },
   { id: "deep-ocean", label: "Deep Ocean", color: "#03131e" },
-  { id: "pure-white", label: "Pure White", color: "#ffffff" },
+  { id: "pure-white", label: "Pure White", color: "#ffffff", selectable: false },
   { id: "red-velvet", label: "Red Velvet", color: "#1e0407" }
 ];
 
@@ -17,6 +17,10 @@ let defaultThemeColor = null;
 
 export function isProfileTheme(id) {
   return VALID.has(id);
+}
+
+export function isSelectableTheme(id) {
+  return PROFILE_THEMES.some(theme => theme.id && theme.id === id && theme.selectable !== false);
 }
 
 export function applyProfileTheme(id) {

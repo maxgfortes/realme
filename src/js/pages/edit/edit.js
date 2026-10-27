@@ -1,5 +1,5 @@
 import { t } from "/src/i18n/i18n.js";
-import { PROFILE_THEMES, isProfileTheme } from "/src/shared/profileThemes.js";
+import { PROFILE_THEMES, isSelectableTheme } from "/src/shared/profileThemes.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc
@@ -390,7 +390,7 @@ function applyUserData(data) {
   fields.bio.value = more.bio || "";
   fields.localizacao.value = about.location || "";
   fields.musica.value = media.musicTheme || "";
-  fields.profileTheme.value = isProfileTheme(media.profileTheme) ? media.profileTheme : "";
+  fields.profileTheme.value = isSelectableTheme(media.profileTheme) ? media.profileTheme : "";
 
   fields.pronomes.value = about.pronom1
     ? about.pronom1 + (about.pronom2 ? "/" + about.pronom2 : "")
@@ -490,7 +490,7 @@ saveBtn.onclick = async () => {
     localizacao: fields.localizacao.value.trim(),
     relacionamento: fields.relacionamento.value.trim(),
     musica: fields.musica.value.trim(),
-    profileTheme: isProfileTheme(fields.profileTheme.value) ? fields.profileTheme.value : ""
+    profileTheme: isSelectableTheme(fields.profileTheme.value) ? fields.profileTheme.value : ""
   };
 
   const error = validate(values);
@@ -678,7 +678,7 @@ onAuthStateChanged(auth, async user => {
 
 if (fields.profileTheme) {
   fields.profileTheme.innerHTML = "";
-  PROFILE_THEMES.forEach(theme => {
+  PROFILE_THEMES.filter(theme => theme.selectable !== false).forEach(theme => {
     fields.profileTheme.add(new Option(theme.label || t("edit.temaPadrao"), theme.id));
   });
 }
