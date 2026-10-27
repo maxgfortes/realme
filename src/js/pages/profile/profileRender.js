@@ -1,3 +1,4 @@
+import { applyProfileTheme } from "/src/shared/profileThemes.js";
 import {
   renderUsername, renderName, renderVerified, renderPronouns, renderPfp, renderBanner, renderBio,
 } from "./profileHeader.js";
@@ -7,6 +8,7 @@ import { renderStats } from "./profileStats.js";
 import { renderMusic } from "./profileMusic.js";
 
 export function renderProfile(data) {
+  applyProfileTheme(data.media?.profileTheme);
   renderUsername(data.user);
   renderName(data.user);
   renderVerified(data.user);

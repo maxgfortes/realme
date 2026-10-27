@@ -1,10 +1,4 @@
 import { t } from "/src/i18n/i18n.js";
-import { db, auth } from "../../../../config/config.js";
-import {
-  doc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const greetingPfp = document.getElementById('greetingPfp');
 const greeting = document.getElementById('greeting');
@@ -20,76 +14,11 @@ function greetingText() {
 
 greeting.textContent = greetingText();
 
-function lerCache() {
-  const localGreeting = localStorage.getItem("greeting");
+import { onCurrentUser } from "/src/shared/currentUser.js";
 
-  if (!localGreeting) {
-    return null;
-  }
+onCurrentUser(user => {
+  if (!user) return;
 
-  return JSON.parse(localGreeting);
-}
-
-function salvarCacheGreeting(dadosNovos) {
-  const atual = lerCache();
-
-  const cache = {
-    displayName: dadosNovos.displayName || (atual ? atual.displayName : null),
-    userphoto: dadosNovos.userphoto || (atual ? atual.userphoto : null)
-  };
-
-  localStorage.setItem("greeting", JSON.stringify(cache));
-}
-
-function mostrarCacheGreeting() {
-  const greeting = lerCache();
-  if (greeting) {
-    if (greeting.displayName) {
-      displayNameElement.textContent = greeting.displayName;
-    }
-    if (greeting.userphoto) {
-      greetingPfp.src = greeting.userphoto;
-    }
-  }
-}
-
-function getDisplayName(uid) {
-  const ref = doc(db, "users", uid);
-  onSnapshot(ref, function (snap) {
-    if (snap.exists()) {
-      const dados = snap.data();
-      const displayName = `${dados.name || ""} ${dados.surname || ""}`.trim();
-      displayNameElement.textContent = displayName;
-      salvarCacheGreeting({
-        displayName: displayName
-      });
-    }
-  });
-}
-
-function getProfilePicture(uid) {
-  const ref = doc(db, "users", uid, "user-infos", "user-media");
-  onSnapshot(ref, function (snap) {
-    if (snap.exists()) {
-      const dados = snap.data();
-      greetingPfp.src = dados.userphoto;
-      salvarCacheGreeting({ userphoto: dados.userphoto });
-    }
-  });
-}
-
-mostrarCacheGreeting();
-
-onAuthStateChanged(auth, function (user) {
-  if (user) {
-    getDisplayName(user.uid);
-    getProfilePicture(user.uid);
-  }
+  if (user.name) displayNameElement.textContent = user.name;
+  if (user.photo && greetingPfp.getAttribute("src") !== user.photo) greetingPfp.src = user.photo;
 });
-
-const btn = document.getElementById('openPostLayer');
-
-const frases = [1, 2, 3, 4, 5].map(n => t(`feed.prompt.${n}`));
-
-const indiceAleatorio = Math.floor(Math.random() * frases.length);
-btn.textContent = frases[indiceAleatorio];

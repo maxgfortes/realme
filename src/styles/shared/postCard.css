@@ -549,3 +549,8 @@
   width: 16px;
   height: 16px;
 }
+.post-mentions-others {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
+  cursor: pointer;
+}

@@ -17,6 +17,7 @@ import { loadWall } from "./wall.js";
 import { showProfileNotFound } from "./profileNotFound.js";
 import { stopMusic } from "./profileMusic.js";
 import { initProfileEvents } from "./profileEvents.js";
+import { applyProfileTheme } from "/src/shared/profileThemes.js";
 import { watchNowPlaying, setSpotifyViewer } from "./spotify.js";
 
 function renderCachedProfile() {
@@ -33,6 +34,7 @@ function renderCachedProfile() {
 async function openProfile(uid) {
   if (state.profileUserId !== uid) {
     state.profileData = createEmptyProfileData();
+    applyProfileTheme(null);
     stopMusic();
   }
 

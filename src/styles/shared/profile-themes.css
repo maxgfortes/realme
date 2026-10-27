@@ -1,0 +1,164 @@
+html[data-profile-theme="midnight"] {
+  --pt-bg: #0b1026;
+  --pt-surface: #171e40;
+  --pt-sheet: #121834;
+  --pt-raised: #222a52;
+  --pt-text: #eef1ff;
+  --pt-muted: #9ea7d6;
+  --pt-border: rgba(158, 167, 214, 0.18);
+  --pt-accent: #7c8cff;
+}
+
+html[data-profile-theme="sweetie"] {
+  --pt-bg: #ffe6f0;
+  --pt-surface: #ffd3e4;
+  --pt-sheet: #fff1f6;
+  --pt-raised: #ffc2d9;
+  --pt-text: #5b1f3c;
+  --pt-muted: #a25b7c;
+  --pt-border: rgba(91, 31, 60, 0.14);
+  --pt-accent: #e8508f;
+}
+
+html[data-profile-theme="darkness"] {
+  --pt-bg: #000000;
+  --pt-surface: #121212;
+  --pt-sheet: #0a0a0a;
+  --pt-raised: #1c1c1c;
+  --pt-text: #f2f2f2;
+  --pt-muted: #8c8c8c;
+  --pt-border: rgba(255, 255, 255, 0.1);
+  --pt-accent: #ffffff;
+}
+
+html[data-profile-theme="sunset"] {
+  --pt-bg: #2a1320;
+  --pt-surface: #3e1d2c;
+  --pt-sheet: #341827;
+  --pt-raised: #4d2536;
+  --pt-text: #ffe9da;
+  --pt-muted: #f0a88c;
+  --pt-border: rgba(240, 168, 140, 0.2);
+  --pt-accent: #ff8a5c;
+}
+
+html[data-profile-theme="cute"] {
+  --pt-bg: #f4eaff;
+  --pt-surface: #e7d6ff;
+  --pt-sheet: #faf4ff;
+  --pt-raised: #dbc4ff;
+  --pt-text: #48296b;
+  --pt-muted: #8b6cb2;
+  --pt-border: rgba(72, 41, 107, 0.14);
+  --pt-accent: #9b5cf0;
+}
+
+html[data-profile-theme="dark-florest"] {
+  --pt-bg: #0d1a11;
+  --pt-surface: #17291c;
+  --pt-sheet: #122217;
+  --pt-raised: #213826;
+  --pt-text: #e2f2e5;
+  --pt-muted: #8fb59a;
+  --pt-border: rgba(143, 181, 154, 0.18);
+  --pt-accent: #5fbf7a;
+}
+
+html[data-profile-theme="deep-ocean"] {
+  --pt-bg: #03131e;
+  --pt-surface: #0b2434;
+  --pt-sheet: #081c2a;
+  --pt-raised: #123247;
+  --pt-text: #def2ff;
+  --pt-muted: #7fb2cf;
+  --pt-border: rgba(127, 178, 207, 0.18);
+  --pt-accent: #3fa9e6;
+}
+
+html[data-profile-theme="pure-white"] {
+  --pt-bg: #ffffff;
+  --pt-surface: #f0f0f0;
+  --pt-sheet: #f7f7f7;
+  --pt-raised: #e6e6e6;
+  --pt-text: #111111;
+  --pt-muted: #6b6b6b;
+  --pt-border: rgba(0, 0, 0, 0.1);
+  --pt-accent: #111111;
+}
+
+html[data-profile-theme="red-velvet"] {
+  --pt-bg: #1e0407;
+  --pt-surface: #330a10;
+  --pt-sheet: #29070c;
+  --pt-raised: #431018;
+  --pt-text: #ffe9eb;
+  --pt-muted: #d98c95;
+  --pt-border: rgba(217, 140, 149, 0.2);
+  --pt-accent: #e5414f;
+}
+
+html[data-profile-theme] #profilePage > :is(.navbar-top, .full-profile-container, .navbar-bottom) {
+  --color-bg-primary: var(--pt-bg);
+  --bg-primary: var(--pt-bg);
+  --bg-np: var(--pt-bg);
+  --color-bg-sheet: var(--pt-sheet);
+  --color-bg-surface: var(--pt-surface);
+  --color-bg-surface-raised: var(--pt-raised);
+  --color-bg-gray-12: var(--pt-surface);
+  --color-bg-gray-13: var(--pt-surface);
+  --color-bg-gray-14-a84: var(--pt-sheet);
+  --color-bg-gray-27: var(--pt-raised);
+  --color-bg-slate-9: var(--pt-surface);
+  --color-bg-slate-10: var(--pt-surface);
+  --color-bg-slate-13: var(--pt-surface);
+  --color-bg-slate-18: var(--pt-raised);
+  --color-bg-slate-20b: var(--pt-raised);
+  --color-bg-slate-22: var(--pt-raised);
+  --color-bg-input: var(--pt-raised);
+  --color-bg-gray-10: var(--pt-surface);
+
+  --color-text-pure: var(--pt-text);
+  --text-pure: var(--pt-text);
+  --color-text-primary: var(--pt-text);
+  --text-primary: var(--pt-text);
+  --text-fff: var(--pt-text);
+  --text-eee: var(--pt-text);
+  --color-text-gray-93: var(--pt-text);
+  --color-text-gray-87b: var(--pt-text);
+
+  --color-text-soft: var(--pt-muted);
+  --color-text-muted: var(--pt-muted);
+  --color-text-subtle: var(--pt-muted);
+  --color-text-secondary: var(--pt-muted);
+  --color-text-tertiary: var(--pt-muted);
+  --text-tertiary: var(--pt-muted);
+  --text-bbb: var(--pt-muted);
+  --color-text-slate-73: var(--pt-muted);
+  --color-text-gray-80: var(--pt-muted);
+  --color-text-gray-40: var(--pt-muted);
+  --color-text-gray-27: var(--pt-muted);
+  --color-text-gray-20: var(--pt-muted);
+
+  --color-icon-slate-97: var(--pt-muted);
+  --color-icon-gray-60: var(--pt-muted);
+  --color-icon-gray-80: var(--pt-muted);
+
+  --color-border-default: var(--pt-border);
+  --color-border-subtle: var(--pt-border);
+
+  --color-text-blue-59: var(--pt-accent);
+}
+
+html:is([data-profile-theme="sweetie"], [data-profile-theme="cute"], [data-profile-theme="pure-white"]) #profilePage > :is(.navbar-top, .full-profile-container, .navbar-bottom) {
+  --color-icon-white: var(--pt-text);
+}
+
+html[data-profile-theme] #profilePage > .full-profile-container {
+  background: var(--pt-bg);
+  color: var(--pt-text);
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+html[data-profile-theme] #profilePage .full-profile-container .action-btn.primary {
+  color: #ffffff;
+}

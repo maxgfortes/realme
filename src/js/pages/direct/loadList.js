@@ -95,6 +95,7 @@ function renderFromCache() {
         );
 
         listenLatestMessage(user.chatId);
+        refreshUserInBackground(user.uid);
     }
 
     firstLoad = false;
@@ -129,11 +130,60 @@ function showUsersSkeleton(count = 12) {
     }
 }
 
+let lastUsers = [];
+let saveTimer = null;
+const refreshedUsers = new Set();
+
+function scheduleListSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        if (lastUsers.length) saveListCache(lastUsers);
+    }, 400);
+}
+
+function patchUserInList(uid, data) {
+    usersList.querySelectorAll(`.user-list-box[data-uid="${CSS.escape(uid)}"]`).forEach(item => {
+        const name = item.querySelector(".user-box-displayname");
+        const image = item.querySelector(".user-pfp-area img");
+
+        if (name && name.textContent !== data.fullName) name.textContent = data.fullName;
+        if (image && image.getAttribute("src") !== data.userPfp) image.src = data.userPfp;
+
+        item.dataset.name = data.fullName.toLowerCase();
+    });
+}
+
+function refreshUserInBackground(uid) {
+    if (refreshedUsers.has(uid)) return;
+
+    refreshedUsers.add(uid);
+
+    fetchUserData(uid).then(fresh => {
+        if (!fresh) return;
+
+        const previous = userDataCache.get(uid);
+        userDataCache.set(uid, fresh);
+
+        if (!previous || previous.fullName !== fresh.fullName || previous.userPfp !== fresh.userPfp) {
+            patchUserInList(uid, fresh);
+            scheduleListSave();
+        }
+    });
+}
+
 async function getUserData(uid) {
     if (userDataCache.has(uid)) {
+        refreshUserInBackground(uid);
         return userDataCache.get(uid);
     }
 
+    refreshedUsers.add(uid);
+    const fresh = await fetchUserData(uid);
+    userDataCache.set(uid, fresh);
+    return fresh;
+}
+
+async function fetchUserData(uid) {
     try {
         const userRef = doc(db, "users", uid);
 
@@ -151,7 +201,6 @@ async function getUserData(uid) {
         ]);
 
         if (!userSnap.exists()) {
-            userDataCache.set(uid, null);
             return null;
         }
 
@@ -170,14 +219,10 @@ async function getUserData(uid) {
             }
         }
 
-        const result = {
+        return {
             fullName,
             userPfp
         };
-
-        userDataCache.set(uid, result);
-
-        return result;
     } catch (error) {
         console.error(error);
         return null;
@@ -393,6 +438,18 @@ async function loadUsers(snapshot) {
             : 0;
 
         return timeB - timeA;
+    });
+
+    lastUsers = users;
+
+    const activeChats = new Set(users.map(user => user.chatId));
+
+    usersList.querySelectorAll(".user-list-box").forEach(item => {
+        if (activeChats.has(item.dataset.chatId)) return;
+
+        messageListeners.get(item.dataset.chatId)?.();
+        messageListeners.delete(item.dataset.chatId);
+        item.remove();
     });
 
     if (firstLoad) {

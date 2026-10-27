@@ -13,6 +13,8 @@ const ACTION_LABEL = {
   "user.verify": "verificou",
   "user.unverify": "removeu o verificado de",
   "user.revokeSessions": "derrubou as sessões de",
+  "user.setPhoto": "trocou a foto de perfil de",
+  "user.removePhoto": "removeu a foto de perfil de",
   "content.hide": "ocultou um post",
   "content.show": "reexibiu um post",
   "content.delete": "apagou um conteúdo",

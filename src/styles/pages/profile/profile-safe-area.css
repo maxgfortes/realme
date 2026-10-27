@@ -1,0 +1,25 @@
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+.navbar-top,
+.friends-header {
+  box-sizing: border-box;
+  height: calc(60px + var(--safe-top));
+  padding-top: var(--safe-top);
+}
+
+.full-profile-container {
+  padding-top: calc(var(--space-60) + var(--safe-top));
+}
+
+.friends-list {
+  padding-top: calc(var(--space-60) + var(--safe-top));
+}
+
+.side-menu,
+.event-layer,
+.timeline {
+  box-sizing: border-box;
+  padding-top: var(--safe-top);
+}

@@ -107,10 +107,40 @@ async function getUser(uid) {
     return promise;
 }
 
-export async function openLikes(postId) {
-    if (!likesMenuArea || !likesList || !postId) {
+const likesTitle = likesMenu?.querySelector(".bottom-menu-title");
+
+function userItemHTML(user) {
+    return `
+        <a
+            href="profile.html?uid=${encodeURIComponent(user.uid)}"
+            class="user-item">
+
+            <div class="user-item-pfp-area">
+                <img
+                    src="${escapeHTML(user.photo)}"
+                    alt=""
+                    loading="lazy"
+                >
+            </div>
+
+            <div class="user-item-infos">
+                <div class="user-item-name">
+                    ${escapeHTML(user.name)}
+                </div>
+                <div class="user-item-username">
+                    ${escapeHTML(user.username)}
+                </div>
+            </div>
+        </a>
+    `;
+}
+
+async function openUserSheet(title, loadUids, emptyText, errorText) {
+    if (!likesMenuArea || !likesList) {
         return;
     }
+
+    if (likesTitle) likesTitle.textContent = title;
 
     likesMenuArea.classList.add("active");
     likesMenuOverlay.classList.add("active");
@@ -123,74 +153,59 @@ export async function openLikes(postId) {
     `;
 
     try {
-        const likesRef = collection(
-            db,
-            ...postSegments(postId),
-            "likers"
-        );
+        const uids = await loadUids();
 
-        const likesSnapshot = await getDocs(likesRef);
-
-        if (likesSnapshot.empty) {
-            likesList.innerHTML = `
-                <div class="likes-empty">
-                    ${t("likes.empty")}
-                </div>
-            `;
-
+        if (!uids.length) {
+            likesList.innerHTML = `<div class="likes-empty">${emptyText}</div>`;
             return;
         }
 
         const users = await Promise.all(
-            likesSnapshot.docs.map(async likeDoc => {
-
-                const uid = likeDoc.id;
-
-                const user = await getUser(uid);
-
-                return {
-                    uid,
-                    ...user
-                };
-            })
+            uids.map(async uid => ({ uid, ...(await getUser(uid)) }))
         );
 
-        likesList.innerHTML = users.map(user => `
-            <a
-                href="profile.html?uid=${encodeURIComponent(user.uid)}"
-                class="user-item">
-                
-                <div class="user-item-pfp-area">
-                    <img
-                        src="${escapeHTML(user.photo)}"
-                        alt=""
-                        loading="lazy"
-                    >
-                </div>
-
-                <div class="user-item-infos">
-                    <div class="user-item-name">
-                        ${escapeHTML(user.name)}
-                    </div>
-                    <div class="user-item-username">
-                        ${escapeHTML(user.username)}
-                    </div>
-                </div>
-            </a>
-        `).join("");
-
+        likesList.innerHTML = users.map(userItemHTML).join("");
     } catch (error) {
-        console.error(
-            "Erro ao carregar curtidas:",
-            error
-        );
-
-        likesList.innerHTML = `
-            <div class="likes-empty">
-                ${t("likes.error")}
-            </div>
-        `;
+        console.error("Erro ao carregar lista:", error);
+        likesList.innerHTML = `<div class="likes-empty">${errorText}</div>`;
     }
+}
+
+export function openLikes(postId) {
+    if (!postId) return;
+
+    return openUserSheet(
+        t("common.curtido_por"),
+        async () => {
+            const likesSnapshot = await getDocs(collection(db, ...postSegments(postId), "likers"));
+            return likesSnapshot.docs.map(likeDoc => likeDoc.id);
+        },
+        t("likes.empty"),
+        t("likes.error")
+    );
+}
+
+export function openMentions(postId) {
+    if (!postId) return;
+
+    return openUserSheet(
+        t("post.mentionedTitle"),
+        async () => {
+            const snapshot = await getDoc(doc(db, ...postSegments(postId)));
+            if (!snapshot.exists()) return [];
+
+            const data = snapshot.data();
+            const raw = Array.isArray(data.mentions) ? data.mentions : [];
+
+            return [...new Set(raw.filter(uid => typeof uid === "string" && uid && uid !== data.creatorid))];
+        },
+        t("post.mentionedEmpty"),
+        t("likes.error")
+    );
+}
+
+export function openUsersList(title, uids) {
+    return openUserSheet(title, async () => uids, t("likes.empty"), t("likes.error"));
 }
 
 export function closeLikes() {
@@ -203,3 +218,15 @@ export function closeLikes() {
 }
 
 likesMenuOverlay.addEventListener("click", closeLikes);
+
+document.addEventListener("click", event => {
+    const others = event.target.closest(".post-mentions-others");
+    if (!others) return;
+
+    const card = others.closest("[data-post-id]");
+    if (!card) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    openMentions(card.dataset.postId);
+});

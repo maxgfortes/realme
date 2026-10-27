@@ -1,26 +1,11 @@
-const userPfp = document.getElementById('creationModalPfp');
-const displayNameCreation = document.getElementById('creationModalDisplayName');
+import { onCurrentUser } from "/src/shared/currentUser.js";
 
-function lerCache() {
-  const localGreeting = localStorage.getItem("greeting");
+const userPfp = document.getElementById("creationModalPfp");
+const displayNameCreation = document.getElementById("creationModalDisplayName");
 
-  if (!localGreeting) {
-    return null;
-  }
+onCurrentUser(user => {
+  if (!user) return;
 
-  return JSON.parse(localGreeting);
-}
-
-function mostrarCacheGreeting() {
-  const greeting = lerCache();
-  if (greeting) {
-    if (greeting.displayName) {
-      displayNameCreation.textContent = greeting.displayName;
-    }
-    if (greeting.userphoto) {
-      userPfp.src = greeting.userphoto;
-    }
-  }
-}
-
-mostrarCacheGreeting();
+  if (displayNameCreation && user.name) displayNameCreation.textContent = user.name;
+  if (userPfp && user.photo && userPfp.getAttribute("src") !== user.photo) userPfp.src = user.photo;
+});

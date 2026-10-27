@@ -1,4 +1,5 @@
 import { t } from "/src/i18n/i18n.js";
+import { PROFILE_THEMES, isProfileTheme } from "/src/shared/profileThemes.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc
@@ -33,7 +34,8 @@ const fields = {
   genero: document.getElementById("genero"),
   localizacao: document.getElementById("localizacao"),
   relacionamento: document.getElementById("relacionamento"),
-  musica: document.getElementById("musica")
+  musica: document.getElementById("musica"),
+  profileTheme: document.getElementById("profileTheme")
 };
 
 const pfpImg = document.querySelector(".pfp");
@@ -388,6 +390,7 @@ function applyUserData(data) {
   fields.bio.value = more.bio || "";
   fields.localizacao.value = about.location || "";
   fields.musica.value = media.musicTheme || "";
+  fields.profileTheme.value = isProfileTheme(media.profileTheme) ? media.profileTheme : "";
 
   fields.pronomes.value = about.pronom1
     ? about.pronom1 + (about.pronom2 ? "/" + about.pronom2 : "")
@@ -486,7 +489,8 @@ saveBtn.onclick = async () => {
     genero: fields.genero.value.trim(),
     localizacao: fields.localizacao.value.trim(),
     relacionamento: fields.relacionamento.value.trim(),
-    musica: fields.musica.value.trim()
+    musica: fields.musica.value.trim(),
+    profileTheme: isProfileTheme(fields.profileTheme.value) ? fields.profileTheme.value : ""
   };
 
   const error = validate(values);
@@ -551,7 +555,8 @@ saveBtn.onclick = async () => {
         {
           userphoto: pfpUrl,
           headerphoto: bannerUrl,
-          musicTheme: values.musica
+          musicTheme: values.musica,
+          profileTheme: values.profileTheme
         },
         { merge: true }
       ),
@@ -602,7 +607,8 @@ saveBtn.onclick = async () => {
         ...(oldData.media || {}),
         userphoto: pfpUrl,
         headerphoto: bannerUrl,
-        musicTheme: values.musica
+        musicTheme: values.musica,
+        profileTheme: values.profileTheme
       },
       more: {
         ...(oldData.more || {}),
@@ -669,3 +675,10 @@ onAuthStateChanged(auth, async user => {
     showToast(t("edit.loadDataError"));
   }
 });
+
+if (fields.profileTheme) {
+  fields.profileTheme.innerHTML = "";
+  PROFILE_THEMES.forEach(theme => {
+    fields.profileTheme.add(new Option(theme.label || t("edit.temaPadrao"), theme.id));
+  });
+}

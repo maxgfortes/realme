@@ -5,6 +5,7 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth, db } from "../../../config/config.js";
 import { openNoteView } from "./noteView.js";
+import { onCurrentUser } from "/src/shared/currentUser.js";
 
 const NOTE_PLACEHOLDER = t("dm.notePlaceholder");
 const DEFAULT_PFP = "../public/img/default.jpg";
@@ -192,21 +193,19 @@ function loadNotes(user) {
 }
 
 function loadUserInfo() {
-    const greeting = localStorage.getItem("greeting");
+    onCurrentUser(user => {
+        if (!user) return;
 
-    if (!greeting) return;
+        if (user.name) {
+            noteName.textContent = user.name;
+            createNoteModalName.textContent = t("dm.noteModalName", { name: user.name });
+        }
 
-    const dados = JSON.parse(greeting);
-
-    if (dados.displayName) {
-        noteName.textContent = dados.displayName;
-        createNoteModalName.textContent = t("dm.noteModalName", { name: dados.displayName });
-    }
-
-    if (dados.userphoto) {
-        notePfp.src = dados.userphoto;
-        createNoteModalPfp.src = dados.userphoto;
-    }
+        if (user.photo) {
+            if (notePfp.getAttribute("src") !== user.photo) notePfp.src = user.photo;
+            if (createNoteModalPfp.getAttribute("src") !== user.photo) createNoteModalPfp.src = user.photo;
+        }
+    });
 }
 
 function buildFriendNode(friendId) {

@@ -15,6 +15,22 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admin/$(request.auth.uid));
     }
 
+    function validCommentThread() {
+      let data = request.resource.data;
+      return (!('depth' in data) || (data.depth is int && data.depth >= 0 && data.depth <= 3)) &&
+        (!('content' in data) || (data.content is string && data.content.size() <= 2000)) &&
+        (!('likes' in data) || data.likes == 0) &&
+        (!('image' in data) || (data.image is map && data.image.url is string && data.image.url.size() <= 500)) &&
+        (!('replyToName' in data) || (data.replyToName is string && data.replyToName.size() <= 120));
+    }
+
+    function commentLikeDelta() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']) &&
+        request.resource.data.likes is int &&
+        request.resource.data.likes >= 0 &&
+        (request.resource.data.likes - resource.data.get('likes', 0)) in [-1, 1];
+    }
+
     function postingEnabled() {
       return !exists(/databases/$(database)/documents/config/app) ||
         get(/databases/$(database)/documents/config/app).data.get('postingEnabled', true) != false;
@@ -236,14 +252,21 @@ service cloud.firestore {
         allow read: if true;
 
         allow create: if isSignedIn() &&
-          request.resource.data.senderid == request.auth.uid;
+          request.resource.data.senderid == request.auth.uid &&
+          validCommentThread();
 
         allow delete: if isSignedIn() && (
           resource.data.senderid == request.auth.uid ||
           get(/databases/$(database)/documents/posts/$(postId)).data.creatorid == request.auth.uid
         );
 
-        allow update: if false;
+        allow update: if isSignedIn() && commentLikeDelta();
+
+        match /likers/{likerId} {
+          allow read: if true;
+          allow create, delete: if isOwner(likerId);
+          allow update: if false;
+        }
       }
     }
 
@@ -492,12 +515,14 @@ service cloud.firestore {
 
           allow create: if isSignedIn() &&
             request.resource.data.senderid == request.auth.uid &&
+            validCommentThread() &&
             (
               (request.resource.data.text is string &&
                request.resource.data.text.size() >= 1) ||
               (request.resource.data.content is string &&
                request.resource.data.content.size() >= 1 &&
-               request.resource.data.content.size() <= 2000)
+               request.resource.data.content.size() <= 2000) ||
+              request.resource.data.image is map
             );
 
           allow delete: if isSignedIn() && (
@@ -506,7 +531,13 @@ service cloud.firestore {
             get(/databases/$(database)/documents/users/$(userId)/wall/$(postId)).data.authorId == request.auth.uid
           );
 
-          allow update: if false;
+          allow update: if isSignedIn() && commentLikeDelta();
+
+          match /likers/{likerId} {
+            allow read: if true;
+            allow create, delete: if isOwner(likerId);
+            allow update: if false;
+          }
         }
       }
 

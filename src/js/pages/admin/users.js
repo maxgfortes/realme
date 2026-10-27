@@ -3,6 +3,7 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12
 import { api, can, session, ROLE_LABEL } from "./api.js";
 import { getPerson, forgetPerson, fullName } from "./people.js";
 import { $, esc, num, toast, toDate, fmtDate, fmtAgo, confirmAction, emptyState, errorState, DEFAULT_PFP } from "./ui.js";
+import { pickImage, uploadImage } from "/src/shared/uploadImage.js";
 
 const INACTIVE_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -137,6 +138,8 @@ function sheetHTML(detail) {
 
     <div class="actions wrap">
       <a class="btn ghost" style="text-align:center;font-size:inherit" href="/profile.html?uid=${encodeURIComponent(detail.uid)}" target="_blank" rel="noopener">Ver perfil</a>
+      <button class="btn ghost" data-sheet="photo">Trocar foto</button>
+      ${detail.photo ? `<button class="btn ghost" data-sheet="removePhoto">Remover foto</button>` : ""}
       <button class="btn ghost" data-sheet="verify">${detail.verified ? "Remover verificado" : "Verificar"}</button>
       ${can("admin") ? `<button class="btn ghost" data-sheet="revoke">Derrubar sessões</button>` : ""}
       ${isSelf ? "" : `<button class="btn ${detail.banned ? "" : "danger"}" data-sheet="ban">${detail.banned ? "Desbanir" : "Banir"}</button>`}
@@ -201,6 +204,27 @@ $("userSheetBody").addEventListener("click", async event => {
   button.disabled = true;
 
   try {
+    if (action === "photo") {
+      const file = await pickImage();
+      if (!file) return;
+
+      toast("Enviando foto...");
+      const { url } = await uploadImage(file, { maxWidth: 800, maxHeight: 800, quality: 0.85 });
+      await api.setPhoto({ uid, photoUrl: url });
+      toast("Foto de perfil atualizada.");
+    }
+
+    if (action === "removePhoto") {
+      const { ok } = await confirmAction({
+        title: "Remover foto de perfil?",
+        text: `${detail.name} volta para a foto padrão.`,
+        confirmLabel: "Remover"
+      });
+      if (!ok) return;
+      await api.setPhoto({ uid, photoUrl: "" });
+      toast("Foto removida.");
+    }
+
     if (action === "verify") {
       await api.setVerified({ uid, verified: !detail.verified });
       toast(detail.verified ? "Verificado removido." : "Usuário verificado.");

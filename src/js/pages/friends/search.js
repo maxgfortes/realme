@@ -151,7 +151,7 @@ function cardHTML(pessoa) {
       </div>
       <div class="user-name">
         <div class="card-info">
-          <div class="profile-username"><p>${esc(username || nome)}</p></div>
+          <div class="profile-username"><p>${esc(nome)}</p></div>
         </div>
         <button class="follow-btn${pessoa.sent ? " sent" : ""}" type="button"${pessoa.sent ? " disabled" : ""}>
           ${pessoa.sent ? t("friends.sent") : t("common.add")}

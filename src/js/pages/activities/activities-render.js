@@ -91,7 +91,30 @@ function salvarPhotoCacheLS(uid, photoUrl) {
 const _photoCacheLS = carregarPhotoCacheLS();
 
 const PHOTO_CACHE_TTL = 5 * 60 * 1000;
-const userCache = {};
+const USER_LS_KEY = 'xact_user_cache_v1';
+const USER_LS_TTL = 30 * 60 * 1000;
+
+function carregarUserCacheLS() {
+  try {
+    const data = JSON.parse(localStorage.getItem(USER_LS_KEY) || '{}');
+    const agora = Date.now();
+    Object.keys(data).forEach(uid => {
+      if (agora - (data[uid].savedAt || 0) > USER_LS_TTL) delete data[uid];
+    });
+    return data;
+  } catch (_) { return {}; }
+}
+
+let salvarUserTimer = null;
+
+function salvarUserCacheLS() {
+  clearTimeout(salvarUserTimer);
+  salvarUserTimer = setTimeout(() => {
+    try { localStorage.setItem(USER_LS_KEY, JSON.stringify(userCache)); } catch (_) {}
+  }, 300);
+}
+
+const userCache = carregarUserCacheLS();
 
 async function fetchPhotoFromFirestore(uid) {
   const lsCached = _photoCacheLS[uid];
@@ -157,14 +180,36 @@ async function resolveUser(uid) {
       data.nome     = nomeCompleto || d.displayName || d.displayname || d.nome || d.username || uid;
     }
 
+    data.savedAt = Date.now();
     userCache[uid] = data;
+    salvarUserCacheLS();
     return data;
   } catch (_) {
     return { username: uid, nome: uid, photo: DEFAULT_PHOTO, photoFetchedAt: Date.now() };
   }
 }
 
+let amigosAoVivo = null;
+let amigosUid = null;
+let pararAmigos = null;
+
+function observarAmigos(uid) {
+  if (amigosUid === uid && pararAmigos) return;
+
+  pararAmigos?.();
+  amigosUid = uid;
+  amigosAoVivo = null;
+
+  pararAmigos = onSnapshot(collection(db, 'users', uid, 'friends'), snap => {
+    amigosAoVivo = new Set(snap.docs.map(d => d.id));
+  }, () => {
+    amigosAoVivo = null;
+  });
+}
+
 async function buscarAmigos(uid) {
+  if (amigosUid === uid && amigosAoVivo) return amigosAoVivo;
+
   const amigos = new Set();
   try {
     const [comoRemetente, comoDestinatario] = await Promise.all([
@@ -711,59 +756,79 @@ function queryAtividades() {
   );
 }
 
-async function fetchEMontarHtml(uid, docsPrecarregados = null) {
-  const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
+const NOVOS_TTL_MS = 2 * 60 * 1000;
+let novosCache = { at: 0, items: [] };
 
-  const [docs, amigosSet] = await Promise.all([
-    docsPrecarregados ? Promise.resolve(docsPrecarregados) : getDocs(queryAtividades()).then(snap => snap.docs),
-    buscarAmigos(uid)
-  ]);
-
-  let atividades = docs.map(d => ({ activityId: d.id, ...d.data() }));
-
-  atividades = await Promise.all(atividades.map(async act => {
-    if (act.actorUid) {
-      const u = await resolveUser(act.actorUid);
-      return {
-        ...act,
-        authorUsername: act.authorUsername || u.username,
-        authorNome:     u.nome || act.authorName,
-        authorPhoto:    u.photo
-      };
-    }
-    return act;
-  }));
-
-  atividades = await Promise.all(atividades.map(async act => {
-    if (!act.targetUid) return act;
-    const t = await resolveUser(act.targetUid);
-    return { ...act, targetUsername: t.username || act.targetUsername, targetNome: t.nome };
-  }));
+async function buscarNovosUsuarios(desde) {
+  if (Date.now() - novosCache.at < NOVOS_TTL_MS) return novosCache.items;
 
   try {
     const nuSnap = await getDocs(query(
       collection(db, 'newusers'),
-      where('createat', '>=', duasSemanasAtras),
+      where('createat', '>=', desde),
       orderBy('createat', 'desc'),
       limit(30)
     ));
-    for (const d of nuSnap.docs) {
-      const newUid = d.id;
-      if (atividades.some(a => a.type === 'new_user' && a.actorUid === newUid)) continue;
-      const u = await resolveUser(newUid);
-      atividades.push({
-        activityId: `_newuser_${newUid}`, type: 'new_user', actorUid: newUid,
-        authorUsername: u.username, authorNome: u.nome, authorPhoto: u.photo,
-        createdAt: d.data().createat, visible: true
-      });
-    }
+
+    novosCache = {
+      at: Date.now(),
+      items: nuSnap.docs.map(d => ({
+        activityId: `_newuser_${d.id}`,
+        type: 'new_user',
+        actorUid: d.id,
+        createdAt: d.data().createat,
+        visible: true
+      }))
+    };
   } catch (e) {
     console.warn('[activities-render] Erro ao varrer newusers:', e);
   }
 
-  atividades = atividades.filter(act =>
-    act.actorUid === uid || amigosSet.has(act.actorUid)
-  );
+  return novosCache.items;
+}
+
+async function fetchEMontarHtml(uid, docsPrecarregados = null) {
+  const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
+
+  const [docs, amigosSet, novos] = await Promise.all([
+    docsPrecarregados ? Promise.resolve(docsPrecarregados) : getDocs(queryAtividades()).then(snap => snap.docs),
+    buscarAmigos(uid),
+    buscarNovosUsuarios(duasSemanasAtras)
+  ]);
+
+  const relevante = act => act.actorUid === uid || amigosSet.has(act.actorUid);
+
+  let atividades = docs
+    .map(d => ({ activityId: d.id, ...d.data() }))
+    .filter(relevante);
+
+  for (const novo of novos) {
+    if (!relevante(novo)) continue;
+    if (atividades.some(a => a.type === 'new_user' && a.actorUid === novo.actorUid)) continue;
+    atividades.push({ ...novo });
+  }
+
+  const uids = new Set();
+  atividades.forEach(act => {
+    if (act.actorUid) uids.add(act.actorUid);
+    if (act.targetUid) uids.add(act.targetUid);
+  });
+
+  await Promise.all([...uids].map(resolveUser));
+
+  atividades = atividades.map(act => {
+    const autor = act.actorUid ? userCache[act.actorUid] : null;
+    const alvo = act.targetUid ? userCache[act.targetUid] : null;
+
+    return {
+      ...act,
+      authorUsername: act.authorUsername || autor?.username,
+      authorNome: autor?.nome || act.authorName,
+      authorPhoto: autor?.photo || act.authorPhoto,
+      targetUsername: alvo?.username || act.targetUsername,
+      targetNome: alvo?.nome || act.targetNome
+    };
+  });
 
   atividades.sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
 
@@ -887,6 +952,7 @@ async function carregarAtividades() {
   }
 
   markActivitiesSeen(uid);
+  observarAmigos(uid);
   iniciarTempoReal(container, uid);
 }
 
@@ -937,12 +1003,24 @@ function iniciarFiltros() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  carregarAtividades();
+function iniciarPagina() {
+  carregarAtividades().catch(err => {
+    console.error('[activities-render] Erro ao iniciar:', err);
+    const container = document.getElementById('activities-section');
+    if (container && !container.querySelector('.act-big')) {
+      container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
+    }
+  });
   iniciarFiltros();
 
   document.addEventListener('visibilitychange', () => {
     const user = auth.currentUser;
     if (!document.hidden && user) markActivitiesSeen(user.uid);
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', iniciarPagina, { once: true });
+} else {
+  iniciarPagina();
+}

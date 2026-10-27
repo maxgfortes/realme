@@ -9,6 +9,7 @@ import { renderLinks } from "./links.js";
 import { renderAboutMenu } from "./aboutRender.js";
 import { scheduleProfileCacheSave } from "./profileCache.js";
 import { renderMusic } from "./profileMusic.js";
+import { applyProfileTheme } from "/src/shared/profileThemes.js";
 
 function watchDocument(ref, onData) {
   const stop = onSnapshot(ref, snapshot => {
@@ -33,6 +34,7 @@ function handleUser(user) {
 
 function handleMedia(media) {
   state.profileData.media = media;
+  applyProfileTheme(media.profileTheme);
   renderPfp(media);
   renderBanner(media);
   renderMusic(media);
