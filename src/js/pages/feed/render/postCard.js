@@ -65,6 +65,7 @@ function sweepDisconnected() {
 setInterval(sweepDisconnected, SWEEP_MS);
 
 const MENTION_NAMES_SHOWN = 2;
+const NO_MENTIONS = { html: "", people: [], others: 0 };
 
 export function clearPostCaches() {
     creatorCache.clear();
@@ -186,6 +187,39 @@ async function buildMentionsHTML(mentionUids) {
     }
 
     return t("post.with", { names: joinNames(parts) });
+}
+
+function postPfpHTML(creator, safeCreatorId, { people, others }) {
+    const creatorPhoto = escapeHTML(creator.photo);
+
+    if (!people.length) {
+        return `
+            <div class="post-pfp-area post-owner-link" data-profile-uid="${safeCreatorId}">
+                <div class="post-pfp">
+                    <img src="${creatorPhoto}" alt="">
+                </div>
+            </div>
+        `;
+    }
+
+    const mentionPfp = ({ uid, photo }, className) => `
+        <div class="post-pfp ${className} post-profile-link" data-profile-uid="${escapeHTML(uid)}">
+            <img src="${escapeHTML(photo)}" alt="">
+        </div>
+    `;
+
+    const [first, second] = people;
+
+    return `
+        <div class="post-pfp-group${others > 0 ? " has-more" : ""}">
+            ${mentionPfp(first, "post-pfp-first")}
+            ${others > 0 ? `<span class="post-pfp-count post-mentions-others">+${others}</span>` : ""}
+            <div class="post-pfp post-pfp-owner post-owner-link" data-profile-uid="${safeCreatorId}">
+                <img src="${creatorPhoto}" alt="">
+            </div>
+            ${second ? mentionPfp(second, "post-pfp-second") : ""}
+        </div>
+    `;
 }
 
 export function normalizeImgs(post) {
@@ -1080,7 +1114,7 @@ function initMusicToggle(postElement) {
     registerMusic(postElement, controller);
 }
 
-export function renderPost({ container, postId, content, imgs, creator, dateText, creatorid, mentionsHTML = "", music = "", location = "", before = null }) {
+export function renderPost({ container, postId, content, imgs, creator, dateText, creatorid, mentions = NO_MENTIONS, music = "", location = "", before = null }) {
     const safeCreatorId = escapeHTML(String(creatorid || ""));
     const profileUrl = `profile.html?uid=${encodeURIComponent(creatorid || "")}`;
 
@@ -1135,11 +1169,7 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
     const postHTML = `
         <div class="post-card-new" data-post-id="${escapeHTML(postId)}">
             <div class="post-header-new">
-                <div class="post-pfp-area post-owner-link" data-profile-uid="${safeCreatorId}">
-                    <div class="post-pfp">
-                        <img src="${escapeHTML(creator.photo)}" alt="">
-                    </div>
-                </div>
+                ${postPfpHTML(creator, safeCreatorId, mentions)}
 
                 <div class="post-header-infos">
                     <div class="post-author-name-area">
@@ -1149,7 +1179,7 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                             data-profile-uid="${safeCreatorId}"
                         >
                             ${escapeHTML(creator.name)}
-                        </a>${mentionsHTML}
+                        </a>${mentions.html}
                     </div>
 
                     ${metaHTML}
@@ -1263,14 +1293,27 @@ export async function hydratePost(postElement, postId) {
     trackListeners(postElement, listenPostCount(postId, postElement));
 }
 
-export function getPostMentionsHTML(data) {
-    return Promise.all([
+export async function getPostMentions(data) {
+    const mentionUids = getMentionUids(data, data.creatorid || "");
+    const shownUids = mentionUids.slice(0, MENTION_NAMES_SHOWN);
+
+    const [wallHTML, mentionsHTML, people] = await Promise.all([
         buildWallHTML(data).catch(() => ""),
-        buildMentionsHTML(getMentionUids(data, data.creatorid || "")).catch(() => "")
-    ]).then(parts => parts.join(""));
+        buildMentionsHTML(mentionUids).catch(() => ""),
+        Promise.all(shownUids.map(async uid => ({
+            uid,
+            photo: (await getCachedCreator(uid)).photo
+        })))
+    ]);
+
+    return {
+        html: wallHTML + mentionsHTML,
+        people,
+        others: mentionUids.length - shownUids.length
+    };
 }
 
-export function appendPost(container, { postId, data, creator, mentionsHTML = "", before = null }) {
+export function appendPost(container, { postId, data, creator, mentions = NO_MENTIONS, before = null }) {
     const created = data.create?.toDate?.();
 
     const postElement = renderPost({
@@ -1281,7 +1324,7 @@ export function appendPost(container, { postId, data, creator, mentionsHTML = ""
         creator,
         dateText: created ? formatPostDate(created) : "",
         creatorid: data.creatorid || "",
-        mentionsHTML,
+        mentions,
         music: data.music || "",
         location: data.location || "",
         before

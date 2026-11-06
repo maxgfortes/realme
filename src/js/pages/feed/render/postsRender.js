@@ -23,7 +23,7 @@ import {
     joinNames,
     getCachedCreator,
     getUserName,
-    getPostMentionsHTML,
+    getPostMentions,
     appendPost,
     bindPostInteractions,
     clearPostCaches,
@@ -192,7 +192,7 @@ function animatePostEnter(element) {
     setTimeout(finish, 900);
 }
 
-function insertLivePost(postId, data, creator, mentionsHTML) {
+function insertLivePost(postId, data, creator, mentions) {
     const firstPost = feed.querySelector(".post-card-new");
     const atTop = isFeedAtTop();
     const previousTop = feedRow?.scrollTop || 0;
@@ -202,7 +202,7 @@ function insertLivePost(postId, data, creator, mentionsHTML) {
         postId,
         data,
         creator,
-        mentionsHTML,
+        mentions,
         before: firstPost
     });
 
@@ -227,15 +227,15 @@ async function handleLiveAdded(postDoc) {
 
     if (time < newestFeedTime) return;
 
-    const [creator, mentionsHTML] = await Promise.all([
+    const [creator, mentions] = await Promise.all([
         getCachedCreator(data.creatorid || ""),
-        getPostMentionsHTML(data)
+        getPostMentions(data)
     ]);
 
     if (!feedStarted || feed.querySelector(postSelector(postDoc.id))) return;
 
     newestFeedTime = Math.max(newestFeedTime, time);
-    insertLivePost(postDoc.id, data, creator, mentionsHTML);
+    insertLivePost(postDoc.id, data, creator, mentions);
 }
 
 function removeFeedElement(element) {
@@ -467,11 +467,11 @@ async function renderFeedItems(items, creators) {
 
     if (!items.length) return;
 
-    const mentionsHTMLs = await Promise.all(
+    const postMentions = await Promise.all(
         items.map(item =>
             item.type === "post"
-                ? getPostMentionsHTML(item.data)
-                : ""
+                ? getPostMentions(item.data)
+                : null
         )
     );
 
@@ -499,7 +499,7 @@ async function renderFeedItems(items, creators) {
             postId: item.id,
             data: item.data,
             creator: creators[index],
-            mentionsHTML: mentionsHTMLs[index]
+            mentions: postMentions[index]
         });
 
         if (element && item.tier) element.dataset.feedTier = item.tier;
