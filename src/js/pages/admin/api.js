@@ -30,7 +30,8 @@ export const api = {
   listAdmins: callable("adminListAdmins"),
   setRole: callable("adminSetRole"),
   setConfig: callable("adminSetConfig"),
-  clearErrors: callable("adminClearErrors")
+  clearErrors: callable("adminClearErrors"),
+  socialGraph: callable("adminSocialGraph")
 };
 
 export const ROLE_LEVEL = { moderator: 1, admin: 2, owner: 3 };

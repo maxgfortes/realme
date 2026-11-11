@@ -49,6 +49,7 @@
     <button class="tab" type="button" data-tab="reports">Denúncias <span class="tab-count" id="reportsCount" hidden></span></button>
     <button class="tab" type="button" data-tab="content">Conteúdo</button>
     <button class="tab" type="button" data-tab="users">Usuários</button>
+    <button class="tab" type="button" data-tab="graph">Rede</button>
     <button class="tab" type="button" data-tab="messages">Mensagens</button>
     <button class="tab" type="button" data-tab="security" data-min-role="admin">Segurança</button>
     <button class="tab" type="button" data-tab="errors" data-min-role="admin">Erros</button>
@@ -124,6 +125,35 @@
     </div>
     <div class="users-count" id="usersCount"></div>
     <div id="usersList"></div>
+  </section>
+
+  <section class="panel" id="panel-graph" hidden>
+    <div class="panel-head">
+      <h2>Rede social</h2>
+      <span class="updated" id="graphUpdated"></span>
+    </div>
+    <div class="kpi-grid small" id="graphStats"></div>
+    <div class="graph-toolbar">
+      <input class="search graph-search" id="graphSearch" type="search" placeholder="Buscar pessoa e apertar Enter" autocomplete="off">
+      <div class="graph-types" id="graphTypes"></div>
+      <div class="graph-options">
+        <label class="graph-range">Força mínima <input type="range" id="graphMin" min="0" max="90" step="5" value="0"> <b id="graphMinValue">0%</b></label>
+        <label class="graph-check"><input type="checkbox" id="graphLabels"> Nomes</label>
+        <label class="graph-check"><input type="checkbox" id="graphIsolated"> Sem conexões</label>
+        <button class="graph-btn" id="graphFit" type="button">Enquadrar</button>
+        <button class="graph-btn" id="graphRelayout" type="button">Reorganizar</button>
+      </div>
+    </div>
+    <div class="graph-stage" id="graphStage">
+      <canvas id="graphCanvas"></canvas>
+      <div class="graph-tooltip" id="graphTooltip" hidden></div>
+      <div class="graph-hint">Arraste para mover · role ou pince para zoom · toque numa pessoa para ver as conexões</div>
+    </div>
+    <div class="card graph-detail" id="graphDetail" hidden></div>
+    <div class="card">
+      <div class="card-title">Conexões mais fortes</div>
+      <div id="graphTop"></div>
+    </div>
   </section>
 
   <section class="panel" id="panel-messages" hidden>

@@ -7,6 +7,7 @@ import { loadFunctions } from "./functions.js";
 import { loadReports, watchOpenCount } from "./reports.js";
 import { loadContent } from "./content.js";
 import { loadUsers } from "./users.js";
+import { loadGraph } from "./graph.js";
 import { loadMessages } from "./messages.js";
 import { loadSecurity } from "./security.js";
 import { loadErrors } from "./errors.js";
@@ -19,12 +20,13 @@ const loaders = {
   reports: loadReports,
   content: loadContent,
   users: loadUsers,
+  graph: loadGraph,
   messages: loadMessages,
   security: loadSecurity,
   errors: loadErrors
 };
 
-const refreshable = new Set(["overview", "functions", "content", "messages", "errors", "security"]);
+const refreshable = new Set(["overview", "functions", "content", "messages", "errors", "security", "graph"]);
 
 let activeTab = null;
 
