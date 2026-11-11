@@ -402,6 +402,65 @@ function zoomAt(clientX, clientY, factor) {
   draw();
 }
 
+let stagePlaceholder = null;
+
+function nativeFullscreenElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+function syncFullscreen() {
+  const native = nativeFullscreenElement() === stage;
+  if (!native && stage.classList.contains("native-full")) {
+    setFullscreen(false);
+    return;
+  }
+  setTimeout(() => {
+    resize();
+    fitView();
+  }, 60);
+}
+
+async function setFullscreen(on) {
+  if (!stage) return;
+
+  if (!on) {
+    if (nativeFullscreenElement() === stage) {
+      try {
+        await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } catch {}
+    }
+    stage.classList.remove("expanded", "native-full");
+    document.body.classList.remove("graph-fullscreen");
+    if (stagePlaceholder) {
+      stagePlaceholder.replaceWith(stage);
+      stagePlaceholder = null;
+    }
+    syncFullscreen();
+    return;
+  }
+
+  if (!stagePlaceholder) {
+    stagePlaceholder = document.createComment("graph-stage");
+    stage.before(stagePlaceholder);
+    document.body.appendChild(stage);
+  }
+
+  stage.classList.add("expanded");
+  document.body.classList.add("graph-fullscreen");
+
+  const request = stage.requestFullscreen || stage.webkitRequestFullscreen;
+  if (request) {
+    try {
+      await request.call(stage);
+      stage.classList.add("native-full");
+    } catch {
+      stage.classList.remove("native-full");
+    }
+  }
+
+  syncFullscreen();
+}
+
 function fitView() {
   if (!graph.nodes.length || !stage) return;
   const rect = stage.getBoundingClientRect();
@@ -633,6 +692,14 @@ function bindControls() {
   });
 
   $("graphFit").addEventListener("click", fitView);
+  $("graphFullscreen").addEventListener("click", () => setFullscreen(true));
+  $("graphExitFull").addEventListener("click", () => setFullscreen(false));
+
+  document.addEventListener("fullscreenchange", syncFullscreen);
+  document.addEventListener("webkitfullscreenchange", syncFullscreen);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && stage.classList.contains("expanded")) setFullscreen(false);
+  });
 
   $("graphSearch").addEventListener("keydown", event => {
     if (event.key !== "Enter") return;

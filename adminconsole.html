@@ -142,11 +142,13 @@
         <label class="graph-check"><input type="checkbox" id="graphIsolated"> Sem conexões</label>
         <button class="graph-btn" id="graphFit" type="button">Enquadrar</button>
         <button class="graph-btn" id="graphRelayout" type="button">Reorganizar</button>
+        <button class="graph-btn" id="graphFullscreen" type="button">Tela cheia</button>
       </div>
     </div>
     <div class="graph-stage" id="graphStage">
       <canvas id="graphCanvas"></canvas>
       <div class="graph-tooltip" id="graphTooltip" hidden></div>
+      <button class="graph-btn graph-exit-full" id="graphExitFull" type="button">Sair da tela cheia</button>
       <div class="graph-hint">Arraste para mover · role ou pince para zoom · toque numa pessoa para ver as conexões</div>
     </div>
     <div class="card graph-detail" id="graphDetail" hidden></div>
