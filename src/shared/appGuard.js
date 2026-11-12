@@ -1,6 +1,6 @@
 import { t } from "/src/i18n/i18n.js";
 import { auth, db } from "/src/config/config.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
     doc, getDoc, updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -43,8 +43,8 @@ async function checkBanned(uid) {
         const snap = await getDoc(doc(db, "users", uid));
 
         if (snap.exists() && snap.data().banned === true) {
-            await signOut(auth);
-            location.replace("/login.html?banned=1");
+            const { logoutAndClear } = await import("/src/shared/logout.js");
+            await logoutAndClear("/login.html?banned=1");
         }
     } catch {}
 }

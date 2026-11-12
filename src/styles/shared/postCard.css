@@ -188,7 +188,8 @@
   aspect-ratio: 1/1;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: 2px;
 }
 
 .post-more {
@@ -608,4 +609,77 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-text-pure);
   cursor: pointer;
+}
+
+.feed-activity {
+  cursor: pointer;
+  padding-bottom: 0;
+}
+
+.feed-activity .post-header-new {
+  align-items: center;
+}
+
+.feed-activity .post-pfp-area {
+  height: auto;
+}
+
+.feed-activity-text {
+  line-height: 1.35;
+}
+
+.feed-activity-text .post-author-name {
+  white-space: normal;
+}
+
+.feed-activity-highlight {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-fff);
+}
+
+.feed-activity:active {
+  opacity: 0.7;
+}
+
+.post-actions-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-right: 2px;
+}
+
+.save-btn {
+  color: var(--text-eee);
+  cursor: pointer;
+}
+
+.save-btn .save-fill {
+  display: none;
+}
+
+.save-btn.saved .save-outline {
+  display: none;
+}
+
+.save-btn.saved .save-fill {
+  display: block;
+}
+
+.save-btn.pop svg {
+  animation: save-pop 280ms cubic-bezier(0.22, 0.75, 0.3, 1);
+}
+
+@keyframes save-pop {
+  40% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .save-btn.pop svg {
+    animation: none;
+  }
 }

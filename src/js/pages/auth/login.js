@@ -4,6 +4,11 @@ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { auth } from "../../../config/config.js";
 
+function nextPage() {
+    const next = new URLSearchParams(location.search).get("next") || "";
+    return /^\/[A-Za-z0-9_\-.]+\.html(\?[^#]*)?$/.test(next) ? next : "feed.html";
+}
+
 const loginBtn = document.getElementById("loginBtn");
 
 const inputEmail = document.getElementById("inputEmail");
@@ -48,7 +53,7 @@ async function login(event) {
     try {
         await signInWithEmailAndPassword(auth, email, password);
 
-        window.location.href = "feed.html";
+        window.location.href = nextPage();
 
     } catch (error) {
         console.error(error);
@@ -78,7 +83,7 @@ async function login(event) {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        window.location.href = "feed.html";
+        window.location.href = nextPage();
     }
 });
 

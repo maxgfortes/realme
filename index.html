@@ -48,6 +48,21 @@
   }
   </script>
   <script type="module" src="/src/i18n/page.js"></script>
+  <script type="module" src="/src/js/pages/index/stats.js"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1320x2868.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1206x2622.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1290x2796.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1179x2556.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1284x2778.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1170x2532.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1080x2340.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1242x2688.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1125x2436.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-828x1792.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1242x2208.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-750x1334.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-640x1136.png">
 </head>
 <body>
 
@@ -73,7 +88,7 @@
     <div class="welcome-headers">
       <h1 class="welcome-title" data-i18n-html="index.bem_vindo_ao_realme">Bem vindo ao <span>RealMe</span></h1>
       <p class="welcome-sub" data-i18n="index.conecte_se_com_seus_amigos">Conecte-se com seus amigos, conheça novas pessoas e compartilhe sua vida com quem importa.</p>
-      <p class="welcome-text" data-i18n="index.tudo_em_um_so_lugar">Tudo em um só lugar: mensagens, posts, perfis e uma rede feita para aproximar pessoas de verdade — sem filtros, sem pressão, só você sendo você.</p>
+      <p class="welcome-text" data-i18n="index.tudo_em_um_so_lugar">Tudo em um só lugar: mensagens, posts, perfis e uma rede feita para aproximar pessoas de verdade sem filtros, sem pressão, só você sendo você.</p>
     </div>
     <div class="welcome-actions">
       <a href="/register.html" class="welcome-auth-btn" data-i18n="common.criar_conta_2">Criar Conta</a>
@@ -132,7 +147,7 @@
 <section class="more-info">
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-number">220+</div>
+      <div class="stat-number" id="userCountStat">220+</div>
       <div class="stat-label" data-i18n="index.pessoas_conectadas">Pessoas conectadas</div>
     </div>
     <div class="stat-card">
@@ -203,7 +218,7 @@
   </div>
 
   <div class="footer-bottom">
-    <p data-i18n="index.2026_realme_todos_os_direitos">© 2026 RealMe — Todos os direitos reservados. Criado por maxgfortes.</p>
+    <p data-i18n="index.2026_realme_todos_os_direitos">© 2026 RealMe   Todos os direitos reservados. Criado por maxgfortes.</p>
   </div>
 </footer>
 </body>

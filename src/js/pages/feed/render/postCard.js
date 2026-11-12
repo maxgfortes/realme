@@ -8,6 +8,7 @@ import "./deletePost.js";
 import "./openComments.js";
 import { openLikes } from "./openLikes.js";
 import { listenPostCount } from "./postCounters.js";
+import { isSaved, toggleSaved } from "/src/shared/savedPosts.js";
 import { likePost, unlikePost, hasLikedPost, updateLikeIcon } from "./likePost.js";
 
 const creatorCache = new Map();
@@ -72,9 +73,54 @@ export function clearPostCaches() {
     userNameCache.clear();
 }
 
+const CREATOR_STORE_KEY = "realme.creators.v1";
+const CREATOR_STORE_TTL = 15 * 60 * 1000;
+const CREATOR_STORE_MAX = 400;
+
+function readCreatorStore() {
+    try {
+        return JSON.parse(localStorage.getItem(CREATOR_STORE_KEY) || "{}") || {};
+    } catch {
+        return {};
+    }
+}
+
+const creatorStore = readCreatorStore();
+let creatorStoreTimer = null;
+
+function persistCreator(uid, creator) {
+    creatorStore[uid] = { name: creator.name, photo: creator.photo, at: Date.now() };
+
+    clearTimeout(creatorStoreTimer);
+    creatorStoreTimer = setTimeout(() => {
+        const entries = Object.entries(creatorStore)
+            .sort((a, b) => b[1].at - a[1].at)
+            .slice(0, CREATOR_STORE_MAX);
+
+        try {
+            localStorage.setItem(CREATOR_STORE_KEY, JSON.stringify(Object.fromEntries(entries)));
+        } catch {}
+    }, 400);
+}
+
+function storedCreator(uid) {
+    const entry = creatorStore[uid];
+
+    if (!entry || Date.now() - entry.at > CREATOR_STORE_TTL) return null;
+
+    return { name: entry.name, photo: entry.photo };
+}
+
 export function getCachedCreator(uid) {
     if (!creatorCache.has(uid)) {
-        creatorCache.set(uid, getCreator(uid));
+        const stored = uid ? storedCreator(uid) : null;
+
+        creatorCache.set(uid, stored
+            ? Promise.resolve(stored)
+            : getCreator(uid).then(creator => {
+                if (uid && creator.found) persistCreator(uid, creator);
+                return creator;
+            }));
     }
 
     return creatorCache.get(uid);
@@ -118,7 +164,8 @@ async function getCreator(creatorid) {
 
         return {
             name: alias || t("common.user"),
-            photo
+            photo,
+            found: true
         };
     } catch (error) {
         return defaultCreator;
@@ -195,7 +242,7 @@ function postPfpHTML(creator, safeCreatorId, { people, others }) {
     if (!people.length) {
         return `
             <div class="post-pfp-area post-owner-link" data-profile-uid="${safeCreatorId}">
-                <div class="post-pfp">
+                <div class="post-pfp" data-presence-uid="${safeCreatorId}">
                     <img src="${creatorPhoto}" alt="">
                 </div>
             </div>
@@ -203,7 +250,7 @@ function postPfpHTML(creator, safeCreatorId, { people, others }) {
     }
 
     const mentionPfp = ({ uid, photo }, className) => `
-        <div class="post-pfp ${className} post-profile-link" data-profile-uid="${escapeHTML(uid)}">
+        <div class="post-pfp ${className} post-profile-link" data-profile-uid="${escapeHTML(uid)}" data-presence-uid="${escapeHTML(uid)}">
             <img src="${escapeHTML(photo)}" alt="">
         </div>
     `;
@@ -214,7 +261,7 @@ function postPfpHTML(creator, safeCreatorId, { people, others }) {
         <div class="post-pfp-group${others > 0 ? " has-more" : ""}">
             ${mentionPfp(first, "post-pfp-first")}
             ${others > 0 ? `<span class="post-pfp-count post-mentions-others">+${others}</span>` : ""}
-            <div class="post-pfp post-pfp-owner post-owner-link" data-profile-uid="${safeCreatorId}">
+            <div class="post-pfp post-pfp-owner post-owner-link" data-profile-uid="${safeCreatorId}" data-presence-uid="${safeCreatorId}">
                 <img src="${creatorPhoto}" alt="">
             </div>
             ${second ? mentionPfp(second, "post-pfp-second") : ""}
@@ -612,7 +659,7 @@ const LOCATION_SVG = `<svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck"
 
 const MUSIC_SVG = `<svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 3 50 48" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-53.49609375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M29.133 5.801C32.248 5.801 36.824 8.035 36.824 14.137V32.807C36.824 33.967 37.039 34.203 38.113 34.461L48.361 36.717C49.135 36.867 49.629 37.469 49.629 38.242V45.697C49.629 46.9 48.662 47.695 47.48 47.438L36.158 45.010C34.783 44.709 34.117 44.021 34.117 42.883L34.246 20.023C34.246 18.949 33.730 18.240 32.764 18.047L29.391 17.338C25.201 16.457 23.246 14.352 23.246 11.193C23.246 8.014 25.695 5.801 29.133 5.801ZM6.037 37.533H26.512C26.834 37.533 27.070 37.770 27.070 38.070C27.070 38.371 26.834 38.607 26.512 38.607H6.037C5.715 38.607 5.479 38.371 5.479 38.070C5.479 37.770 5.715 37.533 6.037 37.533ZM6.037 30.422H26.512C26.834 30.422 27.070 30.658 27.070 30.959C27.070 31.238 26.834 31.475 26.512 31.475H6.037C5.715 31.475 5.479 31.238 5.479 30.959C5.479 30.658 5.715 30.422 6.037 30.422ZM6.037 23.289H26.512C26.834 23.289 27.070 23.547 27.070 23.826C27.070 24.127 26.834 24.363 26.512 24.363H6.037C5.715 24.363 5.479 24.127 5.479 23.826C5.479 23.547 5.715 23.289 6.037 23.289Z"/></g></svg>`;
 
-function buildPostMeta({ dateText, location, headerMusicId }) {
+export function buildPostMeta({ dateText, location, headerMusicId }) {
     const locationHTML = location
         ? `
             <div class="post-location-area">
@@ -1255,6 +1302,13 @@ export function renderPost({ container, postId, content, imgs, creator, dateText
                             <span class="comment-count">0</span>
                         </button>
                     </div>
+
+                    <div class="post-actions-right">
+                        <button class="post-action-btn save-btn${isSaved(postId) ? " saved" : ""}" type="button" aria-label="${t("post.save")}">
+                            <svg class="save-outline" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" aria-hidden="true"><polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polygon></svg>
+                            <svg class="save-fill" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" aria-hidden="true"><path d="M20 22a.999.999 0 0 1-.687-.273L12 14.815l-7.313 6.912A1 1 0 0 1 3 21V3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1Z"></path></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="post-graph-box">
@@ -1386,6 +1440,24 @@ export function bindPostInteractions(container) {
             if (!postId) return;
 
             await openLikes(postId);
+
+            return;
+        }
+
+        const saveButton = event.target.closest(".save-btn");
+
+        if (saveButton) {
+            const savedPostId = saveButton.closest(".post-card-new")?.dataset.postId;
+
+            if (!savedPostId || saveButton.disabled) return;
+
+            saveButton.disabled = true;
+            saveButton.classList.remove("pop");
+            void saveButton.offsetWidth;
+            saveButton.classList.add("pop");
+
+            await toggleSaved(savedPostId).catch(() => null);
+            saveButton.disabled = false;
 
             return;
         }

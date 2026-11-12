@@ -25,7 +25,7 @@ function render(data) {
     kpi("Chamadas", num(totals.calls)),
     kpi("Erros (5xx)", num(totals.errors), { tone: totals.errors ? "bad" : "good" }),
     kpi("Taxa de erro", `${totals.errorRate}%`, { tone: totals.errorRate >= 1 ? "bad" : "good" }),
-    kpi("Mais lenta (p95)", slowest?.p95Ms ? `${num(slowest.p95Ms)} ms` : "—", { sub: slowest?.name || "" })
+    kpi("Mais lenta (p95)", slowest?.p95Ms ? `${num(slowest.p95Ms)} ms` : " ", { sub: slowest?.name || "" })
   ].join("");
 
   const points = hourly.map(point => ({ ...point, count: point.calls, label: hourLabel(point.hour) }));
@@ -46,7 +46,7 @@ function render(data) {
             <span class="fn-name" title="${esc(item.name)}">${esc(item.name)}</span>
             <span class="fn-num">${num(item.calls)}</span>
             <span class="fn-num ${item.errors ? (errorRate >= 5 ? "bad" : "warn") : ""}">${num(item.errors)}</span>
-            <span class="fn-num ${latencyTone(item.p95Ms)}">${item.p95Ms === null ? "—" : `${num(item.p95Ms)}ms`}</span>
+            <span class="fn-num ${latencyTone(item.p95Ms)}">${item.p95Ms === null ? " " : `${num(item.p95Ms)}ms`}</span>
           </div>`;
       }).join("")
     : `<div class="chart-empty">Nenhuma chamada nas últimas 24h</div>`;

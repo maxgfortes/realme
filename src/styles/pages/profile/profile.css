@@ -537,6 +537,11 @@ body {
   background: var(--color-bg-surface);
 }
 
+.pfp-border.square {
+  border-radius: 0;
+  box-shadow: 0 0 0 3px #fff, 0 0 0px 4px #333;
+}
+
 .pfp-border::before {
   content: "";
   position: absolute;
@@ -556,6 +561,10 @@ body {
   position: relative;
   background-size: cover;
   z-index: var(--z-1);
+}
+
+.pfp-border.square .profile-pic {
+  border-radius: 0;
 }
 
 .icon-place svg {
@@ -1244,4 +1253,233 @@ body {
 .spotify-connect.loading {
   opacity: 0.6;
   pointer-events: none;
+}
+
+.status-carousel {
+  position: relative;
+}
+
+.status-track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.status-track::-webkit-scrollbar {
+  display: none;
+}
+
+.status-track > .now-playing {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.status-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+}
+
+.status-dots[hidden] {
+  display: none;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  opacity: 0.4;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.status-dot.active {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.psn-sub {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.psn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.psn-sub span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.psn-connect .psn-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.psn-connect .spotify-connect-status {
+  display: inline;
+}
+
+.psn-form {
+  display: flex;
+  gap: var(--space-8);
+  padding: var(--space-4) var(--space-12) var(--space-12);
+}
+
+.psn-form[hidden] {
+  display: none;
+}
+
+.psn-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 var(--space-12);
+  border: none;
+  border-radius: var(--radius-10);
+  background: var(--color-bg-slate-18);
+  color: var(--color-text-pure);
+  font-size: var(--font-size-15);
+  outline: none;
+  background: transparent;
+}
+
+.psn-submit {
+  height: 40px;
+  padding: 0 var(--space-16);
+  border: none;
+  border-radius: var(--radius-10);
+  background: var(--color-brand);
+  color: #fff;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-14);
+}
+
+.psn-submit:disabled {
+  opacity: 0.6;
+}
+
+body.public-profile .navbar-bottom,
+body.public-profile #actBtnsVisitor,
+body.public-profile #actBtnsOwner,
+body.public-profile #openSettingsBtn,
+body.public-profile #postsSentinel {
+  display: none !important;
+}
+
+.public-cta {
+  display: none;
+}
+
+body.public-profile .public-cta {
+  display: flex;
+}
+
+.public-more {
+  display: block;
+  width: calc(100% - var(--space-32, 32px));
+  margin: var(--space-16) auto calc(var(--space-30) + env(safe-area-inset-bottom));
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-10);
+  background: var(--color-bg-slate-18);
+  color: var(--color-text-pure);
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.public-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+}
+
+.public-gate[hidden] {
+  display: none;
+}
+
+.public-gate-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.public-gate-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-10);
+  padding: var(--space-24, 24px) var(--space-20) calc(var(--space-20) + env(safe-area-inset-bottom));
+  background: var(--bg-primary);
+  border-radius: var(--radius-20) var(--radius-20) 0 0;
+  transform: translateY(100%);
+  transition: transform 240ms cubic-bezier(0.22, 0.75, 0.3, 1);
+}
+
+.public-gate.active .public-gate-overlay {
+  opacity: 1;
+}
+
+.public-gate.active .public-gate-sheet {
+  transform: translateY(0);
+}
+
+.public-gate-pfp {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.public-gate-title {
+  font-size: var(--font-size-18, 18px);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
+  text-align: center;
+}
+
+.public-gate-text {
+  font-size: var(--font-size-14);
+  color: var(--color-text-muted);
+  text-align: center;
+  padding-bottom: var(--space-8);
+}
+
+.public-gate-btn {
+  width: 100%;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-10);
+  background: var(--color-bg-slate-18);
+  color: var(--color-text-pure);
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.public-gate-btn.primary {
+  background: var(--color-brand);
+  color: #fff;
 }

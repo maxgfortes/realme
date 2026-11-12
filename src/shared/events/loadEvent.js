@@ -1,6 +1,6 @@
 import { t, formatDate as formatIntlDate } from "/src/i18n/i18n.js";
 import { db, auth } from "../../config/config.js";
-import "./actionsEvent.js";
+import { markStatus } from "./actionsEvent.js";
 import "./deleteEvent.js";
 
 import {
@@ -161,6 +161,14 @@ async function updateParticipantList(status, snapshot, loadId) {
     );
 
     listReady[status] = true;
+
+    const myUid = auth.currentUser?.uid;
+    if (myUid && listReady.going && listReady.maybe) {
+        markStatus(
+            participantLists.going.has(myUid) ? "going" :
+            participantLists.maybe.has(myUid) ? "maybe" : null
+        );
+    }
 
     const allUids = new Set([
         ...participantLists.going,

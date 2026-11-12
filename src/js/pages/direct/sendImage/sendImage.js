@@ -169,7 +169,8 @@ async function saveMessage(chatId, imageUrl, width, height) {
         doc(db, "chats", chatId),
         {
             lastMessage: t("dm.sentPhoto"),
-            lastMessageTime: serverTimestamp()
+            lastMessageTime: serverTimestamp(),
+            lastSender: auth.currentUser?.uid || ""
         }
     );
 

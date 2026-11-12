@@ -19,7 +19,7 @@ import {
 
 import {
     onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { formatDate } from "./formatDate.js";
 import { getUser } from "./getUser.js";
@@ -40,7 +40,31 @@ const notificationsList = document.querySelector("#notifications-list");
 
 const defaultAvatar = "../public/img/default.jpg";
 
-const posts = {};
+const POSTS_CACHE_KEY = "realme.notifPosts.v1";
+
+function readPostsCache() {
+    try {
+        return JSON.parse(localStorage.getItem(POSTS_CACHE_KEY) || "{}") || {};
+    } catch {
+        return {};
+    }
+}
+
+const posts = readPostsCache();
+
+function savePostsCache() {
+    try {
+        const entries = Object.entries(posts).slice(-200);
+        localStorage.setItem(POSTS_CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
+    } catch {}
+}
+
+function compactPost(data) {
+    const first = Array.isArray(data.imgs) ? data.imgs[0] : null;
+    const url = typeof first === "string" ? first : first?.poster || first?.url || data.img || "";
+
+    return url ? { imgs: [{ url }] } : {};
+}
 
 const pageSize = 50;
 
@@ -81,7 +105,7 @@ async function getPost(postId) {
     }
 
 
-    if (posts[postId]) {
+    if (postId in posts) {
         return posts[postId];
     }
 
@@ -100,12 +124,8 @@ async function getPost(postId) {
         );
 
 
-    if (!postResult.exists()) {
-        return null;
-    }
-
-
-    posts[postId] = postResult.data();
+    posts[postId] = postResult.exists() ? compactPost(postResult.data()) : null;
+    savePostsCache();
 
     return posts[postId];
 }
@@ -266,7 +286,7 @@ function createNotification(
 
 
     function goToProfile() {
-        window.location.href = "perfil.html?uid=" + notification.fromUid;
+        window.location.href = "profile.html?uid=" + notification.fromUid;
     }
 
 

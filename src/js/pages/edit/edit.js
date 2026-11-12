@@ -1,27 +1,13 @@
 import { t } from "/src/i18n/i18n.js";
 import { PROFILE_THEMES, isSelectableTheme } from "/src/shared/profileThemes.js";
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { app, db, auth } from "/src/config/config.js";
 import {
-  getFirestore, doc, getDoc, setDoc
+  doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
-  getAuth, onAuthStateChanged
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import "/src/shared/desktopAlert.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-  authDomain: "ifriendmatch.firebaseapp.com",
-  projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
-  messagingSenderId: "306331636603",
-  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-  measurementId: "G-D96BEW6RC3"
-};
-
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
 
 const IMGBB_API_KEY = "fc8497dcdf559dc9cbff97378c82344c";
 

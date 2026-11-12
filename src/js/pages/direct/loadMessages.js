@@ -13,6 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import { renderMessages } from "./renderMessages.js";
+import { markGroupRead } from "./markAsRead.js";
 
 const PAGE_SIZE = 100;
 
@@ -50,6 +51,11 @@ function markIncomingAsRead(chatId) {
     const myUid = auth.currentUser?.uid;
 
     if (!myUid || !chatIsVisible(chatId)) return;
+
+    if (document.getElementById("dmChatArea")?.dataset.group === "1") {
+        markGroupRead(chatId);
+        return;
+    }
 
     latestDocs.forEach(function(messageDoc) {
         const data = messageDoc.data();

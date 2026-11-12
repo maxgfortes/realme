@@ -15,7 +15,7 @@ const messaging = firebase.messaging();
 const DEFAULT_ICON = "/public/img/icon.png";
 const DEFAULT_URL = "/feed.html";
 
-const CACHE = "realme-version-1.0.11";
+const CACHE = "realme-version-1.0.13";
 const PRECACHE = [
   "/",
   "/feed.html",
@@ -157,7 +157,7 @@ async function cachePut(request, response) {
   }
 
   const cache = await caches.open(CACHE);
-  await cache.put(request, response.clone());
+  await cache.put(request, response);
 }
 
 self.addEventListener("fetch", (event) => {
@@ -204,7 +204,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(request).then(async (cached) => {
       const networkPromise = fetch(request).then((response) => {
         if (response.ok) {
-          event.waitUntil(cachePut(request, response));
+          event.waitUntil(cachePut(request, response.clone()));
         }
 
         return response;

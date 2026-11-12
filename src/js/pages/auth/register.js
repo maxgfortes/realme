@@ -2,6 +2,11 @@ import { t } from "/src/i18n/i18n.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth, IS_LOCAL } from "../../../config/config.js";
 
+function nextPage() {
+    const next = new URLSearchParams(location.search).get("next") || "";
+    return /^\/[A-Za-z0-9_\-.]+\.html(\?[^#]*)?$/.test(next) ? next : "feed.html";
+}
+
 const FUNCTION_URL = IS_LOCAL
     ? "http://127.0.0.1:5001/ifriendmatch/southamerica-east1/createAccount"
     : "https://southamerica-east1-ifriendmatch.cloudfunctions.net/createAccount";
@@ -385,8 +390,7 @@ async function createAccount(event) {
             email,
             password
         );
-        window.location.href =
-            "feed.html";
+        window.location.href = nextPage();
 
     } catch (error) {
 

@@ -161,6 +161,8 @@
   border-radius: var(--radius-md);
 }
 
+
+
 .img-btn button.disable {
   opacity: 0.4;
 }
@@ -193,6 +195,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .img-btn button {
@@ -894,3 +897,4 @@
 #eventDateInput.invalid {
   color: var(--color-text-danger);
 }
+

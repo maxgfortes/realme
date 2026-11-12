@@ -1,4 +1,4 @@
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { logoutAndClear } from "/src/shared/logout.js";
 import { auth } from "./firebase.js";
 import { $, select } from "./dom.js";
 import { state } from "./state.js";
@@ -27,8 +27,7 @@ async function logout(event) {
   event.preventDefault();
   clearOwnUid();
   await removePush(auth.currentUser?.uid).catch(() => {});
-  await signOut(auth);
-  location.replace(LOGIN_PAGE);
+  await logoutAndClear(LOGIN_PAGE);
 }
 
 loginBtn.addEventListener("click", goToLogin);

@@ -131,3 +131,204 @@
   font-size: var(--font-size-14);
   color: var(--color-text-subtle);
 }
+
+.saved-items {
+  padding-bottom: calc(var(--space-30) + env(safe-area-inset-bottom));
+}
+
+.saved-hint {
+  padding: var(--space-12) var(--space-16);
+  font-size: var(--font-size-13, 13px);
+  color: var(--color-text-gray-33);
+  text-align: center;
+  display: none;
+}
+
+.saved-grid {
+  width: 100%;
+}
+
+.saved-sentinel {
+  height: 1px;
+}
+
+.birthdays-items {
+  padding-bottom: calc(var(--space-30) + env(safe-area-inset-bottom));
+}
+
+.bday-calendar {
+  margin: var(--space-8) var(--space-16) var(--space-16);
+  padding: var(--space-12);
+  border-radius: var(--radius-10);
+  background: #272727;
+}
+
+.bday-month-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-10);
+}
+
+.bday-month-title {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
+}
+
+.bday-nav {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-pure);
+  cursor: pointer;
+}
+
+.bday-nav:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bday-weekdays,
+.bday-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.bday-weekdays span {
+  text-align: center;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  padding-bottom: var(--space-6);
+}
+
+.bday-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  border-radius: var(--radius-8);
+  background: transparent;
+  color: var(--color-text-pure);
+  font-size: var(--font-size-13);
+  padding: 0;
+}
+
+.bday-cell:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.bday-cell.has-bday {
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.bday-cell.today {
+  background: var(--color-brand);
+  border-radius: 999px;
+} 
+
+.bday-cell.today .bday-day {
+  color: #fff;
+  font-weight: var(--font-weight-bold);
+}
+
+.bday-cell.selected {
+  background: var(--color-brand);
+}
+
+.bday-cell.selected .bday-day {
+  color: #fff;
+}
+
+.bday-faces {
+  display: flex;
+}
+
+.bday-faces img {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1.5px var(--color-bg-slate-18);
+}
+
+.bday-faces.multi img + img {
+  margin-left: -6px;
+}
+
+.bday-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.bday-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-10) var(--space-20);
+  color: var(--color-text-pure);
+  text-decoration: none;
+}
+
+.bday-row:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.bday-row-pfp {
+  display: block;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.bday-row-pfp img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.bday-row-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bday-row-name {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+}
+
+.bday-row-when {
+  font-size: var(--font-size-13);
+  color: var(--color-text-muted);
+}
+
+.bday-row.is-today .bday-row-when {
+  color: var(--color-brand);
+  font-weight: var(--font-weight-bold);
+}
+
+.bday-empty {
+  padding: var(--space-16) var(--space-20);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-14);
+}
+
+
+.menu-item-link.spotify-connect.psn-connect {
+  border: none;
+}

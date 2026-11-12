@@ -1,27 +1,14 @@
 import { t, getLanguage, getLocale } from "/src/i18n/i18n.js";
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { db, auth } from "/src/config/config.js";
 import {
-  getFirestore, collection, query, where, orderBy, limit,
+  collection, query, where, orderBy, limit,
   getDocs, getDoc, doc, deleteDoc, Timestamp, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getActivitiesSeenAt, markActivitiesSeen } from "/src/shared/activityDot.js";
 import {
-  getAuth, onAuthStateChanged
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB2N41DiH0-Wjdos19dizlWSKOlkpPuOWs",
-  authDomain: "ifriendmatch.firebaseapp.com",
-  projectId: "ifriendmatch",
-  storageBucket: "ifriendmatch.appspot.com",
-  messagingSenderId: "306331636603",
-  appId: "1:306331636603:web:c0ae0bd22501803995e3de",
-  measurementId: "G-D96BEW6RC3"
-};
-
-const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db   = getFirestore(app);
-const auth = getAuth(app);
 
 function esperarAuth() {
   return new Promise(resolve => {
@@ -191,21 +178,6 @@ async function resolveUser(uid) {
 
 let amigosAoVivo = null;
 let amigosUid = null;
-let pararAmigos = null;
-
-function observarAmigos(uid) {
-  if (amigosUid === uid && pararAmigos) return;
-
-  pararAmigos?.();
-  amigosUid = uid;
-  amigosAoVivo = null;
-
-  pararAmigos = onSnapshot(collection(db, 'users', uid, 'friends'), snap => {
-    amigosAoVivo = new Set(snap.docs.map(d => d.id));
-  }, () => {
-    amigosAoVivo = null;
-  });
-}
 
 async function buscarAmigos(uid) {
   if (amigosUid === uid && amigosAoVivo) return amigosAoVivo;
@@ -329,6 +301,8 @@ function gerarTexto(tipo, items, ultimoMs) {
 
     case 'new_friendship':
       return t('act.friendship', { author: autor, target: alvoLink(primeiro), time: tempo });
+    case 'wall_post':
+      return t('act.wallPost', { author: autor, target: alvoLink(primeiro), time: tempo });
 
     case 'profile_update':
       return t('act.profileUpdate', { author: autor, time: tempo });
@@ -468,7 +442,8 @@ function injetarCSS() {
 function avatarsHtml(fotos) {
   function imgTag({ src, uid } = {}) {
     const u = uid ? `data-uid="${uid}"` : '';
-    return `<img src="${src || DEFAULT_PHOTO}" ${u} onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy">`;
+    const presence = uid ? ` data-presence-uid="${uid}"` : '';
+    return `<span class="act-avatar"${presence}><img src="${src || DEFAULT_PHOTO}" ${u} onerror="this.src='${DEFAULT_PHOTO}'" loading="lazy"></span>`;
   }
   if (fotos.length >= 2) {
     return `<div class="act-avatars duo">
@@ -536,6 +511,9 @@ async function fetchPostImages(grupos) {
 }
 
 function profileNavAttr(tipo, items) {
+  if (tipo === 'wall_post' && (items[0].targetUsername || items[0].targetUid)) {
+    return `data-profile-nav="${encodeURIComponent(items[0].targetUsername || items[0].targetUid)}"`;
+  }
   if (['profile_update', 'status_change', 'new_location', 'add_profile_music', 'update_profile_music', 'update_bio'].includes(tipo)) {
     const username = items[0].authorUsername || items[0].actorUid;
     return `data-profile-nav="${encodeURIComponent(username)}"`;
@@ -746,14 +724,32 @@ function ativarSwipeDelete(container, currentUid) {
   });
 }
 
-function queryAtividades() {
-  return query(
+const ATORES_POR_CONSULTA = 30;
+const ATIVIDADES_POR_CONSULTA = 80;
+
+function queriesAtividades(ids) {
+  const desde = Timestamp.fromMillis(Date.now() - UM_MES_MS);
+  const lista = [...ids];
+  const grupos = [];
+
+  for (let i = 0; i < lista.length; i += ATORES_POR_CONSULTA) {
+    grupos.push(lista.slice(i, i + ATORES_POR_CONSULTA));
+  }
+
+  return grupos.map(grupo => query(
     collection(db, 'activities'),
-    where('createdAt', '>=', Timestamp.fromMillis(Date.now() - UM_MES_MS)),
+    where('actorUid', 'in', grupo),
     where('visible', '==', true),
+    where('createdAt', '>=', desde),
     orderBy('createdAt', 'desc'),
-    limit(150)
-  );
+    limit(ATIVIDADES_POR_CONSULTA)
+  ));
+}
+
+async function buscarDocsAtividades(uid) {
+  const amigos = await buscarAmigos(uid);
+  const snaps = await Promise.all(queriesAtividades([uid, ...amigos]).map(q => getDocs(q)));
+  return snaps.flatMap(snap => snap.docs);
 }
 
 const NOVOS_TTL_MS = 2 * 60 * 1000;
@@ -791,7 +787,7 @@ async function fetchEMontarHtml(uid, docsPrecarregados = null) {
   const duasSemanasAtras = Timestamp.fromMillis(Date.now() - UM_MES_MS);
 
   const [docs, amigosSet, novos] = await Promise.all([
-    docsPrecarregados ? Promise.resolve(docsPrecarregados) : getDocs(queryAtividades()).then(snap => snap.docs),
+    docsPrecarregados ? Promise.resolve(docsPrecarregados) : buscarDocsAtividades(uid),
     buscarAmigos(uid),
     buscarNovosUsuarios(duasSemanasAtras)
   ]);
@@ -909,17 +905,52 @@ function iniciarTempoReal(container, uid) {
     }
   };
 
-  pararTempoReal = onSnapshot(queryAtividades(), snap => {
-    docsAtuais = snap.docs;
-    clearTimeout(timer);
-    timer = setTimeout(aplicar, recebeuPrimeiro ? 350 : 0);
-    recebeuPrimeiro = true;
-  }, err => {
+  let pararConsultas = [];
+  let docsPorConsulta = [];
+  let chaveAtores = '';
+
+  const falhou = err => {
     console.error('[activities-render] Erro no tempo real:', err);
     if (!container.querySelector('.act-big')) {
       container.innerHTML = `<p class="xact-empty">${t('act.error')}</p>`;
     }
+  };
+
+  const assinar = atores => {
+    const chave = [...atores].sort().join(',');
+    if (chave === chaveAtores) return;
+    chaveAtores = chave;
+
+    pararConsultas.forEach(parar => parar());
+
+    const consultas = queriesAtividades(atores);
+    docsPorConsulta = consultas.map(() => null);
+
+    pararConsultas = consultas.map((consulta, indice) => onSnapshot(consulta, snap => {
+      docsPorConsulta[indice] = snap.docs;
+      if (docsPorConsulta.some(docs => docs === null)) return;
+
+      docsAtuais = docsPorConsulta.flat();
+      clearTimeout(timer);
+      timer = setTimeout(aplicar, recebeuPrimeiro ? 350 : 0);
+      recebeuPrimeiro = true;
+    }, falhou));
+  };
+
+  const pararAmigosAoVivo = onSnapshot(collection(db, 'users', uid, 'friends'), snap => {
+    amigosUid = uid;
+    amigosAoVivo = new Set(snap.docs.map(d => d.id));
+    assinar(new Set([uid, ...amigosAoVivo]));
+  }, () => {
+    amigosAoVivo = null;
+    assinar(new Set([uid]));
   });
+
+  pararTempoReal = () => {
+    pararAmigosAoVivo();
+    pararConsultas.forEach(parar => parar());
+    clearTimeout(timer);
+  };
 
   window.recarregarAtividades = async function () {
     limparCacheAtividades(uid);
@@ -952,7 +983,6 @@ async function carregarAtividades() {
   }
 
   markActivitiesSeen(uid);
-  observarAmigos(uid);
   iniciarTempoReal(container, uid);
 }
 

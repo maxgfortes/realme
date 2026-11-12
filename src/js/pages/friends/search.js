@@ -19,8 +19,7 @@ import {
 
 import {
   setCurrentUserId,
-  coletarFiltros,
-  preencherFiltros
+  coletarFiltros
 } from "/src/js/pages/friends/filters-state.js";
 
 import {
@@ -31,7 +30,7 @@ const PAGE_SIZE = 24;
 const LOAD_AT = 0.7;
 const MAX_AUTO = 6;
 
-const CACHE_KEY = "friends_seen_v2";
+const CACHE_KEY = "friends_seen_v3";
 const CACHE_TTL = 6 * 60 * 60 * 1000;
 const CACHE_MAX_PEOPLE = 100;
 const CACHE_MAX_QUEUE = 150;
@@ -124,7 +123,9 @@ function cardHTML(pessoa) {
   const username = pessoa.username || "";
   const nome = pessoa.name || username || t("common.user");
   const foto = fotoSegura(pessoa.photo);
-  const banner = fotoSegura(pessoa.banner) || foto;
+  const bannerProprio = fotoSegura(pessoa.banner);
+  const banner = bannerProprio || foto;
+  const bannerClasse = bannerProprio ? "card-banner" : "card-banner blurred";
 
   return `
     <a
@@ -137,7 +138,7 @@ function cardHTML(pessoa) {
       <div class="card-media">
         <img
           src="${esc(banner || IMG_BANNER_PADRAO)}"
-          class="card-banner"
+          class="${bannerClasse}"
           loading="lazy"
           onerror="this.onerror=null;this.src='${IMG_BANNER_PADRAO}'"
         >
@@ -303,16 +304,12 @@ async function buscar({ tipo = "inicial" } = {}) {
   estado.carregando = true;
 
   try {
-    const dados = await chamar({ mode: "search", ...req });
+    const dados = await chamar({ mode: "search", ...req, seen: estado.historico.slice(-HISTORY_MAX) });
 
     if (versao !== estado.versao) return;
 
     const pessoas = dados.people || [];
     const fila = dados.queue || [];
-
-    if (tipo === "similar" && dados.me?.fields) {
-      preencherFiltros(dados.me.fields);
-    }
 
     if (pintouCache && usuarioRolou) {
       salvarCache(chave, pessoas, fila);
@@ -350,17 +347,26 @@ async function carregarMais() {
 
     if (estado.fila.length) {
       const lote = estado.fila.splice(0, PAGE_SIZE);
-      const scores = new Map(lote.map((item) => [item.uid, item.score]));
+      const prontas = lote.filter((item) => item.name !== undefined);
+      const faltando = lote.filter((item) => item.name === undefined);
 
-      const dados = await chamar({
-        mode: "profiles",
-        uids: lote.map((item) => item.uid)
-      });
+      novas = prontas;
 
-      novas = (dados.people || []).map((p) => ({
-        ...p,
-        score: scores.get(p.uid) ?? p.score
-      }));
+      if (faltando.length) {
+        const scores = new Map(faltando.map((item) => [item.uid, item.score]));
+
+        const dados = await chamar({
+          mode: "profiles",
+          uids: faltando.map((item) => item.uid)
+        });
+
+        novas = novas.concat((dados.people || []).map((p) => ({
+          ...p,
+          score: scores.get(p.uid) ?? p.score
+        })));
+      }
+
+      novas.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
     } else {
       const exclude = [
         ...new Set([...estado.vistos, ...estado.historico])

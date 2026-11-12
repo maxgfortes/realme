@@ -11,14 +11,17 @@ import { setupProfileButtons } from "./profileButtons.js";
 import { setupAboutPermissions } from "./aboutMenu.js";
 import { watchProfile } from "./profileListeners.js";
 import { watchFriendship } from "./friendship.js";
-import { loadPostStats } from "./profileStats.js";
-import { loadPostsGrid } from "./postsGrid.js";
-import { loadWall } from "./wall.js";
+import { loadPostStats, updateStat } from "./profileStats.js";
+import { loadPostsGrid, seedPostsGrid, refreshFirstPage } from "./postsGrid.js";
+import { loadWall, renderCachedWall } from "./wall.js";
+import { fetchProfileContent, readContentCache, writeContentCache } from "./profileApi.js";
+import { openPublicProfile } from "./publicProfile.js";
 import { showProfileNotFound } from "./profileNotFound.js";
 import { stopMusic } from "./profileMusic.js";
 import { initProfileEvents } from "./profileEvents.js";
 import { applyProfileTheme } from "/src/shared/profileThemes.js";
 import { watchNowPlaying, setSpotifyViewer } from "./spotify.js";
+import { watchPsn, setPsnViewer } from "./psn.js";
 
 function renderCachedProfile() {
   const uid = getCachedProfileUid();
@@ -46,12 +49,40 @@ async function openProfile(uid) {
 
   watchProfile(uid);
   watchNowPlaying(uid);
+  watchPsn(uid);
   watchFriendship(uid);
-  loadWall(uid);
+
+  const cached = readContentCache(uid);
+  const content = fetchProfileContent({ uid }).then(result => {
+    writeContentCache(uid, result);
+    return result;
+  });
+
+  content.catch(error => console.warn("Perfil pelo servidor indisponível:", error));
+
+  loadWall(uid, content.then(result => result.wall));
+  if (cached?.wall) renderCachedWall(uid, cached.wall);
+
   loadPostsGrid(uid);
+  seedPostsGrid(uid, cached?.posts ? Promise.resolve(cached) : content);
+  if (cached?.posts) content.then(result => refreshFirstPage(uid, result)).catch(() => {});
+
   initProfileEvents({ profileUid: uid, isOwner: state.isOwnProfile })
     .catch(err => console.error("Erro ao carregar eventos:", err));
-  await loadPostStats(uid);
+
+  if (state.isOwnProfile) {
+    await loadPostStats(uid);
+    return;
+  }
+
+  const applyStats = result => {
+    if (state.profileUserId !== uid || !result?.profile?.stats) return;
+    updateStat("posts", result.profile.stats.posts);
+    updateStat("photos", result.profile.stats.photos);
+  };
+
+  if (cached?.profile) applyStats(cached);
+  await content.then(applyStats).catch(() => loadPostStats(uid));
 }
 
 async function handleAuthChange(user) {
@@ -59,7 +90,15 @@ async function handleAuthChange(user) {
   state.currentUsername = user ? await getCurrentUsername(user.uid) : "";
   if (user) saveOwnUid(user.uid);
   setSpotifyViewer(state.currentUserId);
+  setPsnViewer(state.currentUserId);
   renderAuthMenu();
+
+  if (!user && hasProfileInUrl()) {
+    await openPublicProfile();
+    return;
+  }
+
+  document.body.classList.remove("public-profile");
 
   const uid = await resolveProfileUid();
 

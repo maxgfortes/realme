@@ -642,6 +642,15 @@ body {
   position: relative;
 }
 
+.act-avatar {
+  display: block;
+}
+
+.act-avatars.single .act-avatar {
+  width: 56px;
+  height: 56px;
+}
+
 .act-avatars.single img {
   width: 56px;
   height: 56px;
@@ -656,23 +665,33 @@ body {
   height: 53px;
 }
 
+.act-avatars.duo .act-avatar {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+}
+
 .act-avatars.duo img {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-circle);
   object-fit: cover;
-  position: absolute;
+  display: block;
   border: 2px solid var(--bg-primary);
   background: var(--color-bg-surface);
+  box-sizing: border-box;
 }
 
-.act-avatars.duo img:first-child {
-  top: -5; left: 0;
+.act-avatars.duo .act-avatar:first-child {
+  top: 0;
+  left: 0;
   z-index: var(--z-1);
 }
 
-.act-avatars.duo img:last-child {
-  bottom: -5px; right: 0; left: 10px;
+.act-avatars.duo .act-avatar:last-child {
+  bottom: -5px;
+  right: 0;
+  left: 10px;
   z-index: var(--z-2);
 }
 

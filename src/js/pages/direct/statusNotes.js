@@ -5,6 +5,7 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth, db } from "../../../config/config.js";
 import { openNoteView } from "./noteView.js";
+import { watchOwnNoteLikes } from "./noteLikes.js";
 import { onCurrentUser } from "/src/shared/currentUser.js";
 
 const NOTE_PLACEHOLDER = t("dm.notePlaceholder");
@@ -161,6 +162,8 @@ function renderNotes(note) {
         clearNoteText(createNoteBtn, NOTE_PLACEHOLDER);
     }
 
+    watchOwnNoteLikes(auth.currentUser?.uid, hasActiveNote);
+
     createNoteBtn.classList.toggle("placeholder", !hasActiveNote);
     createNoteBtn.classList.toggle("has-note", hasActiveNote);
 
@@ -196,6 +199,9 @@ function loadUserInfo() {
     onCurrentUser(user => {
         if (!user) return;
 
+        const myNotePfp = document.getElementById("myNotePfp");
+        if (myNotePfp && user.uid) myNotePfp.dataset.presenceUid = user.uid;
+
         if (user.name) {
             noteName.textContent = user.name;
             createNoteModalName.textContent = t("dm.noteModalName", { name: user.name });
@@ -214,7 +220,7 @@ function buildFriendNode(friendId) {
     item.dataset.uid = friendId;
     item.innerHTML = `
         <div class="note-user-infos">
-            <div class="note-pfp">
+            <div class="note-pfp" data-presence-uid="${friendId}">
                 <div class="note-pfp-border">
                     <img src="${DEFAULT_PFP}">
                 </div>

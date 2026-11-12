@@ -2,7 +2,7 @@ import { db } from "./firebase.js";
 import { doc, collection, onSnapshot } from "./firestore.js";
 import { state, unsubscribers, stopListeners } from "./state.js";
 import {
-  renderUsername, renderName, renderVerified, renderPronouns, renderPfp, renderBanner, renderBio,
+  renderUsername, renderName, renderVerified, renderPronouns, renderPfp, renderPfpShape, renderBanner, renderBio,
 } from "./profileHeader.js";
 import { updateStat } from "./profileStats.js";
 import { renderLinks } from "./links.js";
@@ -29,6 +29,7 @@ function handleUser(user) {
   renderUsername(user);
   renderName(user);
   renderVerified(user);
+  renderPfpShape(user);
   renderAboutMenu();
 }
 

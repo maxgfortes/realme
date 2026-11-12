@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="../src/styles/shared/comments.css">
   <link rel="stylesheet" href="./src/styles/shared/postCard.css">
   <link rel="stylesheet" href="./src/styles/shared/eventCard.css">
+  <link rel="stylesheet" href="./src/styles/shared/eventChat.css">
   <link rel="stylesheet" href="./src/styles/shared/musicCard.css">
   <link rel="stylesheet" href="./src//styles/shared/notificationItem.css">
   <link rel="stylesheet" href="./src/styles/shared/sugestions.css">
@@ -47,6 +48,20 @@
   <meta name="twitter:description" content="Conecte-se com amigos, conheça pessoas novas e compartilhe sua vida com quem importa no RealMe.">
   <meta name="twitter:image" content="https://socialrealme.com/public/img/share-icon.png">
   <script type="module" src="/src/i18n/page.js"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1320x2868.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1206x2622.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1290x2796.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1179x2556.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1284x2778.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1170x2532.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1080x2340.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1242x2688.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1125x2436.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-828x1792.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/public/img/splash/splash-1242x2208.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-750x1334.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/public/img/splash/splash-640x1136.png">
 </head>
 <body>
 
@@ -215,7 +230,7 @@
       <div class="event-infos">
         <div class="event-info-box">
           <div class="event-info-header">
-            <div class="icon-area"><img src="./public/img/event.png"></div>
+            <div class="icon-area"><img src="./public/img/events.png"></div>
             <div class="event-info-title" id="eventLayerTitle"></div>
           </div>
           <div class="event-info-text" id="eventLayerSub"></div>
@@ -271,14 +286,52 @@
     </div>
   </div>
   <div class="event-bottom">
-    <div class="event-actions-area">
-      <div class="event-actions">
-        <button class="event-act-btn confirm" data-i18n="common.vou_ir">Vou ir</button>
-        <button class="event-act-btn maybe" data-i18n="common.nao_sei">Não sei</button>
+    <div class="event-actions-left">
+      <div class="event-act-area">
+        <div class="event-act-pill">
+          <button class="event-act-btn active" id="noEvent" data-i18n="common.nao_vou">Não vou</button>
+          <button class="event-act-btn" id="maybeEvent" data-i18n="common.nao_sei">Não sei</button>
+          <button class="event-act-btn" id="confirmEvent" data-i18n="common.vou_ir">Vou ir</button>
+        </div>
       </div>
-      <div class="event-actions">
-        <button class="event-act-btn no" data-i18n="common.nao_vou">Não vou</button>
+    </div>
+    <div class="event-actions-right">
+      <button class="event-chat-btn" id="openEventChatBtn">
+        <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="event-chat-area" id="eventChatArea">
+  <div class="event-header">
+    <div class="header-block">
+      <button id="closeChatBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
+      </button>
+    </div>
+    <div class="header-block">
+      <div class="chat-header-title">
+        <div class="event-header-title" data-i18n="common.evento">Evento</div>
+        <div class="event-chat-title">Filme na casa do Max</div>
       </div>
+    </div>
+    <div class="header-block"></div>
+  </div>
+  <div class="event-chat-going"></div>
+
+  <div class="event-messages" id="eventMessages" data-keyboard-follow></div>
+
+  <div class="event-send-area" data-keyboard-lift>
+    <div class="input-area">
+      <button id="img-btn" class="img-btn">
+        <svg fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M6.549 5.013A1.557 1.557 0 1 0 8.106 6.57a1.557 1.557 0 0 0-1.557-1.557Z" fill-rule="evenodd"></path><path d="m2 18.605 3.901-3.9a.908.908 0 0 1 1.284 0l2.807 2.806a.908.908 0 0 0 1.283 0l5.534-5.534a.908.908 0 0 1 1.283 0l3.905 3.905" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M18.44 2.004A3.56 3.56 0 0 1 22 5.564h0v12.873a3.56 3.56 0 0 1-3.56 3.56H5.568a3.56 3.56 0 0 1-3.56-3.56V5.563a3.56 3.56 0 0 1 3.56-3.56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+      <input type="file" id="event-image-input" accept="image/*" hidden>
+      <textarea type="text" class="eventMsgInput" id="dmMsgInput" placeholder="Mensagem" autocomplete="off" maxlength="500" data-i18n-attr="placeholder:direct.mensagem"></textarea>
+      <button class="eventSendBtn" id="eventSendBtn" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 404 511.5"><path fill-rule="nonzero" d="m219.24 72.97.54 438.53h-34.95l-.55-442.88L25.77 241.96 0 218.39 199.73 0 404 222.89l-25.77 23.58z" stroke-width="40" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </div>
 </div>
@@ -359,10 +412,11 @@
       <div class="feelings-stories" id="notesRow">
         <div class="feeling-item my-feeling">
           <div class="note-user-infos">
-            <div class="note-pfp">
+            <div class="note-pfp" id="myNotePfp">
               <div class="note-pfp-border">
                 <img src="../public/img/default.jpg" id="notePfp">
               </div>
+              <div class="note-like-badge" id="myNoteLikes" hidden><svg viewBox="0 0 48 48" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"/></svg><span>0</span></div>
             </div>
             <div class="note-username" id="notenName"></div>
           </div>
@@ -417,6 +471,10 @@
     <div class="feelings-area">
       <textarea class="noteInput" name="note" id="noteInput" placeholder="Ocupado, estudando, trabalhando..." maxlength="40" data-i18n-attr="placeholder:direct.ocupado_estudando_trabalhando"></textarea>
     </div>
+    <div class="note-likes" id="noteLikes" hidden>
+      <div class="note-likes-title" id="noteLikesTitle"></div>
+      <div class="note-likes-list" id="noteLikesList"></div>
+    </div>
     <div class="modal-feeling-btns">
       <button class="cancel-feeling-btn" id="cancelNote" data-i18n="common.cancelar">Cancelar</button>
       <button class="send-feeling-btn" id="sendNote" data-i18n="direct.enviar">Enviar</button>
@@ -440,6 +498,7 @@
       </div>
     </div>
     <form class="note-view-actions" id="replyNoteForm">
+      <button class="btn-act-note note-like-btn" id="likeNoteBtn" type="button" aria-pressed="false" hidden><svg class="heart-outline" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"/></svg><svg class="heart-fill" viewBox="0 0 48 48" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"/></svg></button>
       <input class="reply-note-input" type="text" id="replyNoteInput" placeholder="Responder..." maxlength="500" autocomplete="off" data-i18n-attr="placeholder:direct.responder">
       <button class="btn-act-note" id="replyNoteBtn" type="submit" aria-label="Responder" data-i18n-attr="aria-label:direct.responder_2">
         <svg aria-label="Mensagens" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Mensagens</title><path d="M22.513 3.576C21.826 2.552 20.617 2 19.384 2H4.621c-1.474 0-2.878.818-3.46 2.173-.6 1.398-.297 2.935.784 3.997l3.359 3.295a1 1 0 0 0 1.195.156l8.522-4.849a1 1 0 1 1 .988 1.738l-8.526 4.851a1 1 0 0 0-.477 1.104l1.218 5.038c.343 1.418 1.487 2.534 2.927 2.766.208.034.412.051.616.051 1.26 0 2.401-.644 3.066-1.763l7.796-13.118a3.572 3.572 0 0 0-.116-3.863Z"></path></svg>

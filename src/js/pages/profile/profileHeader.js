@@ -2,6 +2,7 @@ import { t } from "/src/i18n/i18n.js";
 import { $, select, setImage } from "./dom.js";
 import { getDisplayName } from "./format.js";
 import { DEFAULT_PHOTO } from "./constants.js";
+import { state } from "./state.js";
 
 export function renderUsername(user) {
   $("headernameText").textContent = user.username || "";
@@ -28,6 +29,11 @@ export function renderPfp(media) {
   const border = select(".pfp-border");
   setImage(border, photo, "profile-pic", t("common.profilePhoto"));
   border.style.backgroundImage = `url(${photo})`;
+  if (state.profileUserId) select(".pfp").dataset.presenceUid = state.profileUserId;
+}
+
+export function renderPfpShape(user) {
+  select(".pfp-border")?.classList.toggle("square", user?.squarePfp === true);
 }
 
 export function renderBanner(media) {

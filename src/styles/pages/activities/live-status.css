@@ -206,3 +206,11 @@
     animation: none;
   }
 }
+
+.live-status-item.recent .status-item-cover {
+  opacity: 0.75;
+}
+
+.live-status-item.recent .status-item-label {
+  opacity: 0.8;
+}

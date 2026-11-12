@@ -10,6 +10,7 @@ import { getUserPhoto } from "./userData.js";
 import { createPostPreview } from "./postPreview.js";
 import { openWallComposer } from "./wallComposer.js";
 import { openProfileTimeline } from "./timeline.js";
+import { revive } from "./profileApi.js";
 
 const MAX_MENTIONS = 30;
 
@@ -131,7 +132,11 @@ async function renderWallFeed(uid, wallSnapshot) {
 
   if (session !== renderSession || uid !== wallUid) return;
 
-  const items = uniqueById([...wallEntries, ...mentionItems])
+  renderWallItems(uniqueById([...wallEntries, ...mentionItems]));
+}
+
+function renderWallItems(list) {
+  const items = list
     .filter(item => item?.data?.visible !== false)
     .sort((a, b) => b.time - a.time);
   const feed = $("wallFeed");
@@ -147,14 +152,46 @@ async function renderWallFeed(uid, wallSnapshot) {
   items.forEach(item => feed.appendChild(createWallItem(item)));
 }
 
-export function loadWall(uid) {
+export function loadWall(uid, seedPromise = null) {
   wallUid = uid;
   wallItems = [];
   bindComposer();
   renderComposer(uid);
 
+  let skipFirst = Boolean(seedPromise);
+  let latestSnapshot = null;
+
+  if (seedPromise) {
+    const session = ++renderSession;
+
+    seedPromise
+      .then(items => {
+        if (!Array.isArray(items)) throw new Error("NO_SEED");
+        if (session !== renderSession || uid !== wallUid) return;
+        renderWallItems(items.map(item => ({ id: item.id, time: item.time, data: revive(item.data) })));
+      })
+      .catch(() => {
+        skipFirst = false;
+        if (latestSnapshot && uid === wallUid) renderWallFeed(uid, latestSnapshot);
+      });
+  }
+
   const wallQuery = query(collection(db, "users", uid, "wall"), orderBy("createdAt", "desc"));
-  const stop = onSnapshot(wallQuery, snapshot => renderWallFeed(uid, snapshot));
+  const stop = onSnapshot(wallQuery, snapshot => {
+    latestSnapshot = snapshot;
+
+    if (skipFirst) {
+      skipFirst = false;
+      return;
+    }
+
+    renderWallFeed(uid, snapshot);
+  });
 
   unsubscribers.push(stop);
+}
+
+export function renderCachedWall(uid, items) {
+  if (uid !== wallUid || !Array.isArray(items)) return;
+  renderWallItems(items.map(item => ({ id: item.id, time: item.time, data: revive(item.data) })));
 }

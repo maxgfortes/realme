@@ -16,7 +16,9 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { renderUsers } from "./renderUsers.js";
+import { renderUsers, renderGroup, groupAvatarHTML } from "./renderUsers.js";
+import { getUserSummary, peekUserSummary } from "/src/shared/userSummary.js";
+import { t as translate } from "/src/i18n/i18n.js";
 import { openChat } from "./openChat.js";
 
 const usersList = document.getElementById("dmUsersList");
@@ -34,6 +36,8 @@ function listCacheKey() {
 function saveListCache(users) {
     try {
         const serializable = users.map(user => ({
+            group: user.group ? serializableGroup(user.group) : null,
+            unread: Boolean(user.unread),
             chatId: user.chatId,
             uid: user.uid,
             lastMessage: user.lastMessage,
@@ -77,6 +81,18 @@ function renderFromCache() {
     usersList.innerHTML = "";
 
     for (const user of cachedUsers) {
+        if (user.group) {
+            const item = renderGroup(
+                user.chatId,
+                user.group,
+                user.lastMessage,
+                user.lastMessageTime ? formatMessageTime({ toDate: () => new Date(user.lastMessageTime) }) : "",
+                user.unread
+            );
+            applyGroupState(item, user);
+            continue;
+        }
+
         userDataCache.set(user.uid, {
             fullName: user.fullName,
             userPfp: user.userPfp
@@ -370,7 +386,111 @@ function listenLatestMessage(chatId) {
     );
 }
 
+function groupName(group) {
+    if (group.name) return group.name;
+
+    const names = group.members
+        .map(uid => (peekUserSummary(uid)?.name || "").split(" ")[0])
+        .filter(Boolean);
+
+    return names.length ? names.join(", ") : translate("dm.group");
+}
+
+function hydrateGroup(chatId, group) {
+    const missing = group.members.filter(uid => !peekUserSummary(uid));
+
+    if (!missing.length) return;
+
+    Promise.all(missing.map(getUserSummary)).then(() => {
+        const item = usersList.querySelector(`[data-chat-id="${CSS.escape(chatId)}"]`);
+        if (!item) return;
+
+        const resolved = describeGroup(group.raw, group.me);
+        item.querySelector(".user-box-displayname").textContent = resolved.name;
+        item.dataset.name = resolved.name.toLowerCase();
+
+        if (!resolved.photo) item.querySelector(".group-pfp").innerHTML = groupAvatarHTML(resolved);
+
+        const cached = lastUsers.find(entry => entry.chatId === chatId);
+        if (cached) cached.group = serializableGroup(resolved);
+        scheduleListSave();
+    });
+}
+
+function describeGroup(data, me) {
+    const members = (data.participants || []).filter(uid => uid !== me);
+    const group = {
+        raw: data,
+        me,
+        name: typeof data.name === "string" ? data.name.trim() : "",
+        photo: data.photo || "",
+        isEvent: data.isEvent === true,
+        eventId: data.eventId || "",
+        count: (data.participants || []).length,
+        members: members.slice(0, 3),
+        memberPhotos: members.slice(0, 2).map(uid => peekUserSummary(uid)?.photo || DEFAULT_PFP)
+    };
+
+    group.name = groupName(group);
+
+    return group;
+}
+
+function serializableGroup(group) {
+    return {
+        name: group.name,
+        photo: group.photo,
+        isEvent: group.isEvent,
+        eventId: group.eventId,
+        count: group.count,
+        memberPhotos: group.memberPhotos
+    };
+}
+
+function groupUnread(data, me) {
+    const last = data.lastMessageTime?.toMillis?.() || 0;
+    const read = Number(data.readBy?.[me]) || 0;
+
+    return Boolean(data.lastMessage) && data.lastSender && data.lastSender !== me && last > read;
+}
+
+function applyGroupState(item, user) {
+    item.querySelector(".user-box-displayname").textContent = user.group.name;
+
+    const chatArea = document.getElementById("dmChatArea");
+    if (chatArea?.dataset.chatId === item.dataset.chatId) {
+        const title = chatArea.querySelector(".dm-group-title");
+        if (title && title.textContent !== user.group.name) title.textContent = user.group.name;
+    }
+
+    item.dataset.name = user.group.name.toLowerCase();
+    item.dataset.members = String(user.group.count);
+    item.dataset.photo = user.group.photo || "";
+    item.dataset.event = user.group.isEvent ? "1" : "";
+    item.dataset.eventId = user.group.eventId || "";
+
+    ["user-box-displayname", "last-msg", "new-msg-dot"].forEach(name => {
+        item.querySelector(`.${name}`)?.classList.toggle("active", Boolean(user.unread));
+    });
+}
+
 async function createUserItem(user) {
+    if (user.group) {
+        if (usersList.querySelector(`[data-chat-id="${CSS.escape(user.chatId)}"]`)) return;
+
+        const item = renderGroup(
+            user.chatId,
+            user.group,
+            user.lastMessage,
+            formatMessageTime(user.lastMessageTime),
+            user.unread
+        );
+
+        applyGroupState(item, user);
+        hydrateGroup(user.chatId, user.group);
+        return;
+    }
+
     try {
         const userData = await getUserData(user.uid);
 
@@ -411,6 +531,18 @@ async function loadUsers(snapshot) {
 
     snapshot.forEach((chatDoc) => {
         const data = chatDoc.data();
+
+        if (data.isGroup) {
+            users.push({
+                chatId: chatDoc.id,
+                uid: "",
+                group: describeGroup(data, loggedUser),
+                unread: groupUnread(data, loggedUser),
+                lastMessageTime: data.lastMessageTime || null,
+                lastMessage: data.lastMessage || ""
+            });
+            return;
+        }
 
         const otherUser = data.participants?.find(
             uid => uid !== loggedUser
@@ -518,6 +650,11 @@ async function loadUsers(snapshot) {
                     formatMessageTime(
                         user.lastMessageTime
                     );
+            }
+
+            if (user.group) {
+                applyGroupState(existing, user);
+                continue;
             }
 
             listenLatestMessage(user.chatId);

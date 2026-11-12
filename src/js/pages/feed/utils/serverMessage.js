@@ -66,9 +66,9 @@ onAuthStateChanged(auth, async (user) => {
     const button = message.buttonText
         ? `
             <div class="messageAction">
-                <button class="messageBtn">
+                <a class="messageBtn" href="${message.url}">
                     ${message.buttonText}
-                </button>
+                </a>
             </div>
         `
         : "";

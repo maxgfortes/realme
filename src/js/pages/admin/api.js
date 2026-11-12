@@ -25,6 +25,7 @@ export const api = {
   revokeSessions: callable("adminRevokeSessions"),
   setVerified: callable("adminSetVerified"),
   setPhoto: callable("adminSetPhoto"),
+  setSquarePfp: callable("adminSetSquarePfp"),
   moderateContent: callable("adminModerateContent"),
   resolveReport: callable("adminResolveReport"),
   listAdmins: callable("adminListAdmins"),

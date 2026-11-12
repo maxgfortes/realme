@@ -1,4 +1,5 @@
 import {
+    doc,
     collection,
     query,
     where,
@@ -37,4 +38,22 @@ export async function markMessagesAsRead(chatId, otherUserId) {
 
     } catch (error) {
     }
+}
+
+const lastGroupRead = new Map();
+
+export async function markGroupRead(chatId) {
+    const uid = auth.currentUser?.uid;
+
+    if (!uid || !chatId) return;
+
+    const now = Date.now();
+
+    if (now - (lastGroupRead.get(chatId) || 0) < 1500) return;
+
+    lastGroupRead.set(chatId, now);
+
+    try {
+        await updateDoc(doc(db, "chats", chatId), { [`readBy.${uid}`]: now });
+    } catch {}
 }

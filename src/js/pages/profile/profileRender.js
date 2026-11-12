@@ -1,6 +1,6 @@
 import { applyProfileTheme } from "/src/shared/profileThemes.js";
 import {
-  renderUsername, renderName, renderVerified, renderPronouns, renderPfp, renderBanner, renderBio,
+  renderUsername, renderName, renderVerified, renderPronouns, renderPfp, renderPfpShape, renderBanner, renderBio,
 } from "./profileHeader.js";
 import { renderLinks } from "./links.js";
 import { renderAboutMenu } from "./aboutRender.js";
@@ -13,6 +13,7 @@ export function renderProfile(data) {
   renderName(data.user);
   renderVerified(data.user);
   renderPfp(data.media);
+  renderPfpShape(data.user);
   renderBanner(data.media);
   renderMusic(data.media);
   renderPronouns(data.about);

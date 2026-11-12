@@ -122,7 +122,7 @@ function sheetHTML(detail) {
     ${detail.banned ? `<div class="detail-banner">Banido ${detail.bannedAt ? esc(fmtAgo(detail.bannedAt)) : ""}${detail.banReason ? ` · ${esc(detail.banReason)}` : ""}</div>` : ""}
 
     <div class="detail-grid">
-      ${detailItem("E-mail", detail.email || "—")}
+      ${detailItem("E-mail", detail.email || " ")}
       ${detailItem("E-mail verificado", detail.emailVerified ? "Sim" : "Não")}
       ${detailItem("Conta criada", fmtDate(detail.createdAt))}
       ${detailItem("Último login", fmtDate(detail.lastSignInAt))}
@@ -131,7 +131,8 @@ function sheetHTML(detail) {
       ${detailItem("Posts", num(detail.stats.posts))}
       ${detailItem("Amigos", num(detail.stats.friends))}
       ${detailItem("Conteúdos denunciados", num(detail.stats.reports))}
-      ${detailItem("Login via", (detail.providers || []).join(", ") || "—")}
+      ${detailItem("Login via", (detail.providers || []).join(", ") || " ")}
+      ${detailItem("Formato da foto", detail.squarePfp ? "Quadrada" : "Redonda")}
     </div>
 
     ${roleSelect}
@@ -140,6 +141,7 @@ function sheetHTML(detail) {
       <a class="btn ghost" style="text-align:center;font-size:inherit" href="/profile.html?uid=${encodeURIComponent(detail.uid)}" target="_blank" rel="noopener">Ver perfil</a>
       <button class="btn ghost" data-sheet="photo">Trocar foto</button>
       ${detail.photo ? `<button class="btn ghost" data-sheet="removePhoto">Remover foto</button>` : ""}
+      ${can("admin") ? `<button class="btn ghost" data-sheet="squarePfp">${detail.squarePfp ? "Foto redonda" : "Foto quadrada"}</button>` : ""}
       <button class="btn ghost" data-sheet="verify">${detail.verified ? "Remover verificado" : "Verificar"}</button>
       ${can("admin") ? `<button class="btn ghost" data-sheet="revoke">Derrubar sessões</button>` : ""}
       ${isSelf ? "" : `<button class="btn ${detail.banned ? "" : "danger"}" data-sheet="ban">${detail.banned ? "Desbanir" : "Banir"}</button>`}
@@ -153,7 +155,7 @@ async function refreshSheet() {
     const detail = await api.userDetail({ uid: sheetUid });
     if (detail.uid !== sheetUid) return;
     $("userSheetBody").innerHTML = sheetHTML(detail);
-    $("userSheetBody").dataset.detail = JSON.stringify({ banned: detail.banned, verified: detail.verified, name: detail.name });
+    $("userSheetBody").dataset.detail = JSON.stringify({ banned: detail.banned, verified: detail.verified, name: detail.name, squarePfp: detail.squarePfp });
   } catch (error) {
     $("userSheetBody").innerHTML = errorState(error);
   }
@@ -223,6 +225,12 @@ $("userSheetBody").addEventListener("click", async event => {
       if (!ok) return;
       await api.setPhoto({ uid, photoUrl: "" });
       toast("Foto removida.");
+    }
+
+    if (action === "squarePfp") {
+      const next = !detail.squarePfp;
+      await api.setSquarePfp({ uid, squarePfp: next });
+      toast(next ? "Foto quadrada ativada." : "Foto voltou a ser redonda.");
     }
 
     if (action === "verify") {

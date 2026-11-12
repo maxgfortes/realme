@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 export const MAX_MEDIA = 12;
-export const MAX_VIDEO_SECONDS = 30;
+export const MAX_VIDEO_SECONDS = 60;
 export const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 
 const METADATA_TIMEOUT_MS = 15000;

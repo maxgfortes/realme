@@ -3,6 +3,7 @@ import { auth } from "../../../config/config.js";
 import { attachMessageGestures } from "./messageGestures.js";
 import { getDaySeparatorLabel, formatTimeAgo } from "./formatRelativeTime.js";
 import { initReplyPreview } from "./replyPreview.js";
+import { getUserSummary, peekUserSummary } from "/src/shared/userSummary.js";
 
 initReplyPreview();
 
@@ -314,6 +315,32 @@ function syncBubbleContent(entry, message) {
     }
 }
 
+function isGroupChat() {
+    return document.getElementById("dmChatArea")?.dataset.group === "1";
+}
+
+function buildGroupSender(uid) {
+    const label = document.createElement("a");
+    label.className = "group-sender";
+    label.href = `/profile.html?uid=${encodeURIComponent(uid)}`;
+
+    const photo = document.createElement("img");
+    photo.alt = "";
+    const name = document.createElement("span");
+
+    const apply = summary => {
+        photo.src = summary?.photo || "./public/img/default.jpg";
+        name.textContent = (summary?.name || "").split(" ")[0] || t("common.user");
+    };
+
+    apply(peekUserSummary(uid));
+    getUserSummary(uid).then(apply);
+
+    label.append(photo, name);
+
+    return label;
+}
+
 function appendMessage(messagesList, message, context) {
     const { currentUserId, chatId, otherUserName } = context;
 
@@ -334,6 +361,11 @@ function appendMessage(messagesList, message, context) {
         mount(messagesList, state.currentBox);
 
         state.currentSender = message.sender;
+
+        if (!isMine && isGroupChat()) {
+            state.currentBox.classList.add("group-their");
+            state.currentBox.appendChild(buildGroupSender(message.sender));
+        }
     }
 
     const box = state.currentBox;

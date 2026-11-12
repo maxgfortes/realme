@@ -11,6 +11,7 @@ import {
 
 import { auth, db } from "../../../config/config.js";
 import { formatTimeAgo } from "./formatRelativeTime.js";
+import { prepareNoteLike } from "./noteLikes.js";
 
 const CLOSE_MS = 300;
 
@@ -66,6 +67,7 @@ export function openNoteView(note) {
     input.value = "";
     input.placeholder = t("dm.replyTo", { name: firstName(note.name) || t("dm.noteFallback") });
     updateSendState();
+    prepareNoteLike(note.uid);
 
     area.classList.add("active");
     overlay?.classList.add("active");

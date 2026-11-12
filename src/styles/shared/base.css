@@ -31,3 +31,17 @@ img {
 textarea {
   resize: none;
 }
+.loading-gif-area {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-24, 24px) 0;
+}
+
+.loading-gif {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}

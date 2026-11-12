@@ -15,6 +15,8 @@ const ACTION_LABEL = {
   "user.revokeSessions": "derrubou as sessões de",
   "user.setPhoto": "trocou a foto de perfil de",
   "user.removePhoto": "removeu a foto de perfil de",
+  "user.squarePfpOn": "ativou a foto quadrada de",
+  "user.squarePfpOff": "desativou a foto quadrada de",
   "content.hide": "ocultou um post",
   "content.show": "reexibiu um post",
   "content.delete": "apagou um conteúdo",

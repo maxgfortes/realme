@@ -1,74 +1,14 @@
 import { t } from "/src/i18n/i18n.js";
-import { db } from "../../../config/config.js";
-
-import {
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getUserSummary } from "/src/shared/userSummary.js";
 
 const defaultAvatar = "../public/img/default.jpg";
 
-const users = {};
-
 export async function getUser(fromUid) {
+    const summary = await getUserSummary(fromUid);
 
-    if (users[fromUid]) {
-        return users[fromUid];
-    }
-
-    const userReference =
-        doc(db, "users", fromUid);
-
-    const mediaReference =
-        doc(db, "users", fromUid, "user-infos", "user-media");
-
-    const [userResult, mediaResult] =
-        await Promise.all([
-            getDoc(userReference),
-            getDoc(mediaReference)
-        ]);
-
-    let username = t("common.userLower");
-    let handle = "";
-    let userphoto = defaultAvatar;
-
-    if (userResult.exists()) {
-
-        const userData =
-            userResult.data();
-
-        const name =
-            userData.name || "";
-
-        const surname =
-            userData.surname || "";
-
-        username =
-            (name + " " + surname).trim();
-
-        if (!username) {
-            username = t("common.userLower");
-        }
-
-        handle =
-            userData.username || "";
-    }
-
-    if (mediaResult.exists()) {
-
-        const mediaData =
-            mediaResult.data();
-
-        if (mediaData.userphoto) {
-            userphoto = mediaData.userphoto;
-        }
-    }
-
-    users[fromUid] = {
-        username: username,
-        handle: handle,
-        userphoto: userphoto
+    return {
+        username: summary.name || t("common.userLower"),
+        handle: summary.username || "",
+        userphoto: summary.photo || defaultAvatar
     };
-
-    return users[fromUid];
 }

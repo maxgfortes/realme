@@ -6,15 +6,28 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { closeEvent } from "./openEvent.js";
-
 const eventLayer = document.getElementById("eventLayer");
 
 const ACTIONS = {
-    confirm: "going",
-    maybe: "maybe",
-    no: null
+    noEvent: null,
+    maybeEvent: "maybe",
+    confirmEvent: "going"
 };
+
+const BUTTON_FOR_STATUS = {
+    going: "confirmEvent",
+    maybe: "maybeEvent"
+};
+
+export function markStatus(status) {
+    const activeId = BUTTON_FOR_STATUS[status] || "noEvent";
+
+    eventLayer
+        ?.querySelectorAll(".event-act-btn")
+        .forEach(button => {
+            button.classList.toggle("active", button.id === activeId);
+        });
+}
 
 let busy = false;
 
@@ -51,26 +64,26 @@ eventLayer?.addEventListener("click", async event => {
 
     if (!button || busy) return;
 
-    const action = Object.keys(ACTIONS).find(name =>
-        button.classList.contains(name)
-    );
+    const action = button.id;
 
-    if (!action) return;
+    if (!(action in ACTIONS)) return;
 
     const eventId = eventLayer.dataset.eventId;
     const uid = auth.currentUser?.uid;
 
     if (!eventId || !uid) return;
 
+    const previous = eventLayer.querySelector(".event-act-btn.active")?.id || "noEvent";
+
     busy = true;
     setButtonsDisabled(true);
+    markStatus(ACTIONS[action]);
 
     try {
         await setAttendance(eventId, uid, ACTIONS[action]);
-
-        if (action === "no") closeEvent();
     } catch (error) {
         console.error("Erro ao atualizar presença no evento:", error);
+        markStatus(ACTIONS[previous]);
     } finally {
         busy = false;
         setButtonsDisabled(false);

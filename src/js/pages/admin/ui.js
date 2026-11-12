@@ -16,7 +16,7 @@ export function toast(text) {
 }
 
 export function num(value) {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return " ";
   return Number(value).toLocaleString("pt-BR");
 }
 
@@ -32,13 +32,13 @@ export function toDate(value) {
 
 export function fmtDate(value) {
   const date = toDate(value);
-  if (!date) return "—";
+  if (!date) return " ";
   return date.toLocaleString("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 export function fmtAgo(value) {
   const date = toDate(value);
-  if (!date) return "—";
+  if (!date) return " ";
 
   const seconds = Math.round((Date.now() - date.getTime()) / 1000);
   const rtf = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });

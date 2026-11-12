@@ -21,14 +21,14 @@ function render(data) {
     kpi("Ativos hoje (DAU)", num(activity.dau)),
     kpi("Ativos 7 dias (WAU)", num(activity.wau)),
     kpi("Ativos 30 dias (MAU)", num(activity.mau)),
-    kpi("Retenção DAU/MAU", stickiness === null ? "—" : `${stickiness}%`, {
+    kpi("Retenção DAU/MAU", stickiness === null ? " " : `${stickiness}%`, {
       sub: "acima de 20% é saudável",
       tone: stickiness === null ? "" : stickiness >= 20 ? "good" : "bad"
     }),
     kpi("Novos usuários 7d", num(activity.newUsers7)),
     kpi("Posts 24h", num(activity.posts1)),
     kpi("Posts 7d", num(activity.posts7)),
-    kpi("Posts por ativo (7d)", activity.postsPerActive ?? "—")
+    kpi("Posts por ativo (7d)", activity.postsPerActive ?? " ")
   ].join("");
 
   const signups = series.signups.map(point => ({ ...point, label: dayLabel(point.day) }));

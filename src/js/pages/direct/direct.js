@@ -20,3 +20,4 @@ import "/src/js/pages/direct/loadMessages.js";
 import "/src/js/pages/direct/sendMessage.js";
 
 import "/src/js/pages/direct/sendImage/sendImage.js";
+import "/src/js/pages/direct/composer.js";

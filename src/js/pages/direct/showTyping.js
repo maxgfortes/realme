@@ -3,13 +3,13 @@ import {
     onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { db } from "../../../config/config.js";
+import { db, auth } from "../../../config/config.js";
 
 let typingUnsubscribe = null;
 let hideTimeout = null;
 
 export function loadTyping(chatId, otherUserId) {
-    if (!chatId || !otherUserId) {
+    if (!chatId) {
         return;
     }
 
@@ -22,7 +22,10 @@ export function loadTyping(chatId, otherUserId) {
         function (snapshot) {
             const data = snapshot.data();
 
-            const isTyping = data?.typing?.[otherUserId] === true;
+            const me = auth.currentUser?.uid;
+            const isTyping = otherUserId
+                ? data?.typing?.[otherUserId] === true
+                : Object.entries(data?.typing || {}).some(([uid, value]) => uid !== me && value === true);
 
             if (isTyping) {
                 showTyping();

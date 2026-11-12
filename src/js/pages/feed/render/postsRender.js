@@ -20,6 +20,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import {
     escapeHTML,
     formatPostDate,
+    buildPostMeta,
     joinNames,
     getCachedCreator,
     getUserName,
@@ -31,10 +32,12 @@ import {
 } from "./postCard.js";
 
 import { openComments } from "./openComments.js";
+import { renderActivity, bindActivityClicks } from "./activityCard.js";
 
 let lastPost = null;
 let newestFeedTime = 0;
 let livePostsUnsubscribe = null;
+let liveActivitiesUnsubscribe = null;
 let openedPostFromUrl = false;
 
 const TOP_THRESHOLD = 40;
@@ -48,6 +51,16 @@ const PAGE_SIZE = 20;
 const FEED_ENDPOINT = "https://us-central1-ifriendmatch.cloudfunctions.net/feed";
 const LAST_SEEN_KEY = "feedLastSeen";
 const DEFAULT_CREATOR_PHOTO = "/public/img/default.jpg";
+const LIVE_ACTIVITY_TYPES = new Set([
+    "status_change",
+    "profile_update",
+    "update_bio",
+    "new_location",
+    "add_profile_music",
+    "update_profile_music",
+    "new_friendship",
+    "wall_post"
+]);
 
 let feedCursor = null;
 let useLegacyFeed = false;
@@ -192,29 +205,130 @@ function animatePostEnter(element) {
     setTimeout(finish, 900);
 }
 
-function insertLivePost(postId, data, creator, mentions) {
-    const firstPost = feed.querySelector(".post-card-new");
+function placeAtTop(render) {
+    const firstCard = feed.querySelector(".post-card-new");
     const atTop = isFeedAtTop();
     const previousTop = feedRow?.scrollTop || 0;
     const previousHeight = feedRow?.scrollHeight || 0;
 
-    const element = appendPost(feed, {
+    const element = render(firstCard);
+
+    if (!element) return null;
+
+    if (atTop) {
+        animatePostEnter(element);
+        return element;
+    }
+
+    feedRow.scrollTop = previousTop + (feedRow.scrollHeight - previousHeight);
+
+    return element;
+}
+
+function insertLivePost(postId, data, creator, mentions) {
+    placeAtTop(firstPost => appendPost(feed, {
         postId,
         data,
         creator,
         mentions,
         before: firstPost
-    });
+    }));
+}
 
-    if (!element) return;
+function eventSelector(eventId) {
+    return `.post-card-new[data-event-id="${CSS.escape(eventId)}"]`;
+}
 
-    if (atTop) {
-        animatePostEnter(element);
+async function insertLiveEvent(eventId) {
+    if (!feedStarted || !eventId || feed.querySelector(eventSelector(eventId))) return;
+
+    const snapshot = await getDoc(doc(db, "events", eventId));
+
+    if (!snapshot.exists()) return;
+
+    const data = snapshot.data({ serverTimestamps: "estimate" });
+    const creator = await getCachedCreator(data.creatorId || "");
+
+    if (!feedStarted || feed.querySelector(eventSelector(eventId))) return;
+
+    const time = data.createAt?.toMillis ? data.createAt.toMillis() : Date.now();
+
+    placeAtTop(firstCard => renderEvent({
+        feed,
+        eventId,
+        title: data.eventTitle || "",
+        creator,
+        dateText: formatPostDate(new Date(time)),
+        creatorid: data.creatorId || "",
+        before: firstCard
+    }));
+
+    loadEventGoing(eventId);
+}
+
+async function handleLiveActivity(activityDoc) {
+    if (!feedStarted) return;
+
+    const data = activityDoc.data({ serverTimestamps: "estimate" });
+
+    if (data.visible === false || !data.actorUid) return;
+
+    const allowed = await getFeedCreatorIds();
+
+    if (!allowed.includes(data.actorUid)) return;
+
+    if (data.type === "new_event") {
+        await insertLiveEvent(data.eventId);
         return;
     }
 
-    feedRow.scrollTop = previousTop + (feedRow.scrollHeight - previousHeight);
+    if (!LIVE_ACTIVITY_TYPES.has(data.type)) return;
+    if (feed.querySelector(`[data-activity-id="${CSS.escape(activityDoc.id)}"]`)) return;
+
+    const [actor, target] = await Promise.all([
+        getCachedCreator(data.actorUid),
+        data.targetUid ? getCachedCreator(data.targetUid) : null
+    ]);
+
+    if (!feedStarted) return;
+
+    placeAtTop(firstCard => renderActivity(feed, {
+        activityId: activityDoc.id,
+        type: data.type,
+        data,
+        actor: { uid: data.actorUid, ...actor },
+        target: target && { uid: data.targetUid, ...target },
+        time: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now(),
+        before: firstCard
+    }));
 }
+
+function startLiveActivities() {
+    if (liveActivitiesUnsubscribe || !feed) return;
+
+    liveActivitiesUnsubscribe = onSnapshot(
+        query(
+            collection(db, "activities"),
+            where("createdAt", ">", Timestamp.now()),
+            orderBy("createdAt", "desc"),
+            limit(20)
+        ),
+        snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type !== "added") return;
+
+                handleLiveActivity(change.doc)
+                    .catch(error => console.error("Erro ao inserir atividade nova:", error));
+            });
+        },
+        error => console.error("Erro ao observar atividades:", error)
+    );
+}
+
+window.addEventListener("realme:event-created", event => {
+    insertLiveEvent(event.detail?.id)
+        .catch(error => console.error("Erro ao inserir evento novo:", error));
+});
 
 async function handleLiveAdded(postDoc) {
     if (!feedStarted || feed.querySelector(postSelector(postDoc.id))) return;
@@ -402,6 +516,26 @@ function reviveFeedItem(item) {
         data.create = toTimestamp(data.create ?? item.createdAt);
     }
 
+    if (item.type === "activity") {
+        return {
+            type: "activity",
+            id: item.id,
+            data: item.data || {},
+            creatorid: item.creator?.uid || item.data?.actorUid || "",
+            time: item.createdAt || 0,
+            creator: {
+                uid: item.creator?.uid || item.data?.actorUid || "",
+                name: item.creator?.name || t("common.user"),
+                photo: item.creator?.photo || DEFAULT_CREATOR_PHOTO
+            },
+            target: item.target ? {
+                uid: item.target.uid,
+                name: item.target.name || t("common.user"),
+                photo: item.target.photo || DEFAULT_CREATOR_PHOTO
+            } : null
+        };
+    }
+
     return {
         type: item.type === "event" ? "event" : "post",
         id: item.id,
@@ -476,9 +610,22 @@ async function renderFeedItems(items, creators) {
     );
 
     items.forEach((item, index) => {
-        if (feed.querySelector(`[data-${item.type === "event" ? "event" : "post"}-id="${CSS.escape(item.id)}"]`)) return;
+        if (feed.querySelector(`[data-${item.type}-id="${CSS.escape(item.id)}"]`)) return;
 
         const dateText = item.time ? formatPostDate(new Date(item.time)) : "";
+
+        if (item.type === "activity") {
+            renderActivity(feed, {
+                activityId: item.id,
+                type: item.data.type,
+                data: item.data,
+                actor: item.creator,
+                target: item.target,
+                time: item.time
+            });
+
+            return;
+        }
 
         if (item.type === "event") {
             renderEvent({
@@ -536,6 +683,7 @@ async function loadFeed() {
 
         if (feedStarted) {
             startLivePosts();
+            startLiveActivities();
             openPostFromUrl();
         }
     }
@@ -575,7 +723,7 @@ if (feedRow) {
     });
 }
 
-function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
+function renderEvent({ feed, eventId, title, creator, dateText, creatorid, before = null }) {
     const safeCreatorId = escapeHTML(String(creatorid || ""));
     const profileUrl = `profile.html?uid=${encodeURIComponent(creatorid || "")}`;
 
@@ -583,7 +731,7 @@ function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
         <div class="post-card-new" data-event-id="${escapeHTML(eventId)}">
             <div class="post-header-new">
                 <div class="post-pfp-area post-owner-link" data-profile-uid="${safeCreatorId}">
-                    <div class="post-pfp">
+                    <div class="post-pfp" data-presence-uid="${safeCreatorId}">
                         <img src="${escapeHTML(creator.photo)}" alt="">
                     </div>
                 </div>
@@ -597,7 +745,7 @@ function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
                         >${escapeHTML(creator.name)}</a>${t("events.createdEvent")}
                     </div>
 
-                    <div class="post-date-new">${dateText}</div>
+                    ${buildPostMeta({ dateText })}
                 </div>
 
                 <div class="post-more-actions">
@@ -630,7 +778,13 @@ function renderEvent({ feed, eventId, title, creator, dateText, creatorid }) {
         </div>
     `;
 
+    if (before && before.parentNode === feed) {
+        before.insertAdjacentHTML("beforebegin", eventHTML);
+        return before.previousElementSibling;
+    }
+
     feed.insertAdjacentHTML("beforeend", eventHTML);
+    return feed.lastElementChild;
 }
 
 onAuthStateChanged(auth, user => {
@@ -639,3 +793,4 @@ onAuthStateChanged(auth, user => {
 });
 
 bindPostInteractions(feed);
+bindActivityClicks(feed);

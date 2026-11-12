@@ -76,7 +76,7 @@ export async function createEvent() {
 
     showProgress(80);
 
-    await addDoc(collection(db, 'events'), {
+    const eventRef = await addDoc(collection(db, 'events'), {
       createAt: serverTimestamp(),
       creatorId: user.uid,
       eventBanner: banner.url,
@@ -85,6 +85,8 @@ export async function createEvent() {
       eventLocation: location,
       eventTitle: title
     });
+
+    window.dispatchEvent(new CustomEvent('realme:event-created', { detail: { id: eventRef.id } }));
 
     showProgress(100);
     setTimeout(hideProgress, 1000);

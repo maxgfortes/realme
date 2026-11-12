@@ -7,6 +7,7 @@ import { $, select, cloneTemplate } from "./dom.js";
 import { state } from "./state.js";
 import { POSTS_PER_PAGE } from "./constants.js";
 import { createPostPreview } from "./postPreview.js";
+import { fetchProfileContent, revive } from "./profileApi.js";
 
 let gridUserId = null;
 let gridSession = 0;
@@ -16,6 +17,7 @@ let finished = false;
 let observer = null;
 let loadedPosts = [];
 let liveUnsubscribe = null;
+let serverCursor = undefined;
 
 function buildQuery() {
   const constraints = [
@@ -110,7 +112,89 @@ function watchSentinel() {
   observer.observe(sentinel);
 }
 
-async function fetchNextPage() {
+function appendPosts(posts) {
+  const fresh = posts.filter(post => isProfilePost(post.data) && !loadedPosts.some(loaded => loaded.id === post.id));
+  const grid = $("muralPosts");
+
+  grid.querySelectorAll(":scope > :not([data-post-id])").forEach(element => element.remove());
+  fresh.forEach(post => grid.appendChild(createGridItem(post)));
+  loadedPosts.push(...fresh);
+
+  return fresh;
+}
+
+function afterPage() {
+  if (!loadedPosts.length && finished) renderEmptyState();
+  if (!finished) watchSentinel();
+}
+
+function applyServerPage(page) {
+  const posts = (page.posts || []).map(post => ({ id: post.id, userid: gridUserId, data: revive(post.data) }));
+  serverCursor = page.nextCursor || null;
+  finished = !serverCursor;
+
+  const added = appendPosts(posts);
+  afterPage();
+
+  return added;
+}
+
+async function fetchServerPage() {
+  const session = gridSession;
+  const cursor = serverCursor;
+
+  try {
+    const page = await fetchProfileContent({ uid: gridUserId, section: "posts", cursor });
+    if (session !== gridSession) return [];
+    return applyServerPage(page);
+  } catch (error) {
+    if (session !== gridSession) return [];
+    console.warn("Perfil pelo servidor indisponível:", error);
+    serverCursor = undefined;
+    lastSnapshot = cursor ? await getDoc(doc(db, "posts", cursor)).catch(() => null) : null;
+    return fetchFirestorePage();
+  }
+}
+
+export function seedPostsGrid(uid, seedPromise) {
+  if (uid !== gridUserId) return;
+
+  const session = gridSession;
+
+  pagePromise = seedPromise
+    .then(page => {
+      if (session !== gridSession) return [];
+      if (!page) throw new Error("NO_SEED");
+      return applyServerPage(page);
+    })
+    .catch(() => {
+      if (session !== gridSession) return [];
+      serverCursor = undefined;
+      return fetchFirestorePage();
+    })
+    .finally(() => {
+      if (session === gridSession) pagePromise = null;
+    });
+}
+
+export function refreshFirstPage(uid, page) {
+  if (uid !== gridUserId || !page) return;
+
+  const ids = (page.posts || []).map(post => post.id);
+  const shown = loadedPosts.slice(0, ids.length).map(post => post.id);
+
+  if (ids.join() === shown.join() || loadedPosts.length > ids.length) return;
+
+  loadedPosts = [];
+  $("muralPosts").replaceChildren();
+  applyServerPage(page);
+}
+
+function fetchNextPage() {
+  return serverCursor !== undefined ? fetchServerPage() : fetchFirestorePage();
+}
+
+async function fetchFirestorePage() {
   const session = gridSession;
   const result = await getDocs(buildQuery());
 
@@ -124,14 +208,12 @@ async function fetchNextPage() {
     }))
     .filter(post => isProfilePost(post.data) && !loadedPosts.some(loaded => loaded.id === post.id));
 
-  newPosts.forEach(post => $("muralPosts").appendChild(createGridItem(post)));
-  loadedPosts.push(...newPosts);
+  appendPosts(newPosts);
 
   lastSnapshot = result.docs.at(-1) ?? lastSnapshot;
   finished = result.size < POSTS_PER_PAGE;
 
-  if (!loadedPosts.length && finished) renderEmptyState();
-  if (!finished) watchSentinel();
+  afterPage();
 
   return newPosts;
 }
@@ -170,6 +252,7 @@ export function loadPostsGrid(uid) {
   gridSession++;
   lastSnapshot = null;
   pagePromise = null;
+  serverCursor = undefined;
   finished = false;
   loadedPosts = [];
 

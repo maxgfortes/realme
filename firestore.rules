@@ -69,6 +69,18 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
+    match /notes/{userId}/likes/{likerId} {
+      allow read: if isOwner(userId) || isOwner(likerId);
+
+      allow create: if isOwner(likerId) &&
+        likerId != userId &&
+        request.resource.data.keys().hasOnly(['uid', 'createdAt']) &&
+        request.resource.data.uid == likerId;
+
+      allow update: if false;
+      allow delete: if isOwner(likerId) || isOwner(userId);
+    }
+
     match /events/{eventId} {
 
       allow read: if isSignedIn() && (
@@ -285,10 +297,16 @@ service cloud.firestore {
 
       allow update: if isSignedIn() &&
         request.auth.uid in resource.data.participants &&
-        request.resource.data.participants == resource.data.participants;
+        request.resource.data.participants == resource.data.participants &&
+        (
+          resource.data.get('isGroup', false) != true ||
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['lastMessage', 'lastMessageTime', 'lastSender', 'typing', 'readBy'])
+        );
 
       allow delete: if isSignedIn() &&
-        request.auth.uid in resource.data.participants;
+        request.auth.uid in resource.data.participants &&
+        resource.data.get('isGroup', false) != true;
 
       match /messages/{msgId} {
         allow read: if isChatParticipant(chatId);
@@ -360,6 +378,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /psnStatus/{userId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     match /spotifyTokens/{userId} {
       allow read, write: if false;
     }
@@ -391,7 +414,7 @@ service cloud.firestore {
       allow update: if (
           isOwner(userId) &&
           !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['uid', 'username', 'email', 'criadoem', 'nascimento', 'verified', 'banned', 'banReason', 'bannedAt', 'bannedBy'])
+            .hasAny(['uid', 'username', 'email', 'criadoem', 'nascimento', 'verified', 'banned', 'banReason', 'bannedAt', 'bannedBy', 'squarePfp'])
         ) || (
           isAdmin() &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verified']) &&

@@ -50,6 +50,8 @@ export async function openProfileTimeline(posts, startIndex = 0, username = "", 
 
     if (!row) return;
 
+    if (timeline && timeline.parentElement !== document.body) document.body.appendChild(timeline);
+
     const id = ++session;
 
     if (name) name.textContent = username;

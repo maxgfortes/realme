@@ -1,0 +1,47 @@
+:root {
+  --presence-online: #34c759;
+  --presence-away: var(--color-red-59, #ff3b30);
+}
+
+[data-presence-uid] {
+  position: relative;
+}
+
+.presence-dot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 28%;
+  height: 28%;
+  min-width: 9px;
+  min-height: 9px;
+  max-width: 18px;
+  max-height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--color-bg-primary);
+  pointer-events: none;
+  z-index: 2;
+  transform: scale(0);
+  animation: presence-in 220ms cubic-bezier(0.22, 0.75, 0.3, 1) forwards;
+}
+
+.presence-dot.online {
+  background: var(--presence-online);
+}
+
+.presence-dot.away {
+  background: var(--presence-away);
+}
+
+@keyframes presence-in {
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presence-dot {
+    animation: none;
+    transform: none;
+  }
+}

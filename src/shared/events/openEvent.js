@@ -54,3 +54,26 @@ if (eventFromUrl) {
         openEvent(eventFromUrl);
     });
 }
+
+
+
+const openChatBtn = document.getElementById("openEventChatBtn");
+const eventChat = document.getElementById("eventChatArea");
+const closeChatBtn = document.getElementById("closeChatBtn");
+
+function openEventChat() {
+    if (!eventChat || !eventLayer) return;
+
+    eventChat.classList.add("active");
+    eventLayer.classList.add("left");
+}
+
+function closeEventChat() {
+    if (!eventChat || !eventLayer) return;
+
+    eventChat.classList.remove("active");
+    eventLayer.classList.remove("left");
+}
+
+openChatBtn?.addEventListener("click", openEventChat);
+closeChatBtn?.addEventListener("click", closeEventChat);

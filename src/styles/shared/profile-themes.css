@@ -1,11 +1,11 @@
 html[data-profile-theme="midnight"] {
-  --pt-bg: #0b1026;
-  --pt-surface: #171e40;
-  --pt-sheet: #121834;
-  --pt-raised: #222a52;
+  --pt-bg: #080b1d;
+  --pt-surface: #0e0e1f;
+  --pt-sheet: #13141a;
+  --pt-raised: #191c2e;
   --pt-text: #eef1ff;
-  --pt-muted: #9ea7d6;
-  --pt-border: rgba(158, 167, 214, 0.18);
+  --pt-muted: #b1b5d3;
+  --pt-border: transparent;
   --pt-accent: #7c8cff;
 }
 
@@ -70,8 +70,8 @@ html[data-profile-theme="deep-ocean"] {
   --pt-sheet: #081c2a;
   --pt-raised: #123247;
   --pt-text: #def2ff;
-  --pt-muted: #7fb2cf;
-  --pt-border: rgba(127, 178, 207, 0.18);
+  --pt-muted: #bed8e7;
+  --pt-border: transparent;
   --pt-accent: #3fa9e6;
 }
 

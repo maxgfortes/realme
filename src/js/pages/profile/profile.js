@@ -4,6 +4,9 @@ import "/src/shared/notifications/notificationPushItem.js";
 import "/src/shared/directDot.js";
 import "/src/shared/desktopAlert.js";
 import "/src/shared/push.js";
+import "/src/shared/presence.js";
+import "./saved.js";
+import "./birthdays.js";
 
 import "./sideBar.js";
 import "./openEvent.js";

@@ -72,3 +72,6 @@ menu.addEventListener("click", e => {
   const item = e.target.closest(".menu-item");
   if (item) changeTab(Number(item.dataset.profileTab));
 });
+if (new URLSearchParams(location.search).get("tab") === "wall") {
+  requestAnimationFrame(() => changeTab(1));
+}

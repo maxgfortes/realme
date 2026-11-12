@@ -49,5 +49,25 @@ export function getNotificationMessage(type) {
         return t("notif.eventGoing");
     }
 
+    if (type === "note_like") {
+        return t("notif.noteLike");
+    }
+
+    if (type === "birthday_today") {
+        return t("notif.birthdayToday");
+    }
+
+    if (type === "birthday_tomorrow") {
+        return t("notif.birthdayTomorrow");
+    }
+
+    if (type === "birthday_soon") {
+        return t("notif.birthdaySoon");
+    }
+
+    if (type === "group_added") {
+        return t("notif.groupAdded");
+    }
+
     return t("notif.default");
 }

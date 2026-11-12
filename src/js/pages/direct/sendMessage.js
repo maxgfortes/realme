@@ -58,7 +58,8 @@ export async function sendMessage() {
 
         await updateDoc(doc(db, "chats", chatId), {
             lastMessage: content,
-            lastMessageTime: serverTimestamp()
+            lastMessageTime: serverTimestamp(),
+            lastSender: user.uid
         });
     } catch (error) {
         console.error("Erro ao enviar mensagem:", error);
