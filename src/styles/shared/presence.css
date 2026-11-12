@@ -1,6 +1,6 @@
 :root {
-  --presence-online: #34c759;
-  --presence-away: var(--color-red-59, #ff3b30);
+  --presence-online: #33ad52;
+  --presence-away: var(--color-red-59, #ad211a);
 }
 
 [data-presence-uid] {
@@ -9,16 +9,17 @@
 
 .presence-dot {
   position: absolute;
+  display: none;
   right: 0;
   bottom: 0;
   width: 28%;
   height: 28%;
   min-width: 9px;
   min-height: 9px;
-  max-width: 18px;
-  max-height: 18px;
+  max-width: 16px;
+  max-height: 16px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--color-bg-primary);
+  box-shadow: 0 0 0 3px var(--color-bg-primary);
   pointer-events: none;
   z-index: 2;
   transform: scale(0);

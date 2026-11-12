@@ -11,7 +11,7 @@ const RECHECK_MS = 15000;
 const DEFAULT_PFP = "/public/img/default.jpg";
 const PROFILE_CACHE_KEY = "realme.liveStatusProfiles";
 const STATUS_CACHE_KEY = "realme.liveStatusCache.v2";
-const KINDS = ["music", "psn"];
+const KINDS = ["music"];
 const RECENT_MS = 7 * 24 * 60 * 60 * 1000;
 const COLLECTION_FOR_KIND = { music: "nowPlaying", psn: "psnStatus" };
 

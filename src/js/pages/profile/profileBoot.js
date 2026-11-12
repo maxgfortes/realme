@@ -21,7 +21,6 @@ import { stopMusic } from "./profileMusic.js";
 import { initProfileEvents } from "./profileEvents.js";
 import { applyProfileTheme } from "/src/shared/profileThemes.js";
 import { watchNowPlaying, setSpotifyViewer } from "./spotify.js";
-import { watchPsn, setPsnViewer } from "./psn.js";
 
 function renderCachedProfile() {
   const uid = getCachedProfileUid();
@@ -49,7 +48,6 @@ async function openProfile(uid) {
 
   watchProfile(uid);
   watchNowPlaying(uid);
-  watchPsn(uid);
   watchFriendship(uid);
 
   const cached = readContentCache(uid);
@@ -90,7 +88,6 @@ async function handleAuthChange(user) {
   state.currentUsername = user ? await getCurrentUsername(user.uid) : "";
   if (user) saveOwnUid(user.uid);
   setSpotifyViewer(state.currentUserId);
-  setPsnViewer(state.currentUserId);
   renderAuthMenu();
 
   if (!user && hasProfileInUrl()) {
