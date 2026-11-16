@@ -679,3 +679,7 @@
     animation: none;
   }
 }
+
+.save-btn {
+  color: var(--color-text-gray-93);
+}

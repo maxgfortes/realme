@@ -635,5 +635,5 @@
 }
 
 .ec-going-direct svg {
-  stroke: var(--color-icon-white, #fff);
+  stroke: var(--color-icon-gray-80);
 }

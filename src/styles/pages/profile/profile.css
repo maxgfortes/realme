@@ -1479,3 +1479,7 @@ body.public-profile .public-cta {
   background: var(--color-brand);
   color: #fff;
 }
+
+.psn-connect .psn-icon {
+  fill: var(--spotify-green);
+}

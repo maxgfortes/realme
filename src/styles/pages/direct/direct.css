@@ -1700,3 +1700,21 @@ body {
 .group-add-btn[hidden] {
   display: none;
 }
+
+.dm-compose-btn,
+.dm-group-info-btn {
+  color: var(--color-icon-gray-80);
+}
+
+.dm-compose-btn svg,
+.dm-group-info-btn svg {
+  stroke: var(--color-icon-gray-80);
+}
+
+.group-add-btn {
+  color: var(--color-text-pure);
+}
+
+.group-add-btn svg {
+  stroke: var(--color-icon-slate-97);
+}

@@ -323,3 +323,8 @@
 .menu-item-link.spotify-connect.psn-connect {
   border: none;
 }
+.saved-link svg,
+.birthdays-link svg {
+  fill: none;
+  stroke: var(--color-icon-slate-97);
+}
