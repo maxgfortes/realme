@@ -140,10 +140,6 @@
   flex-shrink: 0;
 }
 
-.send-comment:active {
-  background-color: var(--color-bg-blue-50);
-}
-
 .send-comment svg {
   width: 16px;
   height: 16px;
@@ -282,10 +278,6 @@
 .comment-item-options .item-btn.delete svg rect,
 .comment-item-options .item-btn.delete svg line {
     stroke: currentColor;
-}
-
-.comment-item-options .item-btn.delete:active {
-    opacity: .8;
 }
 
 .comment-left {

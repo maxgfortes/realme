@@ -566,7 +566,6 @@ body {
   width: 100%;
 }
 
-
 @keyframes xact-pulse {
   0%, 100% { opacity: .1; }
   50%       { opacity: .35; }
@@ -616,10 +615,6 @@ body {
   width: 34px;
   height: 34px;
   stroke: var(--color-icon-white);
-}
-
-.act-delete-btn:active {
-  opacity: .8;
 }
 
 .act-big {

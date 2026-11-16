@@ -1,4 +1,5 @@
-import { t, formatDate as formatIntlDate } from "/src/i18n/i18n.js";
+import { t } from "/src/i18n/i18n.js";
+import { getDaySeparatorLabel } from "/src/js/pages/direct/formatRelativeTime.js";
 import { app, auth, db } from "/src/config/config.js";
 import {
     collection,
@@ -71,57 +72,29 @@ function dayKey(date) {
     return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
-function dayLabel(date) {
-    const today = new Date();
-    const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
-
-    if (dayKey(date) === dayKey(today)) return t("birthdays.today");
-    if (dayKey(date) === dayKey(yesterday)) return t("events.chatYesterday");
-
-    return formatIntlDate(date, { day: "numeric", month: "long" });
-}
-
-function timeLabel(date) {
-    return formatIntlDate(date, { hour: "2-digit", minute: "2-digit" });
-}
-
-function bubble(message, mine, position) {
-    const classes = `ec-bubble ${mine ? "mine" : "their"} ${position}`;
-
+function bubble(message, mine) {
     if (isImage(message)) {
-        return `<div class="${classes} image"><img src="${escapeHTML(message.content)}" alt="" loading="lazy"></div>`;
+        return `<div class="${mine ? "msg-beta-image-mine" : "msg-beta-image"}"><img class="dm-image loaded" src="${escapeHTML(message.content)}" alt="" loading="lazy"></div>`;
     }
 
-    return `<div class="${classes}">${escapeHTML(message.content || "")}</div>`;
+    return `<div class="${mine ? "msg-beta-mine" : "msg-beta"}">${escapeHTML(message.content || "")}</div>`;
 }
 
 function groupHTML(group, me) {
     const mine = group.sender === me;
-    const count = group.messages.length;
+    const bubbles = group.messages.map(message => bubble(message, mine)).join("");
 
-    const bubbles = group.messages.map((message, index) => {
-        const position = count === 1 ? "single" : index === 0 ? "first" : index === count - 1 ? "last" : "middle";
-        return bubble(message, mine, position);
-    }).join("");
-
-    const time = toDate(group.messages[count - 1].timestamp);
-    const timeHTML = time ? `<div class="ec-time">${escapeHTML(timeLabel(time))}</div>` : "";
-
-    if (mine) {
-        return `<div class="ec-group mine"><div class="ec-col">${bubbles}${timeHTML}</div></div>`;
-    }
+    if (mine) return `<div class="box mine">${bubbles}</div>`;
 
     const summary = peekUserSummary(group.sender);
 
     return `
-        <div class="ec-group their" data-sender="${escapeHTML(group.sender)}">
-            <a class="ec-avatar" href="/profile.html?uid=${encodeURIComponent(group.sender)}">
+        <div class="box their group-their" data-sender="${escapeHTML(group.sender)}">
+            <a class="group-sender" href="/profile.html?uid=${encodeURIComponent(group.sender)}">
                 <img src="${escapeHTML(summary?.photo || DEFAULT_PHOTO)}" alt="">
+                <span>${escapeHTML(firstName(group.sender))}</span>
             </a>
-            <div class="ec-col">
-                <div class="ec-name">${escapeHTML(firstName(group.sender))}</div>
-                ${bubbles}${timeHTML}
-            </div>
+            ${bubbles}
         </div>
     `;
 }
@@ -156,7 +129,7 @@ function render(messages) {
 
         if (key !== lastDay) {
             flush();
-            html += `<div class="ec-day">${escapeHTML(dayLabel(date))}</div>`;
+            html += `<div class="dm-day-separator"><span>${escapeHTML(getDaySeparatorLabel(date))}</span></div>`;
             lastDay = key;
         }
 
@@ -166,10 +139,7 @@ function render(messages) {
             return;
         }
 
-        const lastTime = group ? toDate(group.messages[group.messages.length - 1].timestamp) : null;
-        const sameGroup = group && group.sender === message.sender && lastTime && date - lastTime < 5 * 60 * 1000;
-
-        if (!sameGroup) {
+        if (!group || group.sender !== message.sender) {
             flush();
             group = { sender: message.sender, messages: [] };
             if (message.sender !== me && !peekUserSummary(message.sender)) unknown.add(message.sender);
@@ -188,9 +158,9 @@ function render(messages) {
 
     unknown.forEach(uid => {
         getUserSummary(uid).then(summary => {
-            list.querySelectorAll(`.ec-group[data-sender="${CSS.escape(uid)}"]`).forEach(item => {
-                item.querySelector(".ec-avatar img").src = summary.photo || DEFAULT_PHOTO;
-                item.querySelector(".ec-name").textContent = (summary.name || "").split(" ")[0] || t("common.user");
+            list.querySelectorAll(`.box[data-sender="${CSS.escape(uid)}"] .group-sender`).forEach(label => {
+                label.querySelector("img").src = summary.photo || DEFAULT_PHOTO;
+                label.querySelector("span").textContent = (summary.name || "").split(" ")[0] || t("common.user");
             });
         });
     });

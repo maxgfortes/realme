@@ -35,8 +35,7 @@
   outline: none;
 }
 
-*:focus,
-*:active{
+*:focus {
   outline: none;
   box-shadow: none;
 }

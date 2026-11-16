@@ -48,10 +48,6 @@
   transition: scale 140ms ease;
 }
 
-.live-status-item:active {
-  scale: 0.98;
-}
-
 .live-status-item.entering {
   animation: live-item-in 380ms cubic-bezier(0.22, 0.75, 0.3, 1) both;
 }

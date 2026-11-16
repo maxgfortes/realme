@@ -106,10 +106,6 @@ a:focus-visible {
   background: var(--accent-hover);
 }
 
-.auth-btn:active {
-  transform: scale(0.97);
-}
-
 .auth-btn.login {
   background: transparent;
 }
@@ -216,10 +212,6 @@ a:focus-visible {
 
 .welcome-auth-btn:hover {
   background: var(--accent-hover);
-}
-
-.welcome-auth-btn:active {
-  transform: scale(0.97);
 }
 
 .welcome-auth-btn.login {

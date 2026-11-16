@@ -1094,10 +1094,6 @@ body {
   height: 68px;
 }
 
-.now-playing-card:active {
-  scale: 0.98;
-}
-
 .now-playing-cover {
   width: 56px;
   height: 56px;

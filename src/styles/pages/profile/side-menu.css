@@ -189,10 +189,6 @@
   cursor: pointer;
 }
 
-.bday-nav:active {
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .bday-weekdays,
 .bday-grid {
   display: grid;
@@ -282,10 +278,6 @@
   text-decoration: none;
 }
 
-.bday-row:active {
-  background: rgba(255, 255, 255, 0.05);
-}
-
 .bday-row-pfp {
   display: block;
   width: 44px;
@@ -327,7 +319,6 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-14);
 }
-
 
 .menu-item-link.spotify-connect.psn-connect {
   border: none;

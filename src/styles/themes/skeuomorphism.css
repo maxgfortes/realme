@@ -240,12 +240,6 @@
   text-shadow: var(--skeuo-text-emboss);
 }
 
-:root[data-theme="skeuomorphism"] :is(.action-btn.primary, .send-post-btn, .send-wall-btn, .send-feeling-btn, .push-enable-btn:not(.sec), .save-btn, .messageBtn, .card-add-btn, .follow-btn, .search-btn, .accept-request-btn, .friend-request-btn, .modal-footer-btn, .event-act-btn, .btn-area button, .btn.register, .welcome-auth-btn, .bottom-btn:not(.cancel), .about-menu-btn.active):active {
-  background: var(--skeuo-gradient-primary-pressed) !important;
-  box-shadow: var(--skeuo-shadow-pressed);
-  transform: translateY(1px);
-}
-
 :root[data-theme="skeuomorphism"] :is(.action-btn:not(.primary), .push-enable-btn.sec, .bottom-btn.cancel, .cancel-feeling-btn, .menu-bottom-btn, .about-menu-btn:not(.active), .alert-btn, .btn.login, .np-bottom-btn, .sections-btn) {
   background: var(--skeuo-gradient-secondary) !important;
   color: var(--color-text-secondary) !important;
@@ -253,11 +247,6 @@
   border-color: var(--skeuo-border-secondary);
   box-shadow: var(--skeuo-shadow-raised);
   text-shadow: var(--skeuo-text-engrave);
-}
-
-:root[data-theme="skeuomorphism"] :is(.action-btn:not(.primary), .push-enable-btn.sec, .bottom-btn.cancel, .cancel-feeling-btn, .menu-bottom-btn, .about-menu-btn:not(.active), .alert-btn, .btn.login, .np-bottom-btn, .sections-btn):active {
-  background: var(--skeuo-gradient-secondary-pressed) !important;
-  box-shadow: var(--skeuo-shadow-pressed);
 }
 
 :root[data-theme="skeuomorphism"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), textarea, select, .search-input, .humor-note) {
@@ -295,10 +284,6 @@
 :root[data-theme="skeuomorphism"] .menu-item-link {
   color: var(--color-text-primary);
   border-bottom: 1px solid #eceef1;
-}
-
-:root[data-theme="skeuomorphism"] .menu-item-link:active {
-  background: var(--color-bg-hover);
 }
 
 :root[data-theme="skeuomorphism"] :is(.post-pfp img, .comment-pfp img, .note-pfp img, .user-pfp-area img, .profile-mini, .greetingPfp, .pfp-border) {

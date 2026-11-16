@@ -309,10 +309,6 @@ body {
   flex-shrink: 0;
 }
 
-.dmSendBtn:active {
-  background-color: var(--color-bg-blue-50);
-}
-
 .dmSendBtn svg {
   width: 16px;
   height: 16px;
@@ -575,7 +571,6 @@ body {
   border-bottom-right-radius: var(--radius-15);
   display: none;
 }
-
 
 .typing-dot {
   width: 7px;
@@ -1135,12 +1130,6 @@ body {
   pointer-events: auto;
 }
 
-.dmSendBtn:active,
-.img-btn:active,
-.dm-back-btn:active {
-  scale: 0.9;
-}
-
 .img-btn,
 .dm-back-btn {
   transition: scale 120ms ease, opacity 160ms ease;
@@ -1150,7 +1139,6 @@ body {
   transition: var(--transition-height-fast), box-shadow 200ms ease,
       background-color 200ms ease;
 }
-
 
 .dm-chat-area.active .dm-chat-header > * {
   animation: dm-header-in 340ms var(--dm-ease) both;
@@ -1207,10 +1195,6 @@ body {
 
 .user-list-box.enter {
   animation: dm-row-in 360ms var(--dm-ease) var(--row-delay, 0ms) both;
-}
-
-.user-list-box:active {
-  transform: scale(0.98);
 }
 
 @keyframes dm-row-in {
@@ -1291,7 +1275,6 @@ body {
   transform: scale(0.96);
   transition: opacity 220ms ease, transform 220ms ease;
 }
-
 
 .user-pfp-area .presence-dot {
   right: var(--space-10);
@@ -1583,10 +1566,6 @@ body {
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-}
-
-.compose-person:active {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .compose-person-pfp {

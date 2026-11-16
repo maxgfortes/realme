@@ -799,10 +799,6 @@
   background: var(--color-bg-surface-raised);
 }
 
-.graph-btn:active {
-  background: var(--color-bg-surface-raised);
-}
-
 .graph-stage {
   position: relative;
   height: min(70vh, 640px);
@@ -932,8 +928,6 @@
   grid-column: 2 / -1;
 }
 
-.graph-link-row:active,
-.graph-top-row:active,
 .graph-link-row:hover,
 .graph-top-row:hover {
   background: var(--color-bg-surface-raised);

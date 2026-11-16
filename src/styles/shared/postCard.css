@@ -637,10 +637,6 @@
   color: var(--text-fff);
 }
 
-.feed-activity:active {
-  opacity: 0.7;
-}
-
 .post-actions-right {
   display: flex;
   align-items: center;
