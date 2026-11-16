@@ -81,6 +81,10 @@ service cloud.firestore {
       allow delete: if isOwner(likerId) || isOwner(userId);
     }
 
+    match /{path=**}/going/{goingUid} {
+      allow read: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
     match /events/{eventId} {
 
       allow read: if isSignedIn() && (

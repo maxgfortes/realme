@@ -19,8 +19,12 @@ let panel = null;
 let renderedKey = null;
 let lastArgs = null;
 let lastHtml = "";
+let retryTimer = null;
+let staleRead = false;
 
-const EVENTS_REFRESH_MS = 60 * 1000;
+const RETRY_MS = 4000;
+
+const EVENTS_REFRESH_MS = 5 * 60 * 1000;
 
 const ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -43,6 +47,8 @@ async function fetchCreated(uid) {
       )
     );
 
+    if (snap.metadata.fromCache) staleRead = true;
+
     return snap.docs
       .map(d => ({ id: d.id, ...d.data() }))
       .filter(isActive);
@@ -60,14 +66,14 @@ async function fetchGoing(uid) {
       query(collectionGroup(db, "going"), where("uid", "==", uid))
     );
   } catch (error) {
-    console.error("Erro ao buscar eventos que você vai:", error);
+    if (error.code !== "permission-denied") console.error("Erro ao buscar eventos que você vai:", error);
     return [];
   }
 
-  const confirmed = snap.docs.filter(d => d.data().status !== "maybe");
+  if (snap.metadata.fromCache) staleRead = true;
 
   const events = await Promise.all(
-    confirmed.map(async going => {
+    snap.docs.map(async going => {
       try {
         const eventId = going.ref.parent.parent.id;
         const eventSnap = await getDoc(doc(db, "events", eventId));
@@ -232,6 +238,8 @@ export async function initProfileEvents({ profileUid, isOwner, force = false }) 
   const key = `${profileUid}:${isOwner}`;
   if (renderedKey === key) return;
   renderedKey = key;
+  staleRead = false;
+  clearTimeout(retryTimer);
 
   const [created, going] = await Promise.all([
     fetchCreated(profileUid),
@@ -239,6 +247,10 @@ export async function initProfileEvents({ profileUid, isOwner, force = false }) 
   ]);
 
   if (renderedKey !== key) return;
+
+  if (staleRead) {
+    retryTimer = setTimeout(() => refreshProfileEvents(true), RETRY_MS);
+  }
 
   if (!created.length && !going.length) {
     if (panel) {

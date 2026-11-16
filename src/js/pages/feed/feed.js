@@ -9,6 +9,7 @@ import"/src/shared/ntDot.js";
 import"/src/shared/events/openEvent.js";
 import"/src/shared/events/loadEvent.js";
 import "/src/shared/events/eventChat.js";
+import "/src/shared/events/editEvent.js";
 import"/src/shared/notifications/notificationPushItem.js";
 
 import "/src/js/pages/feed/postCreation/open-creation-modal.js";

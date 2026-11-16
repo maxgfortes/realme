@@ -225,7 +225,7 @@
 .event-chat-notice {
   padding: var(--space-30) var(--space-20);
   text-align: center;
-  color: var(--color-text-muted);
+  color: #999;
   font-size: var(--font-size-14);
 }
 
@@ -242,4 +242,195 @@
   gap: var(--space-8);
   padding: 0 var(--space-16);
   font-size: var(--font-size-13);
+}
+
+.dm-system {
+  align-self: center;
+  max-width: 80%;
+  margin: var(--space-10) auto;
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-12);
+  text-align: center;
+}
+
+.event-chat-going {
+  display: flex;
+  align-items: center;
+  gap: var(--space-10);
+  padding: 0 var(--space-16);
+  background: var(--bg-primary);
+  z-index: 2;
+}
+
+.event-chat-going:empty {
+  display: none;
+}
+
+.ec-going-faces {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.ec-going-faces img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px var(--bg-primary);
+}
+
+.ec-going-faces img + img {
+  margin-left: -10px;
+}
+
+.ec-going-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-13);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ec-going-direct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--color-icon-white, #fff);
+}
+
+.ec-going-direct:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.event-messages {
+  gap: var(--space-2);
+  padding-left: var(--space-12);
+  padding-right: var(--space-12);
+}
+
+.ec-day {
+  align-self: center;
+  margin: var(--space-16) 0 var(--space-8);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.ec-group {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+  max-width: 100%;
+}
+
+.ec-group.mine {
+  justify-content: flex-end;
+}
+
+.ec-avatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 18px;
+}
+
+.ec-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.ec-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  max-width: 78%;
+}
+
+.ec-group.mine .ec-col {
+  align-items: flex-end;
+}
+
+.ec-name {
+  padding: 0 var(--space-12) 2px;
+  font-size: var(--font-size-12);
+  color: var(--color-text-muted);
+}
+
+.ec-bubble {
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--space-8) var(--space-14, 14px);
+  border-radius: 20px;
+  font-size: var(--font-size-16);
+  line-height: 1.35;
+  word-break: break-word;
+  color: var(--color-text-gray-95);
+}
+
+.ec-bubble.their {
+  background: var(--color-bg-gray-19);
+}
+
+.ec-bubble.mine {
+  background: var(--color-bg-blue-50b);
+  color: #fff;
+}
+
+.ec-bubble.their.first { border-bottom-left-radius: 6px; }
+.ec-bubble.their.middle { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+.ec-bubble.their.last { border-top-left-radius: 6px; }
+.ec-bubble.mine.first { border-bottom-right-radius: 6px; }
+.ec-bubble.mine.middle { border-top-right-radius: 6px; border-bottom-right-radius: 6px; }
+.ec-bubble.mine.last { border-top-right-radius: 6px; }
+
+.ec-bubble.image {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.ec-bubble.image img {
+  display: block;
+  max-width: 220px;
+  max-height: 300px;
+  border-radius: inherit;
+}
+
+.ec-time {
+  padding: 2px var(--space-8) 0;
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+.ec-empty {
+  margin: auto;
+  padding: var(--space-30) var(--space-24, 24px);
+  text-align: center;
+}
+
+.ec-empty-title {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-pure);
+  margin-bottom: var(--space-6);
+}
+
+.ec-empty-text {
+  font-size: var(--font-size-14);
+  color: var(--color-text-muted);
 }

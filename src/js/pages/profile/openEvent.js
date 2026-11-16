@@ -5,9 +5,9 @@ import {
   doc,
   getDoc,
   getDocs,
-  setDoc,
-  deleteDoc,
-  collection
+  collection,
+  writeBatch,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const OPEN_EVENT = "realme:open-event";
@@ -236,16 +236,15 @@ async function openEvent(eventId) {
   document.body.classList.add("event-open");
 
   try {
-    const going = await getDocs(collection(db, "events", eventId, "going"));
+    const [going, maybe] = await Promise.all([
+      getDocs(collection(db, "events", eventId, "going")),
+      getDocs(collection(db, "events", eventId, "maybe"))
+    ]);
 
     if (token !== current.token) return;
 
-    going.docs.slice(0, MAX_PEOPLE).forEach(d => {
-      current.people.set(
-        d.data().uid || d.id,
-        d.data().status === STATUS.maybe ? STATUS.maybe : STATUS.going
-      );
-    });
+    maybe.docs.slice(0, MAX_PEOPLE).forEach(d => current.people.set(d.data().uid || d.id, STATUS.maybe));
+    going.docs.slice(0, MAX_PEOPLE).forEach(d => current.people.set(d.data().uid || d.id, STATUS.going));
   } catch (error) {
     console.error("Erro ao carregar presenças:", error);
   }
@@ -269,13 +268,22 @@ async function setMyStatus(status) {
   await renderPeople();
 
   try {
-    const ref = doc(db, "events", eventId, "going", me);
+    const goingRef = doc(db, "events", eventId, "going", me);
+    const maybeRef = doc(db, "events", eventId, "maybe", me);
+    const batch = writeBatch(db);
 
-    if (status) {
-      await setDoc(ref, { uid: me, status });
+    if (status === STATUS.going) {
+      batch.set(goingRef, { uid: me, createdAt: serverTimestamp() });
+      batch.delete(maybeRef);
+    } else if (status === STATUS.maybe) {
+      batch.set(maybeRef, { uid: me, createdAt: serverTimestamp() });
+      batch.delete(goingRef);
     } else {
-      await deleteDoc(ref);
+      batch.delete(goingRef);
+      batch.delete(maybeRef);
     }
+
+    await batch.commit();
 
     document.dispatchEvent(new CustomEvent(GOING_CHANGED, { detail: { eventId } }));
   } catch (error) {

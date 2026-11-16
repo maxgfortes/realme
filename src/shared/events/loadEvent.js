@@ -23,6 +23,22 @@ const DEFAULT_PFP = "./public/img/default.jpg";
 const DEFAULT_BANNER = "./public/img/event.png";
 
 let activeEventId = null;
+let activeEventData = null;
+let activeCreatorId = null;
+
+const eventLayer = document.getElementById("eventLayer");
+
+export function getActiveEvent() {
+    return activeEventId && activeEventData ? { id: activeEventId, data: activeEventData } : null;
+}
+
+function applyOwnership() {
+    const me = auth.currentUser?.uid;
+    const isOwner = Boolean(me && activeCreatorId && me === activeCreatorId);
+
+    eventLayer?.classList.toggle("is-owner", isOwner);
+    document.dispatchEvent(new CustomEvent("realme:event-ownership", { detail: { eventId: activeEventId, isOwner } }));
+}
 let currentLoadId = 0;
 let eventUnsubscribe = null;
 let goingUnsubscribe = null;
@@ -80,6 +96,9 @@ export function loadEvent(eventId) {
     stopEventListeners();
 
     activeEventId = eventId;
+    activeEventData = null;
+    activeCreatorId = null;
+    eventLayer?.classList.remove("is-owner");
     const loadId = ++currentLoadId;
 
     clearEventFields();
@@ -96,6 +115,19 @@ export function loadEvent(eventId) {
             }
 
             const data = snapshot.data();
+            const creatorChanged = activeCreatorId !== (data.creatorId || null);
+
+            activeEventData = data;
+            activeCreatorId = data.creatorId || null;
+
+            if (creatorChanged) {
+                applyOwnership();
+                if (listReady.going) renderAllLists(loadId);
+            }
+
+            document.dispatchEvent(new CustomEvent("realme:event-data", { detail: { eventId, data } }));
+
+            if (eventLayer?.classList.contains("editing")) return;
 
             if (eventLayerTitle) {
                 eventLayerTitle.textContent = data.eventTitle || t("events.untitled");
@@ -160,6 +192,8 @@ async function updateParticipantList(status, snapshot, loadId) {
         snapshot.docs.map(item => item.id)
     );
 
+    if (status === "maybe" && activeCreatorId) participantLists.maybe.delete(activeCreatorId);
+
     listReady[status] = true;
 
     const myUid = auth.currentUser?.uid;
@@ -171,7 +205,7 @@ async function updateParticipantList(status, snapshot, loadId) {
     }
 
     const allUids = new Set([
-        ...participantLists.going,
+        ...goingWithOwner(),
         ...participantLists.maybe
     ]);
 
@@ -314,10 +348,22 @@ function renderAllLists(loadId) {
     renderList("maybe", eventRowMaybe);
 }
 
+function goingWithOwner() {
+    const going = new Set(participantLists.going);
+    if (activeCreatorId) going.add(activeCreatorId);
+    return going;
+}
+
 function renderList(status, container) {
     if (!container || !listReady[status]) return;
 
-    const users = [...participantLists[status]]
+    if (status === "going" && activeCreatorId && !userUnsubscribers.has(activeCreatorId)) {
+        listenToParticipant(activeCreatorId, currentLoadId);
+    }
+
+    const ids = status === "going" ? goingWithOwner() : participantLists[status];
+
+    const users = [...ids]
         .map(uid => getParticipantFromState(uid))
         .filter(Boolean);
 

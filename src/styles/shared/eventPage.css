@@ -373,3 +373,110 @@
   border-radius: 0 9px 9px 0;
   border: none;
 }
+.event-header .header-block.right {
+  justify-content: flex-end;
+}
+
+.header-block .event-nav-btn {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 200ms ease, width 200ms ease;
+}
+
+.header-block .event-nav-btn.active {
+  width: auto;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.event-nav-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--color-icon-white);
+}
+
+.event-nav-btn:disabled {
+  opacity: 0.4;
+}
+
+#closeEventBtn.hidden-by-edit {
+  display: none;
+}
+
+.event-layer.is-owner .event-act-area {
+  display: none;
+}
+
+.event-banner-overlay {
+  position: relative;
+}
+
+.event-banner-edit {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: var(--space-8) var(--space-16);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-bold);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.event-layer.editing .event-banner-edit {
+  display: block;
+}
+
+.event-layer.editing .event-banner-overlay img {
+  filter: brightness(0.75);
+}
+
+.event-edit-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-8) var(--space-12);
+  border: none;
+  outline: none;
+  border-radius: var(--radius-10);
+  background: var(--color-bg-slate-18);
+  color: var(--color-text-pure);
+  font: inherit;
+  font-size: var(--font-size-15);
+  resize: none;
+  color-scheme: dark;
+}
+
+.event-layer.editing .event-info-text {
+  padding-right: var(--space-16);
+}
+
+.event-layer.editing .event-bottom,
+.event-layer.editing .event-users-row-list,
+.event-layer.editing .empty-event-list {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.event-layer.saving .event-edit-input {
+  opacity: 0.6;
+}
+
+.event-edit-error {
+  margin: var(--space-8) var(--space-16) 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-13);
+}
+
+.event-edit-error[hidden] {
+  display: none;
+}

@@ -557,13 +557,16 @@ body {
 }
 
 .xact-loading {
-  width: 30px;
-  height: 30px;
-  border: 2px solid var(--color-border-default);
-  border-top-color: var(--color-border-gray-87);
-  border-radius: var(--radius-circle);
-  animation: spin 0.8s linear infinite;
+  width: 28px;
+  height: 28px;
 }
+
+.xact-loading img {
+  height: 100%;
+  width: 100%;
+}
+
+
 @keyframes xact-pulse {
   0%, 100% { opacity: .1; }
   50%       { opacity: .35; }

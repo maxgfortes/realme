@@ -216,15 +216,21 @@
       <button id="closeEventBtn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298 511.93"><path d="M285.77 441c16.24 16.17 16.32 42.46.15 58.7-16.16 16.24-42.45 16.32-58.69.16l-215-214.47c-16.24-16.16-16.32-42.45-.15-58.69L227.23 12.08c16.24-16.17 42.53-16.09 58.69.15 16.17 16.24 16.09 42.54-.15 58.7l-185.5 185.04L285.77 441z"/></svg>
       </button>
+      <button class="event-nav-btn" id="cancelEventEditBtn" type="button" aria-label="Cancelar" data-i18n-attr="aria-label:common.cancel"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="1 0 41 34" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-33.751953125)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M5.629 1.654C5.436 1.439 5.436 1.139 5.629.924C5.844.709 6.166.709 6.359.924L21.592 16.156L36.803.924C37.018.709 37.318.709 37.533.924C37.748 1.139 37.748 1.439 37.533 1.654L22.322 16.887L37.533 32.098C37.748 32.313 37.748 32.613 37.533 32.828C37.318 33.043 37.018 33.043 36.803 32.828L21.592 17.617L6.359 32.828C6.166 33.043 5.844 33.043 5.629 32.828C5.436 32.613 5.436 32.313 5.629 32.098L20.861 16.887Z"/></g></svg></button>
     </div>
     <div class="header-block">
       <div class="header-title" data-i18n="common.evento">Evento</div>
     </div>
-    <div class="header-block"></div>
+    <div class="header-block right">
+      <button class="event-nav-btn" id="editEventBtn" type="button" aria-label="Editar evento" data-i18n-attr="aria-label:events.editEvent"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="3 2 45 41" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-46.62109375)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M44.365 40.283L45.461 41.379C46.063 41.98 46.084 42.496 45.525 43.033L45.482 43.076C44.988 43.570 44.408 43.527 43.850 42.969L42.775 41.895ZM21.678 18.949L24.320 20.281L43.184 39.145L41.637 40.735L22.752 21.871L21.377 19.250C21.270 19.057 21.484 18.863 21.678 18.949ZM11 3.051H35.600C39.230 3.051 41.143 5.006 41.143 8.572V31.389L40.090 30.336V8.615C40.090 5.650 38.436 4.104 35.557 4.104H11.043C8.078 4.104 6.531 5.650 6.531 8.615V33.129C6.531 36.115 8.078 37.662 11.043 37.662H32.828L33.881 38.715H11C7.391 38.715 5.479 36.781 5.479 33.193V8.572C5.479 4.963 7.391 3.051 11 3.051Z"/></g></svg></button>
+      <button class="event-nav-btn" id="saveEventEditBtn" type="button" aria-label="Salvar" data-i18n-attr="aria-label:events.saveEvent"><svg aria-label="Ícone" class="x1lliihq x1n2onr6 xyb1xck" fill="currentColor" height="24" role="img" viewBox="0 0 44.5 38.5" width="24"><title>Ícone</title><g fill-rule="nonzero" transform="scale(1,-1) translate(0,-38.306640625)"><path fill="currentColor" stroke="currentColor" fill-opacity="1" stroke-width="1.6" d="M16.951 1.805C17.166 1.805 17.273 1.891 17.381 2.020L39.166 35.600C39.252 35.771 39.295 35.879 39.295 35.943C39.295 36.266 39.059 36.502 38.736 36.502C38.521 36.502 38.393 36.416 38.307 36.266L16.930 3.287L6.531 15.082C6.402 15.254 6.273 15.361 6.037 15.361C5.715 15.361 5.479 15.125 5.479 14.803C5.479 14.674 5.521 14.545 5.672 14.395L16.457 2.020C16.607 1.848 16.736 1.805 16.951 1.805Z"/></g></svg></button>
+    </div>
   </div>
   <div class="event-body">
     <div class="event-banner-overlay">
       <img id="eventLayerBanner" src="">
+      <button class="event-banner-edit" id="eventBannerEditBtn" type="button" data-i18n="events.changeBanner">Trocar capa</button>
+      <input type="file" id="eventBannerEditInput" accept="image/*" hidden>
     </div>
     <div class="event-content">
       <div class="event-infos">

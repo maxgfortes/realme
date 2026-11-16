@@ -954,7 +954,7 @@ function iniciarTempoReal(container, uid) {
 
   window.recarregarAtividades = async function () {
     limparCacheAtividades(uid);
-    container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
+    container.innerHTML = `<div class="loading-area"><div class="xact-loading"><img src="/public/img/loading.gif" alt=""></div></div>`;
     await aplicar();
   };
 }
@@ -979,7 +979,7 @@ async function carregarAtividades() {
     container.innerHTML = cached.html;
     ativarSwipeDelete(container, uid);
   } else {
-    container.innerHTML = `<div class="loading-area"><div class="xact-loading"></div></div>`;
+    container.innerHTML = `<div class="loading-area"><div class="xact-loading"><img src="/public/img/loading.gif" alt=""></div></div>`;
   }
 
   markActivitiesSeen(uid);

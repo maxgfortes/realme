@@ -341,7 +341,41 @@ function buildGroupSender(uid) {
     return label;
 }
 
+function appendSystemMessage(messagesList, message) {
+    const messageDate = toDate(message.timestamp) || new Date();
+
+    if (!state.lastDate || !isSameDay(state.lastDate, messageDate)) {
+        mount(messagesList, buildDaySeparator(messageDate));
+    }
+
+    state.lastDate = messageDate;
+    state.currentSender = null;
+    state.currentBox = null;
+
+    const notice = document.createElement("div");
+    notice.className = "dm-system";
+    notice.textContent = message.content || "";
+    mount(messagesList, notice);
+
+    const entry = {
+        box: null,
+        bubble: notice,
+        replyDiv: null,
+        reactionBadge: null,
+        reactionCount: 0,
+        message: { ...message },
+        system: true
+    };
+
+    state.nodes.set(message.id, entry);
+    state.order.push(message.id);
+
+    return entry;
+}
+
 function appendMessage(messagesList, message, context) {
+    if (message.type === "system") return appendSystemMessage(messagesList, message);
+
     const { currentUserId, chatId, otherUserName } = context;
 
     const isMine = message.sender === currentUserId;
@@ -413,6 +447,11 @@ function appendMessage(messagesList, message, context) {
 
 function updateMessage(entry, message) {
     Object.assign(entry.message, message);
+
+    if (entry.system) {
+        entry.bubble.textContent = message.content || "";
+        return;
+    }
 
     syncBubbleContent(entry, message);
     syncReactionBadge(entry, message);
@@ -522,7 +561,7 @@ function startFooterRefresh() {
 }
 
 function renderFooter(messagesList, messages, currentUserId) {
-    const last = messages[messages.length - 1];
+    const last = messages.filter(message => message.type !== "system").at(-1);
     const isMine = last && last.sender === currentUserId;
 
     const isSeen = isMine && last.read === true && !!last.readAt?.toDate;

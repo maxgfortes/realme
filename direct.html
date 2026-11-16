@@ -201,6 +201,11 @@
       <div class="dm-sheet-title" id="groupInfoTitle"></div>
       <button class="dm-sheet-text-btn" type="button" data-sheet-close data-i18n="common.ok">OK</button>
     </div>
+    <input class="compose-group-name" id="groupNameInput" type="text" maxlength="50" autocomplete="off" placeholder="Nome do grupo" data-i18n-attr="placeholder:dm.groupNameLabel" hidden>
+    <button class="group-add-btn" id="groupAddBtn" type="button" hidden>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6"/><path d="M16 11h6"/></svg>
+      <span data-i18n="dm.addFriends">Adicionar amigos</span>
+    </button>
     <div class="compose-hint" id="groupInfoCount"></div>
     <div class="compose-results" id="groupInfoMembers"></div>
     <button class="group-leave-btn" id="groupLeaveBtn" type="button" data-i18n="dm.leaveGroup">Sair do grupo</button>
