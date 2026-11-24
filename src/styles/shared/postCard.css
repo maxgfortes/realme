@@ -248,7 +248,7 @@
   display:block;
 }
 
-.img-card img {
+/* ANTIGO .img-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -263,6 +263,31 @@
   height: auto;
   background: var(--color-bg-surface);
   border:  0.5px var(--color-border-gray-13) solid;
+} */
+.img-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+  max-height: 450px;
+  border:  0.5px #ccc solid;
+}
+
+.img-card {
+  border-radius: 0;
+  width: 100%;
+  height: auto;
+  background: var(--color-bg-surface);
+  border:  0.5px var(--color-border-gray-13) solid;
+  background: #fff;
+  padding: 6px;
+}
+
+.img-card.video-card {
+  background: #fff;
+  border-radius: 0;
+  max-height: 400px;
 }
 
 .post-bottom {
