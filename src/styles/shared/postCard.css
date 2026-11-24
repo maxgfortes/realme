@@ -248,7 +248,7 @@
   display:block;
 }
 
-/* ANTIGO .img-card img {
+/* ANTIGO */.img-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -263,8 +263,8 @@
   height: auto;
   background: var(--color-bg-surface);
   border:  0.5px var(--color-border-gray-13) solid;
-} */
-.img-card img {
+} 
+/*.img-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -288,7 +288,7 @@
   background: #fff;
   border-radius: 0;
   max-height: 400px;
-}
+}*/
 
 .post-bottom {
   padding: var(--space-10);
