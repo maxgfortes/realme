@@ -621,7 +621,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: var(--color-bg-surface);
   pointer-events: none;
 }
